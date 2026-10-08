@@ -1,0 +1,21 @@
+# Optional, separate memory-test UI. The normal frontend/backend remain on market.
+services:
+  memory-backend:
+    extends:
+      file: compose.yaml
+      service: backend
+    environment:
+      MARKETPLACE_IDENTITY_NAMESPACE: marketplace-local-test
+      DATABASE_URL: postgresql+psycopg://market:market-local@postgres:5432/market_test
+      READ_DATABASE_URL: postgresql://agent_reader:reader-local@postgres:5432/market_test
+      ALLOWED_ORIGINS: http://127.0.0.1:5179
+    ports: !reset []
+  memory-frontend:
+    extends:
+      file: compose.yaml
+      service: frontend
+    depends_on: !override
+      memory-backend: {condition: service_healthy}
+    ports: !override ["127.0.0.1:5179:80"]
+    volumes:
+      - ./infra/nginx-memory.conf:/etc/nginx/conf.d/default.conf:ro

@@ -1,0 +1,5 @@
+# Generate infra/litellm.lakera.generated.yaml first; no credentials in that file.
+services:
+  gateway:
+    volumes:
+      - ./infra/litellm.lakera.generated.yaml:/app/config.yaml:ro

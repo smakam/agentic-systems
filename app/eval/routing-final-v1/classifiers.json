@@ -1,0 +1,18 @@
+{
+  "version": "routing-final-v1",
+  "basis": "SPECIFICATION.md section 2 journey categories; known development set, not held-out validation",
+  "tiers": {"SIMPLE":"eval-nano", "MEDIUM":"eval-5", "COMPLEX":"eval-5", "REASONING":"eval-5"},
+  "keyword_rules": [
+    {"tier":"SIMPLE","keywords":["list", "show", "quantity", "stock", "balance", "price"]},
+    {"tier":"COMPLEX","keywords":["why", "investigate", "reconcile", "history", "policy", "eligible", "eligibility", "refund", "failed", "incident", "cause", "can you", "can the", "can we"]}
+  ],
+  "keyword_no_match": "heuristic",
+  "semantic_no_match": "heuristic",
+  "semantic_threshold": 0.5,
+  "embedding_model": "text-embedding-3-small",
+  "semantic_rules": [
+    {"tier":"SIMPLE","keywords":["List the sellers and their current outstanding amounts.","Show the products purchased in this order and their quantities.","How much inventory is available for this listing?","What is the listed price of this product?","Show the shipment status for this purchase.","List the orders placed during this date range."]},
+    {"tier":"COMPLEX","keywords":["Explain why the buyer paid but the merchant has not received the money.","Determine which policy version applies to this return and explain the decision.","Investigate whether delayed refunds affect multiple sellers.","Reconcile conflicting provider events with the current refund status.","Determine whether delivery and the waiting period permit a payout now.","Explain the sequence of failed payment attempts and subsequent retries.","Clarify an ambiguous business name before choosing the relevant orders.","Can you approve a refund and transfer the money on my behalf?"]}
+  ],
+  "openrouter": {"id":"auto-router","allowed_models":["openai/gpt-5-nano","openai/gpt-5"],"cost_tier":"medium"}
+}

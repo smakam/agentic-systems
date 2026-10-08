@@ -1,0 +1,18 @@
+{
+  "google_runtime": "projects/299748367836/locations/us-central1/reasoningEngines/1966208540318105600",
+  "lyzr_agent": "6abfbf34013b6eb4db9ff6f0",
+  "profiles": {
+    "local": {
+      "url": "https://clamor-grumpily-directed.ngrok-free.dev/mcp",
+      "google_secret": "marketplace-business-mcp",
+      "google_secret_version": "1",
+      "lyzr_server": "6ac0df16acb8932f6c574a1f"
+    },
+    "cloud": {
+      "url": "https://marketplace-mcp-327903210973.asia-south1.run.app/mcp",
+      "google_secret": "marketplace-cloud-mcp",
+      "google_secret_version": "1",
+      "lyzr_server": "6ac76996acb8932f6c574bd0"
+    }
+  }
+}

@@ -1,0 +1,5 @@
+flowchart LR
+    G["Generator agent · Nano"] --> R["Reviewer agent · checks the draft"]
+    R -->|"No changes needed"| F["Final answer"]
+    R -->|"Feedback: changes needed"| C["Correction agent · Nano · one correction"]
+    C --> F

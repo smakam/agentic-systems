@@ -1,0 +1,12 @@
+  - guardrail_name: marketplace-lakera-pre
+    litellm_params:
+      guardrail: lakera_v2
+      mode: pre_call
+      default_on: false
+      on_flagged: block
+      api_key: os.environ/LAKERA_API_KEY
+      api_base: https://api.lakera.ai
+      payload: true
+      breakdown: true
+      skip_system_message_in_guardrail: true
+      skip_tool_message_in_guardrail: false

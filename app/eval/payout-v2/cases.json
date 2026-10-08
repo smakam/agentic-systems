@@ -1,0 +1,14 @@
+[
+  {
+    "id": "16",
+    "fixture": "HOLD at 23h",
+    "question": "Can the operator release the payout for LAMP now?",
+    "gold": "No: one hour of the 24-hour hold remains. Delivery timestamp + clock + settlement policy; no claim of provider failure."
+  },
+  {
+    "id": "17",
+    "fixture": "HOLD at 24h30m; payout-fixtures-v2",
+    "question": "Can the operator release the payout for LAMP now?",
+    "gold": "Eligible under these fixture conditions: 24 hours 30 minutes since delivery, so the 24-hour hold has elapsed by 30 minutes; no active return. Not yet paid; explicit operator action needed. Establish delivery timestamp, snapshot clock, settlement policy and absence of active return."
+  }
+]

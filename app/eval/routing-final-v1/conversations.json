@@ -1,0 +1,37 @@
+{
+ "version":"routing-conversations-v1",
+ "purpose":"Six new scripted conversations for granularity, using existing business fixtures; development diagnostic, not independent held-out validation",
+ "grading":"Per turn: correct if all requested material facts are right; partial for material omission without false central conclusion; incorrect for wrong central conclusion or action claim. Citation defects tracked separately. No paid judge.",
+ "sessions":[
+  {"id":"S1","name":"Simple lookup to payout investigation","fixture":"01","turns":[
+   {"question":"For order-2, list the purchased product, quantity and seller.","expected_text":"Two Ceramic Mug Sets, sold by Everyday Studio.","expected_records":[{"product":"Ceramic Mug Set","quantity":2,"seller":"Everyday Studio"}]},
+   {"question":"For that same order, explain why its seller has not received the payout and what must happen before release.","expected_text":"Buyer payment is captured. The shipment is pending and payout is held. Delivery must be confirmed, then the 24-hour hold must pass; an operator must request release. There is no recorded payout failure for this order.","expected_records":[{"payment":"captured","shipment":"pending","payout":"held","amount_paise":161820,"hold_hours":24}]},
+   {"question":"What exact amount is currently payable to that seller for this order, after the marketplace fee?","expected_text":"Everyday Studio is owed INR 1,618.20: gross INR 1,798 less INR 179.80 fee.","expected_records":[{"seller":"Everyday Studio","gross_paise":179800,"fee_paise":17980,"payable_paise":161820}]}
+  ]},
+  {"id":"S2","name":"Investigation to bounded lookup","fixture":"01","turns":[
+   {"question":"Investigate the failed payout to Cedar & Co. on order-1. Distinguish the recorded failure from the delivery waiting period.","expected_text":"Cedar payout failed due to a simulated provider timeout. Delivery was September 25 at 12:00 UTC; the September 27 12:00 clock is 48 hours later, so the 24-hour hold has passed. An operator may retry; success is not guaranteed.","expected_records":[{"payout":"failed","reason":"simulated provider timeout","elapsed_hours":48,"hold_hours":24}]},
+   {"question":"How much is the failed payout amount for that seller on this order?","expected_text":"INR 4,498.20.","expected_records":[{"payable_paise":449820}]},
+   {"question":"Which product and how many units on this order belong to that seller?","expected_text":"Two Canvas Weekenders from Cedar & Co.","expected_records":[{"product":"Canvas Weekender","quantity":2,"seller":"Cedar & Co."}]}
+  ]},
+  {"id":"S3","name":"Clarification and narrowing","fixture":"27","turns":[
+   {"question":"Please list purchases associated with Cedar.","expected_text":"Ask whether Cedar means seller Cedar & Co. or product Cedar Desk; do not choose silently.","expected_records":null},
+   {"question":"The seller Cedar & Co., not the desk product.","expected_text":"Order-1 contains two Canvas Weekenders sold by Cedar & Co.; no other Cedar seller orders exist.","expected_records":[{"order":"order-1","product":"Canvas Weekender","quantity":2,"seller":"Cedar & Co."}]},
+   {"question":"Within those purchases, show only items that have not been delivered.","expected_text":"None; the Cedar items in order-1 have already been delivered.","expected_records":[]}
+  ]},
+  {"id":"S4","name":"Fresh evidence after purchase","fixture":"01","turns":[
+   {"question":"Give the current unpaid seller balance for Cedar & Co. in rupees.","expected_text":"INR 4,498.20 unpaid.","expected_records":[{"unpaid_paise":449820}]},
+   {"question":"What is that balance now?","before":"purchase_canvas","expected_text":"INR 6,747.30 unpaid, including the newly captured purchase; increase INR 2,249.10 is optional.","expected_records":[{"unpaid_paise":674730}]},
+   {"question":"Explain why the new purchase contributes to money owed even though its shipment is still pending. Is that new payout ready for release?","expected_text":"Captured payment creates the seller allocation/payable immediately. That is different from payout eligibility: the new shipment is pending, so it cannot be released until delivery and the 24-hour hold. New item gross INR 2,499, fee INR 249.90, payable INR 2,249.10.","expected_records":[{"new_payable_paise":224910,"new_shipment":"pending","eligible":false}]}
+  ]},
+  {"id":"S5","name":"Clock change and eligibility","fixture":"16","turns":[
+   {"question":"For LAMP, give the product, delivery timestamp and current seller payout status.","expected_text":"One Desk Lamp, delivered September 27 2026 at 12:00 UTC; payout is held.","expected_records":[{"product":"Desk Lamp","delivered_at":"2026-09-27T12:00:00+00:00","payout":"held"}]},
+   {"question":"At the current demo time, can the operator release that payout? Show the elapsed delivery time and the required hold.","before":"advance_90_minutes","expected_text":"Yes: September 28 at 12:30 UTC is 24 hours 30 minutes after delivery, exceeding the 24-hour hold. Payout remains held until the operator requests release.","expected_records":[{"elapsed_hours":24.5,"hold_hours":24,"eligible":true,"payout":"held"}]},
+   {"question":"What amount would the seller receive for that item, and has it actually been paid yet?","expected_text":"INR 1,169.10 is payable. It has not been paid; status is still held.","expected_records":[{"payable_paise":116910,"paid":false}]}
+  ]},
+  {"id":"S6","name":"Routine lookup throughout","fixture":"01","turns":[
+   {"question":"List the products and quantities purchased in order-1.","expected_text":"Two Canvas Weekenders and two Desk Lamps.","expected_records":[{"product":"Canvas Weekender","quantity":2},{"product":"Desk Lamp","quantity":2}]},
+   {"question":"For the Desk Lamp item in that order, who is the seller and what was the unit purchase price?","expected_text":"Northstar Goods; INR 1,299 per unit.","expected_records":[{"seller":"Northstar Goods","unit_price_paise":129900}]},
+   {"question":"What is the purchased line total for those lamps, before deducting seller fees?","expected_text":"Two times INR 1,299 = INR 2,598.","expected_records":[{"gross_paise":259800}]}
+  ]}
+ ]
+}

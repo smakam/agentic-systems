@@ -1,0 +1,14 @@
+services:
+  remote-mcp:
+    image: marketplace-lab-backend
+    command: [python, -m, marketplace.remote_mcp]
+    env_file: .remote-mcp.env
+    environment:
+      READ_DATABASE_URL: postgresql://agent_reader:reader-local@postgres:5432/market
+      DATA_DIR: /data
+      LITELLM_URL: http://gateway:4000/v1
+      LITELLM_API_KEY: ${SUPPORT_GATEWAY_KEY:-}
+    volumes:
+      - ./backend/marketplace:/app/marketplace:ro
+      - ./data:/data:ro
+    ports: ["127.0.0.1:58001:8001"]

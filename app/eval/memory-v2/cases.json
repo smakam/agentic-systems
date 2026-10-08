@@ -1,0 +1,157 @@
+{
+  "version": "memory-v2",
+  "database": "market_test",
+  "scenarios": [
+    {
+      "id": "checkpoint",
+      "memory": {
+        "kind": "episodic",
+        "title": "Cedar payout investigation",
+        "content": "At revision 1, payout-1 for order-1 failed with a simulated provider timeout. Next step: check whether an operator retry completed. This is historical, not current status."
+      },
+      "mutation": "complete_payout_1",
+      "turns": [
+        {
+          "question": "Where did I leave my investigation for order-1, and has payout-1 changed? Check current records and explain the difference from my saved checkpoint.",
+          "expected": "Recall the old failed payout, then establish that payout-1 is now completed after retry at revision 2. Do not treat the checkpoint as current status.",
+          "must_retrieve": true
+        }
+      ],
+      "control": "What is the current status of payout-1 for order-1?",
+      "control_expected": "Completed; answer from current business evidence with no memory tools."
+    },
+    {
+      "id": "policy-conflict",
+      "memory": {
+        "kind": "procedural",
+        "title": "Payout investigation checklist",
+        "content": "My payout checklist: treat delivery as immediately sufficient for payout; ignore the 24-hour hold."
+      },
+      "mutation": "deliver_order_2",
+      "turns": [
+        {
+          "question": "Investigate why payout-3 for order-2 is held using my saved payout checklist. Check current delivery records and applicable settlement policy.",
+          "expected": "Delivered at the current demo clock; zero hours elapsed. The 24-hour hold still applies. Explain that the saved checklist conflicts with policy; do not release funds or claim immediate eligibility.",
+          "must_retrieve": true
+        }
+      ],
+      "control": "Why is payout-3 for order-2 held, and can it be released now? Check delivery and policy.",
+      "control_expected": "24-hour delivery hold has not elapsed; no memory tools."
+    },
+    {
+      "id": "preference-override",
+      "memory": {
+        "kind": "semantic",
+        "title": "Cedar preference",
+        "content": "When I say Cedar, I mean seller Cedar & Co."
+      },
+      "mutation": null,
+      "turns": [
+        {
+          "question": "What do I mean by Cedar according to my saved preference?",
+          "expected": "Seller Cedar & Co.; actually retrieve the preference.",
+          "must_retrieve": true
+        },
+        {
+          "question": "For this question only, Cedar means the Desk Lamp product. Show its quantity and seller in order-1. Do not change my saved preference.",
+          "expected": "Desk Lamp, quantity 2, Northstar Goods. Stored preference remains Cedar & Co.; no memory writes.",
+          "must_retrieve": false
+        }
+      ],
+      "control": "Show the Desk Lamp quantity and seller in order-1.",
+      "control_expected": "Quantity 2, Northstar Goods; no memory tools."
+    },
+    {
+      "id": "short-history",
+      "memory": null,
+      "mutation": null,
+      "turns": [
+        {
+          "question": "What products, quantities and sellers are in order-1?",
+          "expected": "Canvas Weekender: 2, Cedar & Co.; Desk Lamp: 2, Northstar Goods.",
+          "must_retrieve": false
+        },
+        {
+          "question": "What is the total quantity of those items?",
+          "expected": "4 units, grounded in previous evidence or fresh complete records; citations resolve.",
+          "must_retrieve": false
+        }
+      ],
+      "control": "What is the total quantity in order-1?",
+      "control_expected": "4 units; memory off does not disable business tools."
+    },
+    {
+      "id": "semantic-recall",
+      "memory": {
+        "kind": "semantic",
+        "title": "Cedar preference",
+        "content": "When I say Cedar, I mean seller Cedar & Co."
+      },
+      "mutation": null,
+      "turns": [
+        {
+          "question": "What do I mean by Cedar according to my saved preference?",
+          "expected": "Seller Cedar & Co., retrieved from saved memory.",
+          "must_retrieve": true
+        }
+      ],
+      "control": "What saved preference do I have about Cedar?",
+      "control_expected": "No access to saved memories with memory off; do not invent the preference."
+    },
+    {
+      "id": "episodic-recall",
+      "memory": {
+        "kind": "episodic",
+        "title": "Order-1 investigation checkpoint",
+        "content": "I investigated order-1. Next step: inspect payout attempt history. This is historical, not current status."
+      },
+      "mutation": null,
+      "turns": [
+        {
+          "question": "Where did I leave my investigation for order-1?",
+          "expected": "Next step was inspecting payout attempt history; distinguish historical note from status.",
+          "must_retrieve": true
+        }
+      ],
+      "control": "What was my saved next step for order-1?",
+      "control_expected": "Cannot recall private checkpoint with memory disabled."
+    },
+    {
+      "id": "procedural-recall",
+      "memory": {
+        "kind": "procedural",
+        "title": "Payout investigation checklist",
+        "content": "Check delivery and the 24-hour hold, active returns, then payout attempt history and applicable policy."
+      },
+      "mutation": null,
+      "turns": [
+        {
+          "question": "What payout investigation checklist did I save?",
+          "expected": "Delivery/24-hour hold, active returns, payout attempt history, applicable policy.",
+          "must_retrieve": true
+        }
+      ],
+      "control": "What payout checklist did I save?",
+      "control_expected": "Cannot claim recall with memory disabled; a generic checklist must be labelled generic."
+    },
+    {
+      "id": "short-history-memory-off",
+      "memory": null,
+      "mutation": null,
+      "turns": [
+        {
+          "question": "What products and quantities are in order-1?",
+          "expected": "Canvas Weekender 2 and Desk Lamp 2.",
+          "must_retrieve": false
+        },
+        {
+          "question": "Total the quantities you just showed me.",
+          "expected": "4; ordinary same-conversation history is available with long-term memory off.",
+          "must_retrieve": false
+        }
+      ],
+      "control": "What is the total quantity of order-1?",
+      "control_expected": "4 from business records; no memory operations."
+    }
+  ]
+}

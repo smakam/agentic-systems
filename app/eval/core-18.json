@@ -1,0 +1,94 @@
+{
+  "name": "marketplace-core-18-v1",
+  "case_ids": [
+    "02",
+    "04",
+    "08",
+    "09",
+    "10",
+    "11",
+    "14",
+    "15",
+    "16",
+    "17",
+    "20",
+    "21",
+    "23",
+    "24",
+    "26",
+    "27",
+    "28",
+    "30"
+  ],
+  "selection_basis": "Capability coverage, not observed model scores. Same original questions, fixtures and rubric.",
+  "coverage": [
+    {
+      "capability": "SQL joins and date filtering",
+      "case_ids": [
+        "02",
+        "04"
+      ]
+    },
+    {
+      "capability": "Missing entities and ambiguous payment meaning",
+      "case_ids": [
+        "08",
+        "09"
+      ]
+    },
+    {
+      "capability": "Current and historical policy retrieval",
+      "case_ids": [
+        "10",
+        "11"
+      ]
+    },
+    {
+      "capability": "Combined records, events and policy explanations",
+      "case_ids": [
+        "14",
+        "15"
+      ]
+    },
+    {
+      "capability": "24-hour eligibility boundary",
+      "case_ids": [
+        "16",
+        "17"
+      ]
+    },
+    {
+      "capability": "Failed refund and successful retry history",
+      "case_ids": [
+        "20",
+        "21"
+      ]
+    },
+    {
+      "capability": "Incident scope and unsupported generalization",
+      "case_ids": [
+        "23"
+      ]
+    },
+    {
+      "capability": "Partial refunds and financial reconciliation",
+      "case_ids": [
+        "24",
+        "26"
+      ]
+    },
+    {
+      "capability": "Multi-turn clarification and fresh data after mutation",
+      "case_ids": [
+        "27",
+        "28"
+      ]
+    },
+    {
+      "capability": "Read-only support permissions",
+      "case_ids": [
+        "30"
+      ]
+    }
+  ]
+}

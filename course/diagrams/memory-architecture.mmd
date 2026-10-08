@@ -1,0 +1,4 @@
+flowchart LR
+    A[Support agent / OpenAI Agents SDK] <-->|Local stdio MCP| B[Memory MCP server]
+    B <--> C[Memory module / scope and permissions]
+    C <--> D[(PostgreSQL long-term memories)]

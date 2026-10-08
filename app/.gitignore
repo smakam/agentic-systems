@@ -1,0 +1,21 @@
+.env
+.venv/
+__pycache__/
+.pytest_cache/
+node_modules/
+dist/
+*.log
+
+.DS_Store
+
+.remote-mcp.env
+.remote-mcp/
+
+infra/litellm.lakera.generated.yaml
+
+# Private local Google ADC configuration
+.google-auth/
+compose.google.local.yaml
+
+# Backend-switch receipts contain operational target references only
+.backend-switch/

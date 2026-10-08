@@ -1,0 +1,5 @@
+flowchart LR
+    A[Agent runtime / MCP client] <--> B[Scoped memory MCP service]
+    B --> C[Provider adapter interface / planned]
+    C --> D[(PostgreSQL)]
+    C -. Future adapter .-> E[External memory provider / Mem0 or Cognis]

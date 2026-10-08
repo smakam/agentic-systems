@@ -1,0 +1,12 @@
+**/.env
+**/.env.*
+**/.venv
+**/node_modules
+**/__pycache__
+**/.terraform
+**/*.tfstate*
+**/*.tfplan
+**/*.tfvars
+**/results
+**/.git
+frontend/dist

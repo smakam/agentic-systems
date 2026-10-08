@@ -1,0 +1,88 @@
+{
+  "version": "market-gold-v3",
+  "purpose": "Calibrate material completeness; frozen questions and candidate answers unchanged. No human grades supplied to judge.",
+  "cases": {
+    "09": {
+      "essential_facts": [
+        "Distinguish captured buyer payment from seller payout. Accept either a clarification question or an explicitly qualified answer distinguishing both meanings.",
+        "Buyer payment captured; seller payout has a failure. Do not imply seller settlement completed."
+      ],
+      "evidence_requirements": [
+        "Any factual payment/payout statements must match retrieved records. Clarification alone needs no citation."
+      ],
+      "optional_details": [
+        "Enumerating every held or failed seller payout, amount and date."
+      ]
+    },
+    "11": {
+      "essential_facts": [
+        "Return window on June 1, 2025 was 14 days; do not apply historical policy to current orders."
+      ],
+      "evidence_requirements": [
+        "Cite retrieved historical returns v0 policy applicable to requested date; effective_at-filtered retrieval is acceptable."
+      ],
+      "optional_details": [
+        "Printing version ID or full effective-from/to interval."
+      ]
+    },
+    "14": {
+      "essential_facts": [
+        "Cedar remains unpaid because the payout attempt failed with recorded provider timeout; do not invent non-delivery or bank rejection."
+      ],
+      "evidence_requirements": [
+        "Retrieved evidence must establish payout belongs to Cedar, its failure and recorded cause. A cited policy is required for any statement about retry behavior."
+      ],
+      "optional_details": [
+        "Explicitly calculating the already elapsed delivery hold, amount, returns status or suggesting retry when not asked."
+      ]
+    },
+    "15": {
+      "essential_facts": [
+        "Payout completed before return; manual review is required because automated post-payout recovery is unsupported.",
+        "No recorded seller rejection; null refund ID is not the cause."
+      ],
+      "evidence_requirements": [
+        "Retrieved payout/return chronology and policy supporting manual-review cause."
+      ],
+      "optional_details": [
+        "Raw IDs, precise timestamps or detailed recovery procedure."
+      ]
+    },
+    "23": {
+      "essential_facts": [
+        "Only payout-1, belonging to Cedar, has documented incident impact; broader impact is unproven.",
+        "Do not assert other sellers were definitely unaffected or treat held payouts as failed."
+      ],
+      "evidence_requirements": [
+        "Incident affected set and relationship to seller; equivalent incident/event evidence accepted."
+      ],
+      "optional_details": [
+        "Listing all sellers or fetching redundant underlying event when incident evidence suffices."
+      ]
+    },
+    "24": {
+      "essential_facts": [
+        "Remaining unpaid payable to Cedar is INR 2249.10 after one unit refund.",
+        "Correct calculation: original gross 4998 minus refund 2499 minus adjusted fee 249.90, or remaining gross 2499 minus fee 249.90."
+      ],
+      "evidence_requirements": [
+        "Quantity and refund/allocation evidence supports amounts and seller scope."
+      ],
+      "optional_details": [
+        "Explicitly restating one unit remains, printing intermediate remaining gross, or explaining 10 percent fee when equivalent calculation is supplied."
+      ]
+    },
+    "26": {
+      "essential_facts": [
+        "Reconcile all sellers without double counting: captured 9394 = refunds 0 + fees 939.40 + unpaid 8454.60 + paid out 0.",
+        "Accept either aggregate equation or complete correct per-seller reconciliation covering all sellers with zero discrepancy."
+      ],
+      "evidence_requirements": [
+        "Trusted seller_balances view or equivalent allocation-based records covering all sellers."
+      ],
+      "optional_details": [
+        "Aggregate total row when complete per-seller reconciliation supplied; both rupees and paise formatting."
+      ]
+    }
+  }
+}

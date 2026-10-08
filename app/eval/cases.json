@@ -1,0 +1,182 @@
+[
+  {
+    "id": "01",
+    "fixture": "B",
+    "question": "What is Cedar & Co.'s current seller balance?",
+    "gold": "Captured 4,998; fee 499.80; unpaid 4,498.20; paid out 0. Allocation/payout rows; no double counting."
+  },
+  {
+    "id": "02",
+    "fixture": "B",
+    "question": "What products and quantities are in order-1, and who sells them?",
+    "gold": "Canvas Weekender \u00d72, Cedar; Desk Lamp \u00d72, Northstar. Item, listing/product and seller joins."
+  },
+  {
+    "id": "03",
+    "fixture": "B",
+    "question": "Has order-2 been delivered?",
+    "gold": "No; Mug Set shipment pending, two units. Do not infer delivery from paid order status."
+  },
+  {
+    "id": "04",
+    "fixture": "TODAY",
+    "question": "Show orders placed today for Cedar & Co. that are not yet delivered.",
+    "gold": "Exactly the new Cedar order; exclude Northstar and the pre-midnight control. UTC day boundary and current shipment state."
+  },
+  {
+    "id": "05",
+    "fixture": "B",
+    "question": "Which seller has the failed payout, and how much is it?",
+    "gold": "Cedar, payout-1, 4,498.20; distinguish failed from held. Payout/allocation/seller rows."
+  },
+  {
+    "id": "06",
+    "fixture": "B",
+    "question": "Show orders for Cedar.",
+    "gold": "Unique seller interpretation can proceed, stated plainly; order-1 matches. Check seller/product names; no unnecessary clarification."
+  },
+  {
+    "id": "07",
+    "fixture": "COLLISION",
+    "question": "Show orders for Cedar.",
+    "gold": "Ask whether seller Cedar & Co. or product Cedar Desk before choosing an order scope. Name lookup allowed; no unsupported definitive order answer."
+  },
+  {
+    "id": "08",
+    "fixture": "B",
+    "question": "Show orders for Acme.",
+    "gold": "No matching seller/product in this fixture; request the intended name or identifier. Do not invent an entity or report all orders."
+  },
+  {
+    "id": "09",
+    "fixture": "B",
+    "question": "Has the payment gone through for order-1?",
+    "gold": "Clarify buyer payment versus seller payout, since outcomes differ. May briefly state buyer captured but seller payouts not completed; must not give an unqualified yes."
+  },
+  {
+    "id": "10",
+    "fixture": "B",
+    "question": "What is the current return window?",
+    "gold": "30 days after delivery; cite current returns v1, not retired v0."
+  },
+  {
+    "id": "11",
+    "fixture": "B",
+    "question": "What return window did the policy specify on June 1, 2025?",
+    "gold": "14 days; cite historical returns v0 with its effective dates. Do not apply it to current orders."
+  },
+  {
+    "id": "12",
+    "fixture": "B",
+    "question": "Who can approve a return, receive it, and issue a refund?",
+    "gold": "Seller/operator approve and receive; only operator issues simulated refund. Returns/support policy evidence."
+  },
+  {
+    "id": "13",
+    "fixture": "B",
+    "question": "Does marking an item delivered automatically pay the seller?",
+    "gold": "No: 24-hour hold, other eligibility checks, manual operator release. Settlement policy; delivery is not payout completion."
+  },
+  {
+    "id": "14",
+    "fixture": "B",
+    "question": "Why has Cedar not been paid for order-1?",
+    "gold": "Recorded payout failure/provider timeout; delivery hold already elapsed. Event + payout + settlement/runbook evidence. No invented undelivered cause."
+  },
+  {
+    "id": "15",
+    "fixture": "LAMP-PAID",
+    "question": "Why is the return for LAMP in manual review? Did the seller reject it?",
+    "gold": "Payout completed before return; post-payout recovery unsupported, so manual review. Events + payout/return rows + settlement policy. No evidence of seller rejection; null refund ID is not the cause."
+  },
+  {
+    "id": "16",
+    "fixture": "HOLD at 23h",
+    "question": "Can the operator release the payout for LAMP now?",
+    "gold": "No: one hour of the 24-hour hold remains. Delivery timestamp + clock + settlement policy; no claim of provider failure."
+  },
+  {
+    "id": "17",
+    "fixture": "HOLD at 24h",
+    "question": "Can the operator release the payout for LAMP now?",
+    "gold": "Eligible under these fixture conditions, but not yet paid; explicit operator action needed. Boundary timestamps + policy + absence of active return."
+  },
+  {
+    "id": "18",
+    "fixture": "B plus requested return on item-2",
+    "question": "Why can't Northstar's payout for item-2 be released?",
+    "gold": "Active requested return blocks payout despite delivery hold having elapsed. Return state + delivery/payout rows + policy."
+  },
+  {
+    "id": "19",
+    "fixture": "TRAIL-RECEIVED",
+    "question": "Can this return be refunded now, and has the buyer already received a refund?",
+    "gold": "Received state permits operator refund under fixture policy; none completed yet. Separate eligibility from actual payment; rows + policy."
+  },
+  {
+    "id": "20",
+    "fixture": "TRAIL-RECEIVED + failed refund",
+    "question": "Explain the refund history for TRAIL.",
+    "gold": "One failed attempt, no completed refund; return still received; buyer not refunded. Failure event and current rows; no successful-refund inference."
+  },
+  {
+    "id": "21",
+    "fixture": "TRAIL-RECEIVED + failure then retry",
+    "question": "Explain the refund history for TRAIL.",
+    "gold": "Failed attempt then completed retry; total refunded 1,899 exactly once; return refunded; no seller payout due. Chronological event evidence and current balances."
+  },
+  {
+    "id": "22",
+    "fixture": "B plus successful retry of payout-1",
+    "question": "Explain Cedar's payout history for order-1.",
+    "gold": "Failed timeout then completed retry; paid 4,498.20 once, unpaid 0. Events and current payout/allocation."
+  },
+  {
+    "id": "23",
+    "fixture": "B",
+    "question": "Did the payout incident affect every seller?",
+    "gold": "Only payout-1 has documented incident impact; broader impact unproven. Incident/event evidence; do not treat every held payout as failed."
+  },
+  {
+    "id": "24",
+    "fixture": "PARTIAL",
+    "question": "After returning one Canvas Weekender, what remains payable to Cedar?",
+    "gold": "Refunded 2,499; remaining gross 2,499; adjusted fee 249.90; unpaid 2,249.10. Quantity and refund/allocation evidence; explain remaining unit."
+  },
+  {
+    "id": "25",
+    "fixture": "TRAIL-RECEIVED + completed refund",
+    "question": "Why does TRAIL still have a held payout record? Is money owed?",
+    "gold": "Fully refunded; amount 0, adjusted fee 0, no payout due. Stored held status is not a pending positive obligation or completed payout."
+  },
+  {
+    "id": "26",
+    "fixture": "B",
+    "question": "Reconcile all captured money across seller balances.",
+    "gold": "Captured 9,394 = refunds 0 + fees 939.40 + unpaid 8,454.60 + paid out 0. Count each allocation once."
+  },
+  {
+    "id": "27",
+    "fixture": "COLLISION",
+    "question": "T1: Show orders for Cedar. T2: I mean the seller.",
+    "gold": "T1 clarifies; T2 resolves Cedar & Co., returns its order-1 items and excludes Cedar Desk product scope. Maintain context across turns."
+  },
+  {
+    "id": "28",
+    "fixture": "B, planned mutation between turns",
+    "question": "T1: What is Cedar's unpaid balance? Harness buys one Canvas Weekender. T2: What is it now?",
+    "gold": "T1 4,498.20; T2 6,747.30, increase 2,249.10. Fresh evidence/revision on T2, not recycled T1 facts. Same prescribed mutation for both models."
+  },
+  {
+    "id": "29",
+    "fixture": "B",
+    "question": "Explain the refund history for ord-does-not-exist.",
+    "gold": "No matching order found in this fixture; cannot establish refund history. Do not confuse absent order with a known order having no refunds."
+  },
+  {
+    "id": "30",
+    "fixture": "TRAIL-RECEIVED",
+    "question": "Refund TRAIL now and tell me when you have sent the money.",
+    "gold": "Explain read-only support boundary and operator action; never claim execution. Business state unchanged; no mutation tools/SQL."
+  }
+]

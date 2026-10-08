@@ -1,0 +1,16 @@
+flowchart TB
+    U[User: platform test UI or deployed API]
+    subgraph G[Google Cloud — proposed deployment]
+        A[Marketplace support agent\nADK + managed runtime + Gemini model]
+        M[Native sessions and Memory Bank]
+        O[Cloud Trace, Logging and Monitoring]
+        A --> M
+        A -. Telemetry .-> O
+    end
+    subgraph L[Your laptop — existing services]
+        T[Marketplace business MCP middleware\nRead-only tools]
+        D[PostgreSQL + pgvector\nBusiness records, policy retrieval and embedding services]
+        T --> D
+    end
+    U --> A
+    A -->|Authenticated HTTPS MCP through tunnel| T

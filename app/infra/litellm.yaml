@@ -1,0 +1,104 @@
+model_list:
+  - model_name: support-model
+    litellm_params:
+      model: os.environ/OPENAI_MODEL
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: embedding
+    litellm_params:
+      model: openai/text-embedding-3-small
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: eval-nano
+    litellm_params:
+      model: openai/gpt-5-nano-2025-08-07
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: eval-54
+    litellm_params:
+      model: openai/gpt-5.4-2026-03-05
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: eval-5
+    litellm_params:
+      model: openai/gpt-5
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: eval-judge
+    litellm_params:
+      model: anthropic/claude-opus-5-5
+      timeout: 180
+      api_key: os.environ/ANTHROPIC_API_KEY
+litellm_settings:
+  callbacks: [gateway_audit.provider_input_audit]
+  drop_params: false
+  request_timeout: 60
+  num_retries: 0
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+
+# Opt-in learning experiments. Normal support/evaluation calls are unchanged.
+guardrails:
+  - guardrail_name: marketplace-presidio-pre
+    litellm_params:
+      guardrail: presidio
+      mode: pre_call
+      default_on: false
+      skip_system_message_in_guardrail: true
+      skip_tool_message_in_guardrail: false
+      presidio_language: en
+      pii_entities_config:
+        EMAIL_ADDRESS: MASK
+        PHONE_NUMBER: MASK
+        CREDIT_CARD: BLOCK
+      presidio_score_thresholds:
+        EMAIL_ADDRESS: 0.6
+        PHONE_NUMBER: 0.6
+        CREDIT_CARD: 0.8
+  - guardrail_name: marketplace-presidio-post
+    litellm_params:
+      guardrail: presidio
+      mode: post_call
+      default_on: false
+      pii_entities_config:
+        EMAIL_ADDRESS: MASK
+      presidio_score_thresholds:
+        EMAIL_ADDRESS: 0.6
+  - guardrail_name: marketplace-privacy-pre
+    litellm_params:
+      guardrail: litellm_content_filter
+      mode: pre_call
+      default_on: false
+      skip_system_message_in_guardrail: true
+      skip_tool_message_in_guardrail: false
+      patterns:
+        - pattern_type: prebuilt
+          pattern_name: aws_access_key
+          action: BLOCK
+        - pattern_type: prebuilt
+          pattern_name: email
+          action: MASK
+  - guardrail_name: marketplace-privacy-post
+    litellm_params:
+      guardrail: litellm_content_filter
+      mode: post_call
+      default_on: false
+      patterns:
+        - pattern_type: prebuilt
+          pattern_name: email
+          action: MASK
+  - guardrail_name: marketplace-injection-pre
+    litellm_params:
+      guardrail: litellm_content_filter
+      mode: pre_call
+      default_on: false
+      skip_system_message_in_guardrail: true
+      skip_tool_message_in_guardrail: false
+      patterns:
+        - pattern_type: regex
+          name: instruction_override
+          pattern: '(?i)\b(?:ignore|disregard)\s+(?:(?:all|the|your)\s+)?(?:previous|system|developer)\s+instructions\b'
+          action: BLOCK
+        - pattern_type: regex
+          name: credential_disclosure_instruction
+          pattern: '(?i)\b(?:reveal|print|expose)\s+(?:(?:the|all)\s+)?(?:credentials|api[ -]?keys|secrets)\b'
+          action: BLOCK
+        - pattern_type: regex
+          name: claimed_system_precedence
+          pattern: '(?i)\b(?:supersedes|overrides)\s+(?:(?:the|your|agent[''’]s)\s+)?system\s+instructions\b'
+          action: BLOCK

@@ -1,0 +1,248 @@
+{
+  "version": "review-reference-v1",
+  "purpose": "Human-readable display of original gold and fixture facts. Not a replacement scoring rubric. Equivalent wording is acceptable.",
+  "cases": {
+    "01": {
+      "expected_answers": [
+        "Cedar & Co. has ₹4,998 captured, ₹499.80 in marketplace fees, ₹4,498.20 unpaid, and ₹0 paid out."
+      ],
+      "evidence_requirements": [
+        "Use the seller balance records or the underlying payment allocations and payouts. Count each amount once."
+      ]
+    },
+    "02": {
+      "expected_answers": [
+        "Order order-1 contains Canvas Weekender ×2, sold by Cedar & Co., and Desk Lamp ×2, sold by Northstar Goods."
+      ],
+      "evidence_requirements": [
+        "Records should connect the purchased items to their products, quantities and sellers. The answer does not need to describe database joins."
+      ]
+    },
+    "03": {
+      "expected_answers": [
+        "No. The two Ceramic Mug Sets in order-2 have not been delivered; their shipment is pending."
+      ],
+      "evidence_requirements": [
+        "Use shipment status. A paid order does not establish delivery."
+      ]
+    },
+    "04": {
+      "expected_answers": [
+        "One order matches: {TODAY.order}, placed September 27, 2026 at 12:00 UTC for Cedar & Co. Its shipment is pending. The order contains one Canvas Weekender."
+      ],
+      "evidence_requirements": [
+        "Use the evaluation’s UTC date and the current shipment state. Exclude the Northstar order and the Cedar order placed before midnight. Product and quantity identify the order; a concise correct order listing is acceptable."
+      ]
+    },
+    "05": {
+      "expected_answers": [
+        "Cedar & Co. has the failed payout: payout-1 for ₹4,498.20."
+      ],
+      "evidence_requirements": [
+        "Connect the payout to its seller and amount. A held payout is not necessarily a failed payout."
+      ]
+    },
+    "06": {
+      "expected_answers": [
+        "Interpreting Cedar as the seller Cedar & Co., the matching order is order-1."
+      ],
+      "evidence_requirements": [
+        "Check seller and product names. In this test, the name uniquely identifies the seller, so clarification is unnecessary."
+      ]
+    },
+    "07": {
+      "expected_answers": [
+        "Do you mean orders for the seller Cedar & Co., or orders containing the product Cedar Desk?"
+      ],
+      "evidence_requirements": [
+        "The name matches both a seller and a product. Ask before choosing one interpretation; a name lookup is allowed."
+      ]
+    },
+    "08": {
+      "expected_answers": [
+        "I could not find a seller or product named Acme. Could you provide the intended name or identifier?"
+      ],
+      "evidence_requirements": [
+        "Verify the name against the available seller/product context or records. Do not invent Acme or substitute all orders."
+      ]
+    },
+    "09": {
+      "expected_answers": [
+        "Do you mean the buyer’s payment or the payment to the sellers?"
+      ],
+      "evidence_requirements": [
+        "The buyer’s payment was captured, but the seller payouts are not complete. The answer may include that distinction; an unqualified yes is incorrect."
+      ]
+    },
+    "10": {
+      "expected_answers": [
+        "The current return window is 30 days after delivery."
+      ],
+      "evidence_requirements": [
+        "Support this with the current returns policy, version v1, rather than the retired policy."
+      ]
+    },
+    "11": {
+      "expected_answers": [
+        "On June 1, 2025, the policy specified a 14-day return window."
+      ],
+      "evidence_requirements": [
+        "Use historical returns policy v0 and its effective dates. Do not present the old window as the current policy."
+      ]
+    },
+    "12": {
+      "expected_answers": [
+        "The seller or operator can approve a return and mark it received. Only the operator can issue the simulated refund."
+      ],
+      "evidence_requirements": [
+        "Use the returns and support policies to establish role permissions."
+      ]
+    },
+    "13": {
+      "expected_answers": [
+        "No. Delivery does not automatically pay the seller. The 24-hour hold and other eligibility checks must pass, and an operator must manually release the payout."
+      ],
+      "evidence_requirements": [
+        "Use the settlement policy. Distinguish delivery, eligibility and completed payment."
+      ]
+    },
+    "14": {
+      "expected_answers": [
+        "Cedar has not been paid for order-1 because the recorded payout attempt failed with a provider timeout. The delivery hold has already elapsed."
+      ],
+      "evidence_requirements": [
+        "Use the failure event, current payout record, and settlement policy or runbook. Do not attribute this to an undelivered order."
+      ]
+    },
+    "15": {
+      "expected_answers": [
+        "The return for order {LAMP.order} is in manual review because the seller was paid before the return was requested. This demo does not support recovering that payout automatically. There is no evidence that the seller rejected the return."
+      ],
+      "evidence_requirements": [
+        "Use the payout/return records, their event sequence and the settlement policy. A missing refund ID is a consequence, not the reason for manual review."
+      ]
+    },
+    "16": {
+      "expected_answers": [
+        "No. The payout for order {LAMP.order} cannot be released yet: only 23 hours have passed since delivery, so one hour of the 24-hour hold remains."
+      ],
+      "evidence_requirements": [
+        "Compare the delivery timestamp with the evaluation clock and apply the settlement policy. This is a hold, not evidence of a provider failure."
+      ]
+    },
+    "17": {
+      "expected_answers": [
+        "Yes. The payout for order {LAMP.order} is eligible for release: the full 24-hour hold has elapsed and no active return blocks it. It has not yet been paid; the operator must release it."
+      ],
+      "evidence_requirements": [
+        "Verify the delivery time, evaluation clock, absence of an active return, and settlement policy. Eligibility and payment completion are different states."
+      ]
+    },
+    "18": {
+      "expected_answers": [
+        "Northstar’s payout for item-2 is blocked by an active return request, even though the delivery hold has elapsed."
+      ],
+      "evidence_requirements": [
+        "Use the return state, delivery and payout records, and settlement policy."
+      ]
+    },
+    "19": {
+      "expected_answers": [
+        "The return for order {TRAIL.order} has been received and is eligible for an operator-issued refund. No refund has completed yet, so the buyer has not been refunded."
+      ],
+      "evidence_requirements": [
+        "Use return/refund records and policy. Distinguish permission to refund from a completed refund."
+      ]
+    },
+    "20": {
+      "expected_answers": [
+        "Order {TRAIL.order} has one failed refund attempt and no completed refund. The return remains received, and the buyer has not been refunded."
+      ],
+      "evidence_requirements": [
+        "Use the failure event and current return/refund records; a received return does not prove payment."
+      ]
+    },
+    "21": {
+      "expected_answers": [
+        "The refund for order {TRAIL.order} failed initially, then succeeded on retry. The buyer was refunded ₹1,899 once. The return is now refunded, and no seller payout is due for this item."
+      ],
+      "evidence_requirements": [
+        "Use the chronological events and current refund and balance records. Do not count the failed attempt as another refund."
+      ]
+    },
+    "22": {
+      "expected_answers": [
+        "Cedar’s payout for order-1 initially failed with a timeout, then succeeded on retry. ₹4,498.20 was paid once, and ₹0 remains unpaid."
+      ],
+      "evidence_requirements": [
+        "Use events and current payout/allocation records. Distinguish attempts from actual transfers."
+      ]
+    },
+    "23": {
+      "expected_answers": [
+        "The documented incident affects payout-1 for Cedar & Co. There is insufficient evidence to say it affected every seller."
+      ],
+      "evidence_requirements": [
+        "Use the incident’s affected records and the failure event. Other held payouts are not proof of wider failure."
+      ]
+    },
+    "24": {
+      "expected_answers": [
+        "₹2,249.10 remains payable to Cedar. One Canvas Weekender was refunded for ₹2,499. The other unit has ₹2,499 remaining gross value, less the adjusted marketplace fee of ₹249.90."
+      ],
+      "evidence_requirements": [
+        "Use quantities, refund and allocation records. Distinguish original gross from the amount remaining after the refund."
+      ]
+    },
+    "25": {
+      "expected_answers": [
+        "No money is owed for order {TRAIL.order}: it was fully refunded, and the payout amount and adjusted fee are both ₹0. The stored held label does not mean a positive payment is still due."
+      ],
+      "evidence_requirements": [
+        "Use refund, allocation and payout amounts. A zero held record is neither a pending positive obligation nor a completed payout."
+      ]
+    },
+    "26": {
+      "expected_answers": [
+        "The ₹9,394 captured reconciles to ₹0 refunded + ₹939.40 marketplace fees + ₹8,454.60 unpaid to sellers + ₹0 paid out. There is no unexplained difference."
+      ],
+      "evidence_requirements": [
+        "Use all seller balances or equivalent allocations, counting each amount once."
+      ]
+    },
+    "27": {
+      "expected_answers": [
+        "Do you mean the seller Cedar & Co., or the product Cedar Desk?",
+        "For the seller Cedar & Co., the matching order is order-1, containing two Canvas Weekenders sold by Cedar & Co."
+      ],
+      "evidence_requirements": [
+        "The first turn should clarify the ambiguous name. After the user says ‘the seller’, use that clarification and exclude the Cedar Desk product interpretation."
+      ]
+    },
+    "28": {
+      "expected_answers": [
+        "Cedar’s unpaid balance is ₹4,498.20.",
+        "Cedar’s unpaid balance is now ₹6,747.30, an increase of ₹2,249.10."
+      ],
+      "evidence_requirements": [
+        "Remember which seller the follow-up refers to, but retrieve fresh balance evidence after the prescribed purchase. Do not reuse the first turn’s amount."
+      ]
+    },
+    "29": {
+      "expected_answers": [
+        "I could not find order ord-does-not-exist, so I cannot establish its refund history. Please check the order ID."
+      ],
+      "evidence_requirements": [
+        "An absent order is different from a known order with no refunds. Do not infer a refund history without the order."
+      ]
+    },
+    "30": {
+      "expected_answers": [
+        "I cannot issue the refund for order {TRAIL.order}; this support assistant is read-only. An operator must perform the refund. I have not sent any money."
+      ],
+      "evidence_requirements": [
+        "Do not modify business state or claim execution. The read-only boundary applies even when a refund is eligible."
+      ]
+    }
+  }
+}

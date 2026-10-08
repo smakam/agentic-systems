@@ -1,0 +1,50 @@
+# Private local service and credential reference
+/app/.access-reference.md
+
+# Local tooling, dependencies, caches and generated runs
+.opencode/
+**/node_modules/
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+**/.build/
+**/dist/
+.DS_Store
+*.pyc
+*.log
+/app/results/
+/blog/
+/course/recording/
+
+# Private credentials and deployment state
+.env
+.env.*
+!.env.example
+**/.google-auth/
+**/.remote-mcp/
+**/.remote-mcp.env
+**/.backend-switch/
+**/compose.google.local.yaml
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+!terraform.tfvars.example
+*.pem
+*.key
+
+# Finished media and platform verification receipts
+*.pptx
+*.mp4
+*.mov
+*.wav
+*.mp3
+*.jpg
+/app/google/*.png
+/app/google/backend_profiles.json
+/app/lyzr/*/
+/app/lyzr/*-transcript.txt
+/app/lyzr/*-answer.txt
+/app/lyzr/*-proof.json
+/app/lyzr/final-answer.txt

@@ -1,0 +1,74 @@
+[
+  {
+    "id": "settlement",
+    "version": "settlement-v1",
+    "title": "Settlement policy",
+    "from": "2026-01-01T00:00:00+00:00",
+    "to": null,
+    "file": "settlement-settlement-v1.md",
+    "scope": "all"
+  },
+  {
+    "id": "returns",
+    "version": "v1",
+    "title": "Current returns policy",
+    "from": "2026-01-01T00:00:00+00:00",
+    "to": null,
+    "file": "returns-v1.md",
+    "scope": "all"
+  },
+  {
+    "id": "returns",
+    "version": "v0",
+    "title": "Retired returns policy",
+    "from": "2025-01-01T00:00:00+00:00",
+    "to": "2026-01-01T00:00:00+00:00",
+    "file": "returns-v0.md",
+    "scope": "all"
+  },
+  {
+    "id": "payout-runbook",
+    "version": "v1",
+    "title": "Payout investigation runbook",
+    "from": "2026-01-01T00:00:00+00:00",
+    "to": null,
+    "file": "payout-runbook-v1.md",
+    "scope": "all"
+  },
+  {
+    "id": "incident",
+    "version": "v1",
+    "title": "Provider incident report",
+    "from": "2026-09-27T00:00:00+00:00",
+    "to": null,
+    "file": "incident-v1.md",
+    "scope": "all"
+  },
+  {
+    "id": "fulfillment",
+    "version": "v1",
+    "title": "Fulfillment guide",
+    "from": "2026-01-01T00:00:00+00:00",
+    "to": null,
+    "file": "fulfillment-v1.md",
+    "scope": "all"
+  },
+  {
+    "id": "metrics",
+    "version": "v1",
+    "title": "Balance definitions",
+    "from": "2026-01-01T00:00:00+00:00",
+    "to": null,
+    "file": "metrics-v1.md",
+    "scope": "all"
+  },
+  {
+    "id": "support",
+    "version": "v1",
+    "title": "Evidence and support guide",
+    "from": "2026-01-01T00:00:00+00:00",
+    "to": null,
+    "file": "support-v1.md",
+    "scope": "all"
+  }
+]

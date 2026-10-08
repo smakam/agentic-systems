@@ -1,0 +1,6 @@
+flowchart TB
+    Q["User question"] --> C["Coordinator agent · delegates and combines findings"]
+    C <-->|"Investigate / return findings"| W1["Seller 1 agent"]
+    C <-->|"Investigate / return findings"| W2["Seller 2 agent"]
+    C <-->|"Investigate / return findings"| W3["Seller 3 agent"]
+    C --> A["Final answer"]

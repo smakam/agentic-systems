@@ -1,0 +1,8 @@
+FROM ghcr.io/berriai/litellm@sha256:87f34979b9f8cb274fac90ca8a4fdda07d8480de22755562a26adeb95ce20d02
+COPY infra/litellm.yaml /app/config.yaml
+COPY infra/lakera-guardrail.fragment.yaml /app/lakera.fragment.yaml
+RUN cat /app/lakera.fragment.yaml >> /app/config.yaml
+COPY infra/gateway_audit.py /app/gateway_audit.py
+ENV PORT=8080
+ENTRYPOINT []
+CMD ["sh", "-c", "exec litellm --config /app/config.yaml --port ${PORT}"]
