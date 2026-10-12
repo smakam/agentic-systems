@@ -13,7 +13,29 @@ This is a reference implementation and expected-output guide, not a claim that t
 
 The three teaching groups are business, retrieval, and memory; retained evidence supports the first two. `get_catalog` returns definitions/schema, not current business rows. Hosted native memory may have different tools; use the SDK memory path for this exercise.
 
-Local: SDK → stdio marketplace subprocess → database/retrieval. Remote: SDK HTTP MCP client → authenticated HTTPS marketplace MCP service → database/retrieval. A tunnel changes reachability, not the tool contract. A cloud runtime can still launch stdio, so identify transport from actual configuration and metadata. Compare fixed business facts and envelope structure, not identical handles. A write must be rejected by SQL validation/read-only permissions.
+Local: SDK → stdio marketplace subprocess → database/retrieval. Remote: SDK HTTP MCP client → authenticated HTTPS marketplace MCP service → database/retrieval. A tunnel changes reachability, not the tool contract. A cloud runtime can still launch stdio, so identify transport from actual configuration and metadata. Compare fixed business facts and envelope structure, not identical handles. Read-only SQL validation and database permissions are implementation safeguards, not a required rejected-write demo.
+
+## Sample questions: expected observations
+
+- **Order question:** answer from current order records, with quantities, product and seller names supported by the returned evidence. Do not require a fixed tool sequence or identical wording; a successful tool result can still be misinterpreted.
+- **Seller balance:** captured/unpaid values must match the queried seller balance for the active snapshot. Money is stored in integer paise and displayed in rupees. A previous historical run is not a promised numeric baseline for your data.
+- **Payout policy:** retrieved passages should support the delivery requirement, 24-hour hold and blocking returns. If applicable evidence is unavailable, record that outcome rather than invent a rule.
+- **Memory:** explicitly save the uniquely labelled display preference, then recall it in a fresh conversation under the same user with memory enabled. Inspect `search_memories`; an answer inferred from current chat history does not establish long-term recall. Delete only that saved exercise record afterward and verify from another fresh chat. Historical conversation messages remain.
+- **Optional cloud:** the same order question should return evidence from the cloud database. Identify HTTP using run/configuration metadata and inspect the associated cloud Langfuse trace. Record parity requires aligned starting data; local and cloud records are otherwise independent. This step requires the optional [cloud setup](../../../../app/CLOUD-SETUP.md).
+
+## Historical trace references
+
+These were captured in previous verified runs; this document does not claim a fresh rerun in the learner's environment. Local traces belong to the instructor's local Langfuse project; remote traces belong to the instructor's cloud project. Use the run question/operation and metadata to identify them. A fresh learner execution creates a different ID.
+
+| Environment / operation | Question or retained operation | Trace ID |
+|---|---|---|
+| Local business stdio | What are Cedar & Co.'s captured amount and unpaid balance? | `75fd6b9921fb40ac72dbadaa45ef00bd` |
+| Local document retrieval | What must happen before a seller payout can be released? | `b23d55fec67be91f3a7530589cc5bf1d` |
+| Local memory MCP recall | What do I mean by Cedar according to my saved preference? | `987d03dd4cd0b137bd93154ddabc9735` |
+| Cloud HTTP MCP | Saved order/history investigation: catalog, order history and SQL calls | `a77bb8845f0a5f206e488a62df783c18` |
+| Cloud HTTP follow-up | Saved fresh SQL follow-up investigation | `83f35257e01c32b222d848787f424a22` |
+
+The cloud acceptance export retains results/operations/metadata but not the original question text. The fresh order question supplied in the exercise is a runnable example, not a reconstruction of that exact historical prompt. Existing cloud behavior was verified; fresh-project setup rehearsal is deferred.
 
 ## Seller balance implementation
 
