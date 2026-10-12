@@ -1,4 +1,5 @@
 """Real SDK/model comparison against the same stored conversation fixture."""
+import argparse
 import asyncio
 import copy
 import hashlib
@@ -34,8 +35,20 @@ def save():
     OUT.write_text(json.dumps(RESULT, indent=2, default=str) + '\n')
 
 
-async def main():
+def comparison_cases(comparison):
+    if comparison not in ('windows', 'summary', 'all'):
+        raise ValueError('Unknown comparison mode')
+    cases = [('window_2', 2, False), ('window_6', 6, False),
+             ('window_8', 8, False), ('summary_recent_2', 2, True)]
+    return [case for case in cases if comparison == 'all'
+            or (comparison == 'summary') == case[2]]
+
+
+async def main(comparison="all"):
     assert engine.url.database == 'ch10_session_lab', 'Only the disposable Chapter 10 lab is allowed'
+    if comparison not in ('windows', 'summary', 'all'):
+        raise ValueError('Unknown comparison mode')
+    RESULT['comparison'] = comparison
     original_items = fixture()
     RESULT['fixture_sha256'] = hashlib.sha256(json.dumps(original_items, sort_keys=True).encode()).hexdigest()
     RESULT['fixture'] = original_items
@@ -58,8 +71,8 @@ async def main():
         current.setdefault('model_inputs', []).append(copy.deepcopy(inputs))
     agent.BudgetHooks.on_llm_start = capture
     try:
-        for name, window, summary in [('window_2', 2, False), ('window_6', 6, False),
-                                       ('window_8', 8, False), ('summary_recent_2', 2, True)]:
+        selected_cases = comparison_cases(comparison)
+        for name, window, summary in selected_cases:
             cid = 'ch10-reference-' + name
             with Session.begin() as db:
                 row = db.get(Conversation, cid)
@@ -118,4 +131,7 @@ async def main():
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    parser = argparse.ArgumentParser(description='Compare session history strategies in the isolated lab')
+    parser.add_argument('--comparison', choices=('windows', 'summary', 'all'), default='all',
+                        help='Run only window sizes, only summary-plus-two, or all strategies')
+    asyncio.run(main(parser.parse_args().comparison))
