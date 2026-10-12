@@ -226,8 +226,14 @@ Only the initial WSL/Docker setup and the shell/file locations differ from Mac. 
 
 Do not paste `.env`, authentication headers or full rendered Compose configuration into support messages. Share a redacted error and the failing step; logs can include prompts and evidence.
 
-## 10. Later lessons: optional services and hosted platforms
+## 10. Optional cloud setup
+
+For a separately deployed marketplace, OpenAI Agents SDK, HTTP MCP service and cloud tracing, follow [CLOUD-SETUP.md](CLOUD-SETUP.md). It covers the optional Google Cloud path and the application, MCP and Langfuse URLs used in Chapters Five and Eight. This is not an option passed to `scripts/start.sh`, and local/cloud data does not synchronize automatically.
+
+The cloud path currently uses OpenAI and Langfuse Cloud Japan. Existing deployed behavior is verified; a fresh-project installation rehearsal remains deferred. Local setup is sufficient for the required course path.
+
+## 11. Later lessons: optional services and hosted platforms
 
 - **Guardrails:** the first smoke test needs none. Built-in privacy is configured in the gateway; Presidio requires the optional `compose.guardrails.yaml` services, and Lakera requires its provider key/config overlay. Follow the [combined Guardrails and Agent Security guide](docs/SECURITY-CHAPTER-DEMO.md) rather than enabling every profile during initial setup.
 - **Lyzr / Google ADK:** native hosted sessions, memory and telemetry belong to those platform lessons. A tunnel is only needed when a hosted agent must reach your laptop's authenticated remote business MCP endpoint. It is not needed for local SQL, RAG or personal memory. Use [Lyzr setup](lyzr/README.md) or the [single Google walkthrough](../course/GOOGLE-PLATFORM-WALKTHROUGH.md); remote access/secrets must be configured deliberately. The current shared remote business key does not establish per-user private memory access.
-- **Cloud:** use the [cloud deployment guide](cloud/README.md) for the separately deployed stack; the existing project has been exercised, while a fresh-project learner rehearsal remains pending. The local Compose file intentionally uses local Langfuse; creating a Langfuse Cloud account does not automatically redirect this laptop's traces.
+- **Cloud:** the optional setup path is in Section 10. The local Compose file uses local Langfuse; creating a Langfuse Cloud account does not redirect laptop traces automatically.

@@ -30,6 +30,18 @@ Do the **before** step before the purchase in the journey, so you can compare th
 
 The [first-agent verification reference](../../../app/docs/FIRST-AGENT-VERIFICATION.md) also provides fixed-seed order/follow-up examples. Their expected quantities apply only to that seed, not every modified marketplace.
 
+## Optional: first agent in your cloud marketplace
+
+Complete [CLOUD-SETUP.md](../../../app/CLOUD-SETUP.md) first. Skip this section if you are using only the local environment.
+
+1. Open your own cloud marketplace URL and sign in to Support with the password chosen during cloud setup. Select **OpenAI Agents SDK** and start a new conversation.
+2. Ask: **“What products, quantities and sellers are in order-1? Retrieve current records.”**
+3. Check the completed answer and open its business-evidence links. Compare with your current cloud records; the cloud database is independent of the laptop.
+4. Open the corresponding trace in your **Langfuse Cloud Japan** project using the application link. Inspect model requests, tool calls, returned records and the final answer. Record the trace ID from your own run.
+5. Check run/configuration metadata for **HTTP MCP**. Local Compose uses stdio; identical tool names do not prove the transport.
+
+This is a read-only optional agent walkthrough. You do not need to repeat purchases, advance the cloud clock or reset either database. Keep observations locally for comparison with the solution. Stop the cloud database between labs only when no one is using it, following the cloud guide.
+
 ## Marketplace branch practice
 
 Use a separate fresh order for each case; follow the [journey guide](../../../app/USER-JOURNEYS.md).

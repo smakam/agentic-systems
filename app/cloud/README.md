@@ -1,5 +1,7 @@
 # Shared marketplace cloud deployment
 
+Learners: start with the ordered [optional cloud setup guide](../CLOUD-SETUP.md). This file contains deployment references and validation history.
+
 [Access reference: local/cloud URLs, users and credential locations](../.access-reference.md).
 Core cloud deployment verified October 8, 2026. The marketplace web application, authenticated HTTP MCP middleware and private LiteLLM gateway run in `marketplace-app-511005`, backed by private Cloud SQL PostgreSQL and Secret Manager. Langfuse Cloud Japan receives traces and feedback. No laptop or tunnel is required for these services. Cloud SQL is now parked with activation policy NEVER; restart it before cloud use. Storage and retained backups remain billable, and public IPv4 remains disabled. A fresh-project learner rehearsal remains separate work; hosted-platform connections are verified.
 
