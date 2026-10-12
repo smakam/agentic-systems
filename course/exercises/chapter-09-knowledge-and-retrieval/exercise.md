@@ -6,13 +6,13 @@ Inspect what retrieval contributes to an answer, update an indexed policy, and c
 
 Use a dedicated **ch09_rag_lab** database and the supplied lab documents. Keep the main marketplace and fixed market_eval database unchanged. The lab contains only synthetic document chunks, not marketplace business records. The reference script refuses another database name and has no lexical fallback. Its isolated table is intentionally simpler than production's immutable versions and effective-date filters.
 
-## Core practice — repeat the chapter demo
+## Part 1 — repeat the chapter demo
 
-1. In the Support application, ask a policy-only question: “What conditions must be met before releasing a seller payout?” Inspect search_documents inputs, passages, policy version, scope, dates, and citation support.
+1. In the test marketplace Support workspace, select OpenAI Agents SDK and ask a policy-only question: “What conditions must be met before releasing a seller payout?” Inspect search_documents inputs, passages, policy version, scope, dates, and citation support.
 2. Ask “Why is the payout for order-2 held?” Inspect the business evidence as well as the applicable policy. Record which claim comes from SQL and which comes from documents; use the actual current records, not an assumed status.
 3. Save both traces or screenshots and write a short source map. A policy passage cannot prove a payout was executed.
 
-## Exercise 1 — update a policy and refresh the index
+### Update a policy and refresh the index
 
 Use [payout-v1.md](fixtures/payout-v1.md) and [payout-v2.md](fixtures/payout-v2.md). These are simulated lab policies; they do not replace the marketplace policy. Version 1 requires 24 hours after delivery; version 2 requires 48 hours.
 
@@ -23,11 +23,11 @@ Use fixed supplied facts: payment captured, delivery 30 hours ago, no open retur
 3. Rebuild the isolated policy corpus from v2 and generate its embeddings. Ask the identical question again. Verify passage version, source, waiting period, citation and answer.
 4. Restore v1 if repeating the experiment. In the real application's ingestion path, add a new version and correctly set applicability dates; never mutate an existing immutable version.
 
-Submit before/stale/after passages, two answers, and an explanation of why reindexing was necessary. Expected eligibility changes because only the supplied policy changed; the fixed business facts do not change. Do not treat eligibility as executed payment.
+Keep before/stale/after passages, two answers, and an explanation locally of why reindexing was necessary. Expected eligibility changes because only the supplied policy changed; the fixed business facts do not change. Do not treat eligibility as executed payment.
 
-## Exercise 2 — developer extension: implement overlapping chunks
+## Part 2 — additional challenge: compare overlapping chunks
 
-Use the longer [expanded-policy.md](fixtures/expanded-policy.md). The standard payout rule and the lab-only Amber Review exception are adjacent paragraphs. The exception requires 72 hours after delivery. The fixture intentionally includes unrelated material; it is not an operational policy.
+Use the longer [expanded-policy.md](fixtures/expanded-policy.md). The standard payout rule and the lab-only Amber Review exception are adjacent paragraphs. The normal waiting period is 24 hours. Amber Review is a fictional review status, not a product name or a field queried from marketplace records. The question supplies that status as a simulated fact. When the flag is present, the exception requires 72 hours after delivery instead of 24 hours. The fixture intentionally includes unrelated material; it is not an operational policy.
 
 1. Implement a paragraph chunker that retains source line ranges.
 2. Implement two-paragraph windows with stride one, preserving source ranges. Compare your implementation with the reference only after trying it.
@@ -35,7 +35,7 @@ Use the longer [expanded-policy.md](fixtures/expanded-policy.md). The standard p
 4. Compare paragraph versus overlap at top_k=1, then at top_k=4. Hold top_k fixed within each comparison.
 5. Inspect chunk boundaries, retrieved passages, whether the rule and exception are present, returned text length, citations, and the answer. Explain the storage/context cost of overlap. A larger document alone does not guarantee an effect; boundaries and retrieval settings matter.
 
-Submit your chunking code, source ranges, comparison table and a recommendation. Correct answers under both strategies are a valid result. Do not claim overlap always improves correctness or use similarity scores as confidence.
+Keep your chunking code, source ranges, comparison table and recommendation locally to compare with the solution. There is no submission destination. Correct answers under both strategies are a valid result. Do not claim overlap always improves correctness or use similarity scores as confidence.
 
 ## Running the reference after attempting the exercises
 
