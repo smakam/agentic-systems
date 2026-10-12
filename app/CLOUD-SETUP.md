@@ -2,6 +2,8 @@
 
 Use this guide if you want to run the course marketplace and OpenAI Agents SDK in Google Cloud. This optional path is for learners who want cloud deployment experience and are comfortable provisioning cloud services. Most learners can use the local setup for the core course. This deployment is independent of your laptop: data, conversations, memories and credentials are not automatically synchronized.
 
+**Purpose:** this is a small learning and testing deployment, not a production reference architecture. It prioritizes repeatable course experiments and manageable cost; production availability, scaling and operational hardening require additional design.
+
 **Status:** the existing course deployment, agent answers, retained evidence and HTTP MCP traces have been verified. The following installation sequence has not yet been rehearsed end to end in a fresh learner project. That rehearsal is deferred; do not treat this as a validated one-command installer.
 
 ## What runs in the cloud
