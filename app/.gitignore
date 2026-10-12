@@ -9,6 +9,10 @@ dist/
 .DS_Store
 
 .remote-mcp.env
+.ch12.env
+.ch12-cloud-state.json
+.ch12-tunnel.log
+.ch12-tunnel.pid
 .remote-mcp/
 
 infra/litellm.lakera.generated.yaml
@@ -19,3 +23,9 @@ compose.google.local.yaml
 
 # Backend-switch receipts contain operational target references only
 .backend-switch/
+
+# Local browser validation artifacts
+test-output/
+
+# Local provider routing generated from the selected setup option
+infra/litellm.provider.generated.yaml

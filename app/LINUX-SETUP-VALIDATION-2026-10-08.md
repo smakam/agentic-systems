@@ -77,3 +77,18 @@ The disk is temporarily retained for resuming paid checks; storage remains
 billable while compute is stopped. Delete the VM/disk and both temporary firewall
 rules after acceptance, then remove the disposable SSH key files. Existing Cloud
 SQL and hosted agent configurations were not changed by this rehearsal.
+
+## Maintainer rehearsal procedure
+
+This is an installation rehearsal of the **local Docker stack on a fresh Linux host**, separate from the managed Cloud Run/Cloud SQL deployment. It does not need the existing cloud marketplace database, ADK or Lyzr configuration.
+
+1. Create a disposable Ubuntu VM in the designated rehearsal project, record its OS, CPU architecture, RAM, disk and Docker/Compose versions, and connect by SSH. Start with enough RAM/disk for the full Langfuse stack; the Mac observation above is an estimate, not a guaranteed VM minimum.
+2. Install only the prerequisites documented here. Start with an empty working directory and no pre-existing Docker volumes. Avoid copying the instructor's `.env`, ADC credentials, private overlays, runtime profiles or cached images into the learner checkout.
+3. Clone the published course checkpoint and follow sections 2–3 literally. Until the repository is published, a sanitized checkpoint archive can rehearse installation, but it does **not** validate the learner's GitHub clone step. Record that limitation.
+4. Enter the rehearsal's provider key privately in its ignored `.env`. Verify the funded account has access to the configured model and embedding model. Do not copy keys into the report or shell history.
+5. Establish SSH port forwarding, then complete **every section 4 check**: fresh login, seeded order evidence, follow-up quantity, vector policy retrieval, detailed Langfuse trace and feedback persistence. Verify that the automatically provisioned test workspace is available. Memory exercises belong to their later lesson.
+6. Stop and resume the stack, reopen the conversation and check retained data. Capture health, indexing mode, pass/fail observations, first-start duration and resource usage. Record observed API usage/cost where available, without treating estimates as billing totals.
+7. Fix the guide or scripts for any reproducible gap, then retry from a clean disposable setup if the change affects installation. Do not mark this path validated merely because containers start or health passes.
+8. Save a redacted validation report with the exact checkpoint and remaining limitations, then delete the rehearsal VM and associated disks/resources once its results are retained. Merely stopping a VM can retain storage charges.
+
+This checklist is retained for maintainers. The report above records the actual partial Linux validation; it is not a learner setup requirement.

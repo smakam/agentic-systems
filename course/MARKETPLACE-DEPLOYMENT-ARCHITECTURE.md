@@ -33,13 +33,16 @@ This replaces the earlier single-VM proposal. Langfuse Cloud removes the statefu
 
 ## Architecture diagram
 
+**October 10 update:** This diagram includes the implemented cloud SDK HTTP path. Thirteen isolated HTTP protocol/lifecycle tests and Terraform validation passed. Cloud web revision `marketplace-web-00015-8lb` is deployed and ready; a live question and fresh-retrieval follow-up passed with retained evidence and detailed Langfuse tool/model observations. Cloud SQL is confirmed `NEVER`, `STOPPED` after validation. SDK memory remains a separate stdio process. [Acceptance](../app/cloud/VALIDATION-2026-10-10-SDK-HTTP-MCP.md).
+
 ```mermaid
 flowchart TD
     User[User browser] --> Web[Marketplace web app: frontend and chat backend]
     subgraph GCP[New GCP project]
         Web --> SDK[Our agent runtime inside chat backend]
         SDK --> Gateway[Cloud Run: LiteLLM and configured guardrails]
-        SDK --> LocalTools[Business and user-bound memory MCP processes]
+        SDK -->|stdio| LocalTools[User-bound memory MCP process]
+        SDK -->|Authenticated HTTPS MCP| Remote
         Web --> SQL[Cloud SQL PostgreSQL: separate databases]
         LocalTools --> SQL
         Gateway --> SQL
@@ -54,14 +57,14 @@ flowchart TD
     Gateway --> Models[Model providers]
     Web -. traces and answer feedback .-> LF[Langfuse Cloud: Japan]
     Gateway -. model and guardrail telemetry .-> LF
-    Web -. planned adapters .-> Hosted[Google ADK and Lyzr hosted runtimes]
+    Web --> Hosted[Google ADK and Lyzr hosted runtimes]
     Hosted --> Remote
     Hosted -. native tracing and memory .-> Native[Platform-native services]
 ```
 
 The web app is one Cloud Run service: the backend serves the built frontend and API under one HTTPS origin. This avoids a second web service and simplifies cookies and origin configuration. Combining them requires a packaging change; they currently have separate local containers.
 
-Our runtime orchestrates model and tool calls. LiteLLM handles model access and configured filters; it does not execute business SQL or RAG. Preserve our current local MCP process connections inside the web container for our SDK path, including user-bound memory. The separately exposed HTTP MCP service supports hosted runtimes. Both use the same business tool implementation and database, with their respective connection contracts.
+Our runtime orchestrates model and tool calls. LiteLLM handles model access and configured filters; it does not execute business SQL or RAG. Local SDK business tools use a stdio subprocess with the shared handlers. Cloud SDK business tools use the separate authenticated HTTPS MCP service, shared with hosted runtimes. User-bound memory stays a stdio process in the web container. Business-tool responses retain investigation-owned evidence; cloud calls use revision-guarded durable registry state.
 
 ## Component placement
 
@@ -69,7 +72,7 @@ Our runtime orchestrates model and tool calls. LiteLLM handles model access and 
 | --- | --- | --- |
 | Frontend and chat backend | Separate Docker containers | One Cloud Run web service, one HTTPS origin |
 | Our agent runtime | Inside backend | Inside web service |
-| Business SQL/RAG tools | Local MCP process; HTTP endpoint for platform labs | Local process for our SDK; separate Cloud Run HTTP MCP service for hosted agents |
+| Business SQL/RAG tools | Local stdio process; HTTP endpoint for platform labs | Separate Cloud Run HTTP MCP for SDK and hosted agents; SDK deployed; live question/follow-up and traces verified October 10 |
 | Application memory tools | User-bound local MCP process | User-bound process inside web service; persistence in Cloud SQL |
 | Business data, indexed policy passages, chats, sessions, feedback, memory | Local PostgreSQL and pgvector | Cloud SQL PostgreSQL; confirm extensions/schema compatibility during implementation |
 | Test and evaluation fixtures | Separate local databases | Separate databases and credentials; reset commands target only these databases |

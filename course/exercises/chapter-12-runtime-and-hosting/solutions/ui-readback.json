@@ -1,0 +1,207 @@
+{
+  "answer": "The delivery condition that must change is delivery confirmation: policy says payout requires delivery confirmation, and the current order timeline for `order-2` shows only `payment_captured`, with no delivery-confirmed event. [evidence:evidence-58d7c4603344] [evidence:evidence-20dc190b3e15]\n\nAlso, even after delivery is confirmed, the policy requires a 24-hour hold after delivery before release. [evidence:evidence-58d7c4603344]\n\nCurrent payout state remains `held`. [evidence:evidence-e94b8076dea3]",
+  "conversation_id": "chat-1828fb9bc1",
+  "evidence": {
+    "evidence-e94b8076dea3": {
+      "contract_version": "1.0",
+      "status": "ok",
+      "handle": "evidence-e94b8076dea3",
+      "snapshot": {
+        "revision": 1,
+        "clock": "2026-09-27 12:00:00+00:00"
+      },
+      "document_revision": "fe36211d2849ebbe",
+      "attempt": 1,
+      "type": "query",
+      "purpose": "Current order, return, refund and payout records; allocation amounts repeat across multiple returns",
+      "sql": "SELECT i.order_id, i.id AS item_id, i.quantity, r.id AS return_id, r.status AS return_status, r.quantity AS return_quantity, f.id AS refund_id, f.status AS refund_status, f.amount AS refund_amount_paise, a.gross AS gross_paise, a.refunded AS refunded_paise, a.fee AS fee_paise, p.id AS payout_id, p.status AS payout_status, p.amount AS payout_amount_paise FROM analytics.order_items AS i LEFT JOIN analytics.returns AS r ON r.item_id = i.id LEFT JOIN analytics.refunds AS f ON f.return_id = r.id LEFT JOIN analytics.allocations AS a ON a.item_id = i.id LEFT JOIN analytics.payouts AS p ON p.allocation_id = a.id WHERE i.order_id = %(order_id)s ORDER BY i.id, r.id",
+      "params": {
+        "order_id": "order-2"
+      },
+      "rows": [
+        {
+          "order_id": "order-2",
+          "item_id": "item-3",
+          "quantity": 2,
+          "return_id": null,
+          "return_status": null,
+          "return_quantity": null,
+          "refund_id": null,
+          "refund_status": null,
+          "refund_amount_paise": null,
+          "gross_paise": 179800,
+          "refunded_paise": 0,
+          "fee_paise": 17980,
+          "payout_id": "payout-3",
+          "payout_status": "held",
+          "payout_amount_paise": 161820
+        }
+      ],
+      "columns": [
+        "order_id",
+        "item_id",
+        "quantity",
+        "return_id",
+        "return_status",
+        "return_quantity",
+        "refund_id",
+        "refund_status",
+        "refund_amount_paise",
+        "gross_paise",
+        "refunded_paise",
+        "fee_paise",
+        "payout_id",
+        "payout_status",
+        "payout_amount_paise"
+      ],
+      "truncated": false,
+      "row_count": 1,
+      "elapsed_ms": 6,
+      "query_hash": "90091f3e7e9451665875baa1de4b2a995d992594f57d4d318f62542faaf4837d"
+    },
+    "evidence-20dc190b3e15": {
+      "contract_version": "1.0",
+      "status": "ok",
+      "handle": "evidence-20dc190b3e15",
+      "snapshot": {
+        "revision": 1,
+        "clock": "2026-09-27 12:00:00+00:00"
+      },
+      "document_revision": "fe36211d2849ebbe",
+      "attempt": 1,
+      "type": "query",
+      "purpose": "Recorded order event timeline, including failed and successful attempts",
+      "sql": "WITH items AS (SELECT id FROM analytics.order_items WHERE order_id = %(order_id)s), return_ids AS (SELECT id FROM analytics.returns WHERE item_id IN (SELECT id FROM items)), allocation_ids AS (SELECT id FROM analytics.allocations WHERE item_id IN (SELECT id FROM items)), related AS (SELECT id FROM analytics.orders WHERE id = %(order_id)s UNION SELECT id FROM items UNION SELECT id FROM return_ids UNION SELECT id FROM allocation_ids UNION SELECT id FROM analytics.refunds WHERE return_id IN (SELECT id FROM return_ids) UNION SELECT id FROM analytics.payouts WHERE allocation_id IN (SELECT id FROM allocation_ids) UNION SELECT id FROM analytics.shipments WHERE item_id IN (SELECT id FROM items) UNION SELECT id FROM analytics.payments WHERE order_id = %(order_id)s) SELECT e.revision, e.kind, e.entity_id, e.details, e.occurred_at, e.recorded_at FROM analytics.events AS e WHERE e.entity_id IN (SELECT id FROM related) OR e.details ->> 'id' IN (SELECT id FROM related) ORDER BY e.revision, e.recorded_at, e.id",
+      "params": {
+        "order_id": "order-2"
+      },
+      "rows": [
+        {
+          "revision": 1,
+          "kind": "payment_captured",
+          "entity_id": "order-2",
+          "details": {
+            "payment_id": "payment-2",
+            "amount": 179800,
+            "simulated": true
+          },
+          "occurred_at": "2026-09-24 12:00:00+00:00",
+          "recorded_at": "2026-09-24 12:00:00+00:00"
+        }
+      ],
+      "columns": [
+        "revision",
+        "kind",
+        "entity_id",
+        "details",
+        "occurred_at",
+        "recorded_at"
+      ],
+      "truncated": false,
+      "row_count": 1,
+      "elapsed_ms": 3,
+      "query_hash": "3da83f8f871d9cbef1aa31e39233dea1d8ec979a08f4cfbf94a27cd37712653e"
+    },
+    "evidence-8dc63491090b": {
+      "contract_version": "1.0",
+      "status": "ok",
+      "handle": "evidence-8dc63491090b",
+      "snapshot": {
+        "revision": 1,
+        "clock": "2026-09-27 12:00:00+00:00"
+      },
+      "document_revision": "fe36211d2849ebbe",
+      "attempt": 1,
+      "type": "query",
+      "purpose": "Order and payment summary for the requested order history",
+      "sql": "SELECT o.id AS order_id, o.status AS order_status, o.created_at, p.status AS payment_status, p.amount AS payment_amount_paise, p.currency FROM analytics.orders AS o LEFT JOIN analytics.payments AS p ON p.order_id = o.id WHERE o.id = %(order_id)s",
+      "params": {
+        "order_id": "order-2"
+      },
+      "rows": [
+        {
+          "order_id": "order-2",
+          "order_status": "paid",
+          "created_at": "2026-09-24 12:00:00+00:00",
+          "payment_status": "captured",
+          "payment_amount_paise": 179800,
+          "currency": "INR"
+        }
+      ],
+      "columns": [
+        "order_id",
+        "order_status",
+        "created_at",
+        "payment_status",
+        "payment_amount_paise",
+        "currency"
+      ],
+      "truncated": false,
+      "row_count": 1,
+      "elapsed_ms": 0,
+      "query_hash": "bdd9fa29ba1f086a558e547d8113f93b56b17729b32d7fea35fc6bb9bb5efbf8"
+    },
+    "evidence-58d7c4603344": {
+      "contract_version": "1.0",
+      "status": "ok",
+      "handle": "evidence-58d7c4603344",
+      "snapshot": {
+        "revision": 1,
+        "clock": "2026-09-27 12:00:00+00:00"
+      },
+      "document_revision": "fe36211d2849ebbe",
+      "attempt": 1,
+      "type": "documents",
+      "chunks": [
+        {
+          "id": "settlement:settlement-v1:5",
+          "title": "Settlement policy",
+          "version": "settlement-v1",
+          "scope": "all",
+          "source": "settlement-settlement-v1.md",
+          "line_start": 5,
+          "line_end": 5,
+          "body": "Payout requires delivery confirmation and a 24-hour hold after delivery. Requested, approved or received returns block release. A payout failure leaves funds unpaid; retry is a separate operator action. Delivery alone does not imply a completed payout.",
+          "score": 0.6169738663515268
+        },
+        {
+          "id": "settlement:settlement-v1:1",
+          "title": "Settlement policy",
+          "version": "settlement-v1",
+          "scope": "all",
+          "source": "settlement-settlement-v1.md",
+          "line_start": 1,
+          "line_end": 1,
+          "body": "# Seller settlement",
+          "score": 0.5056250983552937
+        }
+      ],
+      "method": "pgvector_cosine",
+      "effective_at": "2026-09-27 12:00:00+00:00",
+      "warning": "Scores rank candidates; they are not confidence or proof."
+    }
+  },
+  "metrics": {
+    "model_requests": 3,
+    "actual_tool_invocations": 2,
+    "model": "gpt-5.4-2026-03-05",
+    "model_route": "direct_openai",
+    "execution_host": "remote_agent",
+    "tool_transport": "mcp_http",
+    "mcp_hostname": "car-marcus-slightly-august.trycloudflare.com",
+    "document_revision": "fe36211d2849ebbe",
+    "snapshot": {
+      "revision": 1,
+      "clock": "2026-09-27T12:00:00Z"
+    },
+    "investigation_cleanup_confirmed": true,
+    "elapsed_seconds": 9.71,
+    "tool_calls": 2
+  },
+  "created_at": "2026-10-10T18:01:48.292679+00:00",
+  "revision": 1,
+  "question": "What delivery condition must change before that payout can be released? Cite the current evidence.",
+  "id": "run-843a4f054b",
+  "status": "completed",
+  "feedback": null
+}

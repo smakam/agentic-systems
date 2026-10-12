@@ -100,6 +100,12 @@ resource "google_secret_manager_secret_iam_member" "read" {
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.runtime[each.value].email}"
 }
+resource "google_secret_manager_secret_iam_member" "web_mcp" {
+  project   = var.project_id
+  secret_id = google_secret_manager_secret.config["mcp-api-key"].secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.runtime["web"].email}"
+}
 
 resource "google_compute_network" "private" {
   project                 = var.project_id

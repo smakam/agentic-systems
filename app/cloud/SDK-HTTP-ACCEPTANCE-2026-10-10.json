@@ -1,0 +1,1608 @@
+{
+  "conversation_id": "chat-ef58061d9b",
+  "runs": [
+    {
+      "id": "run-3833d7a0af",
+      "status": "completed",
+      "answer": "Order-2 status: paid order placed 2026-09-24 12:00 UTC; buyer payment is captured for \u20b91,798.00 INR. [evidence:evidence-00ddfc47f8ca]\n\nShipment: 1 item line, Ceramic Mug Set from Everyday Studio, quantity 2; shipment status is pending, with no delivery timestamp yet. [evidence:evidence-1d5165c824b4]\n\nSeller payout: current payout for that item is held for \u20b91,618.20; allocation shows \u20b91,798.00 gross, \u20b9179.80 fee, and \u20b90 refunded. [evidence:evidence-1d5165c824b4][evidence:evidence-9f0b13c4bcc6]\n\nRecorded events: payment_captured on 2026-09-24 12:00 UTC. [evidence:evidence-4726dc17e199]",
+      "revision": 24,
+      "metrics": {
+        "requests": 4,
+        "input_tokens": 38630,
+        "output_tokens": 504,
+        "total_tokens": 39134,
+        "model": "gpt-5-nano",
+        "price_status": "uncached list-rate estimate, excludes embeddings; not an invoice",
+        "estimated_model_cost_usd": 0.0021331,
+        "trace_id": "a77bb8845f0a5f206e488a62df783c18",
+        "cached_input_tokens": 22016,
+        "memory_enabled": false,
+        "memory_management_scope": false,
+        "memory_operations": [],
+        "memory_tool_attempts": [],
+        "memory_tool_calls": 0,
+        "memory_tool_transport": "disabled",
+        "memory_write_allowed": false,
+        "tool_transport": "mcp",
+        "mcp_transport": "http",
+        "mcp_endpoint_host": "marketplace-mcp-327903210973.asia-south1.run.app",
+        "prompt_version": "catalog-v2-question-context-v11-source-authority",
+        "source_authority": true,
+        "marker_mode": "off",
+        "guardrail_profile": "off",
+        "guardrails": [],
+        "catalog_version": "2.0",
+        "elapsed_seconds": 12.01,
+        "tool_calls": 5,
+        "business_tool_calls": 5,
+        "document_revision": "fe36211d2849ebbe"
+      },
+      "evidence": {
+        "evidence-08bfba50a08a": {
+          "contract_version": "1.0",
+          "status": "ok",
+          "handle": "evidence-08bfba50a08a",
+          "snapshot": {
+            "revision": 24,
+            "clock": "2026-09-28 12:00:00+00:00"
+          },
+          "document_revision": "fe36211d2849ebbe",
+          "attempt": 1,
+          "type": "catalog",
+          "catalog": {
+            "currency": "INR",
+            "money_unit": "integer paise; divide by 100 for rupees",
+            "relationships": [
+              {
+                "from": "orders.customer_id",
+                "to": "customers.id",
+                "cardinality": "many-to-one"
+              },
+              {
+                "from": "order_items.order_id",
+                "to": "orders.id",
+                "cardinality": "many-to-one"
+              },
+              {
+                "from": "order_items.listing_id",
+                "to": "listings.id",
+                "cardinality": "many-to-one"
+              },
+              {
+                "from": "listings.product_id",
+                "to": "products.id",
+                "cardinality": "many-to-one"
+              },
+              {
+                "from": "order_items.seller_id",
+                "to": "sellers.id",
+                "cardinality": "many-to-one"
+              },
+              {
+                "from": "payments.order_id",
+                "to": "orders.id",
+                "cardinality": "one-to-one"
+              },
+              {
+                "from": "allocations.item_id",
+                "to": "order_items.id",
+                "cardinality": "one-to-one"
+              },
+              {
+                "from": "allocations.payment_id",
+                "to": "payments.id",
+                "cardinality": "many-to-one"
+              },
+              {
+                "from": "payouts.allocation_id",
+                "to": "allocations.id",
+                "cardinality": "one-to-one"
+              },
+              {
+                "from": "shipments.item_id",
+                "to": "order_items.id",
+                "cardinality": "one-to-one in baseline; quantity tracked"
+              },
+              {
+                "from": "returns.item_id",
+                "to": "order_items.id",
+                "cardinality": "many-to-one"
+              },
+              {
+                "from": "refunds.return_id",
+                "to": "returns.id",
+                "cardinality": "one-to-one"
+              },
+              {
+                "from": "tickets.order_id",
+                "to": "orders.id",
+                "cardinality": "many-to-one"
+              }
+            ],
+            "metrics": {
+              "captured": "SUM(allocations.gross) at allocation grain, not payment amounts after an item join",
+              "refunded": "SUM(allocations.refunded), completed refunds only",
+              "fees": "SUM(allocations.fee), net of completed refund fee reversal",
+              "unpaid": "gross - fee - refunded for payouts not completed; includes held and failed, not necessarily eligible",
+              "paid_out": "SUM(payouts.amount) WHERE status = completed",
+              "reconciliation": "captured = refunded + fees + unpaid + paid_out"
+            },
+            "time": "Use the run's demo clock, not wall-clock time. Policy selection uses purchase date or the event date specified by the policy.",
+            "cautions": [
+              "Seller payout differs from buyer payment.",
+              "Return receipt differs from completed refund.",
+              "A failure on one payout does not prove all sellers are affected.",
+              "Events contain occurred and recorded timestamps.",
+              "Joining both returns and events can multiply monetary rows; aggregate at the proper grain first."
+            ],
+            "catalog_version": "2.0",
+            "ontology_version": "1.1",
+            "entities": {
+              "customers": {
+                "label": "Customer",
+                "description": "A buyer account that places marketplace orders.",
+                "grain": "One row per buyer account.",
+                "key": [
+                  "id"
+                ],
+                "fields": {
+                  "id": {
+                    "description": "Customer identifier used by orders.customer_id.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.users.id via explicit view lineage"
+                  },
+                  "username": {
+                    "description": "Demo buyer account name.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.users.username via explicit view lineage"
+                  }
+                },
+                "notes": [
+                  "This restricted view exposes buyer identity only, not credentials or other account roles."
+                ],
+                "table": "analytics.customers",
+                "constraints": [
+                  {
+                    "kind": "primary_key",
+                    "columns": [
+                      "id"
+                    ],
+                    "definition": "PRIMARY KEY (id)",
+                    "source": "public.users via explicit view lineage"
+                  },
+                  {
+                    "kind": "unique",
+                    "columns": [
+                      "username"
+                    ],
+                    "definition": "UNIQUE (username)",
+                    "source": "public.users via explicit view lineage"
+                  }
+                ]
+              },
+              "sellers": {
+                "label": "Seller",
+                "description": "An independent merchant offering products through marketplace listings.",
+                "grain": "One row per seller.",
+                "key": [
+                  "id"
+                ],
+                "fields": {
+                  "id": {
+                    "description": "Seller identifier used by listings and order items.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.sellers.id via explicit view lineage"
+                  },
+                  "name": {
+                    "description": "Human-readable seller name.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.sellers.name via explicit view lineage"
+                  }
+                },
+                "table": "analytics.sellers",
+                "constraints": [
+                  {
+                    "kind": "primary_key",
+                    "columns": [
+                      "id"
+                    ],
+                    "definition": "PRIMARY KEY (id)",
+                    "source": "public.sellers via explicit view lineage"
+                  }
+                ]
+              },
+              "products": {
+                "label": "Product",
+                "description": "A product identity and category, independent of a seller offer.",
+                "grain": "One row per product.",
+                "key": [
+                  "id"
+                ],
+                "fields": {
+                  "id": {
+                    "description": "Product identifier referenced by listings.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.products.id via explicit view lineage"
+                  },
+                  "name": {
+                    "description": "Human-readable product name.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.products.name via explicit view lineage"
+                  },
+                  "category": {
+                    "description": "Product category used for catalog organization.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.products.category via explicit view lineage"
+                  }
+                },
+                "table": "analytics.products",
+                "constraints": [
+                  {
+                    "kind": "primary_key",
+                    "columns": [
+                      "id"
+                    ],
+                    "definition": "PRIMARY KEY (id)",
+                    "source": "public.products via explicit view lineage"
+                  }
+                ]
+              },
+              "listings": {
+                "label": "Listing",
+                "description": "A seller offer for a product, with its current price and available stock.",
+                "grain": "One row per seller offer.",
+                "key": [
+                  "id"
+                ],
+                "fields": {
+                  "id": {
+                    "description": "Listing identifier referenced by purchased items.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.listings.id via explicit view lineage"
+                  },
+                  "seller_id": {
+                    "description": "Seller owning this offer.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.listings.seller_id via explicit view lineage"
+                  },
+                  "product_id": {
+                    "description": "Product offered.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.listings.product_id via explicit view lineage"
+                  },
+                  "price": {
+                    "description": "Current unit price in integer paise; not necessarily the historical purchase price.",
+                    "data_type": "integer",
+                    "sql_type": "integer",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.listings.price via explicit view lineage"
+                  },
+                  "stock": {
+                    "description": "Units currently available to purchase; purchases reduce it and completed pre-payout refunds restore returned units.",
+                    "data_type": "integer",
+                    "sql_type": "integer",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.listings.stock via explicit view lineage"
+                  }
+                },
+                "notes": [
+                  "Use order_items.unit_price for historical purchase values."
+                ],
+                "table": "analytics.listings",
+                "constraints": [
+                  {
+                    "kind": "check",
+                    "columns": [
+                      "price",
+                      "stock"
+                    ],
+                    "definition": "CHECK (((price > 0) AND (stock >= 0)))",
+                    "source": "public.listings via explicit view lineage"
+                  },
+                  {
+                    "kind": "primary_key",
+                    "columns": [
+                      "id"
+                    ],
+                    "definition": "PRIMARY KEY (id)",
+                    "source": "public.listings via explicit view lineage"
+                  }
+                ]
+              },
+              "orders": {
+                "label": "Order",
+                "description": "A buyer purchase that can contain items from several sellers.",
+                "grain": "One row per order.",
+                "key": [
+                  "id"
+                ],
+                "fields": {
+                  "id": {
+                    "description": "Order identifier linking items, payment and tickets.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.orders.id via explicit view lineage"
+                  },
+                  "customer_id": {
+                    "description": "Buyer identifier in customers.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.orders.customer_id via explicit view lineage"
+                  },
+                  "status": {
+                    "description": "Order-level status; successful simulated purchases currently create paid orders.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.orders.status via explicit view lineage"
+                  },
+                  "created_at": {
+                    "description": "Purchase time on the demo clock.",
+                    "data_type": "timestamp with time zone",
+                    "sql_type": "timestamp with time zone",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.orders.created_at via explicit view lineage"
+                  }
+                },
+                "notes": [
+                  "Delivery, return, refund and payout statuses belong to separate entities; paid does not mean delivered or settled."
+                ],
+                "table": "analytics.orders",
+                "constraints": [
+                  {
+                    "kind": "primary_key",
+                    "columns": [
+                      "id"
+                    ],
+                    "definition": "PRIMARY KEY (id)",
+                    "source": "public.orders via explicit view lineage"
+                  }
+                ]
+              },
+              "order_items": {
+                "label": "Order item",
+                "description": "A purchased listing within an order, retaining the seller, quantity and price at purchase.",
+                "grain": "One row per purchased listing in an order, potentially containing multiple units.",
+                "key": [
+                  "id"
+                ],
+                "fields": {
+                  "id": {
+                    "description": "Purchased item identifier used by shipment, allocation and returns.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.order_items.id via explicit view lineage"
+                  },
+                  "order_id": {
+                    "description": "Containing order.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.order_items.order_id via explicit view lineage"
+                  },
+                  "listing_id": {
+                    "description": "Listing purchased.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.order_items.listing_id via explicit view lineage"
+                  },
+                  "seller_id": {
+                    "description": "Seller recorded at purchase.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.order_items.seller_id via explicit view lineage"
+                  },
+                  "quantity": {
+                    "description": "Number of units purchased.",
+                    "data_type": "integer",
+                    "sql_type": "integer",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.order_items.quantity via explicit view lineage"
+                  },
+                  "unit_price": {
+                    "description": "Unit price at purchase in integer paise.",
+                    "data_type": "integer",
+                    "sql_type": "integer",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.order_items.unit_price via explicit view lineage"
+                  }
+                },
+                "notes": [
+                  "Item gross is quantity times unit_price. Aggregate at item or allocation grain before joining one-to-many records."
+                ],
+                "table": "analytics.order_items",
+                "constraints": [
+                  {
+                    "kind": "check",
+                    "columns": [
+                      "quantity",
+                      "unit_price"
+                    ],
+                    "definition": "CHECK (((quantity > 0) AND (unit_price > 0)))",
+                    "source": "public.order_items via explicit view lineage"
+                  },
+                  {
+                    "kind": "primary_key",
+                    "columns": [
+                      "id"
+                    ],
+                    "definition": "PRIMARY KEY (id)",
+                    "source": "public.order_items via explicit view lineage"
+                  }
+                ]
+              },
+              "payments": {
+                "label": "Buyer payment",
+                "description": "The simulated captured payment from a buyer for an entire order.",
+                "grain": "One row per order payment in this baseline.",
+                "key": [
+                  "id"
+                ],
+                "fields": {
+                  "id": {
+                    "description": "Payment identifier referenced by allocations and refunds.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.payments.id via explicit view lineage"
+                  },
+                  "order_id": {
+                    "description": "Order funded by this payment.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.payments.order_id via explicit view lineage"
+                  },
+                  "amount": {
+                    "description": "Original captured order total in integer paise; completed refunds are tracked separately.",
+                    "data_type": "integer",
+                    "sql_type": "integer",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.payments.amount via explicit view lineage"
+                  },
+                  "status": {
+                    "description": "Current simulated payment status; successful purchases create captured payments.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.payments.status via explicit view lineage"
+                  },
+                  "currency": {
+                    "description": "Currency code; baseline uses INR.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.payments.currency via explicit view lineage"
+                  }
+                },
+                "notes": [
+                  "A payment funds multiple item allocations. Do not sum its full amount again for every joined item. Payment is not a seller payout."
+                ],
+                "table": "analytics.payments",
+                "constraints": [
+                  {
+                    "kind": "unique",
+                    "columns": [
+                      "order_id"
+                    ],
+                    "definition": "UNIQUE (order_id)",
+                    "source": "public.payments via explicit view lineage"
+                  },
+                  {
+                    "kind": "primary_key",
+                    "columns": [
+                      "id"
+                    ],
+                    "definition": "PRIMARY KEY (id)",
+                    "source": "public.payments via explicit view lineage"
+                  }
+                ]
+              },
+              "shipments": {
+                "label": "Shipment",
+                "description": "Fulfillment state and delivery time for the units of a purchased item.",
+                "grain": "One row per order item in this baseline.",
+                "key": [
+                  "id"
+                ],
+                "fields": {
+                  "id": {
+                    "description": "Shipment identifier used for dispatch and delivery commands.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.shipments.id via explicit view lineage"
+                  },
+                  "item_id": {
+                    "description": "Purchased item being fulfilled.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.shipments.item_id via explicit view lineage"
+                  },
+                  "quantity": {
+                    "description": "Number of units covered by this shipment.",
+                    "data_type": "integer",
+                    "sql_type": "integer",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.shipments.quantity via explicit view lineage"
+                  },
+                  "status": {
+                    "description": "pending, dispatched or delivered.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.shipments.status via explicit view lineage"
+                  },
+                  "delivered_at": {
+                    "description": "Delivery time on the demo clock; null before delivery.",
+                    "data_type": "timestamp with time zone",
+                    "sql_type": "timestamp with time zone",
+                    "nullable": true,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.shipments.delivered_at via explicit view lineage"
+                  }
+                },
+                "notes": [
+                  "Different items in one order can be delivered separately; splitting an individual item into multiple shipments is not implemented."
+                ],
+                "table": "analytics.shipments",
+                "constraints": [
+                  {
+                    "kind": "unique",
+                    "columns": [
+                      "item_id"
+                    ],
+                    "definition": "UNIQUE (item_id)",
+                    "source": "public.shipments via explicit view lineage"
+                  },
+                  {
+                    "kind": "primary_key",
+                    "columns": [
+                      "id"
+                    ],
+                    "definition": "PRIMARY KEY (id)",
+                    "source": "public.shipments via explicit view lineage"
+                  }
+                ]
+              },
+              "allocations": {
+                "label": "Payment allocation",
+                "description": "The portion of a captured payment attributable to one purchased item, including settlement accounting.",
+                "grain": "One row per order item.",
+                "key": [
+                  "id"
+                ],
+                "fields": {
+                  "id": {
+                    "description": "Allocation identifier referenced by its payout.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.allocations.id via explicit view lineage"
+                  },
+                  "item_id": {
+                    "description": "Purchased item whose funds are allocated.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.allocations.item_id via explicit view lineage"
+                  },
+                  "payment_id": {
+                    "description": "Source order payment.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.allocations.payment_id via explicit view lineage"
+                  },
+                  "gross": {
+                    "description": "Original item gross in integer paise.",
+                    "data_type": "integer",
+                    "sql_type": "integer",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.allocations.gross via explicit view lineage"
+                  },
+                  "fee": {
+                    "description": "Current marketplace fee in integer paise, adjusted after completed refunds.",
+                    "data_type": "integer",
+                    "sql_type": "integer",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.allocations.fee via explicit view lineage"
+                  },
+                  "refunded": {
+                    "description": "Cumulative completed refunds for this allocation in integer paise; failed refunds do not count.",
+                    "data_type": "integer",
+                    "sql_type": "integer",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.allocations.refunded via explicit view lineage"
+                  },
+                  "policy": {
+                    "description": "Recorded settlement policy version.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.allocations.policy via explicit view lineage"
+                  }
+                },
+                "notes": [
+                  "Remaining seller payable is gross minus fee minus refunded. Monetary accounting is at allocation grain."
+                ],
+                "table": "analytics.allocations",
+                "constraints": [
+                  {
+                    "kind": "unique",
+                    "columns": [
+                      "item_id"
+                    ],
+                    "definition": "UNIQUE (item_id)",
+                    "source": "public.allocations via explicit view lineage"
+                  },
+                  {
+                    "kind": "primary_key",
+                    "columns": [
+                      "id"
+                    ],
+                    "definition": "PRIMARY KEY (id)",
+                    "source": "public.allocations via explicit view lineage"
+                  }
+                ]
+              },
+              "payouts": {
+                "label": "Seller payout",
+                "description": "Current settlement record for transferring an allocation's net funds to its seller.",
+                "grain": "One current payout record per allocation, not one row per attempt.",
+                "key": [
+                  "id"
+                ],
+                "fields": {
+                  "id": {
+                    "description": "Payout identifier referenced by operational events.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.payouts.id via explicit view lineage"
+                  },
+                  "allocation_id": {
+                    "description": "Allocation being settled; join to order_items for seller identity.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.payouts.allocation_id via explicit view lineage"
+                  },
+                  "amount": {
+                    "description": "Current net seller payable in integer paise; only completed status counts as paid out.",
+                    "data_type": "integer",
+                    "sql_type": "integer",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.payouts.amount via explicit view lineage"
+                  },
+                  "status": {
+                    "description": "held, failed or completed in the implemented simulator.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.payouts.status via explicit view lineage"
+                  }
+                },
+                "notes": [
+                  "Retries update this record; inspect events for attempt history. Eligibility is computed from delivery, the 24-hour hold and active returns; it is not a separate persisted status."
+                ],
+                "table": "analytics.payouts",
+                "constraints": [
+                  {
+                    "kind": "unique",
+                    "columns": [
+                      "allocation_id"
+                    ],
+                    "definition": "UNIQUE (allocation_id)",
+                    "source": "public.payouts via explicit view lineage"
+                  },
+                  {
+                    "kind": "primary_key",
+                    "columns": [
+                      "id"
+                    ],
+                    "definition": "PRIMARY KEY (id)",
+                    "source": "public.payouts via explicit view lineage"
+                  }
+                ]
+              },
+              "returns": {
+                "label": "Return request",
+                "description": "A request to return some or all units of a purchased item.",
+                "grain": "One row per return request; an item may have multiple requests.",
+                "key": [
+                  "id"
+                ],
+                "fields": {
+                  "id": {
+                    "description": "Return identifier used by the refund record.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.returns.id via explicit view lineage"
+                  },
+                  "item_id": {
+                    "description": "Purchased item being returned.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.returns.item_id via explicit view lineage"
+                  },
+                  "quantity": {
+                    "description": "Number of units requested for return.",
+                    "data_type": "integer",
+                    "sql_type": "integer",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.returns.quantity via explicit view lineage"
+                  },
+                  "status": {
+                    "description": "requested, approved, received, rejected, refunded or manual_review.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.returns.status via explicit view lineage"
+                  }
+                },
+                "notes": [
+                  "Receipt alone is not refund completion. Post-payout returns enter manual_review; automatic recovery is not implemented."
+                ],
+                "table": "analytics.returns",
+                "constraints": [
+                  {
+                    "kind": "primary_key",
+                    "columns": [
+                      "id"
+                    ],
+                    "definition": "PRIMARY KEY (id)",
+                    "source": "public.returns via explicit view lineage"
+                  }
+                ]
+              },
+              "refunds": {
+                "label": "Buyer refund",
+                "description": "Current simulated refund record associated with one return and its source payment.",
+                "grain": "One refund record per return; a retry updates that record.",
+                "key": [
+                  "id"
+                ],
+                "fields": {
+                  "id": {
+                    "description": "Refund identifier used in events.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.refunds.id via explicit view lineage"
+                  },
+                  "return_id": {
+                    "description": "Return request being refunded.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.refunds.return_id via explicit view lineage"
+                  },
+                  "payment_id": {
+                    "description": "Original captured payment being refunded.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.refunds.payment_id via explicit view lineage"
+                  },
+                  "amount": {
+                    "description": "Refund amount in integer paise.",
+                    "data_type": "integer",
+                    "sql_type": "integer",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.refunds.amount via explicit view lineage"
+                  },
+                  "status": {
+                    "description": "completed or failed in the implemented simulator.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.refunds.status via explicit view lineage"
+                  }
+                },
+                "notes": [
+                  "Only completed refunds change allocation.refunded and the fee. Do not sum failed attempts as money returned."
+                ],
+                "table": "analytics.refunds",
+                "constraints": [
+                  {
+                    "kind": "primary_key",
+                    "columns": [
+                      "id"
+                    ],
+                    "definition": "PRIMARY KEY (id)",
+                    "source": "public.refunds via explicit view lineage"
+                  },
+                  {
+                    "kind": "unique",
+                    "columns": [
+                      "return_id"
+                    ],
+                    "definition": "UNIQUE (return_id)",
+                    "source": "public.refunds via explicit view lineage"
+                  }
+                ]
+              },
+              "events": {
+                "label": "Business event",
+                "description": "Durable evidence of a simulated business action or provider outcome.",
+                "grain": "One row per recorded event.",
+                "key": [
+                  "id"
+                ],
+                "fields": {
+                  "id": {
+                    "description": "Unique event identifier.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.events.id via explicit view lineage"
+                  },
+                  "entity_id": {
+                    "description": "Identifier of the affected record or demo-clock; resolve its entity type using kind and details.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.events.entity_id via explicit view lineage"
+                  },
+                  "kind": {
+                    "description": "Event/action name, such as payment_captured, payout_failed, purchase or deliver.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.events.kind via explicit view lineage"
+                  },
+                  "occurred_at": {
+                    "description": "Business occurrence time on the demo clock.",
+                    "data_type": "timestamp with time zone",
+                    "sql_type": "timestamp with time zone",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.events.occurred_at via explicit view lineage"
+                  },
+                  "recorded_at": {
+                    "description": "Timestamp when evidence was recorded; seeded history supplies fixed timestamps.",
+                    "data_type": "timestamp with time zone",
+                    "sql_type": "timestamp with time zone",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.events.recorded_at via explicit view lineage"
+                  },
+                  "revision": {
+                    "description": "Committed demo revision associated with this event.",
+                    "data_type": "integer",
+                    "sql_type": "integer",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.events.revision via explicit view lineage"
+                  },
+                  "details": {
+                    "description": "Event-specific JSON evidence; its fields vary by kind.",
+                    "data_type": "json",
+                    "sql_type": "json",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.events.details via explicit view lineage"
+                  }
+                },
+                "notes": [
+                  "entity_id is a polymorphic reference, not a foreign key to one table. Events can multiply monetary rows when joined; aggregate or filter before joining."
+                ],
+                "table": "analytics.events",
+                "constraints": [
+                  {
+                    "kind": "primary_key",
+                    "columns": [
+                      "id"
+                    ],
+                    "definition": "PRIMARY KEY (id)",
+                    "source": "public.events via explicit view lineage"
+                  }
+                ]
+              },
+              "tickets": {
+                "label": "Support ticket",
+                "description": "A recorded support issue associated with an order.",
+                "grain": "One row per ticket.",
+                "key": [
+                  "id"
+                ],
+                "fields": {
+                  "id": {
+                    "description": "Support ticket identifier.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.tickets.id via explicit view lineage"
+                  },
+                  "order_id": {
+                    "description": "Order associated with the issue.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.tickets.order_id via explicit view lineage"
+                  },
+                  "subject": {
+                    "description": "Short issue summary.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.tickets.subject via explicit view lineage"
+                  },
+                  "status": {
+                    "description": "Recorded ticket status, such as open.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.tickets.status via explicit view lineage"
+                  },
+                  "message": {
+                    "description": "Recorded support statement; verify claims against authoritative records and events.",
+                    "data_type": "text",
+                    "sql_type": "text",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.tickets.message via explicit view lineage"
+                  }
+                },
+                "notes": [
+                  "The baseline contains seeded tickets, not a complete ticket-management workflow."
+                ],
+                "table": "analytics.tickets",
+                "constraints": [
+                  {
+                    "kind": "primary_key",
+                    "columns": [
+                      "id"
+                    ],
+                    "definition": "PRIMARY KEY (id)",
+                    "source": "public.tickets via explicit view lineage"
+                  }
+                ]
+              },
+              "incidents": {
+                "label": "Incident",
+                "description": "A recorded operational issue with an explicitly described affected set and supporting evidence.",
+                "grain": "One row per incident.",
+                "key": [
+                  "id"
+                ],
+                "fields": {
+                  "id": {
+                    "description": "Incident identifier.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.incidents.id via explicit view lineage"
+                  },
+                  "title": {
+                    "description": "Short incident description.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.incidents.title via explicit view lineage"
+                  },
+                  "status": {
+                    "description": "Recorded confirmation or lifecycle status; the seeded incident is confirmed.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.incidents.status via explicit view lineage"
+                  },
+                  "affected_ids": {
+                    "description": "JSON array of affected record identifiers; interpret their entity types using evidence.",
+                    "data_type": "json",
+                    "sql_type": "json",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.incidents.affected_ids via explicit view lineage"
+                  },
+                  "evidence": {
+                    "description": "Recorded explanation or evidence references supporting the incident.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.incidents.evidence via explicit view lineage"
+                  }
+                },
+                "notes": [
+                  "Do not infer wider impact or causation beyond the recorded evidence. The baseline contains seeded incident data."
+                ],
+                "table": "analytics.incidents",
+                "constraints": [
+                  {
+                    "kind": "primary_key",
+                    "columns": [
+                      "id"
+                    ],
+                    "definition": "PRIMARY KEY (id)",
+                    "source": "public.incidents via explicit view lineage"
+                  }
+                ]
+              },
+              "freshness": {
+                "label": "Snapshot freshness",
+                "description": "The current committed business revision and demo clock exposed to investigations.",
+                "grain": "Exactly one row describing the current demo state.",
+                "key": [],
+                "fields": {
+                  "revision": {
+                    "description": "Monotonic business revision within a scenario; reset starts a new scenario at revision 1.",
+                    "data_type": "integer",
+                    "sql_type": "integer",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.state.revision via explicit view lineage"
+                  },
+                  "clock": {
+                    "description": "Business as-of time controlled by the demo clock.",
+                    "data_type": "timestamp with time zone",
+                    "sql_type": "timestamp with time zone",
+                    "nullable": false,
+                    "type_source": "database metadata",
+                    "nullability_source": "public.state.clock via explicit view lineage"
+                  }
+                },
+                "notes": [
+                  "Direct analytics views have no asynchronous projection lag. Each investigation pins a repeatable-read snapshot; separate investigations may see different revisions."
+                ],
+                "table": "analytics.freshness",
+                "constraints": []
+              },
+              "seller_balances": {
+                "label": "Seller balance summary",
+                "description": "An analytical view aggregating allocation and payout accounting for each seller.",
+                "grain": "One row per seller, including sellers with no orders.",
+                "key": [
+                  "seller_id"
+                ],
+                "fields": {
+                  "seller_id": {
+                    "description": "Seller identifier and unique row key.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": null,
+                    "type_source": "database metadata",
+                    "nullability_source": "unknown for derived view"
+                  },
+                  "name": {
+                    "description": "Seller name.",
+                    "data_type": "character varying",
+                    "sql_type": "character varying",
+                    "nullable": null,
+                    "type_source": "database metadata",
+                    "nullability_source": "unknown for derived view"
+                  },
+                  "captured": {
+                    "description": "Sum of original allocation gross in integer paise.",
+                    "data_type": "bigint",
+                    "sql_type": "bigint",
+                    "nullable": null,
+                    "type_source": "database metadata",
+                    "nullability_source": "unknown for derived view"
+                  },
+                  "refunded": {
+                    "description": "Sum of completed allocation refunds in integer paise.",
+                    "data_type": "bigint",
+                    "sql_type": "bigint",
+                    "nullable": null,
+                    "type_source": "database metadata",
+                    "nullability_source": "unknown for derived view"
+                  },
+                  "fees": {
+                    "description": "Sum of current adjusted marketplace fees in integer paise.",
+                    "data_type": "bigint",
+                    "sql_type": "bigint",
+                    "nullable": null,
+                    "type_source": "database metadata",
+                    "nullability_source": "unknown for derived view"
+                  },
+                  "paid_out": {
+                    "description": "Sum of payout amounts with completed status, in integer paise.",
+                    "data_type": "bigint",
+                    "sql_type": "bigint",
+                    "nullable": null,
+                    "type_source": "database metadata",
+                    "nullability_source": "unknown for derived view"
+                  },
+                  "unpaid": {
+                    "description": "Remaining seller funds for non-completed payouts in integer paise; includes held and failed payouts.",
+                    "data_type": "bigint",
+                    "sql_type": "bigint",
+                    "nullable": null,
+                    "type_source": "database metadata",
+                    "nullability_source": "unknown for derived view"
+                  }
+                },
+                "notes": [
+                  "captured = refunded + fees + unpaid + paid_out. Unpaid does not imply eligible for immediate release. Do not join this seller-level total to individual items and then sum it."
+                ],
+                "table": "analytics.seller_balances",
+                "constraints": []
+              }
+            },
+            "validation": {
+              "status": "ok",
+              "issues": [],
+              "scope": "table/field coverage and relationship/key endpoints; business meanings and cardinalities require review"
+            },
+            "catalog_hash": "f7064bfdfe0aa4f8"
+          }
+        },
+        "evidence-9f0b13c4bcc6": {
+          "contract_version": "1.0",
+          "status": "ok",
+          "handle": "evidence-9f0b13c4bcc6",
+          "snapshot": {
+            "revision": 24,
+            "clock": "2026-09-28 12:00:00+00:00"
+          },
+          "document_revision": "fe36211d2849ebbe",
+          "attempt": 1,
+          "type": "query",
+          "purpose": "Current order, return, refund and payout records; allocation amounts repeat across multiple returns",
+          "sql": "SELECT i.order_id, i.id AS item_id, i.quantity, r.id AS return_id, r.status AS return_status, r.quantity AS return_quantity, f.id AS refund_id, f.status AS refund_status, f.amount AS refund_amount_paise, a.gross AS gross_paise, a.refunded AS refunded_paise, a.fee AS fee_paise, p.id AS payout_id, p.status AS payout_status, p.amount AS payout_amount_paise FROM analytics.order_items AS i LEFT JOIN analytics.returns AS r ON r.item_id = i.id LEFT JOIN analytics.refunds AS f ON f.return_id = r.id LEFT JOIN analytics.allocations AS a ON a.item_id = i.id LEFT JOIN analytics.payouts AS p ON p.allocation_id = a.id WHERE i.order_id = %(order_id)s ORDER BY i.id, r.id",
+          "params": {
+            "order_id": "order-2"
+          },
+          "rows": [
+            {
+              "order_id": "order-2",
+              "item_id": "item-3",
+              "quantity": 2,
+              "return_id": null,
+              "return_status": null,
+              "return_quantity": null,
+              "refund_id": null,
+              "refund_status": null,
+              "refund_amount_paise": null,
+              "gross_paise": 179800,
+              "refunded_paise": 0,
+              "fee_paise": 17980,
+              "payout_id": "payout-3",
+              "payout_status": "held",
+              "payout_amount_paise": 161820
+            }
+          ],
+          "columns": [
+            "order_id",
+            "item_id",
+            "quantity",
+            "return_id",
+            "return_status",
+            "return_quantity",
+            "refund_id",
+            "refund_status",
+            "refund_amount_paise",
+            "gross_paise",
+            "refunded_paise",
+            "fee_paise",
+            "payout_id",
+            "payout_status",
+            "payout_amount_paise"
+          ],
+          "truncated": false,
+          "row_count": 1,
+          "elapsed_ms": 11,
+          "query_hash": "90091f3e7e9451665875baa1de4b2a995d992594f57d4d318f62542faaf4837d"
+        },
+        "evidence-4726dc17e199": {
+          "contract_version": "1.0",
+          "status": "ok",
+          "handle": "evidence-4726dc17e199",
+          "snapshot": {
+            "revision": 24,
+            "clock": "2026-09-28 12:00:00+00:00"
+          },
+          "document_revision": "fe36211d2849ebbe",
+          "attempt": 1,
+          "type": "query",
+          "purpose": "Recorded order event timeline, including failed and successful attempts",
+          "sql": "WITH items AS (SELECT id FROM analytics.order_items WHERE order_id = %(order_id)s), return_ids AS (SELECT id FROM analytics.returns WHERE item_id IN (SELECT id FROM items)), allocation_ids AS (SELECT id FROM analytics.allocations WHERE item_id IN (SELECT id FROM items)), related AS (SELECT id FROM analytics.orders WHERE id = %(order_id)s UNION SELECT id FROM items UNION SELECT id FROM return_ids UNION SELECT id FROM allocation_ids UNION SELECT id FROM analytics.refunds WHERE return_id IN (SELECT id FROM return_ids) UNION SELECT id FROM analytics.payouts WHERE allocation_id IN (SELECT id FROM allocation_ids) UNION SELECT id FROM analytics.shipments WHERE item_id IN (SELECT id FROM items) UNION SELECT id FROM analytics.payments WHERE order_id = %(order_id)s) SELECT e.revision, e.kind, e.entity_id, e.details, e.occurred_at, e.recorded_at FROM analytics.events AS e WHERE e.entity_id IN (SELECT id FROM related) OR e.details ->> 'id' IN (SELECT id FROM related) ORDER BY e.revision, e.recorded_at, e.id",
+          "params": {
+            "order_id": "order-2"
+          },
+          "rows": [
+            {
+              "revision": 1,
+              "kind": "payment_captured",
+              "entity_id": "order-2",
+              "details": {
+                "amount": 179800,
+                "payment_id": "payment-2",
+                "simulated": true
+              },
+              "occurred_at": "2026-09-24 12:00:00+00:00",
+              "recorded_at": "2026-09-24 12:00:00+00:00"
+            }
+          ],
+          "columns": [
+            "revision",
+            "kind",
+            "entity_id",
+            "details",
+            "occurred_at",
+            "recorded_at"
+          ],
+          "truncated": false,
+          "row_count": 1,
+          "elapsed_ms": 11,
+          "query_hash": "3da83f8f871d9cbef1aa31e39233dea1d8ec979a08f4cfbf94a27cd37712653e"
+        },
+        "evidence-00ddfc47f8ca": {
+          "contract_version": "1.0",
+          "status": "ok",
+          "handle": "evidence-00ddfc47f8ca",
+          "snapshot": {
+            "revision": 24,
+            "clock": "2026-09-28 12:00:00+00:00"
+          },
+          "document_revision": "fe36211d2849ebbe",
+          "attempt": 1,
+          "type": "query",
+          "purpose": "Order and payment summary for the requested order history",
+          "sql": "SELECT o.id AS order_id, o.status AS order_status, o.created_at, p.status AS payment_status, p.amount AS payment_amount_paise, p.currency FROM analytics.orders AS o LEFT JOIN analytics.payments AS p ON p.order_id = o.id WHERE o.id = %(order_id)s",
+          "params": {
+            "order_id": "order-2"
+          },
+          "rows": [
+            {
+              "order_id": "order-2",
+              "order_status": "paid",
+              "created_at": "2026-09-24 12:00:00+00:00",
+              "payment_status": "captured",
+              "payment_amount_paise": 179800,
+              "currency": "INR"
+            }
+          ],
+          "columns": [
+            "order_id",
+            "order_status",
+            "created_at",
+            "payment_status",
+            "payment_amount_paise",
+            "currency"
+          ],
+          "truncated": false,
+          "row_count": 1,
+          "elapsed_ms": 3,
+          "query_hash": "bdd9fa29ba1f086a558e547d8113f93b56b17729b32d7fea35fc6bb9bb5efbf8"
+        },
+        "evidence-1d5165c824b4": {
+          "contract_version": "1.0",
+          "status": "ok",
+          "handle": "evidence-1d5165c824b4",
+          "snapshot": {
+            "revision": 24,
+            "clock": "2026-09-28 12:00:00+00:00"
+          },
+          "document_revision": "fe36211d2849ebbe",
+          "attempt": 1,
+          "type": "query",
+          "purpose": "Shipment and seller payout details for order-2 by item",
+          "sql": "SELECT oi.id AS item_id, s.name AS seller_name, pr.name AS product_name, sh.status AS shipment_status, sh.quantity AS shipment_quantity, sh.delivered_at, a.gross AS gross_paise, a.fee AS fee_paise, a.refunded AS refunded_paise, po.status AS payout_status, po.amount AS payout_amount_paise FROM analytics.order_items AS oi JOIN analytics.sellers AS s ON s.id = oi.seller_id JOIN analytics.listings AS l ON l.id = oi.listing_id JOIN analytics.products AS pr ON pr.id = l.product_id LEFT JOIN analytics.shipments AS sh ON sh.item_id = oi.id LEFT JOIN analytics.allocations AS a ON a.item_id = oi.id LEFT JOIN analytics.payouts AS po ON po.allocation_id = a.id WHERE oi.order_id = %(order_id)s ORDER BY oi.id",
+          "params": {
+            "order_id": "order-2"
+          },
+          "rows": [
+            {
+              "item_id": "item-3",
+              "seller_name": "Everyday Studio",
+              "product_name": "Ceramic Mug Set",
+              "shipment_status": "pending",
+              "shipment_quantity": 2,
+              "delivered_at": null,
+              "gross_paise": 179800,
+              "fee_paise": 17980,
+              "refunded_paise": 0,
+              "payout_status": "held",
+              "payout_amount_paise": 161820
+            }
+          ],
+          "columns": [
+            "item_id",
+            "seller_name",
+            "product_name",
+            "shipment_status",
+            "shipment_quantity",
+            "delivered_at",
+            "gross_paise",
+            "fee_paise",
+            "refunded_paise",
+            "payout_status",
+            "payout_amount_paise"
+          ],
+          "truncated": false,
+          "row_count": 1,
+          "elapsed_ms": 50,
+          "query_hash": "24ca284d47599cf745f744daa269d2fd2236fd92c8528847bac871c5ca2e9911"
+        }
+      }
+    },
+    {
+      "id": "run-5125281875",
+      "status": "completed",
+      "answer": "Everyday Studio receives the payout for order-2, amount \u20b91,618.20. It is not already paid; the current payout status is held, not completed. [evidence:evidence-7c3822754208]",
+      "revision": 24,
+      "metrics": {
+        "requests": 2,
+        "input_tokens": 27891,
+        "output_tokens": 252,
+        "total_tokens": 28143,
+        "model": "gpt-5-nano",
+        "price_status": "uncached list-rate estimate, excludes embeddings; not an invoice",
+        "estimated_model_cost_usd": 0.00149535,
+        "trace_id": "83f35257e01c32b222d848787f424a22",
+        "cached_input_tokens": 26112,
+        "memory_enabled": false,
+        "memory_management_scope": false,
+        "memory_operations": [],
+        "memory_tool_attempts": [],
+        "memory_tool_calls": 0,
+        "memory_tool_transport": "disabled",
+        "memory_write_allowed": false,
+        "tool_transport": "mcp",
+        "mcp_transport": "http",
+        "mcp_endpoint_host": "marketplace-mcp-327903210973.asia-south1.run.app",
+        "prompt_version": "catalog-v2-question-context-v11-source-authority",
+        "source_authority": true,
+        "marker_mode": "off",
+        "guardrail_profile": "off",
+        "guardrails": [],
+        "catalog_version": "2.0",
+        "elapsed_seconds": 5.82,
+        "tool_calls": 1,
+        "business_tool_calls": 1,
+        "document_revision": "fe36211d2849ebbe"
+      },
+      "evidence": {
+        "evidence-7c3822754208": {
+          "contract_version": "1.0",
+          "status": "ok",
+          "handle": "evidence-7c3822754208",
+          "snapshot": {
+            "revision": 24,
+            "clock": "2026-09-28 12:00:00+00:00"
+          },
+          "document_revision": "fe36211d2849ebbe",
+          "attempt": 1,
+          "type": "query",
+          "purpose": "Fresh current seller and payout status for order-2 in this turn",
+          "sql": "SELECT s.name AS seller_name, po.status AS payout_status, po.amount AS payout_amount_paise FROM analytics.order_items AS oi JOIN analytics.sellers AS s ON s.id = oi.seller_id JOIN analytics.allocations AS a ON a.item_id = oi.id JOIN analytics.payouts AS po ON po.allocation_id = a.id WHERE oi.order_id = %(order_id)s ORDER BY oi.id",
+          "params": {
+            "order_id": "order-2"
+          },
+          "rows": [
+            {
+              "seller_name": "Everyday Studio",
+              "payout_status": "held",
+              "payout_amount_paise": 161820
+            }
+          ],
+          "columns": [
+            "seller_name",
+            "payout_status",
+            "payout_amount_paise"
+          ],
+          "truncated": false,
+          "row_count": 1,
+          "elapsed_ms": 7,
+          "query_hash": "01e611ef0691c4f1955097155c3246c815c466ae2ea777b19c1afc212a03417c"
+        }
+      }
+    }
+  ],
+  "trace_summaries": [
+    {
+      "trace_id": "a77bb8845f0a5f206e488a62df783c18",
+      "observation_names": [
+        "Agent workflow",
+        "Marketplace support",
+        "turn",
+        "mcp_tools",
+        "turn",
+        "Agent workflow",
+        "mcp_tools",
+        "turn",
+        "generation",
+        "generation",
+        "generation",
+        "support-investigation",
+        "Gateway output \u2192 Model input",
+        "Gateway output \u2192 Model input",
+        "query_business_data",
+        "get_order_history",
+        "mcp_tools",
+        "turn",
+        "mcp_tools",
+        "generation",
+        "Gateway output \u2192 Model input",
+        "Gateway output \u2192 Model input",
+        "get_catalog"
+      ],
+      "observation_count": 23,
+      "tool_observations": [
+        {
+          "name": "query_business_data",
+          "level": "DEFAULT"
+        },
+        {
+          "name": "get_order_history",
+          "level": "DEFAULT"
+        },
+        {
+          "name": "get_catalog",
+          "level": "DEFAULT"
+        }
+      ],
+      "metadata": {
+        "run_id": "run-3833d7a0af",
+        "revision": 24,
+        "conversation_id": "chat-ef58061d9b",
+        "guardrail": "off",
+        "source_authority": true,
+        "mcp_transport": "http",
+        "mcp_endpoint_host": "marketplace-mcp-327903210973.asia-south1.run.app",
+        "resourceAttributes": {
+          "telemetry.sdk.language": "python",
+          "telemetry.sdk.name": "opentelemetry",
+          "telemetry.sdk.version": "1.45.0",
+          "service.instance.id": "bfd3f58d-6af0-44a8-924e-0332f6b10ba2",
+          "service.name": "unknown_service:python3.12"
+        },
+        "scope": {
+          "name": "langfuse-sdk",
+          "version": "4.15.6",
+          "attributes": {
+            "public_key": "pk-lf-fd9f77e6-7889-4802-8411-9d68996eaf1a"
+          }
+        }
+      }
+    },
+    {
+      "trace_id": "83f35257e01c32b222d848787f424a22",
+      "observation_names": [
+        "Marketplace support",
+        "Agent workflow",
+        "turn",
+        "Agent workflow",
+        "mcp_tools",
+        "turn",
+        "mcp_tools",
+        "generation",
+        "generation",
+        "support-investigation",
+        "Gateway output \u2192 Model input",
+        "query_business_data"
+      ],
+      "observation_count": 12,
+      "tool_observations": [
+        {
+          "name": "query_business_data",
+          "level": "DEFAULT"
+        }
+      ],
+      "metadata": {
+        "run_id": "run-5125281875",
+        "revision": 24,
+        "conversation_id": "chat-ef58061d9b",
+        "guardrail": "off",
+        "source_authority": true,
+        "mcp_transport": "http",
+        "mcp_endpoint_host": "marketplace-mcp-327903210973.asia-south1.run.app",
+        "resourceAttributes": {
+          "telemetry.sdk.language": "python",
+          "telemetry.sdk.name": "opentelemetry",
+          "telemetry.sdk.version": "1.45.0",
+          "service.instance.id": "bfd3f58d-6af0-44a8-924e-0332f6b10ba2",
+          "service.name": "unknown_service:python3.12"
+        },
+        "scope": {
+          "name": "langfuse-sdk",
+          "version": "4.15.6",
+          "attributes": {
+            "public_key": "pk-lf-fd9f77e6-7889-4802-8411-9d68996eaf1a"
+          }
+        }
+      }
+    }
+  ],
+  "ready_revision": "marketplace-web-00015-8lb",
+  "image": "asia-south1-docker.pkg.dev/marketplace-app-511005/marketplace/web@sha256:75bc70256c987cbb6eec6fb33be93605a2a3d9f8784e18b523c4feb06386355e",
+  "stop_operation": "2f7dcbef-34e3-4ef4-9558-d06f0000002f",
+  "sql_final_state": {
+    "activationPolicy": "NEVER",
+    "state": "STOPPED",
+    "operation_status": "DONE"
+  }
+}

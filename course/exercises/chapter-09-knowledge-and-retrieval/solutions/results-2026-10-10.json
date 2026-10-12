@@ -1,0 +1,238 @@
+{
+  "embedding_alias": "embedding",
+  "dimensions": 1536,
+  "policy": {
+    "question": "Simulated fixed facts: payment captured, delivery 30 hours ago, no open return. Is the seller payout eligible? Give the waiting period and cite policy.",
+    "before": [
+      {
+        "id": "policy:5",
+        "version": "v1",
+        "source": "payout-v1.md",
+        "line_start": 5,
+        "line_end": 5,
+        "body": "Captured payment, confirmed delivery, and no open return are required before release. A delivered purchase must wait at least 24 hours after delivery before its seller payout becomes eligible. Eligibility is not evidence that a payout was executed.",
+        "score": 0.6926240124196996
+      },
+      {
+        "id": "policy:3",
+        "version": "v1",
+        "source": "payout-v1.md",
+        "line_start": 3,
+        "line_end": 3,
+        "body": "This is a simulated teaching policy, not the marketplace's operational policy. It applies to seller payouts in the lab.",
+        "score": 0.5337403220714414
+      },
+      {
+        "id": "policy:1",
+        "version": "v1",
+        "source": "payout-v1.md",
+        "line_start": 1,
+        "line_end": 1,
+        "body": "# Lab seller payout policy \u2014 version 1",
+        "score": 0.515183502674933
+      }
+    ],
+    "source_changed_not_reindexed": [
+      {
+        "id": "policy:5",
+        "version": "v1",
+        "source": "payout-v1.md",
+        "line_start": 5,
+        "line_end": 5,
+        "body": "Captured payment, confirmed delivery, and no open return are required before release. A delivered purchase must wait at least 24 hours after delivery before its seller payout becomes eligible. Eligibility is not evidence that a payout was executed.",
+        "score": 0.6926240124196996
+      },
+      {
+        "id": "policy:3",
+        "version": "v1",
+        "source": "payout-v1.md",
+        "line_start": 3,
+        "line_end": 3,
+        "body": "This is a simulated teaching policy, not the marketplace's operational policy. It applies to seller payouts in the lab.",
+        "score": 0.5337403220714414
+      },
+      {
+        "id": "policy:1",
+        "version": "v1",
+        "source": "payout-v1.md",
+        "line_start": 1,
+        "line_end": 1,
+        "body": "# Lab seller payout policy \u2014 version 1",
+        "score": 0.515183502674933
+      }
+    ],
+    "after_reindex": [
+      {
+        "id": "policy:5",
+        "version": "v2",
+        "source": "payout-v2.md",
+        "line_start": 5,
+        "line_end": 5,
+        "body": "Captured payment, confirmed delivery, and no open return are required before release. A delivered purchase must wait at least 48 hours after delivery before its seller payout becomes eligible. Eligibility is not evidence that a payout was executed.",
+        "score": 0.6941018873204642
+      },
+      {
+        "id": "policy:3",
+        "version": "v2",
+        "source": "payout-v2.md",
+        "line_start": 3,
+        "line_end": 3,
+        "body": "This is a simulated teaching policy, not the marketplace's operational policy. It applies to seller payouts in the lab.",
+        "score": 0.5337102215882763
+      },
+      {
+        "id": "policy:1",
+        "version": "v2",
+        "source": "payout-v2.md",
+        "line_start": 1,
+        "line_end": 1,
+        "body": "# Lab seller payout policy \u2014 version 2",
+        "score": 0.5149601196696946
+      }
+    ],
+    "before_answer": "Yes. Under the simulated lab policy, seller payout becomes eligible only if payment is captured, delivery is confirmed, and there is no open return; for delivered purchases, there is also a minimum 24-hour wait after delivery before eligibility. Since your facts say payment was captured, delivery was 30 hours ago, and there is no open return, the payout is eligible. The waiting period is at least 24 hours after delivery. Eligibility does not mean the payout was actually executed. [policy:5][policy:3]",
+    "after_answer": "No. Based on the simulated facts, the seller payout is **not yet eligible**.\n\nReason:\n- Required conditions are: **captured payment, confirmed delivery, and no open return** [policy:5].\n- Even when those are met, **a delivered purchase must wait at least 48 hours after delivery before its seller payout becomes eligible** [policy:5].\n- Here, delivery was **30 hours ago**, which is **short of the 48-hour waiting period** [policy:5].\n\nWaiting period:\n- **At least 48 hours after delivery** [policy:5].\n\nAlso, eligibility does **not** mean a payout was actually executed [policy:5]."
+  },
+  "chunking": [
+    {
+      "strategy": "paragraph",
+      "top_k": 1,
+      "question": "Simulated fixed facts: payment captured, confirmed delivery 30 hours ago, no open return, Amber Review flag present. Is seller payout eligible? Explain the standard rule and the exception, with citations.",
+      "passages": [
+        {
+          "id": "paragraph:15",
+          "version": "lab-v1",
+          "source": "expanded-policy.md",
+          "line_start": 15,
+          "line_end": 15,
+          "body": "Exception to the standard seller payout rule: a purchase carrying the lab-only Amber Review flag requires 72 elapsed hours after confirmed delivery, rather than 24. Captured payment and no open return are still required. This flag changes eligibility only; it does not prove release was executed.",
+          "score": 0.7632539440580284
+        }
+      ],
+      "has_standard_rule": false,
+      "has_exception": true,
+      "retrieved_characters": 296,
+      "answer": "Based on the supplied passage, the seller is **not yet payout-eligible** under the stated facts.\n\n- **Standard rule:** The passage describes an **exception** to a \u201cstandard seller payout rule\u201d and says the Amber Review flag requires **72 elapsed hours after confirmed delivery, rather than 24** [paragraph:15]. So the standard rule is **24 hours after confirmed delivery**.\n- **Exception:** If the purchase has the **Amber Review flag**, eligibility requires:\n  - **72 hours after confirmed delivery**\n  - **captured payment**\n  - **no open return** [paragraph:15].\n\nApplying your facts:\n- payment captured \u2705\n- confirmed delivery **30 hours ago** \u2705 for standard timing, but\n- no open return \u2705\n- **Amber Review flag present** \u2705\n\nBecause Amber Review changes the timing requirement from **24 hours to 72 hours**, **30 hours is not enough**, so the seller is **not yet eligible** [paragraph:15].\n\nAlso, the passage says this flag **\u201cchanges eligibility only; it does not prove release was executed\u201d** [paragraph:15]."
+    },
+    {
+      "strategy": "paragraph",
+      "top_k": 4,
+      "question": "Simulated fixed facts: payment captured, confirmed delivery 30 hours ago, no open return, Amber Review flag present. Is seller payout eligible? Explain the standard rule and the exception, with citations.",
+      "passages": [
+        {
+          "id": "paragraph:15",
+          "version": "lab-v1",
+          "source": "expanded-policy.md",
+          "line_start": 15,
+          "line_end": 15,
+          "body": "Exception to the standard seller payout rule: a purchase carrying the lab-only Amber Review flag requires 72 elapsed hours after confirmed delivery, rather than 24. Captured payment and no open return are still required. This flag changes eligibility only; it does not prove release was executed.",
+          "score": 0.7632539440580284
+        },
+        {
+          "id": "paragraph:13",
+          "version": "lab-v1",
+          "source": "expanded-policy.md",
+          "line_start": 13,
+          "line_end": 13,
+          "body": "Under the standard seller payout rule, release eligibility requires captured payment, confirmed delivery, no open return, and at least 24 elapsed hours after delivery. This standard rule is subject to the immediately following exception.",
+          "score": 0.6914565545686517
+        },
+        {
+          "id": "paragraph:1",
+          "version": "lab-v1",
+          "source": "expanded-policy.md",
+          "line_start": 1,
+          "line_end": 1,
+          "body": "# Lab extended seller payout policy",
+          "score": 0.5427904956017475
+        },
+        {
+          "id": "paragraph:9",
+          "version": "lab-v1",
+          "source": "expanded-policy.md",
+          "line_start": 9,
+          "line_end": 9,
+          "body": "Payment capture records the amount received for a purchase. Authorization without capture is insufficient evidence of settled payment. A support explanation must distinguish these states.",
+          "score": 0.5059348213365623
+        }
+      ],
+      "has_standard_rule": true,
+      "has_exception": true,
+      "retrieved_characters": 755,
+      "answer": "No. Based on the supplied facts, the seller is not yet payout-eligible.\n\n- Standard rule: payout eligibility requires all of the following: captured payment, confirmed delivery, no open return, and at least 24 hours since delivery [paragraph:13].\n- Exception: if the purchase has the lab-only Amber Review flag, the timing requirement changes from 24 hours to 72 hours after confirmed delivery. Captured payment and no open return are still required [paragraph:15].\n\nHere, the facts say:\n- payment was captured,\n- delivery was confirmed 30 hours ago,\n- there is no open return,\n- and the Amber Review flag is present.\n\nBecause Amber Review applies, the 72-hour exception controls. Only 30 hours have elapsed, so the seller is not yet eligible [paragraph:15].\n\nAlso, the policy says this flag changes eligibility only and does not prove any payout release was actually executed [paragraph:15]."
+    },
+    {
+      "strategy": "overlap",
+      "top_k": 1,
+      "question": "Simulated fixed facts: payment captured, confirmed delivery 30 hours ago, no open return, Amber Review flag present. Is seller payout eligible? Explain the standard rule and the exception, with citations.",
+      "passages": [
+        {
+          "id": "overlap:15",
+          "version": "lab-v1",
+          "source": "expanded-policy.md",
+          "line_start": 15,
+          "line_end": 17,
+          "body": "Exception to the standard seller payout rule: a purchase carrying the lab-only Amber Review flag requires 72 elapsed hours after confirmed delivery, rather than 24. Captured payment and no open return are still required. This flag changes eligibility only; it does not prove release was executed.\n\nAn open return blocks eligibility while it remains unresolved. Closing a return does not by itself prove a refund occurred. Completed refund records establish the actual monetary adjustment.",
+          "score": 0.7796877231041529
+        }
+      ],
+      "has_standard_rule": false,
+      "has_exception": true,
+      "retrieved_characters": 488,
+      "answer": "Not yet eligible, based on the supplied facts.\n\n- Standard rule: seller payout eligibility normally requires captured payment, confirmed delivery, and no open return; the standard waiting period is 24 hours after confirmed delivery. The passage provided gives the exception relative to that standard: Amber Review requires 72 hours instead of 24 [overlap:15].\n- Exception: if the purchase has the lab-only Amber Review flag, eligibility requires 72 elapsed hours after confirmed delivery, and still requires captured payment and no open return [overlap:15].\n\nApplied here:\n- Payment captured: yes\n- Confirmed delivery: 30 hours ago\n- No open return: yes\n- Amber Review flag: present\n\nBecause Amber Review raises the wait from 24 to 72 hours, 30 hours since delivery is insufficient, so the seller payout is not yet eligible [overlap:15].\n\nAlso, eligibility is not the same as payout execution; the flag \u201cchanges eligibility only; it does not prove release was executed\u201d [overlap:15]."
+    },
+    {
+      "strategy": "overlap",
+      "top_k": 4,
+      "question": "Simulated fixed facts: payment captured, confirmed delivery 30 hours ago, no open return, Amber Review flag present. Is seller payout eligible? Explain the standard rule and the exception, with citations.",
+      "passages": [
+        {
+          "id": "overlap:15",
+          "version": "lab-v1",
+          "source": "expanded-policy.md",
+          "line_start": 15,
+          "line_end": 17,
+          "body": "Exception to the standard seller payout rule: a purchase carrying the lab-only Amber Review flag requires 72 elapsed hours after confirmed delivery, rather than 24. Captured payment and no open return are still required. This flag changes eligibility only; it does not prove release was executed.\n\nAn open return blocks eligibility while it remains unresolved. Closing a return does not by itself prove a refund occurred. Completed refund records establish the actual monetary adjustment.",
+          "score": 0.7796877231041529
+        },
+        {
+          "id": "overlap:13",
+          "version": "lab-v1",
+          "source": "expanded-policy.md",
+          "line_start": 13,
+          "line_end": 15,
+          "body": "Under the standard seller payout rule, release eligibility requires captured payment, confirmed delivery, no open return, and at least 24 elapsed hours after delivery. This standard rule is subject to the immediately following exception.\n\nException to the standard seller payout rule: a purchase carrying the lab-only Amber Review flag requires 72 elapsed hours after confirmed delivery, rather than 24. Captured payment and no open return are still required. This flag changes eligibility only; it does not prove release was executed.",
+          "score": 0.7336152979713266
+        },
+        {
+          "id": "overlap:11",
+          "version": "lab-v1",
+          "source": "expanded-policy.md",
+          "line_start": 11,
+          "line_end": 13,
+          "body": "Shipment records establish whether delivery occurred. A label being created, a package being dispatched, and delivery being confirmed are different events. Eligibility uses confirmed delivery time.\n\nUnder the standard seller payout rule, release eligibility requires captured payment, confirmed delivery, no open return, and at least 24 elapsed hours after delivery. This standard rule is subject to the immediately following exception.",
+          "score": 0.6133103239403564
+        },
+        {
+          "id": "overlap:1",
+          "version": "lab-v1",
+          "source": "expanded-policy.md",
+          "line_start": 1,
+          "line_end": 3,
+          "body": "# Lab extended seller payout policy\n\nThis document is a synthetic teaching fixture. It does not change real marketplace rules or records. Its purpose is to test retrieval of a rule and its adjacent exception.",
+          "score": 0.5761648451662301
+        }
+      ],
+      "has_standard_rule": true,
+      "has_exception": true,
+      "retrieved_characters": 1667,
+      "answer": "No. Based on the supplied facts, the seller is **not yet payout-eligible**.\n\n- **Standard rule:** eligibility requires **captured payment, confirmed delivery, no open return, and at least 24 hours elapsed after delivery** [overlap:13][overlap:11].\n- **Exception:** if the purchase has the **Amber Review** flag, the delivery waiting period becomes **72 hours after confirmed delivery instead of 24**, while **captured payment** and **no open return** are still required [overlap:15][overlap:13].\n\nHere, you stated:\n- payment captured,\n- confirmed delivery **30 hours ago**,\n- no open return,\n- **Amber Review flag present**.\n\nBecause Amber Review applies, the order needs **72 elapsed hours after confirmed delivery**. At **30 hours**, that requirement is not yet met, so it is **not eligible yet** [overlap:15].\n\nAlso, the policy says the Amber Review flag **changes eligibility only** and **does not prove release was executed** [overlap:15][overlap:13]."
+    }
+  ],
+  "chunk_counts": {
+    "policy_v1": 3,
+    "policy_v2": 3,
+    "paragraph": 14,
+    "overlap": 14
+  }
+}

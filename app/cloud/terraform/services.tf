@@ -1,19 +1,19 @@
 variable "lyzr_secret_enabled" {
-  type = bool
-  default = false
+  type        = bool
+  default     = false
   description = "Provision the secret and scoped access before private key entry."
 }
 variable "lyzr_agent_id" {
-  type = string
+  type    = string
   default = ""
 }
 variable "google_runtime_resource" {
-  type = string
+  type    = string
   default = ""
 }
 variable "lyzr_enabled" {
-  type = bool
-  default = false
+  type        = bool
+  default     = false
   description = "Enable only after the dedicated Lyzr API-key secret has a value."
 }
 variable "web_image" {
@@ -206,14 +206,14 @@ resource "google_cloud_run_v2_service" "application" {
         mount_path = "/cloudsql"
       }
       dynamic "env" {
-        for_each = merge({ LITELLM_URL = "${google_cloud_run_v2_service.gateway[0].uri}/v1", GATEWAY_IAM_AUDIENCE = google_cloud_run_v2_service.gateway[0].uri, AGENT_TOOL_TRANSPORT = "mcp", DB_POOL_SIZE = "2", DB_MAX_OVERFLOW = "2", ALLOWED_ORIGINS = var.app_origin, SECURE_COOKIES = "true", REMOTE_MCP_PORT = "8080", INITIALIZE_ON_STARTUP = "false", LANGFUSE_HOST = "https://jp.cloud.langfuse.com", LANGFUSE_PUBLIC_KEY = var.langfuse_public_key }, each.key == "mcp" ? { REMOTE_MCP_ALLOWED_HOSTS = "marketplace-mcp-${data.google_project.current.number}.${var.region}.run.app" } : { LYZR_AGENT_ID = var.lyzr_agent_id, GOOGLE_RUNTIME_RESOURCE = var.google_runtime_resource, MARKETPLACE_IDENTITY_NAMESPACE = var.project_id })
+        for_each = merge({ LITELLM_URL = "${google_cloud_run_v2_service.gateway[0].uri}/v1", GATEWAY_IAM_AUDIENCE = google_cloud_run_v2_service.gateway[0].uri, DB_POOL_SIZE = "2", DB_MAX_OVERFLOW = "2", ALLOWED_ORIGINS = var.app_origin, SECURE_COOKIES = "true", REMOTE_MCP_PORT = "8080", INITIALIZE_ON_STARTUP = "false", LANGFUSE_HOST = "https://jp.cloud.langfuse.com", LANGFUSE_PUBLIC_KEY = var.langfuse_public_key }, each.key == "mcp" ? { REMOTE_MCP_ALLOWED_HOSTS = "marketplace-mcp-${data.google_project.current.number}.${var.region}.run.app" } : { AGENT_TOOL_TRANSPORT = "mcp_http", SDK_MCP_URL = "https://marketplace-mcp-${data.google_project.current.number}.${var.region}.run.app/mcp", LYZR_AGENT_ID = var.lyzr_agent_id, GOOGLE_RUNTIME_RESOURCE = var.google_runtime_resource, MARKETPLACE_IDENTITY_NAMESPACE = var.project_id })
         content {
           name  = env.key
           value = env.value
         }
       }
       dynamic "env" {
-        for_each = each.key == "web" ? merge({ DATABASE_URL = "web-database-url", READ_DATABASE_URL = "web-read-database-url", LITELLM_API_KEY = "web-support-key", LANGFUSE_SECRET_KEY = "web-langfuse-secret" }, var.lyzr_enabled ? { LYZR_API_KEY = "web-lyzr-api-key" } : {}) : { READ_DATABASE_URL = "mcp-read-database-url", MCP_REGISTRY_DATABASE_URL = "mcp-registry-database-url", REMOTE_MCP_API_KEY = "mcp-api-key", LITELLM_API_KEY = "mcp-embedding-key" }
+        for_each = each.key == "web" ? merge({ DATABASE_URL = "web-database-url", READ_DATABASE_URL = "web-read-database-url", SDK_MCP_API_KEY = "mcp-api-key", LITELLM_API_KEY = "web-support-key", LANGFUSE_SECRET_KEY = "web-langfuse-secret" }, var.lyzr_enabled ? { LYZR_API_KEY = "web-lyzr-api-key" } : {}) : { READ_DATABASE_URL = "mcp-read-database-url", MCP_REGISTRY_DATABASE_URL = "mcp-registry-database-url", REMOTE_MCP_API_KEY = "mcp-api-key", LITELLM_API_KEY = "mcp-embedding-key" }
         content {
           name = env.key
           value_source {
@@ -226,7 +226,7 @@ resource "google_cloud_run_v2_service" "application" {
       }
     }
   }
-  depends_on = [google_secret_manager_secret_iam_member.read, google_project_iam_member.sql_client]
+  depends_on = [google_secret_manager_secret_iam_member.read, google_secret_manager_secret_iam_member.web_mcp, google_project_iam_member.sql_client]
 }
 data "google_project" "current" { project_id = var.project_id }
 resource "google_cloud_run_v2_service_iam_member" "gateway_invoker" {

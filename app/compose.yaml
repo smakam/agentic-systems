@@ -28,7 +28,7 @@ services:
       PRESIDIO_ANONYMIZER_API_BASE: http://presidio-anonymizer:3000
     depends_on:
       postgres: {condition: service_healthy}
-    volumes: ["./infra/litellm.yaml:/app/config.yaml:ro", "./infra/gateway_audit.py:/app/gateway_audit.py:ro"]
+    volumes: ["${LITELLM_CONFIG_PATH:-./infra/litellm.yaml}:/app/config.yaml:ro", "./infra/gateway_audit.py:/app/gateway_audit.py:ro"]
     ports: ["127.0.0.1:4000:4000"]
   backend:
     build: ./backend
@@ -41,6 +41,7 @@ services:
       DATA_DIR: /data
       LITELLM_URL: http://gateway:4000/v1
       LITELLM_API_KEY: ${SUPPORT_GATEWAY_KEY:-}
+      OPERATOR_GATEWAY_KEY: ${OPERATOR_GATEWAY_KEY:-}
       LYZR_AGENT_ID: ${LYZR_AGENT_ID:-}
       LYZR_API_KEY: ${LYZR_API_KEY:-}
       GOOGLE_RUNTIME_RESOURCE: ${GOOGLE_RUNTIME_RESOURCE:-}

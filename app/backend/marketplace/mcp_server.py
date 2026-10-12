@@ -1,11 +1,12 @@
 """Local read-only MCP server. One process owns one investigation snapshot."""
-import json
+import json, os
 from mcp.server import MCPServer
 from .tools import ReadContext
 from .tool_contracts import build_tool_functions
 
 def main():
-    ctx = ReadContext()
+    settings=json.loads(os.getenv("CONTEXT_COMPARISON_JSON", "{}"))
+    ctx = ReadContext(suppress_catalog=bool(settings.get("suppress_catalog")),suppress_documents=bool(settings.get("suppress_documents")))
     server = MCPServer('Marketplace read tools')
     for fn in build_tool_functions(ctx):
         server.tool(structured_output=False)(fn)
