@@ -53,6 +53,12 @@ python3 -m unittest discover -s course/exercises/chapter-10-session-state/soluti
 
 After exporting results, an optional cleanup is `docker compose -f app/compose.yaml exec -T postgres dropdb -U postgres ch10_session_lab`. Never substitute `market_eval` or `market` into this cleanup command. Recreate/reset the lab before another rehearsal.
 
+## Exact comparison questions
+
+The complete seven-block fixture and eighth recall question are written out in [Developer extension 1 in the exercise](../exercise.md#developer-extension-1--change-the-window). The same fixture is restored independently for the two-, six- and eight-block windows and summary-plus-two comparison. Seven prior blocks means the eight-block limit includes all seven; it is not an eight-to-ten-question history.
+
+For summary-plus-two, the older five blocks become a summary while the final two retain exact messages and any paired tool results. Two is a lab choice. The goal is to measure whether early information survives and what input/summary overhead it adds, rather than assuming summary-only or a hybrid is always better. Full stored history remains unchanged.
+
 ## Expected checks
 
 - Continuity: the follow-up input contains the earlier order reference. Reusing history may allow an answer without a new business-tool call.
