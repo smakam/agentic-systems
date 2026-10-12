@@ -2,7 +2,9 @@
 
 The executable reference is supplied in [session_strategies.py](session_strategies.py), with the real SDK comparison in [compare_strategies.py](compare_strategies.py). Production history selection stays unchanged. Offline checks and the saved completed live validation pass. Learner runs use the normal configured gateway; the earlier validation routing and failed attempts are retained in the historical validation record.
 
-## Repeatable setup and commands
+## Setup for the optional developer lab
+
+These commands are for the optional developer challenges or automated rehearsal. Core UI practice uses the existing marketplace and Langfuse and does not require this database-copy setup.
 
 Run from the code repository root with the local Docker stack running. [reset_lab.sh](reset_lab.sh) copies the fixed evaluation database into `ch10_session_lab`; its source is read-only and its restore destination is fixed in the script. Run it before each complete demo rehearsal. Stop other lab scripts before resetting. It restores the same business data, clock, revision and policy index rather than accumulating purchases from earlier runs.
 

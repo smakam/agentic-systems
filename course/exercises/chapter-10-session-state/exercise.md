@@ -2,11 +2,16 @@
 
 Status: instructions, reference solutions and saved validation are available. Use the normal configured gateway for learner runs. Instructor UI rehearsal remains separate.
 
-## Repeatable starting state
+## Choose your practice path
 
-Keep the fixed evaluation database unchanged. Create a disposable lab database from the same baseline for each rehearsal. Use the same model alias and mapping, history strategy, input questions, and initial marketplace state in each comparison. Record these settings with the results. Reset only the disposable lab between complete runs; never reset the fixed evaluation or interactive marketplace database.
+- **Part 1: UI practice.** Use the already running local marketplace and Langfuse from Course Setup. Prepare a fresh demo order in the regular interactive marketplace; keep the fixed test database unchanged. You do not need to create or reset a lab database just to repeat these UI questions.
+- **Part 2: optional developer challenges.** If you want to change the history-selection code, use the disposable lab setup in the solution. The database-copy and script commands apply to this path, or to an automated instructor rehearsal.
 
-Store full conversation history in PostgreSQL. Apply history-selection changes only to the input selected for the next model call. Preserve complete tool-call/result pairs and current investigation metadata.
+## Starting state for the scripted developer lab
+
+Keep the fixed evaluation database unchanged. For scripted developer runs, create a disposable lab database from the same baseline for each comparison. Use the same model alias and mapping, history strategy, input questions, and initial marketplace state in each comparison. Record these settings with the results. Reset only the disposable lab between complete runs; never reset the fixed evaluation or interactive marketplace database.
+
+For developer implementations, store full conversation history in PostgreSQL. Apply history-selection changes only to the input selected for the next model call. Preserve complete tool-call/result pairs and current investigation metadata.
 
 ## Part 1 — repeat the three demos
 
@@ -16,7 +21,7 @@ Store full conversation history in PostgreSQL. Apply history-selection changes o
 
 Keep the questions, relevant trace/input excerpts, revisions, and a short explanation for each case locally for comparison with the solution. There is no submission destination. Redact credentials and provider reasoning items.
 
-## Part 2 — additional challenges
+## Part 2 — optional developer challenges
 
 ### Developer extension 1 — change the window
 
