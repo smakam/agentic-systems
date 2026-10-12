@@ -1,10 +1,10 @@
 # Inside AI Agent Systems: From Components to Platforms
 
-**Subtitle:** Build a real AI application and explore models, context, evaluation, routing, memory, and multi-agent designs through hands-on experiments.
+**Subtitle:** Understand, build and evaluate AI agents through hands-on experiments, and choose the right platform for your needs.
 
 **Reviewer-facing outline:** [Google Doc — course outline for feedback](https://docs.google.com/document/d/1rcXN8C5P0o7AqQWdzh7CVFlvRq1WJRGLUA4o-GSCPZc/edit). This separate outline omits internal delivery status, authoring notes and release-version planning.
 
-**Status:** agreed section/chapter structure and living progress map, updated October 8, 2026 (welcome/setup and chapter 3 opening sequence added; guardrails/security consolidated and numbered sections synchronized). Target launch is late November or December 2026.
+**Status:** agreed section/chapter structure and living progress map, updated October 10, 2026; Tracing and Monitoring consolidated (welcome/setup and chapter 3 opening sequence added; guardrails/security consolidated and numbered sections synchronized). Target launch is late November or December 2026.
 **Owner:** Sreenivas Makam. This plan was drafted with Claude and is not an implementation spec. The build record stays in [MILESTONE-LOG.md](../MILESTONE-LOG.md) and [SPECIFICATION.md](../SPECIFICATION.md).
 
 ## Positioning
@@ -17,7 +17,7 @@
 
 **Prerequisites:** Python, basic SQL, Docker, and familiarity with calling an LLM API.
 
-**Current baseline — October 8, 2026:** GPT-5.4 is the default interactive support model. Bounded persistent-memory and multi-agent/reviewer-workflow implementations are available; completed comparisons and their limits are documented in chapters 18 and 17. References to Nano as the default in older experiment notes describe the configuration at that time. Migration away from Nano for remaining comparison aliases and teaching labs is deferred to later model/chapter preparation; preserve historical Nano results.
+**Current baseline — October 8, 2026:** GPT-5.4 is the default interactive support model. Bounded persistent-memory and multi-agent/reviewer-workflow implementations are available; completed comparisons and their limits are documented in chapters 17 and 16. References to Nano as the default in older experiment notes describe the configuration at that time. Migration away from Nano for remaining comparison aliases and teaching labs is deferred to later model/chapter preparation; preserve historical Nano results.
 
 **What sets it apart**, based on the Udemy scan of 30 Sep 2026:
 - **One stateful business system throughout.** Orders, payouts, refunds and versioned policies, not a new toy app every section.
@@ -52,7 +52,7 @@ After every meaningful milestone, in the same documentation update:
 
 ### At-a-glance chapter map
 
-**Agreed October 8, 2026:** Six sections, twenty-three chapters. Chapters may contain multiple short lectures; lecture breakdown is deferred to recording preparation. Detailed evidence and remaining work stay under each chapter below.
+**Updated October 10, 2026:** Six sections, twenty-two chapters; Tracing and Monitoring merged into Observability. Chapters may contain multiple short lectures; lecture breakdown is deferred to recording preparation. Detailed evidence and remaining work stay under each chapter below.
 
 | Section | Chapter | Title |
 |---|---|---|
@@ -68,17 +68,16 @@ After every meaningful milestone, in the same documentation update:
 | C — Core Components | 10 | Session State |
 | C — Core Components | 11 | The Agent Loop |
 | C — Core Components | 12 | Runtime and Hosting |
-| D — Observability, Evaluation and Security | 13 | Tracing |
-| D — Observability, Evaluation and Security | 14 | Monitoring |
-| D — Observability, Evaluation and Security | 15 | Evaluation |
-| D — Observability, Evaluation and Security | 16 | Guardrails and Agent Security |
-| E — Advanced Agent Topics | 17 | Model Routing |
-| E — Advanced Agent Topics | 18 | Workflow vs Single Agent vs Multi-Agent |
-| E — Advanced Agent Topics | 19 | Short-Term and Long-Term Memory |
-| F — Agentic Platforms | 20 | Google Gemini Enterprise Agent Platform |
-| F — Agentic Platforms | 21 | Lyzr Agent Studio |
-| F — Agentic Platforms | 22 | Other Agent Platforms |
-| F — Agentic Platforms | 23 | Choosing an Agent Platform |
+| D — Observability, Evaluation and Security | 13 | Observability: Tracing and Monitoring |
+| D — Observability, Evaluation and Security | 14 | Evaluation |
+| D — Observability, Evaluation and Security | 15 | Guardrails and Agent Security |
+| E — Advanced Agent Topics | 16 | Model Routing |
+| E — Advanced Agent Topics | 17 | Workflow vs Single Agent vs Multi-Agent |
+| E — Advanced Agent Topics | 18 | Short-Term and Long-Term Memory |
+| F — Agentic Platforms | 19 | Google Gemini Enterprise Agent Platform |
+| F — Agentic Platforms | 20 | Lyzr Agent Studio |
+| F — Agentic Platforms | 21 | Other Agent Platforms |
+| F — Agentic Platforms | 22 | Choosing an Agent Platform |
 
 ## Lesson format
 
@@ -95,6 +94,28 @@ For hands-on component and advanced chapters, provide a starting checkpoint, a m
 **Closing slide for every lesson** (agreed October 4, 2026): one slide titled "What you can do now, and what's next". The left side lists three or four things the learner can now do, phrased as abilities ("Follow one question through a trace…"), not topics covered. The right side previews the next chapter in two or three points. This replaces a separate "Up next" slide.
 
 Objectives and “Lab and result” bullets describe the intended learner experience. Each chapter’s **Progress and evidence** block distinguishes completed implementation/experiments from proposed work and learner packaging. “Course-ready” additionally requires a tested learner path, lab instructions, verified result and recording material.
+
+**Material ownership:** This outline is the planning source for each chapter demo and learner exercise. Slide decks contain presentation content only. Keep one separate Markdown speaker-notes file for each chapter. It contains slide-by-slide presentation notes, the demo walkthrough and cues, the learner exercise task, expected learner output and instructor solution/check. Keep distributed learner instructions and reference solutions separately organized under the chapter exercise materials.
+
+### Draft learner exercise and solution organization — October 8, 2026
+
+**For owner review; not finalized.** Chapters 6–22 below now have proposed learner exercises and solution deliverables. These are planning notes, not claims that learner instructions or solutions have been created or verified. Finalize each exercise during chapter preparation; preserve the existing experiment evidence and pending-work boundaries.
+
+Aim for one core exercise per chapter, usually 15–30 minutes after setup, with an optional extension for learners who want to adapt it to their own application. Platform setup may take longer; distinguish setup time from exercise time. Learners may attempt the exercise independently or follow the worked solution.
+
+Keep exercise instructions and solutions together under the relevant chapter, with solutions in a separate folder so learners can choose when to open them. Proposed package:
+
+```text
+course/exercises/chapter-06-model-and-gateway/
+  exercise.md
+  starter/                 # only when the exercise requires starter code/config
+  solutions/
+    README.md              # worked solution and expected observations
+    changes.patch          # only when applicable
+    example-results/       # only when useful and verified
+```
+
+Use starter files and patches only where there is code/configuration to change; worksheet and diagnosis exercises need a worked example instead. Each exercise should state prerequisites, a starting checkpoint, the task, acceptance checks, expected time/cost and cleanup/reset steps where needed. Each solution should explain what changed, why and how to verify it, including expected facts/evidence rather than an identical model-generated answer. Keep credentials out of all distributed files. Use isolated learner/test fixtures for mutations and adversarial inputs; do not change shared demonstration agents or business data without an explicit setup step.
 
 ## Promotional preview — separate from course lessons
 
@@ -153,14 +174,14 @@ The goal of this part is for learners to see the whole system before going deep 
 - **What we learned / have available:** Component ownership is split between app, Agents SDK, MCP, gateway and telemetry. Session history, per-question snapshot and deliberate cross-session memory are different responsibilities.
 - **Tests and references:** [Architecture and ownership](../SPECIFICATION.md#3-architecture-and-layer-ownership); [actual prompt/input walkthrough](../app/docs/PROMPT-AND-CATALOG.md); M01, M26–M30.
 - **Hands-on readiness:** Trace one SQL question and one policy question from UI to model/tool result. Existing traces and walkthrough are available; annotated learner exercise/checkpoint still to prepare.
-- **Pending:** Prepare the course diagram and a short guided trace with expected observations. Memory and multi-agent are now implemented as bounded learning experiments; introduce their roles here and explain their detailed architecture, results and limits in chapters 18 and 17. The dated October 1 progress block records the earlier preparation state.
+- **Pending:** Prepare the course diagram and a short guided trace with expected observations. Memory and multi-agent are now implemented as bounded learning experiments; introduce their roles here and explain their detailed architecture, results and limits in chapters 17 and 16. The dated October 1 progress block records the earlier preparation state.
 
 ### 3. The Marketplace Application
 - **Learning objective:** Connect business-state changes to agent answers.
-- **Format and result:** Instructor-led application demo of marketplace journeys and support questions; learner setup comes next. No code exercise is required here.
+- **Format and result — agreed October 10:** Overview of the marketplace and its business journeys, with a brief marketplace-only live walkthrough: login, browse/select a product and place a purchase. Do not demonstrate or explain the support agent in this chapter. Learner setup comes next, and the marketplace-plus-agent end-to-end walkthrough belongs to chapter 5.
 - **Covers:** buyers, sellers, orders, payments, payouts, refunds and versioned policy documents.
 - **Why realistic data matters:** order value, platform fees and seller payable are different metrics with different grains. The double-counting example shows SQL that looks convincing and is wrong.
-- **Demo:** a purchase, then delivery, then payout in the UI, then the same question asked of the agent before and after.
+- **Chapter demo:** Show the simple marketplace flow through login, product selection and purchase. Explain the business entities and purchase/delivery/payout/refund flows using slides/diagrams. Keep support-agent questions, traces and before/after agent answers for chapter 5.
 - **Status:** built (M01). Per-answer thumbs-up/down feedback is an application capability added October 8.
 
 #### Progress and evidence — October 1, 2026
@@ -168,8 +189,8 @@ The goal of this part is for learners to see the whole system before going deep 
 - **Current state:** Built; business journeys exercised.
 - **What we learned / have available:** Order items, buyer capture, seller allocation, payout and refund are distinct. Manual state changes and the demo clock make before/after agent questions reproducible.
 - **Tests and references:** [Buyer/seller/operator/support journeys](../app/USER-JOURNEYS.md); [business integration tests](../app/backend/tests/test_integration.py); [fixtures](../app/backend/marketplace/eval_fixtures.py); M01.
-- **Hands-on readiness:** Happy purchase → dispatch → delivery → hold → payout, then return/refund and failure/retry. Journeys and checks exist; package a clean resettable learner walkthrough.
-- **Pending:** Select one happy path and two failure paths, preserve expected balances, and prepare starting/ending checkpoints.
+- **Available application evidence:** Happy purchase → dispatch → delivery → hold → payout, then return/refund and failure/retry journeys and checks exist. Chapter 3 uses only a simple marketplace walkthrough; the agent demonstration belongs to chapter 5.
+- **Pending:** Align chapter 3 presentation and speaker notes with the marketplace-only scope and rehearse login/product selection/purchase. Prepare the separate agent walkthrough checkpoints under chapter 5.
 
 #### Local and cloud deployment architecture — core paths verified October 8, 2026
 
@@ -198,13 +219,16 @@ Provide written setup instructions and a checklist; a separate setup video is no
 - Publish tested machine requirements, dependency versions, setup troubleshooting and estimated per-lab API costs after clean-machine verification. Provide saved traces/results for the learning path without paid reruns.
 
 ### 5. First Agent, End to End
+- **Reviewed packet — October 12:** Seven slides, a marketplace refresher in speaker notes, first before/after agent questions, code responsibilities, learner-task links, and the shared recap design. [Learner exercise](exercises/chapter-05-first-agent/exercise.md) and [separate worked solution](exercises/chapter-05-first-agent/solutions/README.md) include marketplace journeys. [Validation report](../app/results/chapter-05-validation-2026-10-12/REPORT.md) records six business scenarios and three live MCP questions/traces; UI recording rehearsal and GitHub publication remain pending.
 - **Learning objective:** Run the baseline agent and verify its first answers.
 - **Lab and result:** Configure the model alias, run a few known-answer questions and locate the corresponding traces.
 - **Covers:** every component in its simplest form. OpenAI Agents SDK, one model through LiteLLM, the read-only SQL tool, document search and Langfuse tracing turned on.
 - **Teaching format:** Demo-led throughout. Follow one question through the relevant agent code, model calls, tool calls, evidence and final answer; use the environment installed in chapter 4.
+- **Chapter demo — agreed October 10:** In the main interactive marketplace, ask a current-state question (for example, a seller's captured amount and unpaid balance), inspect its evidence and Langfuse trace, then make a purchase from that seller through the buyer UI. Ask the same question again in the same conversation and inspect the new trace: confirm the business revision changed, fresh records were queried, and the answer reflects the purchase. Verify the expected change from the purchase amount, fee and allocation records; purchase alone does not imply a completed seller payout. Walk through the relevant agent code and model/tool calls alongside these two answers. Rehearse the exact seller, product and starting balances before recording; this is an agreed sequence, not a completed rehearsal.
+- **Database separation — agreed October 10:** Use the main database for interactive purchase/delivery/refund/payout demos. Keep the test database's business fixture fixed for repeatable comparisons; experiments may vary model inputs/catalog responses without changing that business fixture. Record the test revision/clock and expected answers for each comparison. Experiment conversations and run telemetry are separate from business fixture immutability.
 - **Learner practice:** Ask a different question, inspect its trace, and explain which components supplied the inputs and produced the answer. Include expected observations and an acceptance checklist.
 - **Early evaluation:** introduce the latest nano/GPT-5.4 end-to-end baseline here, before changing individual components. Show two or three representative questions and the saved 18-case summary; learners need not pay to rerun the whole suite initially. Latest assistant review with user-approved cases 23/24: nano **11 correct / 4 partial / 3 incorrect**, GPT-5.4 **17 / 1 / 0**. These are grades across **18 cases**, with **20 generated answers per model** because two cases have follow-up turns; multi-turn cases must satisfy both turns. They are not answer-level counts or a general model ranking. [Answers and comparison](../app/results/core18-history-v3-2026-10-01/comparison.html).
-- **Where the same experiment fits later:** chapter 6 discusses the model choice; chapters 7/10 explain the changed context/history; chapter 15 explains gold, deterministic checks, assistant versus human grading and why cases 23/24 were reclassified. This latest run did not use Claude as judge. Repeat small known-answer checks during component labs; keep the detailed evaluation method in Part D.
+- **Where the same experiment fits later:** chapter 6 discusses the model choice; chapters 7/10 explain the changed context/history; chapter 14 explains gold, deterministic checks, assistant versus human grading and why cases 23/24 were reclassified. This latest run did not use Claude as judge. Repeat small known-answer checks during component labs; keep the detailed evaluation method in Part D.
 - **Status:** built (M01).
 
 #### Progress and evidence — October 1, 2026
@@ -223,43 +247,39 @@ Each lesson explains the component, relevant tools/frameworks, our implementatio
 This part uses the **OpenAI Agents SDK baseline** throughout. That makes OpenAI the reference implementation, so it doesn't need its own track in Part F.
 
 ### 6. Model and gateway
-- **Learning objective:** Explain gateway responsibilities and test a model change.
-- **Lab and result:** Switch one alias/provider configuration and compare the same questions, usage attribution and answers.
-- **Covers:**
-  - choosing one model by benchmarks, domain performance, cost and latency
-  - why a gateway helps: LiteLLM, model aliases, virtual keys per workload, usage attribution
-- **Decision:** a gateway vs calling providers directly. Model aliases simplify migration configuration; regression checks establish whether the replacement still works.
-- **Case study:** both routing models are being retired on 11 Dec 2026, so learners see a real model migration.
-- **Status:** built (M06).
+- **Reviewed packet — October 12:** Twelve slides and matching HTML/notes. Learner guide has Part 1 (repeat demo) and Part 2 (additional alias/cache challenges), with no submission requirement. A dated [rehearsal report](../app/results/chapter-06-rehearsal-2026-10-12/REPORT.md) records stable-alias switching, Support/Operator attribution, five Langfuse traces, new alias and isolated response-cache checks. The local role-key implementation is applied and main/test state preserved. GitHub publication and instructor recording rehearsal remain pending.
+
+**Draft learner practice — for review, not finalized:**
+
+- **Learning objective:** Explain the model's role in interpreting requests and selecting tools, compare model capability, cost and latency, and understand how a gateway centralizes access while keeping model changes separate from application code.
+- **Covers:** Provider translation; scoped keys and workload usage attribution; retries, timeouts, fallbacks and rate limits for reliability; usage estimates, budgets and alerts for spend management; and gateway response caching. Distinguish response caching from provider prompt caching. Introduce gateway guardrails and trace integrations briefly; later chapters develop them.
+- **Chapter demo:** (1) Send the same application request through a stable alias, change the model behind that alias, and compare the answer and gateway usage, including estimated cost and latency. (2) Run requests as Support and Operator, using separate gateway identities with the same model aliases, and show usage and estimated spend attributed to each. Briefly tour the LiteLLM UI settings for retries, caching and alerts; this is a capability walkthrough, not a configuration experiment.
+- **User exercises:** Repeat the model-alias swap with fixed questions and record answer quality, evidence, tool calls, usage, estimated cost and latency; then verify that Support and Operator usage is attributed separately. Optional developer extension: add a new model alias and call it through the gateway. Optional advanced exercise: enable response caching in a controlled setup, verify a same-model repeat is a cache hit and a model switch is a miss, then clear or expire the entry and verify a fresh model call. Explain when cached responses are useful and when fresh data is required.
+- **Solution to prepare:** Configuration and verification steps, example comparison evidence and a worked attribution/cache result. Keep provider billing distinct from gateway usage attribution.
+- **Decision:** A gateway versus calling providers directly. Model aliases simplify migration configuration; regression checks establish whether the replacement still works.
+- **Status:** Built (M06); draft learner exercise and reference solution are in [course/exercises/chapter-06-model-and-gateway](exercises/chapter-06-model-and-gateway/). Rehearsal, including the Operator identity setup, remains pending.
 
 #### Progress and evidence — October 1, 2026
 
 - **Current state:** Built and measured.
 - **What we learned / have available:** One shared LiteLLM gateway uses aliases and separate support/eval/judge virtual keys. Provider access, workload attribution and model quality are separate concerns.
 - **Tests and references:** [Gateway setup and credentials configuration](../app/README.md); [M06 verification](../MILESTONE-LOG.md#m06--consolidate-model-access-into-one-gateway); [model comparison](../app/results/core18-history-v3-2026-10-01/comparison.html).
-- **Hands-on readiness:** Change the candidate alias and compare a fixed question; inspect workload usage. Historical smoke calls through all three identities and access-denial checks are logged in M06; learner instructions still to package.
-- **Pending:** Verify currently available teaching models, prices and budgets before recording; avoid turning historical model choices into permanent recommendations.
+- **Hands-on readiness:** The model-alias comparison and support/evaluation/judge usage attribution have prior implementation evidence in M06. Support-versus-Operator attribution now has a distinct Operator gateway identity and passed the October 12 API/code rehearsal. Verify the installed UI screens for retry, caching and alerts before recording; do not imply those controls are configured in the course setup.
+- **Pending:** Prepare and rehearse the fixed-request alias swap, Support/Operator cost attribution and brief settings tour. Verify current teaching models, prices and budgets before recording; avoid turning historical model choices into permanent recommendations.
 
 ### 7. Prompt and context
-- **Learning objective:** Determine which context a question needs and when to supply it.
-- **Lab and result:** Run the context omission/restoration and delivery variants described below; inspect evidence and answer changes.
-- **Covers:**
-  - system instructions
-  - the ontology (metric definitions, safe joins)
-  - the static relationship map in the unified catalog, plus fresh revision/clock metadata per question (see [prompt walkthrough](../app/docs/PROMPT-AND-CATALOG.md))
-  - a pinned data snapshot so answers are consistent
-- **Decision:** what goes into each call vs what the agent fetches with tools.
-- **Embedded experiment:** omit selected metric/join definitions and restore them. Upfront versus tool-fetched catalog is an optional later extension, not required for the baseline lesson. Keep the model, fixture and questions fixed; inspect actual inputs and measure answer quality, tokens and cost. Missing context may cause abstention or no change as well as errors; report what happens.
-- **Status:** baseline built; controlled context-ablation comparisons still to prepare.
 
-#### Progress and evidence — October 1, 2026
+**Reviewed October 12: ten slides, matching HTML and speaker notes complete.**
 
-- **Current state:** Built; several diagnostics measured; controlled ablation pending.
-- **What we learned / have available:** Ontology supplies meanings, grain, metrics and semantic relationships; database metadata supplies types/constraints. The unified catalog replaces sampled business rows formerly called a context graph. Static instructions are separate from catalog results and question-specific revision/clock/document revision. Retained prefixes can support caching, but a cache improvement has not been established.
-- **Tests and references:** [Exact prompt and call-by-call walkthrough](../app/docs/PROMPT-AND-CATALOG.md); [ontology](../app/data/ontology.json); [catalog tests](../app/backend/tests/test_catalog.py); [catalog change and diagnostics](../app/results/catalog-v2-2026-10-01/REPORT.md); [current regression](../app/results/core18-history-v3-2026-10-01/REPORT.md); M28–M30.
-- **Hands-on readiness:** Already exercised: unified catalog/schema drift checks, question metadata placement, full history retention, revision refresh and clock-only eligibility. Reuse prompt walkthrough and captured inputs as the initial lab. Planned core lab: omit/restore selected definitions. Comparing upfront versus tool-fetched catalog is deferred as an optional optimization.
-- **Pending:** Run controlled context ablations and a dedicated cold/warm cache experiment. Measure quality, input/cached tokens, cost and latency; keep model, fixtures and history policy fixed. Catalog drift checks do not prove business semantics are correct.
-
+- **Learning objective:** Separate stable instructions and changing context in the prompt, explain how ontology supplies business context, and understand the effect of missing context.
+- **Covers:** Input structure, concise prompting practices with benefits and costs, review when the model changes, static versus dynamic inputs in our application, entity definitions and relationships, separately retrieved policies, and stable-prefix prompt caching. Measure cache reuse rather than assuming savings.
+- **Context walkthrough:** Use separate definitions, relationship and policy questions. Inspect the actual catalog, SQL, current records and policy passages in the subsequent model inputs and traces. No combined question is assigned.
+- **Comparison demo and learner practice:** In the test marketplace's OpenAI Agents SDK workspace, compare a catalog-dependent balance question and a policy-only question separately. Run normal, successful-empty and restored conditions. The UI controls start a fresh conversation with memory off. `get_catalog` returns success with null catalog data; `search_documents` returns success with empty passages. Tool schemas and other business tools remain available.
+- **Observed catalog behavior:** The model inferred SQL from remaining prompt/tool hints. Some queries retrieved records and column names, while others failed. Two empty-catalog runs reached the eight-model-turn limit without a complete balance answer. Empty catalog did not make SQL construction impossible.
+- **Observed policy behavior:** Reworded searches and an evidence fetch returned no passages. The model acknowledged that it could not verify the policy rather than inventing one. Normal and restored context returned expected answers. These are observations for the inspected runs, not guarantees.
+- **Exercise and solution:** [Learner steps](exercises/chapter-07-prompt-and-context/exercise.md) and [reference solution](exercises/chapter-07-prompt-and-context/solutions/README.md). Repeat the demo and keep observations locally. No submission or advanced challenge is required.
+- **Evidence:** Chapter Seven's Drive `_authoring` folder contains the context-comparison report and captured results. Speaker notes link the report and list empty/restored trace IDs. The earlier selected-field ablation differs from successful suppression of an entire source.
+- **Validation:** Eight scoped model traces verified with the same business revision and static prompt hash. Successful-empty contracts, evidence retention and flag isolation checked. Business state preserved. The OpenAI route was tested; this sequence was not validated through OpenRouter. Owner recording rehearsal remains separate.
 
 #### Optional optimizations to consider later — deferred
 
@@ -288,16 +308,27 @@ application. If revisited, compare one change at a time with fixed questions and
 fixtures. See [Future Optimizations: selective catalog loading](../SPECIFICATION.md#151-selective-catalog-context-loading).
 
 ### 8. Tools and MCP
-- **Learning objective:** Understand tool contracts independently of their transport.
-- **Lab and result:** Change a tool description or response field, verify its contract, then compare direct invocation with MCP using the same input.
+
+**Agreed chapter demo and learner exercises — October 10:**
+
+- **Chapter demo:** Discover the business, retrieval and memory tool groups; run representative questions and inspect their MCP calls, arguments and results. Compare one marketplace tool via local stdio and remote HTTP, pairing traces with connection configuration. Show a rejected write in an isolated lab. Keep deeper retrieval/memory behavior for their chapters.
+- **Core learner exercise:** Repeat the demo and submit a tool map, local/remote diagram, call/trace references, result comparison and rejected-request evidence.
+- **Developer extension 1:** Add `get_seller_balance(seller_id)` to an isolated copy of the existing marketplace server using its read context and parameterized seller-balance view. Verify discovery, known/unknown seller behavior, evidence and reconciliation. Production retains its five-tool contract.
+- **Developer extension 2:** Build a separate `get_tracking_status(tracking_id)` MCP server over supplied simulated JSON; connect it alongside the marketplace server. No new database or carrier account required.
+- **Exercise package:** [Instructions](exercises/chapter-08-tools-and-mcp/exercise.md), [worked solution](exercises/chapter-08-tools-and-mcp/solutions/README.md), and reference code/fixture in the solutions folder. Scope agreed; owner dry run pending.
+- **Learning objective:** Distinguish tool contract, implementation and transport; extend a server and connect a new tool system.
 - **Covers:**
   - tool contracts
   - our five read-only tools
   - SQL validation (the query structure is checked before it runs, plus a read-only DB role, a 100-row cap and a 3-second timeout)
   - evidence handles
+- **Tool grouping — agreed October 10:** Teach three distinct responsibilities: business definitions/current data/history (`get_catalog`, `query_business_data`, `get_order_history`), document retrieval (`search_documents`), and personal memory (`search_memories`, `save_memory`, `update_memory`, `delete_memory`). Business data and document retrieval share the marketplace MCP server while using separate underlying query/retrieval functions. `fetch_evidence` retrieves retained results from either business or document tools. The local SDK memory tools use a separate owner-scoped MCP server; their writes affect memory, not marketplace business records. Hosted-platform native memory paths are covered separately.
+- **Connection diagrams — agreed October 10:** Show SDK runtime/client → stdio tool subprocess → business data; hosted Google/Lyzr runtime → HTTPS tunnel → laptop HTTP MCP → laptop data; and hosted runtime → cloud HTTPS MCP on Cloud Run → cloud data. Locality of stdio is relative to the runtime environment, which can itself be hosted. Endpoint configuration chooses the backend independently of runtime selection. Tie each diagram and tool group to inspectable discovery/configuration/call evidence during demo planning; deeper retrieval and memory behavior belongs to their own chapters.
 - **MCP:** expose the same tools as one MCP server. MCP is a transport and does not make tools safe. That server is also what Part F reuses on every platform.
 - **Permissions (note added October 1, 2026):** teach agent permissions here, because tools are how the agent acts on the world. Least privilege means the agent gets only the tools it needs (five read-only tools, no business actions), and each tool enforces its own limits regardless of what the model asks for: read-only database role, SQL validation, allowed schemas, and row/time limits. Mention briefly that model access is scoped separately by gateway keys (chapter 6) and that hosted platforms add agent identity and access control (Part F). A short lab moment: show that a write or unsafe query requested by the model is refused at the tool/database layer. Application user identity stays outside the teaching scope.
-- **Status:** local stdio and authenticated remote HTTP adapters built; Lyzr remote connection smoke-tested. Cloud hosting without tunneling and learner lab packaging remain pending.
+- **Status — October 10:** Local stdio and authenticated cloud HTTP middleware are verified. Thirteen isolated HTTP protocol/lifecycle tests and Terraform validation passed. Cloud web revision `marketplace-web-00015-8lb` is deployed and ready; a live question and fresh-retrieval follow-up passed with retained evidence and detailed Langfuse tool/model observations. Cloud SQL is confirmed `NEVER`, `STOPPED` after validation. Chapter 8 exercise package is ready for owner dry run. Earlier dated pending lists below are historical checkpoints.
+- **Owner validation:** Review slides; execute the chapter demo; execute learner exercises and compare solutions; confirm slide, demo and exercise speaker notes are aligned. Track these four checks separately from implementation tests.
+- **Implementation acceptance record:** [October 10 SDK HTTP deployment](../app/cloud/VALIDATION-2026-10-10-SDK-HTTP-MCP.md), including successful question/follow-up, trace verification and stopped SQL readback. Seller-balance and tracking reference tools passed actual stdio discovery/calls; owner rehearsal remains separate.
 
 #### Progress and evidence — October 1, 2026
 
@@ -316,34 +347,44 @@ fixtures. See [Future Optimizations: selective catalog loading](../SPECIFICATION
 - **Pending:** Deploy the middleware and SQL/RAG/embedding dependencies to cloud HTTPS without tunneling, then update Studio and prove operation with local services stopped. Remote citation enforcement and broader platform parity checks remain open.
 
 ### 9. Knowledge and retrieval (RAG)
-- **Learning objective:** Separate retrieval correctness from answer correctness.
-- **Lab and result:** Toggle document retrieval or effective-date filtering and inspect passages, citations and final answers on fixed questions.
-- **Covers:**
-  - pgvector search over versioned policy documents
-  - citations
-  - answers that combine SQL and documents
-  - current vs retired policy versions
-- **Embedded experiment:** ask policy and SQL-plus-policy questions with retrieval off, then on; compare unfiltered retrieval with effective-date filtering. Check retrieved passages separately from the final answer. Keep this experiment inside this lesson, not a new Part E topic.
-- **Status:** baseline built; controlled retrieval comparisons still to prepare.
+
+**Slides — agreed October 10:** Include the actual RAG architecture as an editable diagram: versioned policy files → paragraph chunks/source metadata → gateway embeddings → PostgreSQL/pgvector; then agent-selected search query → query embedding → date/scope-filtered cosine ranking → passages/evidence handle → later model input, combined with SQL facts where needed. Explain this reference implementation among alternative designs; no reranker or approximate vector index is claimed. The diagram shows the indexed path; unindexed chunks use a labelled lexical fallback.
+
+**Chapter demo — agreed October 10:**
+
+1. Ask a policy-only payout question; inspect search_documents passages, applicability and citation support.
+2. Ask why order-2's payout is held; inspect SQL/current-record evidence and policy together. Use the actual current state.
+3. In the isolated ch09_rag_lab vector database, prepare a new supplied policy version, show indexed evidence remains unchanged before reindexing, then reindex and repeat the same eligibility question. Keep supplied business facts fixed.
+
+**User exercises — agreed and reference-tested October 10:** Repeat the two application questions and the policy-version/reindex demo. Developer extension: implement two-paragraph overlapping chunks, index the longer synthetic policy separately from paragraph chunks, and compare passages, source ranges, citations, returned text volume and answers at fixed top_k (1 and 4). Main marketplace and fixed market_eval data remain unchanged. No extra advanced exercise is open.
+
+**Materials:** [Exercise](exercises/chapter-09-knowledge-and-retrieval/exercise.md), [worked solution and runnable reference](exercises/chapter-09-knowledge-and-retrieval/solutions/README.md), [raw measured results](exercises/chapter-09-knowledge-and-retrieval/solutions/results-2026-10-10.json). Separate chapter speaker notes contain slide, demo and exercise guidance.
+
+**Validation:** Real gateway embeddings, pgvector cosine retrieval and six model answers completed against a separate local lab database. Policy v1 (24-hour wait) answered eligible at 30 hours; v2 (48-hour wait) answered not yet eligible. The unreindexed source did not alter indexed evidence. Paragraph and overlap both answered the Amber Review exception correctly; overlap changed text volume but did not improve this final decision. Larger documents alone do not guarantee a chunking effect. These are bounded lab results, not a retrieval benchmark. Instructor application-demo rehearsal and learner walkthrough remain owner checks.
 
 #### Progress and evidence — October 1, 2026
 
-- **Current state:** RAG baseline built and checked; comparative retrieval experiment pending.
+- **Current state:** RAG baseline built and checked; isolated policy refresh and chunking reference comparisons passed October 10 (see materials above).
 - **What we learned / have available:** Documents are paragraph chunks with source lines, immutable versions and effective dates. They live in PostgreSQL document_chunks with pgvector embeddings. Search filters effective date/scope and ranks by cosine distance; unindexed data has an explicitly labeled lexical fallback. Ranking is not proof, and SQL facts may need policy evidence to explain them.
 - **Tests and references:** [Document ingestion](../app/backend/marketplace/seed.py); [search implementation](../app/backend/marketplace/tools.py); [effective-date and vector-path tests](../app/backend/tests/test_integration.py); [policy/mixed-answer regression](../app/results/core18-history-v3-2026-10-01/REPORT.md).
 - **Hands-on readiness:** Existing checks: current/historical policy selection and restricted-reader vector retrieval. The vector integration test uses synthetic embeddings; the live suite also exercises document calls. Package ingestion → inspect chunk/version → retrieve → cite, then a payout SQL-plus-policy question.
-- **Pending:** Run planned retrieval off/on and effective-date-filter comparisons; inspect returned passages separately from prose. No completed chunk-size, embedding-model, reranker or retrieval-quality benchmark is claimed.
+- **Pending:** Owner review of slides, full demo rehearsal, learner walkthrough and speaker-note alignment. Older retrieval off/on and date-filter comparisons are not required by the finalized plan. No embedding-model, reranker or broad retrieval-quality benchmark is claimed.
 
 ### 10. Session state
-- **Learning objective:** Distinguish conversation history from run state and persistent memory.
-- **Lab and result:** Change history inclusion for a follow-up, then start a new session and check what does and does not carry over.
-- **Covers:**
-  - conversation history
-  - per-run state
-  - follow-up questions
-  - isolation between users and conversations
-- **Long-term memory** is deferred to Part E.
-- **Status:** built.
+
+**Slides — agreed October 10:** Explain short-term conversational memory: purpose, PostgreSQL storage, user ownership and conversation/session ID, runtime binding, stored full history versus the selected model context, and evidence freshness. Include a block diagram: user → owned conversation → stored history → select up to six prior complete question blocks → next model call, alongside current question and fresh business revision/clock/document revision. The history window is currently hard-coded; it counts question blocks, not individual messages. Mention token budgets, summarization/compaction and selective retrieval as alternative long-conversation strategies, not implemented features. Briefly distinguish later cross-session memory.
+
+**Chapter demo — agreed October 10:**
+
+1. **Follow-up continuity:** In a fresh SDK conversation with long-term memory disabled, ask shipment status for a prepared order, then ask “How many units are in that order?” Inspect retained messages/tool evidence and whether additional retrieval occurs. A follow-up may retrieve again; continuity does not require zero tool calls.
+2. **Freshness after marketplace change:** In that same conversation, change the prepared shipment through the marketplace (for example pending → dispatched). Ask its current shipment status again. Verify business revision changed, fresh retrieval occurred, returned evidence uses the new snapshot and the answer reflects the new state. The session retains the order reference; the old status must not become current truth. Refresh is prompt-guided, not deterministic removal of stale history.
+3. **Six-block window boundary:** Use a separate SDK conversation. Put a distinctive fictional label in the first question, then add six later question blocks without repeating it. Before the eighth question, inspect DatabaseSession.get_items and the actual generation input to show the first block is absent while the full stored history still contains it. Ask for the initial label; grade input visibility separately from the answer. If the label appears in a later block, reset the fixture rather than claim it was forgotten.
+
+**Preparation status — complete October 10:** The updated eight-slide deck and separate speaker notes are delivered and checked. All three demos passed from the fixed baseline in a disposable lab copy through a temporary OpenRouter GPT-5.4 gateway, authorized after direct OpenAI credits ran out. The fixed evaluation database fingerprint matched before and after. The repeatable reset and actual SDK selector also passed. Neutral arithmetic questions replace the earlier command-like filler. Instructor UI rehearsal remains separate.
+
+**User exercises — agreed and validated October 10:** Repeat the three demos, compare configurable windows of two/six/eight complete question blocks, then compare summarization of older turns plus a small recent window. Preserve full storage, complete tool pairs, and current freshness metadata. Every case needs a fixed starting state, fixed inputs, expected checks and reset steps. Keep the evaluation database unchanged; use a disposable baseline copy for changes. [Exercise instructions](exercises/chapter-10-session-state/exercise.md), executable developer solutions, demo/reset scripts and [measured results](exercises/chapter-10-session-state/solutions/README.md) are present. Three offline contract checks and the actual SDK selector against PostgreSQL pass. The four-strategy live comparison completed through OpenRouter: two/six blocks excluded the early label, while eight blocks and summary plus two correctly recalled it. Current investigation metadata and full stored fixture prefixes were preserved. The short summary example increased supplied input size, so do not claim compression or cost savings. The owner still reviews slides, performs demos/exercises, and checks note alignment.
+
+**Learning objective:** Explain conversation continuity, stored history versus supplied model input, and freshness after a business change. Compare history strategies without mutating full storage or breaking tool pairs. Long-term memory is deferred to Part E. Existing conversation isolation remains part of the implementation; the agreed practice above replaces the older fresh-session draft.
 
 #### Progress and evidence — October 1, 2026
 
@@ -358,53 +399,30 @@ fixtures. See [Future Optimizations: selective catalog loading](../SPECIFICATION
 GPT-5.4 quantity follow-ups reused the same-conversation structured evidence with zero additional tool calls, including with long-term memory disabled. Sidebar navigation retained completed turns and a draft. [Current short-term conclusions and pending UI checks](../app/docs/MEMORY-STATUS.md#short-term-memory); [repeatable suite](../app/eval/memory-v2/README.md). Pending-request navigation and full-reload restoration are distinct from the verified sidebar case; no automatic compaction is implemented.
 
 ### 11. The agent loop (basic orchestration)
-- **Learning objective:** Explain tool selection, continuation and stopping behavior.
-- **Lab and result:** Change a run limit or inject a controlled tool error and inspect the loop’s response and termination.
-- **Covers:**
-  - how the SDK loop decides the next step
-  - run limits and stopping conditions
-  - handling tool errors
-- **Workflow vs multi-agent** is deferred to Part E.
-- **Loop limits (note added October 1, 2026):** teach maximum iterations as one of a family of run budgets that stop the loop. Current settings:
-  - maximum loop turns (model/tool steps): 8, `AGENT_MAX_TURNS`
-  - time limit per question: 150 s, `AGENT_MAX_SECONDS`
-  - maximum output tokens per model call: 4,096, `AGENT_MAX_COMPLETION_TOKENS`
-  - estimated cost budget per question: **$1.00 in the current Compose configuration**, `AGENT_MAX_ESTIMATED_COST_USD`; the Python fallback is $0.05 when no environment override is supplied. This is an estimated run stop checked after a model call, so it may overshoot by one call; embedding charges are separate, and this is not a provider billing cap.
-  - tool calls per investigation: 24, enforced in `ReadContext.save()`
 
-  Show what happens when a limit is reached and how the failure is reported. The nano step-limit failure in M30 is a ready example.
-- **Status:** built.
+**Agreed plan — October 10, 2026; preparation and reference validation complete, owner review/dry run remains.**
 
-#### Progress and evidence — October 1, 2026
-
-- **Current state:** Loop built; success and failure paths observed.
-- **What we learned / have available:** The SDK performs repeated model/tool steps until a final answer or limit. One user question may require several model calls. SQL rejection, retry and stopping are independent of semantic answer correctness.
-- **Tests and references:** [Runner and limits](../app/backend/marketplace/agent.py); [error/budget tests](../app/backend/tests/test_evaluation.py); [MCP interruption test](../app/backend/tests/test_mcp.py); [nano step-limit failure](../app/results/core18-history-v3-2026-10-01/REPORT.md).
-- **Hands-on readiness:** Existing traces show tool selection, retries and eight-step termination. Prepare one controlled error and one lowered-limit exercise with a clear failed-run outcome.
-- **Pending:** Investigate CASE validation/recovery and the misleading generic gateway/API-key error for a step-limit failure. Package the controlled lab; do not add retries merely to erase failed attempts.
+- **Slides:** intro; editable model/tool loop diagram; our OpenAI Agents SDK implementation; model turns versus tool invocations and enforcement; recovery/stopping; final evidence-based response; demo summary; learner exercise; recap.
+- **Implementation:** Agent defines instructions/model/MCP tools; Runner.run supplies the question, DatabaseSession, hooks and max_turns. One SDK turn is one model invocation, including any requested tool execution; the final-answer call counts. Model chooses requests; runtime executes them; MCP middleware validates SQL.
+- **Chapter demo:** code-to-trace normal execution, one controlled temporary SQL read failure followed by recovery, and one-model-turn stopping. A lab-only selector exposes Normal execution / Tool-error recovery / Turn-limit stop in the disposable ch11_loop_lab UI. Changing mode starts a fresh conversation. Use the same order-2 business-and-policy question for each case. Show counts, returned evidence, citations and stopping reason. The recovery case is a retry, not proof of malformed-query repair.
+- **Core learner exercise:** repeat the three demos and annotate a trace with model/tool counts, continuation reasons, evidence and stop condition.
+- **Advanced developer exercise:** implement a small agent loop without Agents SDK Runner, using supplied OpenAI/native MCP adapters. Retain assistant tool calls, validate allowed names/JSON, pair returned results by call ID, repeat until final text without tool calls or a turn limit. Pass scripted checks, run one live marketplace question and compare orchestration with the SDK. This replaces earlier proposals about only lowering tool budgets or detecting repeated failures.
+- **Files:** [Exercise](exercises/chapter-11-agent-loop/exercise.md), [starter](exercises/chapter-11-agent-loop/starter.py), [worked solution/setup](exercises/chapter-11-agent-loop/solutions/README.md), [validation and measured results](exercises/chapter-11-agent-loop/solutions/VALIDATION.md).
+- **Repeatability:** fixed market_eval source is read-only. Stop lab services, reset a disposable copy and use fresh conversations. Experimental modes require an explicit lab flag plus matching lab reader/writer database names; main/cloud defaults remain unchanged. No cloud SQL startup is needed.
+- **Limits:** eight SDK model turns (AGENT_MAX_TURNS), 150 seconds per question, 4,096 output tokens per call and estimated cost budget ($1 Compose / $0.05 Python fallback). Cost is checked after a call and can overshoot; embeddings are separate. ReadContext.save limits evidence saves to 24, not exactly 24 invocations; order history can save multiple records. Use hook attempts and trace TOOL observations for actual model-requested tool counts.
+- **Validation:** SDK UI normal 4 model calls/3 tools; recovery 5/4; stop 1/1 with MaxTurnsExceeded. Current Langfuse API confirmed matching generation/tool observations. Minimal-loop reference completed a live call in 5/4. Five exercise tests, three backend checks and fifteen frontend checks passed. Business/document fingerprints match fixed baseline. Details in VALIDATION.md; live counts are observations, not guarantees.
+- **Status:** slide/notes/demo/exercise preparation complete; owner's review and rehearsal pending. The generic API-key message on MaxTurnsExceeded is fixed. Historical CASE-query recovery questions remain separate implementation research, not a required Chapter 11 activity. Workflow/multi-agent remains deferred to Part E.
 
 ### 12. Runtime and hosting
-- **Learning objective:** Distinguish the SDK loop from its hosting process.
-- **Lab and result:** Change a local runtime setting, restart the service and verify the agent/session behavior; map the hosting boundary.
-- **Covers:**
-  - the local Docker Compose stack
-  - what changes when you host it
-  - the difference between the SDK loop and a hosted runtime
-- **Two meanings of "runtime"** (introduced in chapter 2): (3) the agent loop inside your code, for example the OpenAI Agents SDK runner; (4) a hosted service that runs your process, for example AWS Bedrock AgentCore Runtime or Gemini's Agent Runtime. Analogy: the car's engine vs the garage and road service it runs on. The AWS lesson keeps (3) unchanged and changes only (4).
-- **Sets up:** Part F.
-- **Status:** local build done.
 
-#### Progress and evidence — October 1, 2026
+**Agreed chapter preparation — October 10, 2026:**
 
-- **Current state:** Local runtime built; hosted comparison pending.
-- **What we learned / have available:** Compose hosts services; Agents SDK manages the in-process loop. Moving hosting does not itself change the agent framework or establish a quality improvement.
-- **Tests and references:** [Compose stack](../app/compose.yaml); [startup and reset guidance](../app/README.md); M01, M26.
-- **Hands-on readiness:** Existing local start/restart path available. Prepare a runtime-setting change and persistence check across restart as the learner lab.
-- **Pending:** Clean-machine resource/setup verification and checkpoint packaging; hosted behavior is covered in chapters 20/21.
-
-#### Remote middleware hosting update — October 2, 2026
-
-Lyzr now hosts the private agent runtime and exposes its authenticated agent API; our MCP middleware still runs locally through a temporary tunnel. These are two deployment responsibilities. The next hosting lab must move the middleware, PostgreSQL/pgvector/policy data and embedding/gateway dependencies to a proper cloud endpoint with TLS, secrets and private database access. Provider selection and cloud deployment remain pending. Preserve the investigation TTL/evidence contract and account for process-local state before using multiple workers, replicas or scale-to-zero. Acceptance includes repeat protocol/security/support checks and successful Studio SQL/policy retrieval with the tunnel and local middleware stopped. See [cloud scope and acceptance criteria](../SPECIFICATION.md#34-lyzr-remote-mcp-implementation-and-cloud-follow-up--october-2-2026). A separate external Lyzr inference-API request is still untested.
+- **Slides:** framework versus hosting environment; documentation-backed framework/host overview; editable local Docker versus Cloud Run and independent chat/agent/middleware placement diagrams; host resources, lifecycle, connectivity, credentials and deadlines. Mention interrupted execution briefly; no separate restart/persistence demo.
+- **Demo:** read-only local Docker and existing Cloud Run configuration walkthrough, resource/timeout/concurrency settings, connections and external storage. No Cloud SQL startup is required.
+- **Exercise:** local chat/history → Cloud Run agent → authenticated HTTPS tunnel → local HTTP MCP → disposable baseline copy. The cloud agent calls OpenAI directly using the Responses API. Middleware embeddings retain the local gateway dependency. Fixed market_eval remains unchanged.
+- **Package:** [exercise](exercises/chapter-12-runtime-and-hosting/exercise.md), [worked solution](exercises/chapter-12-runtime-and-hosting/solutions/README.md), bounded reset/deploy/tunnel/validation/cleanup scripts, dedicated Compose overlay and stateless worker/local adapter.
+- **Validation:** both live questions completed with three model calls and two MCP invocations each, fresh cited evidence, confirmed investigation cleanup and saved local runs. Five contract tests passed. Docker/Cloud Run configuration readback passed. The fixed evaluation fingerprint matches the earlier recorded baseline.
+- **Status:** slides, notes, demo and exercise prepared and tested; temporary resources removed and Cloud SQL STOPPED confirmed. Owner review and rehearsal remain. Later platform chapters cover platform-specific deployment options.
 
 ---
 
@@ -416,52 +434,24 @@ These are horizontal disciplines: each applies to every component. They answer d
 - **Evaluation:** is it *correct*, and consistently so?
 - **Security:** can it be made to misbehave, leak data or overspend? (Added October 5, 2026.)
 
-### 13. Tracing, with the failure clinic as the example
-- **Learning objective:** Diagnose a wrong answer using captured evidence.
-- **Lab and result:** Capture and replay a request with a diagnostic script; compare correct/incorrect inputs and document what the evidence does not establish.
-- **Covers:** Langfuse traces of model calls, tool calls, the exact model inputs and cost per step.
-- **Worked example:** payout eligibility failures (M03, M09–M13). GPT-5.4 treated 23 hours as past the 24-hour hold and exactly 24 hours as not past it. The investigation:
-  1. Check whether the gold answer is wrong (it isn't).
-  2. Check whether the evidence reached the model (traces show it did).
-  3. Rerun unchanged (3 of 4 runs correct).
-  4. Test a timestamp-ambiguity hypothesis by widening the gap to 24h30m (failures remain, so boundary ambiguity is not a sufficient explanation).
-  5. Compare right and wrong runs side by side (same facts).
-  6. Replay the identical request (wrong, correct, wrong).
-  7. Swap in GPT-5 (6 of 6 correct).
-- **Lesson:** check the gold answer, then the evidence, then the model input, then variance, and only then blame the model.
-- **Status:** diagnosed and documented.
-- **Sources:**
-  - [Diagnosis](../app/results/diagnosis-2026-09-29/DIAGNOSIS.md)
-  - [Input comparison](../app/results/payout-input-comparison-2026-09-29/FINDINGS.md)
+### 13. Observability: Tracing and Monitoring
 
-#### Progress and evidence — October 1, 2026
+**Agreed consolidation — October 10, 2026.** Replaces the former separate Tracing and Monitoring chapters. Earlier chapters already demonstrate individual traces; this chapter teaches capabilities, selection criteria and a comparison of standalone observability platforms.
 
-- **Current state:** Failure diagnosis measured and documented.
-- **What we learned / have available:** Trace the first wrong decision: missing retrieval, lost transport, misread evidence, arithmetic, scope or citation. Same evidence can produce different answers; SDK input capture is not proof of exact provider HTTP payload.
-- **Tests and references:** [Original diagnosis](../app/results/diagnosis-2026-09-29/DIAGNOSIS.md); [input comparison](../app/results/payout-input-comparison-2026-09-29/FINDINGS.md); [catalog-v2 diagnosis](../app/results/catalog-v2-2026-10-01/DIAGNOSIS.md); [current captures/walkthrough](../app/docs/PROMPT-AND-CATALOG.md); M09–M13, M28–M30.
-- **Hands-on readiness:** Captured/replayed correct and incorrect payout responses exist. Package one guided investigation from answer → evidence → input → repeated sample, preserving wrong answers.
-- **Pending:** Select a compact example and checkpoints; document capture boundaries and do not expose credentials. Provider-wire capture is a separate optional diagnostic.
+- **Slides:** tracing versus monitoring; required tracing features (model input/output, tool calls, hierarchy, timing, errors and session links); monitoring features (aggregate latency, failures, token usage, cost, dashboards and alerts); shared requirements (integration coverage, privacy, retention, export and hosting options); documentation-backed comparison of a small selection of standalone platforms; our Langfuse/LiteLLM implementation; recap.
+- **Platform boundary:** distinguish standalone observability platforms from platform-native telemetry. Native Google/Lyzr internals stay in their respective platform chapters. Evaluation is an overlapping capability; deeper evaluation methodology stays in the next chapter.
+- **Comparison:** research current official documentation before selecting products or asserting features. Compare capabilities and limitations rather than crown a winner. Distinguish built-in features from integrations, paid tiers and proposed functionality.
+- **Demo:** local Langfuse monitoring dashboard → slow-tool diagnosis → recovered error versus failed root → follow-up session. Existing real Chapter 11 traces remain available for comparison; costs in the supplied analytics cohort are explicitly synthetic.
+- **Learner exercise:** upload the six-case supplied OTLP batch, verify ingestion, build a batch-filtered dashboard, identify symptoms and submit supporting IDs. No model calls are needed. [Exercise](exercises/chapter-13-observability/exercise.md), [separate solution](exercises/chapter-13-observability/solutions/README.md), [validation and local IDs](exercises/chapter-13-observability/validation.md).
+- **Validation:** six roots/25 observations ingested; API readback and local UI verified timings, tokens, supplied costs, failures and shared session. Dashboard filters persisted after reload. Alerts and external comparisons remain documentation-backed overviews, not live delivery or benchmarks.
+- **Status:** merged v3 deck and separate notes, detailed demo and repeatable exercise are prepared and validated. Owner review and rehearsal remain. Course contains 22 chapters. Downstream legacy deck filename/title migration is tracked separately in the slide review index; [historical premerge plan](planning/observability-premerge-2026-10-10.md) retained for context.
 
-### 14. Monitoring
-- **Learning objective:** Use AI telemetry to spot regressions.
-- **Lab and result:** Add a cost/latency/error view and generate controlled traffic or a simulated error to verify the displayed change.
-- **Covers:**
-  - cost per question by model
-  - latency spread
-  - tool and model error rates
-  - usage per virtual key
-  - simple thresholds for spotting AI cost, latency and error regressions; no general on-call/operations curriculum
-- **Status:** Existing telemetry available. Owner deferred monitoring demo organization to chapter preparation on October 8; no new dashboard is required upfront. The Monitoring chapter covers only Langfuse/LiteLLM; native Google/Lyzr monitoring is covered in the respective platform chapters.
+### 14. Evaluation
 
-#### Progress and evidence — October 1, 2026
+**Draft learner practice — for review, not finalized:**
 
-- **Current state:** Telemetry exists; teaching dashboard pending.
-- **What we learned / have available:** Langfuse traces and LiteLLM virtual-key usage provide different views. Locally estimated costs, provider billing, cached tokens and model latency must be labeled distinctly.
-- **Tests and references:** [Telemetry/services guide](../app/README.md); [cost/cache report](../app/results/routing-granularity-2026-09-30/REPORT.md); [current estimated costs](../app/results/core18-history-v3-2026-10-01/REPORT.md); M05–M06, M18.
-- **Hands-on readiness:** Existing usage/cost/latency data can be inspected. The small regression dashboard and controlled traffic/error exercise are not yet packaged.
-- **Pending:** During chapter preparation, organize cost/latency/error demonstrations from existing dashboards. Keep this chapter limited to Langfuse/LiteLLM. Cover Google/Lyzr native monitoring only in their respective platform chapters; label available metrics and their limits. Add a small comparison view only if essential information is missing. This does not block overall experiment completion.
-
-### 15. Evaluation
+- **Exercise:** Add one gold case and deterministic check, run repeated trials, then compare human and judge grades.
+- **Solution to prepare:** Case definition, check implementation, repeated-run results and interpretation of judge disagreement and answer variability.
 - **Learning objective:** Build and critique an evaluation pipeline.
 - **Lab and result:** Add a gold case and deterministic check, run repeated trials and compare provisional judge grades with human review.
 - **Covers:**
@@ -514,7 +504,12 @@ isolation machinery is implemented; this learner walkthrough remains to prepare.
 [isolation tests](../app/backend/tests/test_evaluation.py).
 
 
-### 16. Guardrails and Agent Security
+### 15. Guardrails and Agent Security
+
+**Draft learner practice — for review, not finalized:**
+
+- **Exercise:** Compare a normal support request with a synthetic injection or forged-policy request in the isolated test workspace.
+- **Solution to prepare:** Safe test inputs, expected enforcement boundaries, observed outcomes and limitations; do not assume every attack is blocked.
 
 - **Learning objective:** Distinguish model refusal, prompt guidance, gateway screening and enforceable tool boundaries; explain their limits using OWASP.
 - **Relationship to other sections:** Monitoring, tracing and evaluation remain separate sections. Chapter 2 briefly identifies guardrails on the component map; there is no separate guardrails lesson in Section C. All detailed guardrail demos live here.
@@ -547,7 +542,12 @@ isolation machinery is implemented; this learner walkthrough remains to prepare.
 
 Every lesson in this part is an experiment: a hypothesis, one change, the same evaluation set, and quality, cost and latency compared together.
 
-### 17. Model routing
+### 16. Model routing
+
+**Draft learner practice — for review, not finalized:**
+
+- **Exercise:** Compare a fixed-model baseline with one routing policy on a small shared question set.
+- **Solution to prepare:** Routing configuration and quality/cost/latency comparison including classifier overhead, available teaching models and experimental limits.
 - **Learning objective:** Measure a classifier and routing scope against fixed-model baselines.
 - **Lab and result:** Change a routing configuration, run a bounded comparison and explain quality/cost trade-offs and uncertainty.
 - **Covers:**
@@ -567,7 +567,12 @@ Every lesson in this part is an experiment: a hypothesis, one change, the same e
 - **Hands-on readiness:** Already measured: LLM/JEV, restricted OpenRouter, keyword/heuristic/semantic classifiers, plus six conversations under four live policies. Published examples use the earlier nano/GPT-5 baseline, not the latest nano/GPT-5.4 run. Learner lab still needs checkpoints and bounded commands.
 - **Pending:** Rerun a bounded fixed-model vs conversation/question comparison on the current prompt/catalog/history. Explicitly remeasure cache tokens, input volume, calls, cost and latency, and also regrade quality/tool usage; do not assume only caching changed. Use one declared model pool and identical fixtures. Preserve historical reports; label cold/warm/run-order effects and separate classifier cost. Larger held-out coverage remains future validation.
 
-### 18. Workflow vs single agent vs multi-agent
+### 17. Workflow vs single agent vs multi-agent
+
+**Draft learner practice — for review, not finalized:**
+
+- **Exercise:** Run the same investigation through single-agent and coordinator/worker designs with equal total budgets.
+- **Solution to prepare:** Configurations, traces and a comparison of correctness, evidence, calls, cost and latency; explain where delegation helped or added overhead.
 - **Learning objective:** Compare workflow, single-agent and multi-agent designs on the same task.
 - **Lab and result:** Compare single-agent tool scheduling with coordinator/worker delegation, then inspect the nano → GPT-5.4 review → nano correction workflow. Compare correctness, evidence, calls, cost and latency with explicit experimental boundaries.
 - **Covers:**
@@ -584,7 +589,7 @@ Every lesson in this part is an experiment: a hypothesis, one change, the same e
 - **Tests and references:** [Single-agent runtime](../app/backend/marketplace/agent.py); [current baseline](../app/results/core18-history-v3-2026-10-01/REPORT.md); [payout experiment plan and controls](../app/eval/orchestration-v1/README.md); [comparison and limitations](../app/results/payout-orchestration-v2-2026-10-01/REPORT.md); [run-by-run report](../app/results/payout-orchestration-v2-2026-10-01/comparison.html); [research direction](../RESEARCH-GUIDE.md).
 - **Reviewer workflow learning and references:** Detection, correction and final grading are separate. Full catalog metadata matters to the critic; nano may still fail to retrieve missing evidence. Including the saved nano generation cost, the workflow estimate is $0.2575 versus $0.4244 for saved GPT-5.4 alone: approximately 39% lower cost, with 5 versus 7 fully correct answers. Every draft was reviewed; only flagged drafts were corrected. These conservative uncached totals combine historical generation with new review/correction, rather than fresh end-to-end measurements. The user accepted this as a completed learning milestone on October 1. No further runs are required to close it. Assistant grades remain provisional; acceptance of the experiment does not constitute individual grade adjudication or a production-policy decision. [Report](../app/results/reviewer-workflow-v2-2026-10-01/REPORT.md); [comparison](../app/results/reviewer-workflow-v2-2026-10-01/comparison.html); [plan](../app/eval/reviewer-v1/README.md).
 - **Hands-on readiness:** Runnable fixture/runner and archived model inputs available for the three tested strategies. Learners can inspect serial tool intervals, concurrent history requests, three overlapping worker model calls, evidence/citation checks and independent client/gateway timeout limits. Reviewer inputs, feedback and corrections are archived; a controlled identical-work scheduling lab and learner packaging remain to prepare.
-- **Pending:** Human review of provisional explanation grades if desired; prepare the teaching walkthrough. A pure serial/parallel scheduling comparison needs identical retrieval work after discovery. Add seller-specific policies only if they create meaningful independent investigation branches. Independent-system/A2A remains later work. Optional reviewer variants can enforce evidence acquisition or give the reviewer tools; broader held-out repeats and fresh end-to-end cost/cache/latency measurements are enhancements, not required to close the learning experiment. Memory was the next proposed implementation topic at the time of this October 1 note; its bounded implementation and comparison are now complete in chapter 19. Keep this required course work.
+- **Pending:** Human review of provisional explanation grades if desired; prepare the teaching walkthrough. A pure serial/parallel scheduling comparison needs identical retrieval work after discovery. Add seller-specific policies only if they create meaningful independent investigation branches. Independent-system/A2A remains later work. Optional reviewer variants can enforce evidence acquisition or give the reviewer tools; broader held-out repeats and fresh end-to-end cost/cache/latency measurements are enhancements, not required to close the learning experiment. Memory was the next proposed implementation topic at the time of this October 1 note; its bounded implementation and comparison are now complete in chapter 18. Keep this required course work.
 
 
 - **Saved diagrams:** [Coordinator with seller workers and evaluator–optimizer](diagrams/AGENT-PATTERNS.md), with editable Mermaid sources and implementation boundaries.
@@ -642,7 +647,12 @@ See [M32 report](../app/results/payout-orchestration-v2-2026-10-01/REPORT.md), [
 
 **Reading and source boundaries:** Primary references above were checked October 1, 2026. Also read [Cognition's multi-agent account](https://cognition.com/blog/multi-agents-working) and the counterpoint [Single-Agent LLMs Outperform Multi-Agent Systems on Multi-Hop Reasoning Under Equal Thinking Token Budgets](https://arxiv.org/abs/2604.02460), already catalogued with limitations in [research guide chapter 6](../RESEARCH-GUIDE.md#4-orchestration). Those are external evidence, not local test results. For the blog, distinguish published findings, our design hypotheses, implemented architecture and measured outcomes. No new experiments are required to capture this discussion.
 
-### 19. Short-term and long-term memory
+### 18. Short-term and long-term memory
+
+**Draft learner practice — for review, not finalized:**
+
+- **Exercise:** Save a synthetic preference, recall it in a new conversation, then update/delete it and repeat; include a memory-off or user-isolation check.
+- **Solution to prepare:** Save/recall/update/delete steps, selected memory evidence, expected isolation and a distinction between conversation history and persistent memory.
 - **Learning objective:** Distinguish session state from deliberately retained knowledge, and measure when memory helps or misleads a later conversation.
 - **Lab and result:** Demonstrate existing short-term state, then compare memory off/on for three explicitly saved long-term examples. Update/delete memories and repeat the later question.
 - **Status:** Bounded memory learning lab complete, with a repeatable test suite; required for v1. Lesson recording/packaging and selected manual catalogue cases remain pending. This is not a production-readiness claim.
@@ -701,7 +711,12 @@ Reuse the marketplace support tasks, MCP tool contracts and evaluation criteria 
 
 **Companion material:** [Platform landscape and customer fit](PLATFORM-GUIDE.md#platform-landscape-positioning-and-customer-fit) · [Component ownership worksheet](PLATFORM-GUIDE.md#common-comparison-agentic-system-components-and-ownership). The guide holds product references, technical boundaries, architecture, dashboard steps, detailed evidence and enhancements.
 
-### 20. Google Gemini Enterprise Agent Platform
+### 19. Google Gemini Enterprise Agent Platform
+
+**Draft learner practice — for review, not finalized:**
+
+- **Exercise:** Connect a hosted Google agent to the shared business MCP backend, ask a question and follow-up, then inspect its native trace.
+- **Solution to prepare:** Setup instructions, configuration template without credentials, successful tool/source checkpoints and an annotated native trace.
 
 Main lesson document: [Google platform walkthrough — architecture, setup steps and checks](GOOGLE-PLATFORM-WALKTHROUGH.md). ADK is deployed. Hosted SQL/RAG and seven memory checks passed, including native Memory Bank recall under the actual Playground user. Deployment Traces → Session view and retrieved memory in model input are verified. Setup, CLI commands, results and trace-viewing steps are all in that same guide.
 
@@ -710,14 +725,24 @@ Main lesson document: [Google platform walkthrough — architecture, setup steps
 - **Status:** Bounded experiment phase complete; user manually validated short-term memory, long-term memory and general questions October 8. Hosted checks and native trace inspection passed. Slides, speaker notes, homework and recording preparation remain later work.
 - **Details:** [Approach, comparison criteria, evidence and pending work](PLATFORM-GUIDE.md#19-google-gemini-enterprise-agent-platform).
 
-### 21. Lyzr Agent Studio
+### 20. Lyzr Agent Studio
+
+**Draft learner practice — for review, not finalized:**
+
+- **Exercise:** Connect Lyzr to the same business MCP tools, ask the shared question and inspect its saved sources and native memory behavior.
+- **Solution to prepare:** Setup instructions, configuration template without credentials and annotated tool, source and native-memory checkpoints.
 
 - **Learning objective:** Reuse business middleware while moving agent execution and native memory to a managed platform.
 - **Lab:** Configure the model/prompt, connect seven remote business MCP actions, test native Cognis memory and call the deployed agent API.
 - **Status:** Included hands-on platform chapter. Local/cloud marketplace adapters, hosted business calls, sessions and memory were validated. Learner packaging remains; preserve the historical checklist-use limitation.
 - **Details:** [Architecture, component ownership, dashboard steps, tracing, user experience, test evidence and enhancements](PLATFORM-GUIDE.md#21-lyzr-agent-studio).
 
-### 22. Other Agent Platforms
+### 21. Other Agent Platforms
+
+**Draft learner practice — for review, not finalized:**
+
+- **Exercise:** Complete a component-ownership worksheet for two offerings: agent execution, tools, sessions, memory, tracing, deployment and access.
+- **Solution to prepare:** A worked comparison with dated official sources and clearly identified unknowns; this is a documentation exercise, not a deployment lab.
 
 - **Learning objective:** Compare managed agent offerings with the SDK baseline by component ownership and operational responsibility.
 - **Format:** Slides only, about one or two slides per offering; no new deployment labs.
@@ -726,11 +751,16 @@ Main lesson document: [Google platform walkthrough — architecture, setup steps
 - **Evidence boundary:** These are documentation-based overviews, not marketplace integrations validated in this course. OpenAI Agents SDK remains the baseline throughout the application; its managed Agents API is a distinct offering. See [official Agents API documentation](https://developers.openai.com/api/docs/guides/agents-api/overview). Recheck product capabilities when preparing slides.
 - **Deferred:** A hands-on AWS hosting chapter may be added later if bandwidth permits; it is outside the current release scope.
 
-### 23. Choosing an AI platform
+### 22. Choosing an AI platform
+
+**Draft learner practice — for review, not finalized:**
+
+- **Exercise:** Write a short decision report using results collected throughout the course: chosen design/platform, evidence, trade-offs, limitations and next steps.
+- **Solution to prepare:** An example decision report and rubric; explain the reasoning and distinguish measured integrations from documentation-only comparisons.
 
 - **Learning objective:** Choose a stack using customer needs, measured results and ownership requirements.
 - **Lab:** Generate a decision report from available tracks; compare quality, cost, latency, integration effort and control, with confounders disclosed.
-- **Closing lesson — prepare with this chapter:** Use the existing decision-report lab to conclude the course. Learners summarize their chosen design/platform, supporting evidence, quality/cost/latency trade-offs and limitations, then identify sensible next steps. Prepare this during chapter 23 delivery work; no additional chapter or implementation project is required. End with a thank-you slide; no separate conclusion chapter.
+- **Closing lesson — prepare with this chapter:** Use the existing decision-report lab to conclude the course. Learners summarize their chosen design/platform, supporting evidence, quality/cost/latency trade-offs and limitations, then identify sensible next steps. Prepare this during chapter 22 delivery work; no additional chapter or implementation project is required. End with a thank-you slide; no separate conclusion chapter.
 - **Status:** Method available; prepare the decision lesson from the SDK baseline and completed Google/Lyzr tracks, with documentation-only offerings clearly identified.
 - **Details:** [Decision criteria, evidence and pending work](PLATFORM-GUIDE.md#22-choosing-an-ai-platform).
 
@@ -738,27 +768,27 @@ Main lesson document: [Google platform walkthrough — architecture, setup steps
 
 ## Scope for v1
 
-**Required v1:** Six sections A–F, twenty-three numbered chapters: welcome; Anatomy with local setup and first-agent practice; Core Components; Observability, Evaluation and Security; Advanced Agent Topics; Google and Lyzr hands-on platform chapters; an Other Agent Platforms overview; and Choosing an Agent Platform. Detailed guardrails and security are combined in chapter 16. Monitoring covers LiteLLM/Langfuse; native monitoring belongs in each platform chapter. Use the local SDK for the main course demos.
+**Required v1:** Six sections A–F, twenty-two numbered chapters: welcome; Anatomy with local setup and first-agent practice; Core Components; Observability, Evaluation and Security; Advanced Agent Topics; Google and Lyzr hands-on platform chapters; an Other Agent Platforms overview; and Choosing an Agent Platform. Detailed guardrails and security are combined in chapter 15. Observability covers capability criteria and standalone-platform comparison, with Langfuse/LiteLLM as the implemented example; native telemetry belongs in each platform chapter. Use the local SDK for the main course demos.
 
-**Not required for this release:** Additional deployment labs for AWS, Claude Managed Agents, Microsoft Foundry or OpenAI Agents API. Mention these in chapter 22 through slides. AWS hands-on hosting remains an open future addition if bandwidth permits. Multi-agent and memory remain required.
+**Not required for this release:** Additional deployment labs for AWS, Claude Managed Agents, Microsoft Foundry or OpenAI Agents API. Mention these in chapter 21 through slides. AWS hands-on hosting remains an open future addition if bandwidth permits. Multi-agent and memory remain required.
 
 **Timeline rule:** keep the first multi-agent and memory implementations bounded. If time becomes tight, reduce variants, optional comparisons and recording breadth before removing those two required learning topics. Confirm any further scope change with the course owner.
 
 ## Completed experiments — confirmed October 8, 2026
 
-The owner confirmed that the Gemini experiments (20), session-only versus persistent-memory comparison (19), and revised security marker comparison (16) are done. Do not list these as remaining experiments. Preserve their bounded evidence and distinguish completion of the experiment from preparation of the lesson.
+The owner confirmed that the Gemini experiments (19), session-only versus persistent-memory comparison (18), and revised security marker comparison (15) are done. Do not list these as remaining experiments. Preserve their bounded evidence and distinguish completion of the experiment from preparation of the lesson.
 
-- **Gemini:** [Platform walkthrough and verification](GOOGLE-PLATFORM-WALKTHROUGH.md); native SQL/RAG, session/memory checks and trace inspection are recorded in chapter 20.
+- **Gemini:** [Platform walkthrough and verification](GOOGLE-PLATFORM-WALKTHROUGH.md); native SQL/RAG, session/memory checks and trace inspection are recorded in chapter 19.
 - **Memory:** [Current conclusions](../app/docs/MEMORY-STATUS.md) and [repeatable comparison report](../app/results/memory-repeatable-20261003T093153094486Z/REPORT.md). Remaining selected manual demonstrations are lesson preparation, not reopening the completed comparison.
-- **Security marker:** [Combined teaching guide](../app/docs/SECURITY-CHAPTER-DEMO.md) and chapter 16's recorded user acceptance. No new independent trace review is implied by this completion confirmation; historical reports remain unchanged.
+- **Security marker:** [Combined teaching guide](../app/docs/SECURITY-CHAPTER-DEMO.md) and chapter 15's recorded user acceptance. No new independent trace review is implied by this completion confirmation; historical reports remain unchanged.
 
 ## Experiments and implementation remaining
 
-1. Run the bounded component experiments still pending: context omission/restoration (7), tool-contract changes (8), and retrieval off/on and policy-date selection (9).
+1. Chapter 7 context omission/restoration comparisons completed October 10; the exercise scope is closed. Use the selected explanation-completeness example for the optional demo comparison. Remaining component preparation includes tool-contract changes (8) and retrieval off/on and policy-date selection (9).
 2. Cloud deployment and hosted runtime connections are verified; rehearse setup in a fresh project and on a clean machine for learner release. Resolve any optional Lyzr checklist-use enhancement separately.
-3. Complete any remaining fixed-workflow or controlled scheduling variants for chapter 18; retain the completed single-agent/worker and reviewer-workflow results. The chapter 19 memory comparison is complete.
-4. Assemble the platform comparison (23) from the SDK baseline and completed Google/Lyzr tracks. Prepare the documentation-based overview (22); AWS deployment is deferred and does not block this release.
-5. During the relevant chapter preparation, revisit the low-priority current-version routing/cache refresh (17) and pending online evaluation (15); neither blocks overall experiment completion.
+3. Complete any remaining fixed-workflow or controlled scheduling variants for chapter 17; retain the completed single-agent/worker and reviewer-workflow results. The chapter 18 memory comparison is complete.
+4. Assemble the platform comparison (22) from the SDK baseline and completed Google/Lyzr tracks. Prepare the documentation-based overview (21); AWS deployment is deferred and does not block this release.
+5. During the relevant chapter preparation, revisit the low-priority current-version routing/cache refresh (16) and pending online evaluation (14); neither blocks overall experiment completion.
 6. Proposed extension: a bounded code-versus-model calculation experiment, such as payout eligibility. Treat the deterministic tool as a variant to measure, not a preselected fix.
 7. Deferred model migration: replace remaining Nano comparison aliases/teaching configurations during later model preparation. GPT-5.4 is already the interactive default; this outline update does not migrate model configurations or rerun historical comparisons.
 
@@ -770,7 +800,7 @@ Lecture breakdown and the recording tracker are deferred to delivery/recording p
 2. For each lesson, prepare slides, speaker notes, participant homework, starting checkpoints, expected observations, verification steps and costs; refine the hands-on demo, then record and edit. Feature or experiment completion alone is not course readiness.
 3. Package the existing evaluation runner into add-a-case, judge-calibration and repeated-run exercises (15), plus the completed local/remote MCP comparisons (8).
 4. Organize monitoring demonstrations from existing Langfuse/LiteLLM dashboards (14); no upfront dashboard build is required.
-5. Prepare chapter 16 materials from the existing combined security guide and OWASP map. The marker comparison is complete; broader memory/multi-agent attacks remain optional, and full Top 10 coverage is not claimed.
+5. Prepare chapter 15 materials from the existing combined security guide and OWASP map. The marker comparison is complete; broader memory/multi-agent attacks remain optional, and full Top 10 coverage is not claimed.
 6. Package the completed memory (19) and Gemini (20) experiments; select any remaining manual demonstrations without treating them as unfinished core comparisons.
 7. Record the welcome/roadmap after the chapters. Discuss the separate promotional video's content and script before recording it at the same final stage.
 
@@ -783,12 +813,12 @@ Lecture breakdown and the recording tracker are deferred to delivery/recording p
 
 ## Blogs that feed the course
 
-Published: model routing Parts 1 and 2 (feed chapter 17). Candidate next posts, each one a lesson:
+Published: model routing Parts 1 and 2 (feed chapter 16). Candidate next posts, each one a lesson:
 - the failure clinic (chapter 13)
-- judge calibration (chapter 15)
-- the model-retirement rerun (chapters 6 and 15)
-- Gemini vs baseline (chapter 20)
-- attacking our own agent: the OWASP map and measured attack success (chapter 16)
+- judge calibration (chapter 14)
+- the model-retirement rerun (chapters 6 and 14)
+- Gemini vs baseline (chapter 19)
+- attacking our own agent: the OWASP map and measured attack success (chapter 15)
 
 ### Automatic checklist retrieval and sidebar state retention — October 3, 2026
 
@@ -819,11 +849,11 @@ Finish the required experiments and update each section’s evidence/pending wor
 
 [OWASP 2026 course map](../app/docs/OWASP-SECURITY-MAP.md) connects the existing injection/privacy trials, read-only SQL/MCP constraints, memory ownership and runner limits. [Two final demonstrations](../app/results/security-boundaries-2026-10-07/REPORT.md) passed: real memory MCP denied cross-owner search/update/delete and disabled writes, with owner access and unchanged-record controls; GPT-5.4 repeated an ordinary visible marker but withheld the private instruction marker. One disclosure prompt only, no real secrets, no paid judge. Test fixtures cleaned up and business revision unchanged. Role-specific SQL/RAG authorization was not added solely for the lesson. The 2025 table remains a historical planning reference; use the linked 2026 map for new materials. Bounded chapter experiments are complete; full OWASP coverage is not claimed. Slides, notes, homework and recording remain later preparation work.
 
-Security lesson revision: detailed guardrails and agent security are combined in chapter 16. The memory-permission demo is removed from the teaching sequence; the combined guide contains the revised marker comparison and OWASP notes. Historical test reports remain unchanged.
+Security lesson revision: detailed guardrails and agent security are combined in chapter 15. The memory-permission demo is removed from the teaching sequence; the combined guide contains the revised marker comparison and OWASP notes. Historical test reports remain unchanged.
 
 ### Next course work after security consolidation — October 7, 2026
 
-Guardrails and agent security share chapter 16 and one main guide; monitoring, tracing and evaluation retain their separate sections. No memory-permission demo or new read-by-ID tool is required. The revised marker UI has user-reported validation. Next substantive experiments focus on Google's enterprise agent platform, reusing the application/MCP baseline. Slides, speaker notes, homework and final recording preparation follow experiment completion and outline finalization.
+Guardrails and agent security share chapter 15 and one main guide; monitoring, tracing and evaluation retain their separate sections. No memory-permission demo or new read-by-ID tool is required. The revised marker UI has user-reported validation. Next substantive experiments focus on Google's enterprise agent platform, reusing the application/MCP baseline. Slides, speaker notes, homework and final recording preparation follow experiment completion and outline finalization.
 
 ### Marketplace interface runtime selection — implementation follow-up
 

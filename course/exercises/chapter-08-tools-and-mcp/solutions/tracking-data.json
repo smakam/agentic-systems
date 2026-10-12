@@ -1,0 +1,12 @@
+{
+  "DEMO-TRACK-001": {
+    "status": "in_transit",
+    "latest_event": "Departed demonstration sorting centre",
+    "observed_at": "2026-10-10T09:00:00Z"
+  },
+  "DEMO-TRACK-002": {
+    "status": "delivered",
+    "latest_event": "Delivered in the demonstration fixture",
+    "observed_at": "2026-10-10T10:00:00Z"
+  }
+}

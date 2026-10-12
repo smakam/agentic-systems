@@ -18,6 +18,9 @@ A working **local simulation** for studying agent behavior. The marketplace chan
 
 For the complete learner path, use [Local laptop setup](LOCAL-SETUP.md): prerequisites, first run, main/test workspaces, evidence and trace checks, memory, feedback, cleanup and troubleshooting. The commands below are a quick reference.
 
+**Choose or change the inference provider:** in `app/.env`, set `INFERENCE_PROVIDER=openai` and fill `OPENAI_API_KEY`, or set `INFERENCE_PROVIDER=openrouter` and fill `OPENROUTER_API_KEY`. From `app`, rerun `./scripts/start.sh`. Startup regenerates routing for chat, embeddings and OpenAI evaluation models, recreates the gateway to load it, and reruns document indexing. A page refresh alone does not apply a provider change. Existing marketplace records and conversations are retained. Startup also provisions the isolated test database if absent and starts its UI at `http://127.0.0.1:5179`; existing test data is preserved, and fixture resets remain explicit. Anthropic judge and Lakera keys remain optional. See the [setup guide](LOCAL-SETUP.md) for key purposes and validation coverage.
+
+
 Prerequisites: Docker Desktop with Compose, internet access for initial downloads, Python 3 for local key provisioning, and an OpenAI API key with billing enabled for live inference. The complete Langfuse stack is substantial; allow several GB of disk/RAM. This machine is the tested environment, not a guarantee for every host.
 
 ```sh
@@ -175,9 +178,13 @@ history still belongs to the existing application session. `tool_transport` in
 run metrics identifies the access path. The child receives the read database URL
 and embedding gateway key, not business-write or provider credentials.
 
-This is a local transport implementation, not a public network endpoint. A remote
-platform integration will need an authenticated HTTP transport and explicit run
-lifecycle/identity handling. Do not expose the internal support dataset publicly.
+The SDK also supports `AGENT_TOOL_TRANSPORT=mcp_http` with `SDK_MCP_URL` and
+`SDK_MCP_API_KEY`. This connects directly to authenticated HTTP business MCP;
+the application binds investigation identity, retains returned evidence and
+closes the investigation. Cloud configuration selects HTTPS; local Compose keeps
+stdio. SDK memory remains a separate user-bound stdio server. The new path passed
+nine isolated protocol/lifecycle tests; cloud revision `marketplace-web-00013-sc6` is ready; live acceptance needs
+approval to start the parked database. See [deployment and runtime paths](DEPLOYMENT-AND-RUNTIME-PATHS.md).
 
 Verification: `scripts/test.sh` runs real MCP protocol tests against `market_test`.
 `scripts/compare-mcp.py` runs four questions per transport (eight paid candidate
@@ -355,3 +362,7 @@ The local and cloud reference application paths are working. The shared UI selec
 Cloud `market` was aligned once to local revision 24, including clock, business history and indexed policies, with a retained rollback snapshot. User accounts, conversations, ratings and personal/native memories remain independent; test/evaluation databases were not copied. Local order summaries and daily counts now use readable business labels and formatting. The user approved the new local output and confirmed the cloud SDK detailed trace in Langfuse. Google/Lyzr wrapper traces record the marketplace question/answer/timing/feedback; internal calls remain in native platform tracing.
 
 Course plan: local SDK for main demonstrations; hosted agents and native platform monitoring in platform chapters. Online evaluation remains Evaluation chapter preparation. Clean-machine/fresh-project learner rehearsals, publication checkpoints, slides, notes, homework and recording preparation remain separate work. See the [architecture and delivery boundaries](../course/MARKETPLACE-DEPLOYMENT-ARCHITECTURE.md).
+
+## Chapter 12 hybrid hosting exercise
+
+See [exercise](../course/exercises/chapter-12-runtime-and-hosting/exercise.md) and [validation](../course/exercises/chapter-12-runtime-and-hosting/validation.md). The dedicated Compose overlay uses a disposable database, local chat/history, separate Cloud Run agent with direct OpenAI Responses, and laptop HTTP MCP through a tunnel. It is opt-in and does not change normal runtime routing. The temporary instructor cloud deployment was cleaned up after successful tests.

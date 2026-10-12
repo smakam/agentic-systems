@@ -34,7 +34,8 @@ def validate_sql(sql):
     return tree.sql(dialect='postgres')
 
 def client(*, judge=False):
-    key=os.getenv("JUDGE_GATEWAY_KEY" if judge else "LITELLM_API_KEY")
+    from .gateway_identity import current_key
+    key=os.getenv("JUDGE_GATEWAY_KEY") if judge else current_key()
     if not key: raise RuntimeError("Gateway virtual key missing; run scripts/start.sh")
     options={}
     audience=os.getenv('GATEWAY_IAM_AUDIENCE')
@@ -47,7 +48,9 @@ def client(*, judge=False):
     return AsyncOpenAI(base_url=os.getenv('LITELLM_URL','http://localhost:4000/v1'),api_key=key,max_retries=0,timeout=timeout,**options)
 
 class ReadContext:
-    def __init__(self):
+    def __init__(self, *, suppress_catalog=False, suppress_documents=False):
+        self.suppress_catalog = suppress_catalog
+        self.suppress_documents = suppress_documents
         self.conn=psycopg.connect(os.getenv('READ_DATABASE_URL','postgresql://agent_reader:reader-local@localhost:55432/market'),row_factory=dict_row)
         self.conn.execute('BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY')
         self.snapshot=self.conn.execute('SELECT * FROM analytics.freshness').fetchone()
@@ -114,6 +117,8 @@ class ReadContext:
           {'order_id':order_id},'Recorded order event timeline, including failed and successful attempts')
         return {'current_records':current,'event_timeline':events}
     def catalog(self):
+        if self.suppress_catalog:
+            return self.save({"type":"catalog","status":"ok","catalog":None,"method":"context_suppressed"})
         from .catalog import build_catalog
         catalog = build_catalog(self.conn, self.ontology)
         payload = {'type': 'catalog', 'catalog': catalog}
@@ -121,6 +126,8 @@ class ReadContext:
             payload.update(status='error', code='CATALOG_DRIFT', message='Catalog and database differ; do not construct SQL until definitions are repaired.')
         return self.save(payload)
     async def search(self,query,effective_at=None,scope='all',top_k=4):
+        if self.suppress_documents:
+            return self.save({'type':'documents','status':'ok','chunks':[],'method':'context_suppressed'})
         if not 1<=top_k<=8: raise ValueError('top_k must be 1–8')
         when=datetime.fromisoformat(effective_at) if effective_at else self.snapshot['clock']
         if when.tzinfo is None: raise ValueError('Use a date-time with timezone')

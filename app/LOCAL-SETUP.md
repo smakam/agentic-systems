@@ -2,30 +2,26 @@
 
 This is the canonical learner setup for the **local** marketplace, agent, SQL/RAG tools, PostgreSQL, LiteLLM and Langfuse. The baseline services run in Docker; the startup shell script and small Python key-provisioning script run on the host. Google ADK and Lyzr are covered in later platform chapters; they are not required for the initial setup. The [cloud architecture](../course/MARKETPLACE-DEPLOYMENT-ARCHITECTURE.md) is a separate deployment path; local data does not automatically synchronize with it.
 
-The setup chapter demonstrates **Mac**. Follow sections 1–4 for the first run; later chapters keep using that same environment. Sections 5–6 cover optional test data and lifecycle operations. Linux and Windows differences are listed separately below so the main walkthrough stays focused.
+The setup chapter demonstrates **Mac**. Follow sections 1–4 for the first run; later chapters keep using that same environment. Sections 5–6 explain the automatically available test workspace and lifecycle operations. Linux and Windows differences are listed separately below so the main walkthrough stays focused.
 
-**Verification status — October 8, 2026:** commands below are checked against the current scripts and configuration. The existing Mac development machine has exercised the local stack, main/test workspaces, memory, citations and feedback. This is an existing-machine check, not a fresh Mac installation. A clean Google Cloud Linux VM rehearsal is planned and has not passed yet; Windows/WSL2 is documented but unverified. A Linux result would validate the shared container workflow, not Mac installation or processor compatibility. The published GitHub URL/versioned learner checkpoint also remains a release check. Replace the clone placeholders before distributing the course.
+**Verification status:** the existing Mac development environment has exercised the local stack, main/test workspaces, memory, citations and feedback; this is not a clean Mac installation. The October 8 clean Google Cloud Ubuntu VM passed installation, startup, health, login, database persistence and Langfuse health checks. Live provider questions, vector retrieval, agent traces and feedback on that VM remain unvalidated; see [Linux rehearsal report](LINUX-SETUP-VALIDATION-2026-10-08.md). Windows/WSL2 remains documented but untested. Provider switching, synthetic model/tool calls and embeddings pass for both providers on the existing Mac setup; fresh installation and real-record OpenRouter acceptance are not verified. The repository URL and main branch are supplied below; no versioned release tag is pinned yet.
 
 | Path | Coverage today |
 |---|---|
 | Mac walkthrough | Existing development environment exercised; clean installation pending |
-| Linux | Commands reviewed; clean Google VM rehearsal pending |
+| Linux | Clean Google VM installation/health passed; live inference/RAG acceptance pending |
 | Windows with WSL2 | Adaptation notes only; not tested |
-
-### Setup chapter recording plan
-
-Use a few orientation slides for prerequisites and the setup sequence, then show the local terminal and application. Link this guide as the learner reference. Demonstrate configuration without displaying keys, startup, login, one successful question, and its trace. Keep detailed installation commands and troubleshooting in this document rather than reading every command aloud. Learners finish setup when the first-run checks in section 4 pass; the next chapter walks through the first agent and its code.
 
 ## 1. Install the prerequisites on Mac
 
 | Requirement | What you need |
 |---|---|
 | Git | To download the course checkpoint |
-| Docker Desktop | Running, with Docker Compose **2.24.4 or newer**; the optional test workspace uses Compose override tags |
+| Docker Desktop | Running, with Docker Compose **2.24.4 or newer**; the test workspace uses Compose override tags |
 | Python 3 | For `scripts/provision-gateway-keys.py`; no local pip packages are required for startup |
 | Shell | macOS/Linux shell, or WSL2 on Windows; Windows commands below run inside WSL, not PowerShell |
 | Browser | For the marketplace, gateway and traces |
-| OpenAI API account | A funded API key with access to the configured support and embedding models; a ChatGPT subscription is separate |
+| Inference provider account | A funded OpenAI or OpenRouter API key with access to the configured chat and embedding models; a ChatGPT subscription is separate |
 | Internet | Initial image/package downloads, model and embedding calls |
 
 On Mac:
@@ -35,7 +31,16 @@ On Mac:
 3. Install Python 3 if `python3 --version` is unavailable. The startup helper uses Python's standard library, so no virtual environment or local package installation is needed for the initial walkthrough.
 4. Open **Terminal**. Run every command in this guide there, from the stated directory. Keep Docker Desktop running while using the course stack.
 
-Allow several GB of free RAM and disk for Langfuse's PostgreSQL, ClickHouse, Redis and object storage. A previous idle/light-use observation was about 3.3 GiB across the stack with 7.75 GiB allocated to Docker; this is not a hardware minimum or peak measurement. Start with roughly 8 GiB available to Docker and inspect actual usage. ARM/x86 and Windows fresh-install compatibility have not been independently verified for this release.
+### CPU, memory and disk guidance
+
+| Resource | Practical starting point |
+|---|---|
+| Laptop CPU | 4 CPU cores available for comfortable use; no local GPU is required because model inference runs at the selected provider |
+| Laptop memory | 16 GB total RAM recommended, with about 8 GB available to Docker; leave room for the OS and browser |
+| Free disk | Reserve about 20 GB for initial images/builds and lab data, with more space for growing traces; this is a planning allowance, not a measured installation size |
+| Tested Linux VM | 2 vCPUs, 8 GB RAM and a 60 GB boot disk passed installation/health checks; live model/RAG acceptance on that VM remains partial |
+
+An earlier idle/light-use observation was about 3.3 GB across the stack with 7.75 GB allocated to Docker. These figures are not hard minimums or peak measurements. Large batches, indexing and Langfuse retention can increase resource use. Inspect actual Docker memory and disk usage if startup is slow or containers restart. ARM/x86 Mac and Windows fresh-install compatibility have not been independently verified for this release.
 
 You do **not** need local Node.js, PostgreSQL, LiteLLM or Langfuse installations. Their runtimes are packaged in the containers. Python 3.12 and Node 22 are pinned in the image builds; a code editor is optional for the first run.
 
@@ -48,28 +53,52 @@ docker compose version
 python3 --version
 ```
 
-`docker version` must show a working server, not just an installed client. Keep ports **5178, 5179, 58000, 55432, 4000, 3000 and 9090** free. Port 5179 is only needed for the optional test UI.
+`docker version` must show a working server, not just an installed client. Keep ports **5178, 5179, 58000, 55432, 4000, 3000 and 9090** free. Port 5179 is used by the test UI, which startup also launches.
 
-## 2. Download the checkpoint and configure inference
+## 2. Download the repository and configure inference
 
-Replace both placeholders with the repository URL and checkpoint supplied with the course. No published remote is configured in the current source directory, so a URL is not invented here.
+Use the course repository’s `main` branch for the current setup. A course checkpoint is a named branch or tag; we have not pinned a release tag yet, so `main` can change as the course is updated.
 
 ```sh
-git clone --branch <COURSE_CHECKPOINT> <COURSE_REPOSITORY_URL> ai-systems-blogging
-cd ai-systems-blogging/app
+git clone --branch main https://github.com/smakam/agentic-systems.git
+cd agentic-systems/app
 [ -f .env ] || cp .env.example .env
 chmod 600 .env
 ```
 
-Open `.env` in your editor. Set **OPENAI_API_KEY** to your own API key and save. Leave `SUPPORT_GATEWAY_KEY`, `EVAL_GATEWAY_KEY` and `JUDGE_GATEWAY_KEY` empty on a new installation: startup generates model-scoped virtual keys for them. Do not paste your provider key into those fields or into the browser.
+### Get an API account, credit balance and key
 
-The baseline needs only the OpenAI key. `ANTHROPIC_API_KEY` is for the optional evaluation judge; `LAKERA_API_KEY` is for the later Lakera lesson. Leave the other optional fields empty until that lesson. Keep `AGENT_TOOL_TRANSPORT=mcp` for the baseline.
+You create an API key; you purchase API credits or enable billing on the account that key belongs to.
 
-The current configuration in `compose.yaml`/`infra/litellm.yaml` uses **GPT-5.4** through the `support-model` alias and `text-embedding-3-small` for embeddings. Historical reports may use Nano; they do not describe the current default. Check the checkpoint configuration before changing a model. If your account cannot access a configured model, resolve that before treating an answer as a course test result.
+- **OpenAI:** [sign up or sign in to the OpenAI API platform](https://platform.openai.com/), configure a payment method and add credit through [API billing](https://platform.openai.com/settings/organization/billing/overview), then create a key in [API keys](https://platform.openai.com/api-keys). Use the course’s configured OpenAI models; account/model access may vary. A ChatGPT subscription does not fund API requests. See the [official API quickstart](https://developers.openai.com/api/docs/quickstart).
+- **OpenRouter:** [sign up or sign in](https://openrouter.ai/), add funds through [Credits](https://openrouter.ai/settings/credits), then create a key in [API keys](https://openrouter.ai/settings/keys). The balance pays for requests to supported models across OpenRouter’s providers, subject to access, routing and pricing. The course still uses its configured models; it does not provide an arbitrary-model selector. See [OpenRouter account and credit guidance](https://openrouter.ai/support).
+
+**Budget guidance:** USD **10–20 as an initial API-credit planning allowance**, not a measured or guaranteed cost for completing every chapter. Usage depends on repetitions, models, embeddings and evaluation runs. Credit-purchase fees/taxes and optional hosted-platform charges may be additional. A complete course-wide cost estimate has not been measured. Later platform labs are optional; eligible Google Cloud/AWS newcomers and Lyzr free-plan users may receive limited credits, with differing expiry and service restrictions: [Google Cloud](https://cloud.google.com/signup-faqs), [AWS](https://aws.amazon.com/free/), [Lyzr](https://docs.lyzr.ai/agent-lab/plans). Check each lesson and current terms before creating paid resources.
+
+Open `.env` in your editor. Set `INFERENCE_PROVIDER` to `openai` (default) or `openrouter`. For `openai`, fill `OPENAI_API_KEY`; for `openrouter`, fill `OPENROUTER_API_KEY`. Save the file. You do not need both keys for the baseline. Run `./scripts/start.sh` after changing this selection: startup generates the gateway routes for chat, embeddings and the OpenAI evaluation models. The chat UI does not select the inference provider.
+
+| Setting/key | Where it is used | Required? |
+|---|---|---|
+| `INFERENCE_PROVIDER` | Chooses direct OpenAI or OpenRouter routing in the local LiteLLM gateway | Select one |
+| `OPENAI_API_KEY` | LiteLLM calls OpenAI for agent model requests, document/query embeddings and OpenAI evaluation models | Only when `openai` is selected |
+| `OPENROUTER_API_KEY` | LiteLLM calls those model and embedding services through OpenRouter | Only when `openrouter` is selected |
+| `ANTHROPIC_API_KEY` | Optional evaluation judge through direct Anthropic | Optional, for that evaluation lesson |
+| `LAKERA_API_KEY` | Optional Lakera guardrail checks | Optional, for that security lesson |
+| `SUPPORT_GATEWAY_KEY`, `EVAL_GATEWAY_KEY`, `JUDGE_GATEWAY_KEY` | Application-to-LiteLLM access, scoped to the allowed model aliases | Generated by startup |
+
+Leave the three gateway keys empty on a new installation. Startup provisions them; do not paste a provider key into those fields or the browser. The agent sends model requests to LiteLLM using its scoped gateway key, and LiteLLM authenticates upstream with the selected provider key. Document indexing and query embeddings also pass through the gateway. Provider choice does not move the application or database to the cloud. Keep `AGENT_TOOL_TRANSPORT=mcp` for the baseline.
+
+The course uses the configured model aliases for repeatable demonstrations. Arbitrary model selection is not part of the setup UI: advanced learners may change the code/configuration, but those choices are not validated against the course’s expected results.
+
+The selected provider also routes the OpenAI model comparisons used later. The optional judge continues to use Anthropic directly. Provider routes can differ in model availability and behavior; record the chosen route when comparing results. OpenRouter’s embedding endpoint supports the same `text-embedding-3-small` model used by our baseline: [OpenRouter embedding documentation](https://openrouter.ai/docs/api/api-reference/embeddings/create-embeddings). Both routes keep the embedding model/dimension unchanged; do not switch embedding families without rebuilding the index.
+
+Validation status: both routes passed live synthetic model/tool calls and 1,536-dimensional embeddings, and the actual startup script switched to OpenRouter and back to OpenAI on the existing Mac setup. This is not a clean-install or real-record OpenRouter acceptance test. See the [provider-switch report](results/provider-switch-2026-10-12/REPORT.md).
+
+The default provider routes use **GPT-5.4** through the `support-model` alias and `text-embedding-3-small` for embeddings. Historical reports may use Nano; they do not describe the current default. Check the provider configuration before changing a model. If your account cannot access a configured model, resolve that before treating an answer as a course test result.
 
 Real questions and document indexing incur provider charges. The app's cost estimate is not an invoice or a billing-account cap. Its run cost stop is checked after a model call and can overshoot by one call; embedding charges are separate. Set provider-side spending controls appropriate to your lab.
 
-## 3. Start the stack
+## 3. Start both workspaces and shared services
 
 From the `app` directory:
 
@@ -79,67 +108,47 @@ docker compose ps
 curl --fail http://localhost:58000/api/health
 ```
 
-Startup creates PostgreSQL, initializes the gateway database, provisions scoped keys into the gitignored `.env`, builds/starts the application and Langfuse services, then attempts document embeddings. The first run may take several minutes. Restarting an existing setup does not reset its business data or conversations.
+Startup creates PostgreSQL, initializes the gateway database, provisions scoped keys into the gitignored `.env`, and starts the main marketplace, isolated test workspace, gateway and Langfuse services. It creates the test database if missing and attempts document embeddings in both workspaces. The first run may take several minutes. Restarting an existing setup does not reset its business data or conversations.
+
+| Workspace | Purpose |
+|---|---|
+| Main marketplace | Normal exploration: place orders, change business states and keep your ongoing conversations/data |
+| Isolated test marketplace | Repeatable lessons and exercises using a known seeded baseline or a named fixture, without changing main-workspace data |
+
+Most investigation exercises only read business records, so they do not require a reset after each question. Questions still save conversations and traces. Some lessons deliberately change marketplace state or saved memory; those lessons specify when to restore their seed/fixture before repeating the scenario. Reset only when the required starting state has changed, not after every read-only exercise. Normal startup preserves both workspaces and never performs a lesson reset. Section 5 explains isolation; lesson-specific guides provide any required reset instructions.
 
 If startup reports that vector indexing is unavailable, the UI may still load. Fix the key/provider error and index again; don't count lexical fallback as a successful vector-retrieval test.
 
 | Surface | URL | Login |
 |---|---|---|
 | Marketplace | [localhost:5178](http://localhost:5178/) | `operator` or `support`, password `demo-marketplace` |
+| Isolated test marketplace | [127.0.0.1:5179](http://127.0.0.1:5179/) | Same seeded demo accounts/password, with separate data and sessions |
 | Local Langfuse | [localhost:3000](http://localhost:3000/) | `operator@example.local`, password `demo-marketplace` |
-| LiteLLM dashboard | [localhost:4000/ui](http://localhost:4000/ui/) | `admin`, password is the **local demo master key** configured in `compose.yaml` |
+| LiteLLM dashboard | [localhost:4000/ui](http://localhost:4000/ui/) | `admin`, password `sk-marketplace-local` (**local demo gateway master key**, not a provider API key) |
 | Backend API docs | [localhost:58000/docs](http://localhost:58000/docs) | Browser/API authentication required for protected operations |
 
-Other seeded marketplace usernames are `buyer`, `buyer2` and `seller`, with the same demo password. Use **localhost** consistently for the main UI. These public demo credentials and loopback port bindings are for a laptop lab; they are not a cloud authentication setup.
+Other seeded marketplace usernames are `buyer`, `buyer2` and `seller`, with the same demo password. Use **localhost** consistently for the main UI and **127.0.0.1** for the test UI. Both hostnames point to your laptop. We intentionally use different hostnames because browser login cookies are scoped by hostname, not by port; this keeps the two workspaces’ login sessions from interfering with each other. Both are started by the same command; no additional setup is required. Section 5 explains test-workspace use and explicit fixture resets. These public demo credentials and loopback port bindings are for a laptop lab; they are not a cloud authentication setup.
 
 Sign in as **operator**, open **Support workspace**, and find **Workspace options → Documents** on the right. Click **Index documents** if needed, and wait for the indexing status. Indexing embeds missing chunks; it does not reset business records.
 
-## 4. Verify one complete question and its trace
+## 4. Verify the services and logins
 
-Use a newly seeded workspace for the stated business expectations. An existing workspace may have different order status because you changed it in a prior lesson.
+For this setup chapter, confirm that the services are running and that you can open and sign in to all four applications. You do not need to ask an agent question yet.
 
-1. Start a new conversation. Leave gateway guardrails **Off**, long-term memory **Off**, and memory changes **Off**. Keep source authority at its normal enabled setting.
-2. Ask: **“What products, quantities and sellers are in order-1?”** Expected seed: two Canvas Weekenders from Cedar & Co. and two Desk Lamps from Northstar Goods. Open the database citation to inspect records; prose alone is not evidence.
-3. In that same conversation, ask: **“What is the total quantity of those items?”** Expected total: **4**. This checks short-term conversation context, regardless of whether the model reuses records or queries again.
-4. In a new conversation, ask: **“What does the payout policy require before a seller can be paid?”** Inspect policy citations and the search result. The normal policy requires confirmed delivery plus a 24-hour hold, subject to blockers such as active returns. Verify vector versus lexical retrieval in the returned technical details.
-5. Open the answer's trace in local Langfuse, project **Support experiments**. One question execution is one trace; generations and tool calls are observations within it. Follow model input → tool result → subsequent generation → final answer. Tool selection is model-dependent, so every question need not follow an identical sequence.
-6. Give a completed answer thumbs-down, reload/reopen the conversation, and check the vote persists. Its trace should show `user_feedback = False`; thumbs-up is `True`. PostgreSQL is authoritative; score export to Langfuse is best effort. Scores analytics summarize **rated** answers, not correctness.
+| Application | Check |
+|---|---|
+| Main marketplace | Open `http://localhost:5178`, sign in as `operator`, and see the marketplace and Support workspace |
+| Isolated test marketplace | Open `http://127.0.0.1:5179`, sign in as `operator`, and see the separate test workspace |
+| LiteLLM dashboard | Open `http://localhost:4000/ui`, sign in with the local demo credentials in section 3, and confirm the dashboard loads |
+| Local Langfuse | Open `http://localhost:3000`, sign in with the local demo credentials in section 3, and open the local project |
 
-The conversation must belong to the signed-in user to rate it. If an answer is incorrect, preserve the trace and evidence; don't change the fixture merely to make it pass. Saved [regression answers](results/core18-history-v3-2026-10-01/REPORT.md) can be inspected without paying to rerun a benchmark.
+Use the documented main/test hostnames to keep login sessions separate. If a service is not ready, use section 9 before proceeding. A successful login verifies service access, not model answer quality or provider billing/access. Keep your selected provider key configured; Chapter Five verifies model/tool calls, business and policy evidence, and traces using the [first-agent verification checks](docs/FIRST-AGENT-VERIFICATION.md).
 
-### Optional long-term memory smoke check
+## 5. Use the automatically available test workspace
 
-Use a harmless preference and the same signed-in user throughout:
+`./scripts/start.sh` starts both workspaces. The main UI uses `market`; the test UI uses disposable `market_test`. Startup creates the test database if missing; the test backend initializes/seeds an empty database, while existing test data is preserved. Both workspaces share the gateway and observability services, but not business records, logins, conversations or memories. An operator-created memory does not become a support user's memory.
 
-1. New conversation: enable **Use long-term memory** and **Allow memory changes for this question**. Ask: **“Remember that I prefer payout investigation answers as three short bullet points.”**
-2. Inspect saved memories and the trace for a successful `save_memory` operation. An acknowledgment alone does not prove persistence. Permission to change memory resets after each question.
-3. Start a **new conversation**, keep long-term memory enabled and memory changes disabled. Ask: **“What format do I prefer for payout investigation answers?”** Inspect `search_memories`, its returned preference, and the answer.
-4. In another new conversation with long-term memory disabled, ask the same question. It should not retrieve that stored preference. This contrasts cross-conversation memory with ordinary history.
-
-Memory is private per application user. A new conversation is not the same as switching sidebar tabs. A remembered investigation checkpoint is historical context, never authority for current business status. For detailed cases and cleanup use the [memory catalogue](eval/memory-v2/README.md).
-
-## 5. Open the isolated test workspace when a lesson needs it
-
-The main UI uses `market`; the optional test UI uses **disposable `market_test`**. They share the local gateway and observability services, but not business records, logins, conversations or memories. An operator-created memory does not become a support user's memory.
-
-From `app`, with the main stack running:
-
-```sh
-sh scripts/memory-repeatable.sh --reset
-docker compose -f compose.yaml -f compose.memory.yaml up -d --no-deps --build memory-backend memory-frontend
-```
-
-Open **[127.0.0.1:5179](http://127.0.0.1:5179/)** and sign in with the seeded demo accounts. Use **127.0.0.1**, not localhost: the test backend allows that origin, and the separate hostname avoids login-cookie collisions with the main workspace. Test questions still incur inference charges.
-
-For a prepared historical-checkpoint scenario, stop the test services before replacing their data:
-
-```sh
-docker compose -f compose.yaml -f compose.memory.yaml stop memory-frontend memory-backend
-sh scripts/memory-repeatable.sh --prepare checkpoint
-docker compose -f compose.yaml -f compose.memory.yaml up -d --no-deps memory-backend memory-frontend
-```
-
-Reload the page and sign in again after a fixture reset. Prepared scenario memories belong to **support**. Follow the [catalogue's exact question and expected state](eval/memory-v2/README.md); this fixture is different from the clean baseline.
+No additional first-run command is needed. Open **[127.0.0.1:5179](http://127.0.0.1:5179/)** and sign in with the seeded demo accounts. Use **127.0.0.1**, not localhost: the test backend allows that origin, and the separate hostname avoids login-cookie collisions with the main workspace. Test questions still incur inference charges. Startup indexes documents in both workspaces; verify readiness before using vector-retrieval exercises.
 
 Never run a fixture reset, `scripts/test.sh`, or another runner against `market_test` while someone is using the test UI. They share and may replace that disposable database. No fixture/reset command here should be pointed at a real external database.
 
@@ -147,47 +156,57 @@ Never run a fixture reset, `scripts/test.sh`, or another runner against `market_
 
 | Action | Effect |
 |---|---|
-| `docker compose stop` | Stops the main stack, keeps named volumes/data |
-| `./scripts/start.sh` | Resumes the main stack; preserves existing data |
+| `docker compose -f compose.yaml -f compose.memory.yaml stop` | Stops both workspaces and shared services; keeps named volumes/data |
+| `./scripts/start.sh` | Starts/resumes both workspaces; applies provider selection and preserves existing data |
 | `./scripts/reset.sh --confirm-demo-reset` | Erases/reseeds main marketplace state, sessions, conversations and memories; local Langfuse traces remain |
-| `sh scripts/memory-repeatable.sh --reset` | Erases/reseeds **only market_test**; stop the optional UI first |
+| `./scripts/memory-repeatable.sh --reset` | Erases/reseeds **only market_test**; stop the test UI first |
 
-Stop the optional test UI using the two-file Compose command in section 5 before stopping the shared main stack. After either database reset, sign in again and check document indexing. Do not use `docker compose down -v` as normal cleanup: it deletes named volumes, including database and trace storage.
+**When to reset:**
+
+- **Main marketplace:** after placing orders, processing returns or payouts, changing the demo clock, or other exploration, when you intentionally want to start again from the original seeded marketplace. This also removes that workspace’s logins, conversations and saved memories.
+- **Test workspace:** after a lesson/test changes its business records or saved memory and you need the clean baseline before repeating that exercise. If a lesson requires a named fixture, use that lesson’s preparation instructions rather than assuming the clean baseline is its starting point.
+- **No reset needed:** ordinary read-only questions, stopping/resuming services, or changing the inference provider. Startup preserves existing data.
+
+The two reset commands target different databases: `./scripts/reset.sh --confirm-demo-reset` resets only the main `market` workspace and does not reset `market_test`. `./scripts/memory-repeatable.sh --reset` resets only `market_test` and does not change the main workspace.
+
+The stop command above includes both workspaces. After either database reset, sign in again and check document indexing. Do not use `docker compose down -v` as normal cleanup: it deletes named volumes, including database and trace storage.
 
 The integration test command `./scripts/test.sh` also uses disposable `market_test`, not the interactive `market` database. The evaluation command `./scripts/evaluate.sh` uses `market_eval` and makes **paid model calls**. Neither is required for the first UI smoke check.
 
-## Linux differences — Ubuntu laptop or Google Cloud VM
+## 7. Linux differences — Ubuntu laptop or Google Cloud VM
 
 Use the same application configuration, startup script and verification questions. For a headless VM, install [Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/) with its **Docker Compose plugin**, rather than Docker Desktop. Install Git, Python 3 and curl through the distribution's package manager. Check the installed Compose version against section 1; an older distribution package may not support our override tags.
 
 Run `docker version` and `docker compose version` as the same account that will run `./scripts/start.sh`. Configure Docker access according to the installation guide before startup. Do not alternate between a normal checkout and `sudo ./scripts/start.sh`: that can create root-owned files and a different Docker setup. Membership in the Docker group grants extensive host access and is appropriate only for a trusted lab account.
 
-Our service ports bind to loopback. On a remote VM, `localhost` in your laptop browser is your laptop, not the VM. Use SSH port forwarding for the required UI ports and keep the services private; do not change the Compose bindings to public addresses just to reach the demo. Forward **5178** for the marketplace, **3000** for Langfuse, and **4000** for the gateway dashboard. Add **5179** only for the optional test workspace. Preserve the documented browser hostnames for main and test workspaces.
+Our service ports bind to loopback. On a remote VM, `localhost` in your laptop browser is your laptop, not the VM. Use SSH port forwarding for the required UI ports and keep the services private; do not change the Compose bindings to public addresses just to reach the demo. Forward **5178** for the marketplace, **3000** for Langfuse, and **4000** for the gateway dashboard. Forward **5179** for the test workspace. Preserve the documented browser hostnames for main and test workspaces.
 
-### Clean Google Cloud Linux VM rehearsal
+## 8. Windows setup — Ubuntu inside Windows using WSL2
 
-This is an installation rehearsal of the **local Docker stack on a fresh Linux host**, separate from the managed Cloud Run/Cloud SQL deployment. It does not need the existing cloud marketplace database, ADK or Lyzr configuration.
+For Windows, this course uses **Ubuntu inside Windows through Windows Subsystem for Linux 2 (WSL2)**. You keep using your Windows desktop and browser, but run our shell scripts in the Ubuntu terminal. You do not need to create a separate cloud VM or translate the scripts into PowerShell.
 
-1. Create a disposable Ubuntu VM in the designated rehearsal project, record its OS, CPU architecture, RAM, disk and Docker/Compose versions, and connect by SSH. Start with enough RAM/disk for the full Langfuse stack; the Mac observation above is an estimate, not a guaranteed VM minimum.
-2. Install only the prerequisites documented here. Start with an empty working directory and no pre-existing Docker volumes. Avoid copying the instructor's `.env`, ADC credentials, private overlays, runtime profiles or cached images into the learner checkout.
-3. Clone the published course checkpoint and follow sections 2–3 literally. Until the repository is published, a sanitized checkpoint archive can rehearse installation, but it does **not** validate the learner's GitHub clone step. Record that limitation.
-4. Enter the rehearsal's provider key privately in its ignored `.env`. Verify the funded account has access to the configured model and embedding model. Do not copy keys into the report or shell history.
-5. Establish SSH port forwarding, then complete **every section 4 check**: fresh login, seeded order evidence, follow-up quantity, vector policy retrieval, detailed Langfuse trace and feedback persistence. Run the optional memory check and section 5 test workspace if they are included in the learner checkpoint.
-6. Stop and resume the stack, reopen the conversation and check retained data. Capture health, indexing mode, pass/fail observations, first-start duration and resource usage. Record observed API usage/cost where available, without treating estimates as billing totals.
-7. Fix the guide or scripts for any reproducible gap, then retry from a clean disposable setup if the change affects installation. Do not mark this path validated merely because containers start or health passes.
-8. Save a redacted validation report with the exact checkpoint and remaining limitations, then delete the rehearsal VM and associated disks/resources once its results are retained. Merely stopping a VM can retain storage charges.
+1. **Install WSL2 and Ubuntu.** Follow [Microsoft’s WSL installation guide](https://learn.microsoft.com/en-us/windows/wsl/install). On a supported Windows installation, open PowerShell as administrator and run:
+   ```powershell
+   wsl --install -d Ubuntu
+   ```
+   Restart Windows when prompted. Launch **Ubuntu** from the Start menu and create the Linux username/password when asked. In PowerShell, `wsl --list --verbose` should show Ubuntu using version **2**; use Microsoft’s guide if it does not.
+2. **Install Docker Desktop for Windows.** Follow [Docker Desktop’s WSL2 setup](https://docs.docker.com/desktop/features/wsl/). Enable the WSL2 engine and Ubuntu integration in Docker Desktop’s settings. Keep Docker Desktop running. Follow its current Windows/WSL system requirements; do not separately install Docker Engine inside Ubuntu for this Docker Desktop path.
+3. **Open the Ubuntu terminal and install the command-line prerequisites.** Run the following inside Ubuntu, not PowerShell:
+   ```sh
+   sudo apt update
+   sudo apt install -y git python3 curl
+   git --version
+   python3 --version
+   docker version
+   docker compose version
+   ```
+   Docker must show a working server, and Compose must meet the version requirement in section 1.
+4. **Run the shared application setup in Ubuntu.** Create a working folder in your Linux home directory, for example `mkdir -p ~/courses && cd ~/courses`. Follow sections 2–4 from there: clone the repository, create/configure the ignored `.env`, run `./scripts/start.sh`, and verify the application. Use the resource guidance in section 1. Clone inside the Linux filesystem rather than `/mnt/c`, and preserve LF shell-script line endings.
+5. **Open the application in your Windows browser.** Use the same URLs in section 3: main workspace on `localhost`, test workspace on `127.0.0.1`, with their documented ports. If access fails, check Docker/WSL integration and local forwarding before changing application origins or exposing ports.
 
-No clean Linux rehearsal has been completed by the documentation edit. Its result must be added after the actual run.
+Only the initial WSL/Docker setup and the shell/file locations differ from Mac. Application commands, provider selection, questions and expected evidence are shared. This Windows/WSL2 path is **documented from the official instructions but has not been validated on a Windows machine for this release**.
 
-## Windows differences — WSL2
-
-Use Linux commands inside **WSL2**, rather than translating these scripts into PowerShell. Follow [Docker Desktop's WSL2 setup](https://docs.docker.com/desktop/features/wsl/) to install/configure the backend and enable integration for your Linux distribution. Install Git, Python 3 and curl inside that distribution; confirm the section 1 version commands work in its terminal.
-
-Clone into the WSL Linux home directory, such as `~/courses`, instead of a Windows-mounted directory such as `/mnt/c`. This avoids mixing Windows filesystem behavior with the Linux container workflow. Keep shell scripts with LF line endings; do not copy a Windows-formatted `.env` from another machine. Edit the ignored `.env` locally and use the same startup commands from the WSL checkout.
-
-Open the documented UI URLs in your Windows browser after startup. If loopback forwarding or Docker integration prevents access, inspect WSL/Docker networking before changing application origins or exposing ports. File locations, Docker installation and host networking differ from the recorded Mac walkthrough; application questions and expected evidence are shared. These notes have **not** been validated on a Windows machine for this release.
-
-## Troubleshooting
+## 9. Troubleshooting
 
 | Symptom | What to check |
 |---|---|
@@ -207,19 +226,8 @@ Open the documented UI URLs in your Windows browser after startup. If loopback f
 
 Do not paste `.env`, authentication headers or full rendered Compose configuration into support messages. Share a redacted error and the failing step; logs can include prompts and evidence.
 
-## Later lessons: optional services and hosted platforms
+## 10. Later lessons: optional services and hosted platforms
 
 - **Guardrails:** the first smoke test needs none. Built-in privacy is configured in the gateway; Presidio requires the optional `compose.guardrails.yaml` services, and Lakera requires its provider key/config overlay. Follow the [combined Guardrails and Agent Security guide](docs/SECURITY-CHAPTER-DEMO.md) rather than enabling every profile during initial setup.
 - **Lyzr / Google ADK:** native hosted sessions, memory and telemetry belong to those platform lessons. A tunnel is only needed when a hosted agent must reach your laptop's authenticated remote business MCP endpoint. It is not needed for local SQL, RAG or personal memory. Use [Lyzr setup](lyzr/README.md) or the [single Google walkthrough](../course/GOOGLE-PLATFORM-WALKTHROUGH.md); remote access/secrets must be configured deliberately. The current shared remote business key does not establish per-user private memory access.
 - **Cloud:** use the [cloud deployment guide](cloud/README.md) for the separately deployed stack; the existing project has been exercised, while a fresh-project learner rehearsal remains pending. The local Compose file intentionally uses local Langfuse; creating a Langfuse Cloud account does not automatically redirect this laptop's traces.
-
-Before recording/distribution, replace the clone placeholders, perform a clean-machine install with an empty volume set, record host requirements and observed first-run API cost, and verify model availability. This guide is a code-checked learner path, not evidence that those release checks have already passed.
-
-
-### Returning to local-only work
-
-Use the local marketplace and select **OpenAI Agents SDK** for the main course demos. The SDK's tools, business data, memory, LiteLLM and Langfuse remain local. `scripts/start.sh` now retains the private Google ADC overlay and test workspace if that overlay already exists, and restarts frontend proxies after backend rebuilds. Fresh learners without the overlay retain the ordinary local startup path. Shell syntax was checked; the full startup script was not rerun against the existing data merely to validate this change.
-
-The independent hosted-backend switch is `python3 scripts/switch-backend.py local --apply` from `app`. It selects the retained local tunnel/key profile for both Google and Lyzr and affects every caller of those shared agents. Keep the laptop MCP service and tunnel running; start fresh platform conversations after switching. Switch back with `cloud --apply` only after restarting the cloud database.
-
-Cloud SQL may be stopped between labs. This preserves cloud records, conversations and memories but makes the cloud marketplace and cloud MCP unavailable until restarted. Storage and retained backups remain billable; stopping SQL does not erase other cloud resources or guarantee zero total project cost. Keep Terraform `database_active=false` while parked so a later apply does not restart compute unintentionally.

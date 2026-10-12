@@ -2,6 +2,8 @@
 
 Captured October 8, 2026. This is the main guide for the three-component architecture, runtime selection, backend switching and the local-to-cloud demo test sequence. Detailed implementation and platform setup remain in the linked guides.
 
+**October 10 transport update:** The SDK now supports `mcp_http` using an authenticated remote business MCP endpoint. Cloud configuration selects this path; local Compose retains stdio. Thirteen isolated HTTP protocol/lifecycle tests and Terraform validation passed. Cloud web revision `marketplace-web-00015-8lb` is deployed and ready; a live question and fresh-retrieval follow-up passed with retained evidence and detailed Langfuse tool/model observations. Cloud SQL is confirmed `NEVER`, `STOPPED` after validation. The October 8 smoke results below exercised the earlier cloud stdio path. See [October 10 acceptance](cloud/VALIDATION-2026-10-10-SDK-HTTP-MCP.md).
+
 [Open the architecture diagram](diagrams/deployment-runtime-paths.html) — chat application, three agent runtimes, and local/cloud business backend choices.
 
 ## Current working mode — October 8
@@ -42,7 +44,16 @@ For normal demos, keep the chat application and business backend local, and chan
 
 For a cloud demo, use the cloud chat application and configure the agents to the cloud business backend. Keep the URL and its matching authentication secret together as one backend profile. Retain local and cloud credentials separately rather than overwriting a key when switching.
 
-The SDK currently launches its business MCP server as a local subprocess using stdio in the application backend. It does not need the public laptop tunnel. Google and Lyzr need the authenticated HTTP MCP endpoint because their agent processes are remote. Both routes expose marketplace tools through MCP, using different transports.
+The local SDK launches its business MCP server as a subprocess using stdio; that subprocess contains the shared business handlers and queries PostgreSQL directly. It does not forward to a second HTTP middleware or need the laptop tunnel. The cloud SDK configuration uses Streamable HTTP to the separately deployed Cloud Run business MCP service. Google and Lyzr use authenticated HTTP MCP as well. All routes reuse the business handlers; the transport does not change business permissions. SDK preference memory remains a separate owner-bound stdio process, including inside the cloud web container.
+
+## SDK transport configuration and lifecycle
+
+- `AGENT_TOOL_TRANSPORT=mcp`: local stdio; subprocess-owned repeatable-read context and state resource.
+- `AGENT_TOOL_TRANSPORT=mcp_http`: SDK-managed HTTP MCP via `SDK_MCP_URL` and secret-backed `SDK_MCP_API_KEY`. HTTPS is required except loopback HTTP for isolated tests. Missing/invalid configuration fails rather than falling back to local tools.
+- The application opens/closes an investigation, injects its identity into requests outside model-generated arguments, and exposes only the five business tools to the model. Remote cloud reads use the durable registry's revision checks. Returned nested evidence is retained by the application before cleanup so saved citations still resolve.
+- Trace metadata records `mcp_transport` and the endpoint hostname; never put authentication keys in traces. Tool labels alone do not distinguish transport. Verify a cloud question, evidence links, follow-up, cleanup and Langfuse tool spans after deploying the change.
+
+Implementation: [HTTP SDK adapter](backend/marketplace/http_mcp_client.py), [protocol/lifecycle tests](backend/tests/test_sdk_http_mcp.py), [cloud service configuration](cloud/terraform/services.tf). The hosted-backend switch script still manages Google/Lyzr; SDK connection configuration belongs to its application environment.
 
 ## How to know which backend will be used
 
@@ -120,3 +131,11 @@ All six one-question agent smoke checks passed October 8. Your own walkthrough r
 API references: [Lyzr published API schema](https://agent-prod.studio.lyzr.ai/openapi.json), [Lyzr MCP connections](https://docs.lyzr.ai/enterprise/integrations/mcp), [Google Reasoning Engine update](https://cloud.google.com/vertex-ai/docs/reference/rest/v1/projects.locations.reasoningEngines/patch).
 
 Shared presentation and hosted source-viewer validation completed October 8 in local and cloud applications. The additional cloud concurrent-call defect was repaired and the previously timed-out Lyzr payout question passed with database and policy source buttons. Responses can still take tens of seconds or over a minute; see the [validation record](BACKEND-SWITCH-VALIDATION-2026-10-08.md) for observed timings and limits. Hosted agents remain configured for cloud.
+
+## Returning from hosted-platform lessons to local work
+
+Use the local marketplace and select **OpenAI Agents SDK** for the main course demos. The SDK's tools, business data, memory, LiteLLM and Langfuse remain local. `scripts/start.sh` now retains the private Google ADC overlay and test workspace if that overlay already exists, and restarts frontend proxies after backend rebuilds. Fresh learners start both local workspaces with the same startup script. Provider switching and automatic workspace startup were validated on the configured Mac on October 12, 2026; see the provider-switch report.
+
+The independent hosted-backend switch is `python3 scripts/switch-backend.py local --apply` from `app`. It selects the retained local tunnel/key profile for both Google and Lyzr and affects every caller of those shared agents. Keep the laptop MCP service and tunnel running; start fresh platform conversations after switching. Switch back with `cloud --apply` only after restarting the cloud database.
+
+Cloud SQL may be stopped between labs. This preserves cloud records, conversations and memories but makes the cloud marketplace and cloud MCP unavailable until restarted. Storage and retained backups remain billable; stopping SQL does not erase other cloud resources or guarantee zero total project cost. Keep Terraform `database_active=false` while parked so a later apply does not restart compute unintentionally.

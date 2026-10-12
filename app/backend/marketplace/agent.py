@@ -10,6 +10,8 @@ from .business import uid
 from .tools import ReadContext,client
 from .tool_contracts import build_tool_functions
 from .mcp_client import open_mcp, RemoteReadContext, open_memory_mcp, LocalMemoryContext
+from .http_mcp_client import open_http_mcp, HTTPReadContext
+from agents.exceptions import MaxTurnsExceeded
 
 # Disable the separate OpenAI trace exporter; Langfuse is our selected sink.
 set_tracing_disabled(True)
@@ -52,6 +54,10 @@ class BudgetHooks(RunHooks):
                 if isinstance(value,str):
                     try: value=json.loads(value)
                     except ValueError: pass
+                # MCP text blocks wrap the actual JSON error/evidence envelope.
+                if isinstance(value,dict) and value.get('type')=='text':
+                    try: value=json.loads(value['text'])
+                    except (KeyError,ValueError): pass
                 attempt.update(status='error' if isinstance(value,dict) and value.get('status')=='error' else 'completed',result=value)
                 break
 
@@ -97,17 +103,39 @@ def build_question_input(question, snapshot, history=None):
         content += '\nExplain recorded failed and successful attempts chronologically. Cite full evidence handles. If refunded_paise equals gross_paise and payout_amount_paise is zero, say no payout due; do not suggest releasing it. Do not repeat supplied queries unless additional information is needed.'
     return content + '\n\nApplication investigation metadata (applies to this question only): ' + json.dumps(snapshot, default=str, sort_keys=True)
 
-async def answer(conversation_id,question, *, evaluation_config=None, memory_enabled=False, memory_write=False, guardrail="off", source_authority=True, marker_mode="off"):
+async def answer(conversation_id,question, *, evaluation_config=None, memory_enabled=False, memory_write=False, guardrail="off", source_authority=True, marker_mode="off", suppress_catalog=False, suppress_documents=False):
+    if suppress_catalog or suppress_documents:
+        memory_enabled=False
+        memory_write=False
+    from .loop_lab import validate as validate_loop
+    validate_loop((evaluation_config or {}).get('loop_mode','normal'))
     validate_settings(guardrail,source_authority)
     from .security_marker import marker_instructions
     marker_instructions(marker_mode)
     transport=(evaluation_config or {}).get('tool_transport',os.getenv('AGENT_TOOL_TRANSPORT','direct'))
+    if transport == 'mcp_http':
+        if suppress_catalog or suppress_documents: raise ValueError('Context comparison requires local SDK tools')
+        async with open_http_mcp() as server:
+            try:
+                await server.begin()
+                ctx=HTTPReadContext(server)
+                return await _answer(conversation_id,question,ctx,server,evaluation_config=evaluation_config,memory_enabled=memory_enabled,memory_write=memory_write,guardrail=guardrail,source_authority=source_authority,marker_mode=marker_mode)
+            finally:
+                try:
+                    await asyncio.wait_for(server.end(),timeout=10)
+                except Exception:
+                    logging.getLogger(__name__).warning('HTTP MCP investigation cleanup unavailable; server TTL applies')
     if transport == 'mcp':
-        async with open_mcp() as server:
+        async with open_mcp(suppress_catalog=suppress_catalog,suppress_documents=suppress_documents) as server:
+            if (evaluation_config or {}).get('loop_mode')=='tool_error':
+                from .loop_lab import inject_once
+                server.loop_lab_state=inject_once(server)
             ctx=await RemoteReadContext.create(server)
+            ctx.context_suppression={"catalog":suppress_catalog,"documents":suppress_documents}
             return await _answer(conversation_id,question,ctx,server,evaluation_config=evaluation_config,memory_enabled=memory_enabled,memory_write=memory_write,guardrail=guardrail,source_authority=source_authority,marker_mode=marker_mode)
     if transport != 'direct': raise ValueError('Unknown tool transport')
-    ctx=ReadContext()
+    ctx=ReadContext(suppress_catalog=suppress_catalog,suppress_documents=suppress_documents)
+    ctx.context_suppression={"catalog":suppress_catalog,"documents":suppress_documents}
     try:
         return await _answer(conversation_id,question,ctx,None,evaluation_config=evaluation_config,memory_enabled=memory_enabled,memory_write=memory_write,guardrail=guardrail,source_authority=source_authority,marker_mode=marker_mode)
     finally:
@@ -184,7 +212,9 @@ For counts and aggregates, lead with the count and state the actual date range u
     try:
         if memory_start_error is not None:
             raise RuntimeError('Local memory MCP initialization failed') from memory_start_error
-        span=lf.start_as_current_observation(name='support-investigation',as_type='span',input=question,metadata={'run_id':run_id,'revision':ctx.snapshot['revision'],'conversation_id':conversation_id,'guardrail':guardrail,'source_authority':source_authority}) if lf else nullcontext()
+        connection={'mcp_transport':getattr(server,'transport_kind','stdio') if server else 'direct'}
+        if getattr(server,'endpoint',None): connection['mcp_endpoint_host']=server.endpoint
+        span=lf.start_as_current_observation(name='support-investigation',as_type='span',input=question,metadata={'run_id':run_id,'revision':ctx.snapshot['revision'],'conversation_id':conversation_id,'guardrail':guardrail,'source_authority':source_authority,**connection}) if lf else nullcontext()
         with span as observation:
             if observation:
                 metrics['trace_id']=observation.trace_id
@@ -203,13 +233,16 @@ For counts and aggregates, lead with the count and state the actual date range u
             if not memory_only and order_ids and re.search(r'\b(history|timeline|attempts?|retr(?:y|ies|ied))\b',question,re.I):
                 history=[await ctx.order_history(order_id) if server else ctx.order_history(order_id) for order_id in order_ids[:3]]
 
-            result=await asyncio.wait_for(Runner.run(agent,build_question_input(question,{**ctx.snapshot,'document_revision':ctx.doc_hash},history),session=DatabaseSession(conversation_id),max_turns=MAX_TURNS,hooks=hooks),timeout=MAX_SECONDS)
+            result=await asyncio.wait_for(Runner.run(agent,build_question_input(question,{**ctx.snapshot,'document_revision':ctx.doc_hash},history),session=DatabaseSession(conversation_id),max_turns=1 if config.get('loop_mode')=='turn_limit' else MAX_TURNS,hooks=hooks),timeout=MAX_SECONDS)
             final=str(result.final_output)
             usage=result.context_wrapper.usage
             metrics={'requests':usage.requests,'input_tokens':usage.input_tokens,'output_tokens':usage.output_tokens,'total_tokens':usage.total_tokens,'model':config.get('model',os.getenv('OPENAI_MODEL','gpt-5-nano')),'price_status':'uncached list-rate estimate, excludes embeddings; not an invoice','estimated_model_cost_usd':round(hooks.cost,8)}
             if observation:
                 observation.update(output=final)
                 metrics['trace_id']=observation.trace_id
+    except MaxTurnsExceeded:
+        status='failed'; final='The model-turn limit was reached before the investigation finished. Evidence collected so far is retained; no complete conclusion is available. Try a narrower question or restore the normal limit.'
+        metrics['error_type']='MaxTurnsExceeded'
     except CostBudgetExceeded:
         status='failed'; final='The estimated model cost limit was reached. Evidence collected so far is retained. Try a narrower question.'
     except asyncio.TimeoutError:
@@ -257,10 +290,18 @@ For counts and aggregates, lead with the count and state the actual date range u
         metrics['memory_tool_transport']='mcp' if memory_enabled else 'disabled'
         metrics['memory_write_allowed']=bool(memory_enabled and memory_write)
         metrics['tool_transport']='mcp' if server else 'direct'
+        metrics['mcp_transport']=getattr(server,'transport_kind','stdio') if server else 'direct'
+        if getattr(server,'endpoint',None): metrics['mcp_endpoint_host']=server.endpoint
         metrics['prompt_version']=PROMPT_VERSION if source_authority else PROMPT_VERSION+'-demo-without-source-authority'
         metrics['source_authority']=source_authority
+        metrics['prompt_hash']=hooks.prompt_hash
+        metrics['context_suppression']=getattr(ctx,'context_suppression',{'catalog':False,'documents':False})
         metrics['marker_mode']=marker_mode
         metrics['guardrail_profile']=guardrail
+        if 'loop_mode' in config:
+            metrics.update(loop_mode=config['loop_mode'],max_turns=1 if config['loop_mode']=='turn_limit' else MAX_TURNS,
+                           actual_tool_invocations=len(hooks.tool_attempts),tool_attempts=hooks.tool_attempts,
+                           loop_lab=getattr(server,'loop_lab_state',None))
         metrics['guardrails']=PROFILES[guardrail]
         metrics['catalog_version']='2.0'
         metrics.update(elapsed_seconds=round(time.monotonic()-started,2),tool_calls=ctx.calls+metrics['memory_tool_calls'],business_tool_calls=ctx.calls,document_revision=ctx.doc_hash)

@@ -12,7 +12,7 @@ for attempt in range(20):
  try:call('/health/liveliness');break
  except (OSError,ValueError):time.sleep(2)
 else:raise SystemExit('Gateway not ready')
-for name,alias,models in [('SUPPORT_GATEWAY_KEY','marketplace-support',['support-model','embedding']),('EVAL_GATEWAY_KEY','marketplace-evaluation',['eval-nano','eval-54','eval-5','support-model','embedding']),('JUDGE_GATEWAY_KEY','marketplace-judge',['eval-judge'])]:
+for name,alias,models in [('SUPPORT_GATEWAY_KEY','marketplace-support',['support-model','embedding']),('OPERATOR_GATEWAY_KEY','marketplace-operator',['support-model','embedding']),('EVAL_GATEWAY_KEY','marketplace-evaluation',['eval-nano','eval-54','eval-5','support-model','embedding']),('JUDGE_GATEWAY_KEY','marketplace-judge',['eval-judge'])]:
  key=values.get(name)
  if key:
   import urllib.parse

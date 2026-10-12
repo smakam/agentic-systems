@@ -4,14 +4,18 @@ import os
 import sys
 from agents.mcp import MCPServerStdio
 
-def open_mcp():
+def open_mcp(*, suppress_catalog=False, suppress_documents=False):
     # Do not pass business-write credentials, provider keys or tracing secrets.
     allowed = ('READ_DATABASE_URL', 'LITELLM_URL', 'LITELLM_API_KEY', 'DATA_DIR',
                'GATEWAY_IAM_AUDIENCE')
+    from .gateway_identity import current_key
+    env = {k: os.environ[k] for k in allowed if k in os.environ}
+    if current_key(): env['LITELLM_API_KEY'] = current_key()
+    env['CONTEXT_COMPARISON_JSON'] = json.dumps(dict(suppress_catalog=suppress_catalog,suppress_documents=suppress_documents))
     return MCPServerStdio(
         name='Marketplace read tools',
         params={'command': sys.executable, 'args': ['-m', 'marketplace.mcp_server'],
-                'env': {k: os.environ[k] for k in allowed if k in os.environ}},
+                'env': env},
         cache_tools_list=True, client_session_timeout_seconds=60)
 
 class RemoteReadContext:

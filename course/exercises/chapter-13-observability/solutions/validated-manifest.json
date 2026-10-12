@@ -1,0 +1,49 @@
+{
+  "batch_id": "ch13-58634577764b",
+  "synthetic": true,
+  "state": "accepted",
+  "cases": [
+    {
+      "case": "normal",
+      "trace_id": "1ac2e6e6ead248299b2edbe84a8f78e4",
+      "session_id": "ch13-58634577764b-normal",
+      "status": "completed",
+      "duration_ms": 1200
+    },
+    {
+      "case": "slow-tool",
+      "trace_id": "3aa05eb93d9b48d4aca9500c169a11bd",
+      "session_id": "ch13-58634577764b-slow",
+      "status": "completed",
+      "duration_ms": 6200
+    },
+    {
+      "case": "recovered-error",
+      "trace_id": "fce7498a66e341ea9f4101822fa856e6",
+      "session_id": "ch13-58634577764b-recovery",
+      "status": "completed",
+      "duration_ms": 2400
+    },
+    {
+      "case": "failed-run",
+      "trace_id": "b63894e9aeb74282a38b2c02d2463a3d",
+      "session_id": "ch13-58634577764b-failure",
+      "status": "failed",
+      "duration_ms": 900
+    },
+    {
+      "case": "conversation-first",
+      "trace_id": "a57dd93e8c6b4b66925e107c326b95cc",
+      "session_id": "ch13-58634577764b-followup",
+      "status": "completed",
+      "duration_ms": 1800
+    },
+    {
+      "case": "conversation-followup",
+      "trace_id": "15ba7de725ee4bdda44e9ac76d1191df",
+      "session_id": "ch13-58634577764b-followup",
+      "status": "completed",
+      "duration_ms": 1500
+    }
+  ]
+}

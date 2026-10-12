@@ -1,0 +1,28 @@
+# Explicit opt-in disposable lab; regular services and cloud deployment are unchanged.
+services:
+  ch11-backend:
+    extends:
+      file: compose.yaml
+      service: backend
+    image: marketplace-lab-backend
+    profiles: [chapter11]
+    ports: !override ["127.0.0.1:58011:8000"]
+    environment:
+      CH11_LOOP_LAB: 'true'
+      PYTHONPATH: /app
+      INITIALIZE_ON_STARTUP: 'false'
+      DATABASE_URL: postgresql+psycopg://market:market-local@postgres:5432/ch11_loop_lab
+      READ_DATABASE_URL: postgresql://agent_reader:reader-local@postgres:5432/ch11_loop_lab
+      ALLOWED_ORIGINS: http://localhost:5181,http://127.0.0.1:5181
+    volumes:
+      - ./backend/marketplace:/app/marketplace:ro
+      - ../course/exercises/chapter-11-agent-loop:/exercise:ro
+  ch11-frontend:
+    image: marketplace-lab-frontend
+    profiles: [chapter11]
+    depends_on:
+      ch11-backend: {condition: service_healthy}
+    ports: ["127.0.0.1:5181:80"]
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html:ro
+      - ./infra/nginx.ch11.conf:/etc/nginx/conf.d/default.conf:ro

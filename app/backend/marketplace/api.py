@@ -181,14 +181,36 @@ class Question(BaseModel):
     memory_enabled:bool=False
     memory_write:bool=False
     guardrail:Guardrail="off"
+    suppress_catalog:bool=False
+    suppress_documents:bool=False
     source_authority:bool=True
     marker_mode:str="off"
+    loop_mode:Literal['normal','tool_error','turn_limit']='normal'
+
+@app.get('/api/hosting-lab')
+def hosting_lab_options(user=Depends(identity)):
+    role(user,'support','operator')
+    from .hosting_client import enabled, validate
+    validate()
+    return {'enabled':enabled()}
+
+@app.get('/api/loop-lab')
+def loop_lab_options(user=Depends(identity)):
+    role(user,'support','operator')
+    from .loop_lab import enabled, MODES
+    return {'enabled':enabled(),'modes':list(MODES) if enabled() else []}
 @app.post('/api/conversations/{cid}/ask')
 async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session)):
     conv=owned(db,user,cid)
     runtime=runtime_binding(conv)['runtime']
+    from .loop_lab import validate as validate_loop, enabled as loop_enabled
+    try: validate_loop(body.loop_mode,runtime)
+    except ValueError as exc: raise HTTPException(403,str(exc))
     try: validate_controls(runtime,body)
     except ValueError as exc: raise HTTPException(400,str(exc))
+    if (body.suppress_catalog or body.suppress_documents) and not is_test(): raise HTTPException(403,'Context comparison is available only in the test workspace')
+    if (body.suppress_catalog or body.suppress_documents) and runtime!='sdk': raise HTTPException(400,'Context comparison requires the local SDK runtime')
+    if (body.suppress_catalog or body.suppress_documents) and conv.items: raise HTTPException(400,'Start a fresh conversation for a context comparison')
     if not runtime_configured(runtime): raise HTTPException(503,'Selected runtime is not configured')
     from .security_marker import MARKER_PROMPTS
     if body.marker_mode not in MARKER_PROMPTS: raise HTTPException(400, 'Unknown private-instruction mode')
@@ -207,8 +229,22 @@ async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session
             if conv.title=='New investigation': conv.title=body.question[:70]; db.commit()
             if runtime!='sdk':
                 return await hosted_answer(db,conv,body.question,body)
+            from . import hosting_client
+            if hosting_client.enabled():
+                try:
+                    hosting_client.validate()
+                    if body.memory_enabled or body.memory_write or body.guardrail != 'off' or body.loop_mode != 'normal' or body.marker_mode != 'off' or body.suppress_catalog or body.suppress_documents:
+                        raise ValueError('Chapter 12 remote agent uses memory off, guardrail off and normal mode')
+                    return await hosting_client.answer(cid,body.question)
+                except ValueError as exc:
+                    raise HTTPException(400,str(exc)) from None
+                except RuntimeError as exc:
+                    raise HTTPException(502,str(exc)) from None
             from .agent import answer
-            return await answer(cid,body.question,memory_enabled=body.memory_enabled,memory_write=body.memory_write,guardrail=body.guardrail,source_authority=body.source_authority,marker_mode=body.marker_mode)
+            lab_config={'loop_mode':body.loop_mode,'tool_transport':'mcp','model':os.getenv('OPENAI_MODEL','gpt-5.4')} if loop_enabled() else None
+            from .gateway_identity import for_role
+            with for_role(user.role):
+                return await answer(cid,body.question,evaluation_config=lab_config,memory_enabled=body.memory_enabled,memory_write=body.memory_write,guardrail=body.guardrail,source_authority=body.source_authority,marker_mode=body.marker_mode,suppress_catalog=body.suppress_catalog,suppress_documents=body.suppress_documents)
         finally:
             if corpus_locked: lock.execute(text('SELECT pg_advisory_unlock_shared(hashtext(:key))'),{'key':LOCK})
             lock.execute(text('SELECT pg_advisory_unlock(hashtext(:cid))'),{'cid':cid})

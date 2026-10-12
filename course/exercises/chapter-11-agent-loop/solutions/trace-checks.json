@@ -1,0 +1,450 @@
+[
+  {
+    "trace_id": "ff9cfc4226ca599acefdd696843d1ae1",
+    "observations": [
+      {
+        "id": "c9ea769c33d0978e",
+        "name": "Gateway output \u2192 Model input",
+        "type": "SPAN",
+        "level": "DEFAULT",
+        "parentObservationId": "d27fe417ba60b87b"
+      },
+      {
+        "id": "9179271eea3ac027",
+        "name": "generation",
+        "type": "GENERATION",
+        "level": "DEFAULT",
+        "parentObservationId": "6173d5778695cfb4"
+      },
+      {
+        "id": "6173d5778695cfb4",
+        "name": "turn",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "645d00d71e96a7d6"
+      },
+      {
+        "id": "d88ac16bd7d8518f",
+        "name": "mcp_tools",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "645d00d71e96a7d6"
+      },
+      {
+        "id": "f1989e44594dffb5",
+        "name": "Gateway output \u2192 Model input",
+        "type": "SPAN",
+        "level": "DEFAULT",
+        "parentObservationId": "d27fe417ba60b87b"
+      },
+      {
+        "id": "a64c3c4f437e0a63",
+        "name": "search_documents",
+        "type": "TOOL",
+        "level": "DEFAULT",
+        "parentObservationId": "c439d5b244a1a9fa"
+      },
+      {
+        "id": "c439d5b244a1a9fa",
+        "name": "turn",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "645d00d71e96a7d6"
+      },
+      {
+        "id": "2e26ac1b7792d8cf",
+        "name": "generation",
+        "type": "GENERATION",
+        "level": "DEFAULT",
+        "parentObservationId": "c439d5b244a1a9fa"
+      },
+      {
+        "id": "0cc5d4ea90a1958d",
+        "name": "mcp_tools",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "645d00d71e96a7d6"
+      },
+      {
+        "id": "186b4e49a3742641",
+        "name": "Gateway output \u2192 Model input",
+        "type": "SPAN",
+        "level": "DEFAULT",
+        "parentObservationId": "d27fe417ba60b87b"
+      },
+      {
+        "id": "740ff93c64086fb7",
+        "name": "query_business_data",
+        "type": "TOOL",
+        "level": "DEFAULT",
+        "parentObservationId": "dfcbe16e11eee05a"
+      },
+      {
+        "id": "23232b451a0efae5",
+        "name": "generation",
+        "type": "GENERATION",
+        "level": "DEFAULT",
+        "parentObservationId": "dfcbe16e11eee05a"
+      },
+      {
+        "id": "dfcbe16e11eee05a",
+        "name": "turn",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "645d00d71e96a7d6"
+      },
+      {
+        "id": "c87af4b1257de7db",
+        "name": "mcp_tools",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "645d00d71e96a7d6"
+      },
+      {
+        "id": "7e485d481da49184",
+        "name": "Gateway output \u2192 Model input",
+        "type": "SPAN",
+        "level": "DEFAULT",
+        "parentObservationId": "d27fe417ba60b87b"
+      },
+      {
+        "id": "e2695b8dc9dd2ce1",
+        "name": "get_catalog",
+        "type": "TOOL",
+        "level": "DEFAULT",
+        "parentObservationId": "f391dc5cd95efcea"
+      },
+      {
+        "id": "f391dc5cd95efcea",
+        "name": "turn",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "645d00d71e96a7d6"
+      },
+      {
+        "id": "0abe3dc9ec3cc2c1",
+        "name": "generation",
+        "type": "GENERATION",
+        "level": "DEFAULT",
+        "parentObservationId": "f391dc5cd95efcea"
+      },
+      {
+        "id": "645d00d71e96a7d6",
+        "name": "Marketplace support",
+        "type": "AGENT",
+        "level": "DEFAULT",
+        "parentObservationId": "db2cd646f2b5e4fb"
+      },
+      {
+        "id": "c8a78c10108af104",
+        "name": "mcp_tools",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "db2cd646f2b5e4fb"
+      },
+      {
+        "id": "db2cd646f2b5e4fb",
+        "name": "Agent workflow",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "58704646f4174788"
+      },
+      {
+        "id": "58704646f4174788",
+        "name": "Agent workflow",
+        "type": "AGENT",
+        "level": "DEFAULT",
+        "parentObservationId": "d27fe417ba60b87b"
+      },
+      {
+        "id": "d27fe417ba60b87b",
+        "name": "support-investigation",
+        "type": "SPAN",
+        "level": "DEFAULT",
+        "parentObservationId": null
+      }
+    ],
+    "generations": 4,
+    "tools": 3
+  },
+  {
+    "trace_id": "4a0c39e87ecb4b137f5bbd902655c9b6",
+    "observations": [
+      {
+        "id": "cdf3eeb6028e1848",
+        "name": "mcp_tools",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "250bf56b7edf43c9"
+      },
+      {
+        "id": "0fd7dd17334eb8b8",
+        "name": "Gateway output \u2192 Model input",
+        "type": "SPAN",
+        "level": "DEFAULT",
+        "parentObservationId": "fc75aca108f8b2d6"
+      },
+      {
+        "id": "cf3a34040ba2da04",
+        "name": "get_catalog",
+        "type": "TOOL",
+        "level": "DEFAULT",
+        "parentObservationId": "925c2e77880a77ef"
+      },
+      {
+        "id": "9ae87065a4c09795",
+        "name": "generation",
+        "type": "GENERATION",
+        "level": "DEFAULT",
+        "parentObservationId": "925c2e77880a77ef"
+      },
+      {
+        "id": "925c2e77880a77ef",
+        "name": "turn",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "250bf56b7edf43c9"
+      },
+      {
+        "id": "250bf56b7edf43c9",
+        "name": "Marketplace support",
+        "type": "AGENT",
+        "level": "ERROR",
+        "parentObservationId": "c039fb95eefb989e"
+      },
+      {
+        "id": "cf71de07a6241ce5",
+        "name": "mcp_tools",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "c039fb95eefb989e"
+      },
+      {
+        "id": "c039fb95eefb989e",
+        "name": "Agent workflow",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "289cff38273261ae"
+      },
+      {
+        "id": "289cff38273261ae",
+        "name": "Agent workflow",
+        "type": "AGENT",
+        "level": "DEFAULT",
+        "parentObservationId": "fc75aca108f8b2d6"
+      },
+      {
+        "id": "fc75aca108f8b2d6",
+        "name": "support-investigation",
+        "type": "SPAN",
+        "level": "ERROR",
+        "parentObservationId": null
+      }
+    ],
+    "generations": 1,
+    "tools": 1
+  },
+  {
+    "trace_id": "b7d2f229e68a46e53428c689e5c9518c",
+    "observations": [
+      {
+        "id": "cec34a44290a2fc9",
+        "name": "Gateway output \u2192 Model input",
+        "type": "SPAN",
+        "level": "DEFAULT",
+        "parentObservationId": "7cc3e1922c673e7f"
+      },
+      {
+        "id": "cadd81e4fb73530c",
+        "name": "generation",
+        "type": "GENERATION",
+        "level": "DEFAULT",
+        "parentObservationId": "e576811c3a23d6c7"
+      },
+      {
+        "id": "e576811c3a23d6c7",
+        "name": "turn",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "2b8ca8bafa22c2d9"
+      },
+      {
+        "id": "61e562a9e8a6b5a8",
+        "name": "mcp_tools",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "2b8ca8bafa22c2d9"
+      },
+      {
+        "id": "65ecfe2132961a0b",
+        "name": "Gateway output \u2192 Model input",
+        "type": "SPAN",
+        "level": "DEFAULT",
+        "parentObservationId": "7cc3e1922c673e7f"
+      },
+      {
+        "id": "099fc44cbd56afad",
+        "name": "search_documents",
+        "type": "TOOL",
+        "level": "DEFAULT",
+        "parentObservationId": "09d5069d2fe3a6e8"
+      },
+      {
+        "id": "4ec8f9335bbdc1ef",
+        "name": "generation",
+        "type": "GENERATION",
+        "level": "DEFAULT",
+        "parentObservationId": "09d5069d2fe3a6e8"
+      },
+      {
+        "id": "09d5069d2fe3a6e8",
+        "name": "turn",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "2b8ca8bafa22c2d9"
+      },
+      {
+        "id": "b7e5e4f9825491e1",
+        "name": "mcp_tools",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "2b8ca8bafa22c2d9"
+      },
+      {
+        "id": "cc6d2fce09e788f0",
+        "name": "Gateway output \u2192 Model input",
+        "type": "SPAN",
+        "level": "DEFAULT",
+        "parentObservationId": "7cc3e1922c673e7f"
+      },
+      {
+        "id": "6c6f8d7126afbb55",
+        "name": "query_business_data",
+        "type": "TOOL",
+        "level": "DEFAULT",
+        "parentObservationId": "61cad79c4375268e"
+      },
+      {
+        "id": "bebb69be73e51c3c",
+        "name": "generation",
+        "type": "GENERATION",
+        "level": "DEFAULT",
+        "parentObservationId": "61cad79c4375268e"
+      },
+      {
+        "id": "d29dd28b93253b92",
+        "name": "mcp_tools",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "2b8ca8bafa22c2d9"
+      },
+      {
+        "id": "61cad79c4375268e",
+        "name": "turn",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "2b8ca8bafa22c2d9"
+      },
+      {
+        "id": "d70d7c34af376048",
+        "name": "Gateway output \u2192 Model input",
+        "type": "SPAN",
+        "level": "DEFAULT",
+        "parentObservationId": "7cc3e1922c673e7f"
+      },
+      {
+        "id": "65e1f74afebf393b",
+        "name": "query_business_data",
+        "type": "TOOL",
+        "level": "DEFAULT",
+        "parentObservationId": "d8413feb5e3045bc"
+      },
+      {
+        "id": "dd49cf4552724640",
+        "name": "generation",
+        "type": "GENERATION",
+        "level": "DEFAULT",
+        "parentObservationId": "d8413feb5e3045bc"
+      },
+      {
+        "id": "d8413feb5e3045bc",
+        "name": "turn",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "2b8ca8bafa22c2d9"
+      },
+      {
+        "id": "8cf2d7f76ed1d2f8",
+        "name": "mcp_tools",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "2b8ca8bafa22c2d9"
+      },
+      {
+        "id": "1a984c3e7de99ee1",
+        "name": "get_catalog",
+        "type": "TOOL",
+        "level": "DEFAULT",
+        "parentObservationId": "3fbf17741f8fe00d"
+      },
+      {
+        "id": "73222455ff151d45",
+        "name": "Gateway output \u2192 Model input",
+        "type": "SPAN",
+        "level": "DEFAULT",
+        "parentObservationId": "7cc3e1922c673e7f"
+      },
+      {
+        "id": "b1e302ac7a695f14",
+        "name": "generation",
+        "type": "GENERATION",
+        "level": "DEFAULT",
+        "parentObservationId": "3fbf17741f8fe00d"
+      },
+      {
+        "id": "3fbf17741f8fe00d",
+        "name": "turn",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "2b8ca8bafa22c2d9"
+      },
+      {
+        "id": "2b8ca8bafa22c2d9",
+        "name": "Marketplace support",
+        "type": "AGENT",
+        "level": "DEFAULT",
+        "parentObservationId": "a7ed7f9a2d97bed3"
+      },
+      {
+        "id": "4495a072e2b7a521",
+        "name": "mcp_tools",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "a7ed7f9a2d97bed3"
+      },
+      {
+        "id": "a7ed7f9a2d97bed3",
+        "name": "Agent workflow",
+        "type": "CHAIN",
+        "level": "DEFAULT",
+        "parentObservationId": "6b835a7b9204b356"
+      },
+      {
+        "id": "6b835a7b9204b356",
+        "name": "Agent workflow",
+        "type": "AGENT",
+        "level": "DEFAULT",
+        "parentObservationId": "7cc3e1922c673e7f"
+      },
+      {
+        "id": "7cc3e1922c673e7f",
+        "name": "support-investigation",
+        "type": "SPAN",
+        "level": "DEFAULT",
+        "parentObservationId": null
+      }
+    ],
+    "generations": 5,
+    "tools": 4
+  }
+]
