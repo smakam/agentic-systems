@@ -24,5 +24,4 @@ services:
       ch11-backend: {condition: service_healthy}
     ports: ["127.0.0.1:5181:80"]
     volumes:
-      - ./frontend/dist:/usr/share/nginx/html:ro
       - ./infra/nginx.ch11.conf:/etc/nginx/conf.d/default.conf:ro

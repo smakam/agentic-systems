@@ -366,3 +366,7 @@ Course plan: local SDK for main demonstrations; hosted agents and native platfor
 ## Chapter 12 hybrid hosting exercise
 
 See [exercise](../course/exercises/chapter-12-runtime-and-hosting/exercise.md) and [validation](../course/exercises/chapter-12-runtime-and-hosting/validation.md). The dedicated Compose overlay uses a disposable database, local chat/history, separate Cloud Run agent with direct OpenAI Responses, and laptop HTTP MCP through a tunnel. It is opt-in and does not change normal runtime routing. The temporary instructor cloud deployment was cleaned up after successful tests.
+
+## Starting all course workspaces
+
+`./scripts/start.sh` starts main and test plus the existing **Agent Loop** and **Runtime and Hosting** lab UIs. Use `./scripts/stop.sh` to stop them together without deleting data. See [Local setup](LOCAL-SETUP.md#chapter-specific-lab-environments) for the UI/database mapping and cloud prerequisites. Initializing an empty lab is separate from resetting an existing fixture; startup does not reset data or deploy cloud resources.

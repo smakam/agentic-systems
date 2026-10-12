@@ -3,7 +3,9 @@ services:
     extends: {file: compose.yaml, service: backend}
     image: marketplace-lab-backend
     profiles: [chapter12]
-    env_file: .ch12.env
+    env_file:
+      - path: .ch12.env
+        required: false
     ports: !override ["127.0.0.1:58012:8000"]
     environment:
       CH12_HOSTING_LAB: 'true'
@@ -19,13 +21,14 @@ services:
     depends_on: {ch12-backend: {condition: service_healthy}}
     ports: ["127.0.0.1:5192:80"]
     volumes:
-      - ./frontend/dist:/usr/share/nginx/html:ro
       - ./infra/nginx.ch12.conf:/etc/nginx/conf.d/default.conf:ro
   ch12-mcp:
     image: marketplace-lab-backend
     profiles: [chapter12]
     command: [python, -m, marketplace.remote_mcp]
-    env_file: .ch12.env
+    env_file:
+      - path: .ch12.env
+        required: false
     environment:
       READ_DATABASE_URL: postgresql://agent_reader:reader-local@postgres:5432/ch12_hosting_lab
       LITELLM_URL: http://gateway:4000/v1

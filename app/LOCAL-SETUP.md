@@ -108,12 +108,14 @@ docker compose ps
 curl --fail http://localhost:58000/api/health
 ```
 
-Startup creates PostgreSQL, initializes the gateway database, provisions scoped keys into the gitignored `.env`, and starts the main marketplace, isolated test workspace, gateway and Langfuse services. It creates the test database if missing and attempts document embeddings in both workspaces. The first run may take several minutes. Restarting an existing setup does not reset its business data or conversations.
+Startup creates PostgreSQL, initializes the gateway database, provisions scoped keys into the gitignored `.env`, and starts all four local UIs: main marketplace, test marketplace, Agent Loop lab, and Runtime and Hosting lab, alongside the shared gateway and Langfuse services. It creates missing practice/lab databases and seeds only empty ones; initialized workspaces are preserved. It attempts document indexing in main/test and newly initialized labs. The hosting UI can open without cloud credentials; its cloud-agent experiment still requires the optional setup in that exercise. Startup does not deploy cloud resources or start a tunnel. The first run may take several minutes. Restarting an existing setup does not reset its business data or conversations.
 
 | Workspace | Purpose |
 |---|---|
 | Main marketplace | Normal exploration: place orders, change business states and keep your ongoing conversations/data |
 | Isolated test marketplace | Repeatable lessons and exercises using a known seeded baseline or a named fixture, without changing main-workspace data |
+| Agent Loop lab | Normal execution, simulated read-error recovery and turn-limit stopping, used in **The Agent Loop** |
+| Runtime and Hosting lab | Local interface for the optional hosted-agent experiment, used in **Runtime and Hosting** |
 
 Most investigation exercises only read business records, so they do not require a reset after each question. Questions still save conversations and traces. Some lessons deliberately change marketplace state or saved memory; those lessons specify when to restore their seed/fixture before repeating the scenario. Reset only when the required starting state has changed, not after every read-only exercise. Normal startup preserves both workspaces and never performs a lesson reset. Section 5 explains isolation; lesson-specific guides provide any required reset instructions.
 
@@ -123,6 +125,8 @@ If startup reports that vector indexing is unavailable, the UI may still load. F
 |---|---|---|
 | Marketplace | [localhost:5178](http://localhost:5178/) | `operator` or `support`, password `demo-marketplace` |
 | Isolated test marketplace | [127.0.0.1:5179](http://127.0.0.1:5179/) | Same seeded demo accounts/password, with separate data and sessions |
+| Agent Loop lab | [localhost:5181](http://localhost:5181/) | Same demo accounts/password; separate lab data |
+| Runtime and Hosting lab | [localhost:5192](http://localhost:5192/) | Same demo accounts/password; separate lab data |
 | Local Langfuse | [localhost:3000](http://localhost:3000/) | `operator@example.local`, password `demo-marketplace` |
 | LiteLLM dashboard | [localhost:4000/ui](http://localhost:4000/ui/) | `admin`, password `sk-marketplace-local` (**local demo gateway master key**, not a provider API key) |
 | Backend API docs | [localhost:58000/docs](http://localhost:58000/docs) | Browser/API authentication required for protected operations |
@@ -152,12 +156,18 @@ No additional first-run command is needed. Open **[127.0.0.1:5179](http://127.0.
 
 Never run a fixture reset, `scripts/test.sh`, or another runner against `market_test` while someone is using the test UI. They share and may replace that disposable database. No fixture/reset command here should be pointed at a real external database.
 
+### Chapter-specific lab environments
+
+The same `./scripts/start.sh` launches both lab interfaces; separate launch commands and a host npm build are not required. Agent Loop uses `ch11_loop_lab`; Runtime and Hosting uses `ch12_hosting_lab`. Both are disposable, isolated from main `market`, practice `market_test` and fixed evaluation `market_eval`. They reuse the marketplace code and shared PostgreSQL/gateway/Langfuse infrastructure. Existing lab conversations and business state survive startup. On first use, missing/empty labs receive the normal synthetic seed.
+
+Use the standard test marketplace for general exercises. Use the two dedicated labs only in their corresponding chapters. The hosting lab needs its own cloud-agent credentials and tunnel before hosted questions work; merely opening its local UI does not prove cloud connectivity. Startup starts its HTTP MCP service only when the existing private configuration contains its authentication key. It never runs cloud deployment or a lesson reset. Lesson-specific reset commands remain explicit when a clean fixture is needed. All localhost-based UIs share browser login-cookie scope: if switching between main and the dedicated labs causes a login rejection, sign in again in the selected UI. The standard test UI uses 127.0.0.1 to separate its cookie scope.
+
 ## 6. Stop, resume and reset deliberately
 
 | Action | Effect |
 |---|---|
-| `docker compose -f compose.yaml -f compose.memory.yaml stop` | Stops both workspaces and shared services; keeps named volumes/data |
-| `./scripts/start.sh` | Starts/resumes both workspaces; applies provider selection and preserves existing data |
+| `./scripts/stop.sh` | Stops all four local UIs, lab services and shared services; keeps volumes/data |
+| `./scripts/start.sh` | Starts/resumes all four local UIs; applies provider selection and preserves existing data |
 | `./scripts/reset.sh --confirm-demo-reset` | Erases/reseeds main marketplace state, sessions, conversations and memories; local Langfuse traces remain |
 | `./scripts/memory-repeatable.sh --reset` | Erases/reseeds **only market_test**; stop the test UI first |
 
@@ -169,7 +179,7 @@ Never run a fixture reset, `scripts/test.sh`, or another runner against `market_
 
 The two reset commands target different databases: `./scripts/reset.sh --confirm-demo-reset` resets only the main `market` workspace and does not reset `market_test`. `./scripts/memory-repeatable.sh --reset` resets only `market_test` and does not change the main workspace.
 
-The stop command above includes both workspaces. After either database reset, sign in again and check document indexing. Do not use `docker compose down -v` as normal cleanup: it deletes named volumes, including database and trace storage.
+The stop command above includes all four local UIs and the lab services. After either database reset, sign in again and check document indexing. Do not use `docker compose down -v` as normal cleanup: it deletes named volumes, including database and trace storage.
 
 The integration test command `./scripts/test.sh` also uses disposable `market_test`, not the interactive `market` database. The evaluation command `./scripts/evaluate.sh` uses `market_eval` and makes **paid model calls**. Neither is required for the first UI smoke check.
 

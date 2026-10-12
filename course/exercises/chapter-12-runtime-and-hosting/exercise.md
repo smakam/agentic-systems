@@ -4,6 +4,10 @@ The local Docker setup is already complete. Move the agent process to your own G
 
 Path: local chat → Cloud Run agent → authenticated HTTPS tunnel → local HTTP MCP → disposable PostgreSQL copy. The agent calls OpenAI directly. LiteLLM still supplies the local middleware embedding dependency; it is not the agent model route in this exercise.
 
+## Local UI startup
+
+The normal `./app/scripts/start.sh` command launches this lab UI at [localhost:5192](http://localhost:5192/) and preserves its `ch12_hosting_lab` database. The UI can open before cloud configuration, but the hosted-agent questions require the cloud agent, credentials and tunnel prepared below. Those steps configure the remote path; they are not required merely to launch the local UI. No startup command deploys cloud resources automatically.
+
 ## Prerequisites
 
 Use the existing app setup, Docker, a running local gateway and PostgreSQL, and the unchanged `market_eval` baseline. Install cloudflared at `app/.remote-mcp/cloudflared` using the existing tunnel setup. You need Google Cloud billing, Cloud Run, Artifact Registry and Secret Manager enabled, an Artifact Registry Docker repository, deployment permissions, and a service account. Provision your own OpenAI key as a Secret Manager secret in your chosen project and give that service account Secret Accessor permission on it. The helper deliberately does not upload provider keys from the laptop. Do not use instructor credentials. Configure gcloud authentication; this machine also supports the existing local ADC Docker CLI fallback.
@@ -11,6 +15,7 @@ Use the existing app setup, Docker, a running local gateway and PostgreSQL, and 
 ## Run from the repository root
 
 ```sh
+docker compose -f app/compose.yaml -f app/compose.ch12.yaml --profile chapter12 stop ch12-backend ch12-frontend ch12-mcp
 python3 course/exercises/chapter-12-runtime-and-hosting/solutions/cloud_lab.py prepare
 bash course/exercises/chapter-12-runtime-and-hosting/solutions/reset_lab.sh
 docker compose -f app/compose.yaml -f app/compose.ch12.yaml --profile chapter12 up -d --no-deps ch12-mcp
