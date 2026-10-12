@@ -21,6 +21,8 @@ The paragraph implementation tracks nonblank paragraphs and one-based source ran
 
 All four answers correctly said the Amber Review payout is not yet eligible at 30 hours because the exception requires 72 hours. At top_k=1 the exception itself states “rather than 24,” so the model can recover the standard timing without retrieving the complete standard-rule paragraph. Overlap's top-ranked window paired the exception with the following paragraph, not the preceding rule. Do not present this as an answer-quality improvement or hide the result because it differs from the hypothesis.
 
+For this particular question, paragraph chunks with top_k=1 were the most efficient observed option by retrieved-text volume: they returned 296 characters and still produced the correct answer. The other three settings returned more text without improving the final decision. This is not a measured total-cost or latency win, and it does not establish paragraph/top-one as the best configuration for other questions; use a broader representative question set before selecting a default.
+
 The lesson is to inspect actual retrieved context: overlap changed boundaries and text volume, but increased context cost without improving this final decision. A broader question set is needed before adopting it. Document size alone does not determine whether chunking matters.
 
 ## Evidence and limits
