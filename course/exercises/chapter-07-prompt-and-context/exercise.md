@@ -1,5 +1,14 @@
 # Chapter 7 exercise: Prompt and context
 
+## UI, database and cleanup
+
+**UI:** [test marketplace](http://127.0.0.1:5179/) from Course Setup; use the role/workspace named in each task. **Database:** disposable practice database `market_test`, separate from main `market` and the fixed evaluation baseline `market_eval`. Test UI changes do not update the main marketplace. Save your questions, results and traces locally.
+
+Use Support with OpenAI Agents SDK and a fresh conversation for each condition. Business questions are read-only; the context controls change returned tool data, not stored catalog, documents or business records.
+
+**Cleanup:** restore both suppression controls to off and the original workspace options. No business database reset is required; saved conversations and traces remain.
+
+
 ## Your tasks
 
 Repeat the questions and context comparison covered in the demo. There is no additional challenge and nothing to submit. Keep your observations locally and compare them with the reference solution.

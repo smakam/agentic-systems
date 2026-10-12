@@ -1,10 +1,19 @@
 # Your First Agent, End to End — marketplace practice
 
+## UI, database and cleanup
+
+**UI:** [test marketplace](http://127.0.0.1:5179/) from Course Setup; use the role/workspace named in each task. **Database:** disposable practice database `market_test`, separate from main `market` and the fixed evaluation baseline `market_eval`. Test UI changes do not update the main marketplace. Save your questions, results and traces locally.
+
+For purchases, dispatch, delivery, clock changes and payouts, use fresh orders in this test workspace. The optional cloud walkthrough uses your own cloud UI and independent cloud database.
+
+**Cleanup:** no reset is needed after read-only questions. After state-changing practice, preserve results and reset the test practice database only if you need its clean seed again: run `./scripts/memory-repeatable.sh --reset` from `app`, with no other test UI user or runner active. This discards test conversations, memories and business changes; sign in again and check document indexing. Do not reset main or `market_eval`.
+
+
 Complete “Course Setup” first. Keep Docker running. Use the configured OpenAI/OpenRouter route; arbitrary model substitutions are not validated against these checks. Start with gateway guardrails off, long-term memory off and memory changes off. All marketplace payments and shipping are simulated. Budget 45–60 minutes for the core, plus 30–45 minutes for the branch practice; those are planning estimates. Model questions are paid. The worked solution is separate so you can try first.
 
 ## Starting point and workspace choice
 
-Use the **main marketplace** for purchases and business-state changes. Use fresh orders for each independent branch; no whole-database reset is required. Record each new order/item/shipment/payout reference and the starting demo clock. The **test workspace** is for fixed seeded comparisons: inspect its seed before relying on example facts, and do not mutate that fixture during a comparison. Never run database-reset/test scripts while another person is using the test UI. Keep the evaluation database unchanged.
+Use the test marketplace and fresh orders for each independent branch. Record the new order/item/shipment/payout references and starting demo clock. Keep the practice state fixed within a comparison. Never run reset/test scripts while another person uses the test UI; keep `market_eval` unchanged.
 
 The [journey guide](../../../app/USER-JOURNEYS.md) supplies exact role actions and boundary behavior. On the clean seed, listing-1 is Canvas Weekender from Cedar & Co.; if your listings/prices changed, use the current checkout receipt rather than the example amounts below.
 
@@ -54,7 +63,7 @@ Use a separate fresh order for each case; follow the [journey guide](../../../ap
 | Failed payout then retry | Eligible failure leaves seller funds unpaid; retry completes payment once |
 | Active return and access boundaries | Active return blocks payout; seller scope and support read-only permissions are respected |
 
-## What to submit
+## What to check and record
 
 - A short journey record: roles, references, starting state/clock, expected and observed transitions, and screenshots/event evidence.
 - Before/after seller amounts and the purchase’s gross, fee and seller share; separate purchase from payout.
@@ -66,6 +75,6 @@ Use a separate fresh order for each case; follow the [journey guide](../../../ap
 
 The business math reconciles; early release is rejected; later release is manual; no duplicate completed refund/payout occurs; changed facts are backed by fresh evidence. Agent output wording may differ. If an answer is wrong, retain its evidence/trace and report the discrepancy rather than altering the fixture to make it pass. Marketplace mutation is performed by the human role, not the support agent.
 
-Stop/resume normally to preserve your work. Reset the main marketplace only if you intentionally want to discard it; resets also remove its conversations/memories. Restore a test fixture only when that lesson requires it. Langfuse traces are not erased by those marketplace resets. Do not commit credentials or include them in submissions.
+Stop/resume normally to preserve your work. Restore only the test practice seed when the next attempt needs it, following the cleanup guidance above. Langfuse traces are not erased by those marketplace resets. Do not commit credentials or include them in recorded results.
 
 Try the exercise before opening the [worked solution](solutions/README.md).

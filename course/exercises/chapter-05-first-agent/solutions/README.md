@@ -1,5 +1,14 @@
 # “Your First Agent, End to End” — worked solution
 
+## UI, database and cleanup
+
+**UI:** [test marketplace](http://127.0.0.1:5179/) from Course Setup; use the role/workspace named in each task. **Database:** disposable practice database `market_test`, separate from main `market` and the fixed evaluation baseline `market_eval`. Test UI changes do not update the main marketplace. Save your questions, results and traces locally.
+
+For purchases, dispatch, delivery, clock changes and payouts, use fresh orders in this test workspace. The optional cloud walkthrough uses your own cloud UI and independent cloud database.
+
+**Cleanup:** no reset is needed after read-only questions. After state-changing practice, preserve results and reset the test practice database only if you need its clean seed again: run `./scripts/memory-repeatable.sh --reset` from `app`, with no other test UI user or runner active. This discards test conversations, memories and business changes; sign in again and check document indexing. Do not reset main or `market_eval`.
+
+
 This is an expected-results guide, not an exact model-answer script. Use current rows/events for your own references. All values below use the clean seed’s **one Canvas Weekender at ₹2,499** and the simulation’s 10% marketplace fee. Your edited listing/quantity may differ.
 
 ## Purchase and payout

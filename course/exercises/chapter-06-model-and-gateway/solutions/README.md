@@ -1,5 +1,14 @@
 # Chapter 6 reference solution: Model and gateway
 
+## UI, database and cleanup
+
+**UI/API:** the supplied comparison is a CLI/API lab, not a task in the normal test UI. Run `scripts/chapter-06-lab.py` from `app`; the isolated backend is `http://127.0.0.1:58006`, its gateway is `http://localhost:4006`, and traces appear in [local Langfuse](http://localhost:3000/).
+
+**Database:** the lab creates its own `market_test` in the separate `course-ch6-db` container. This is not the `market_test` used by the normal test UI. Keep its seed fixed during each model comparison; normal main/test records and `market_eval` remain unchanged.
+
+**Cleanup:** save outputs, restore the original lab model mapping, then run `python3 scripts/chapter-06-lab.py cleanup` from `app`. That stops only the isolated lab services. If you choose your own implementation instead, restore any edited model mappings/configuration or source files and restart the affected service.
+
+
 **Status:** API/code checks passed for the recorded OpenAI lab. Recording rehearsal remains separate. Do not distribute credentials.
 
 The exercise guide is shared by the instructor demo and learner practice. Keep dated rehearsal results linked here, separate from the learner instructions. Speaker notes provide recording cues and reference that same guide.

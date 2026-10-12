@@ -1,5 +1,16 @@
 # Chapter 9 — Knowledge and Retrieval
 
+## UI, database and cleanup
+
+**UI:** [test marketplace](http://127.0.0.1:5179/) from Course Setup; use the role/workspace named in each task. **Database:** disposable practice database `market_test`, separate from main `market` and the fixed evaluation baseline `market_eval`. Test UI changes do not update the main marketplace. Save your questions, results and traces locally.
+
+Core policy and SQL-plus-policy questions use Support with OpenAI Agents SDK in the test UI.
+
+**Developer lab:** reindexing and chunking comparisons run through the supplied CLI against `ch09_rag_lab`, containing only synthetic lab documents. The normal test UI does not automatically query this separate corpus. Its policy changes do not replace the marketplace policies.
+
+**Cleanup:** save outputs and, when no lab runner is active, remove only `ch09_rag_lab` using the supplied command. Read-only UI practice needs no reset. Restore source/configuration changes if you used your own implementation.
+
+
 ## Goals and prerequisites
 
 Inspect what retrieval contributes to an answer, update an indexed policy, and compare chunking strategies. Use the course's running local Docker backend, gateway and pgvector PostgreSQL services. Embedding/model calls use your configured gateway and incur normal provider usage.

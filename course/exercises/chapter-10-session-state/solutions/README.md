@@ -1,12 +1,23 @@
 # Session State — worked solution
 
+## UI, database and cleanup
+
+**UI:** [test marketplace](http://127.0.0.1:5179/) from Course Setup; use the role/workspace named in each task. **Database:** disposable practice database `market_test`, separate from main `market` and the fixed evaluation baseline `market_eval`. Test UI changes do not update the main marketplace. Save your questions, results and traces locally.
+
+Part 1 uses Support with OpenAI Agents SDK and newly prepared test orders. Dispatch those orders in the same test marketplace; the fixed evaluation baseline remains unchanged.
+
+**Developer lab:** the optional reference runner uses a temporary backend code copy and disposable `ch10_session_lab`, not the database behind the test UI. The reference resets only that lab between comparisons.
+
+**Cleanup:** the reference runner restores its temporary in-memory session class in `finally`; it does not undo source-file edits. If implementing your own approach, restore the original six-block sliding window and history selector, undo other source/configuration edits and restart the affected backend. Save outputs before deleting the disposable lab. Reset the UI practice database only when a clean seed is needed and no other test user or runner is active; never reset `market_eval`.
+
+
 This solution follows the three tasks in the [exercise](../exercise.md). Part 1 uses the existing UI. The two optional developer extensions use an isolated code lab. Production history selection stays unchanged.
 
 ## 1. Repeat the three demos
 
 ### A. Follow-up continuity
 
-Prepare a fresh order with two units and a pending shipment in the regular interactive marketplace. Keep the fixed test database unchanged. In a new OpenAI Agents SDK Support conversation ask:
+Prepare a fresh order with two units and a pending shipment in the test marketplace (`market_test`). Keep the fixed evaluation database `market_eval` unchanged. In a new OpenAI Agents SDK Support conversation ask:
 
 1. “What is the current shipment status for <your prepared order ID>? Cite the evidence.” Replace the placeholder with your order ID.
 2. “How many units are in that order?”
@@ -69,7 +80,7 @@ The lesson is input inclusion. A larger window recovers the early label in this 
 
 ### One-time setup for either developer extension
 
-Changing selection in an isolated code copy needs a destination database. This setup copies the baseline into `ch10_session_lab` and loads the scripts; it does not modify the fixed test database or the regular marketplace. It is for developer experiments or scripted rehearsal, not Part 1 UI practice.
+Changing selection in an isolated code copy needs a destination database. This setup copies the baseline into `ch10_session_lab` and loads the scripts; it does not modify `market_eval` or main `market`. It is for developer experiments or scripted rehearsal, not Part 1 UI practice.
 
 Run from the repository root with the normal local Docker stack and configured gateway:
 
@@ -91,7 +102,7 @@ docker cp marketplace-lab-backend-1:/tmp/ch10-window-results.json /tmp/ch10-wind
 
 This mode makes three final-answer calls, one per window, and no summary call. Record the resolved model, selected input, answer, tokens and usage. The runner restores the original session class in `finally`; the production default remains six blocks.
 
-## 3. Developer extension two — summary plus recent blocks
+## 3. Developer extension two — compaction plus sliding window
 
 **What changes:** how older context is represented in model input. Use the same seven-block fixture and final recall question as extension one. Summarize blocks 1–5 and keep blocks 6–7 intact.
 
@@ -148,4 +159,4 @@ After saving results, remove only the disposable database if no lab runner is ac
 docker compose -f app/compose.yaml exec -T postgres dropdb -U postgres ch10_session_lab
 ```
 
-Never substitute the fixed test or regular marketplace database in cleanup. If repeating an automated demo, reset only the disposable lab first. [Historical validation](../../../../app/results/chapter-10-validation-2026-10-10/historical-validation.md) retains execution provenance and earlier attempts separately from the learner setup. The revised CLI selectors are checked without fresh paid model calls; instructor UI rehearsal remains separate.
+The drop command above is only for `ch10_session_lab`; never substitute `market_test`, `market_eval` or main `market`. If repeating an automated demo, reset only the disposable lab first. [Historical validation](../../../../app/results/chapter-10-validation-2026-10-10/historical-validation.md) retains execution provenance and earlier attempts separately from the learner setup. The revised CLI selectors are checked without fresh paid model calls; instructor UI rehearsal remains separate.

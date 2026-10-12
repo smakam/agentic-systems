@@ -1,15 +1,26 @@
 # Chapter 10 — Session state
 
+## UI, database and cleanup
+
+**UI:** [test marketplace](http://127.0.0.1:5179/) from Course Setup; use the role/workspace named in each task. **Database:** disposable practice database `market_test`, separate from main `market` and the fixed evaluation baseline `market_eval`. Test UI changes do not update the main marketplace. Save your questions, results and traces locally.
+
+Part 1 uses Support with OpenAI Agents SDK and newly prepared test orders. Dispatch those orders in the same test marketplace; the fixed evaluation baseline remains unchanged.
+
+**Developer lab:** the optional reference runner uses a temporary backend code copy and disposable `ch10_session_lab`, not the database behind the test UI. The reference resets only that lab between comparisons.
+
+**Cleanup:** the reference runner restores its temporary in-memory session class in `finally`; it does not undo source-file edits. If implementing your own approach, restore the original six-block sliding window and history selector, undo other source/configuration edits and restart the affected backend. Save outputs before deleting the disposable lab. Reset the UI practice database only when a clean seed is needed and no other test user or runner is active; never reset `market_eval`.
+
+
 Status: instructions, reference solutions and saved validation are available. Use the normal configured gateway for learner runs. Instructor UI rehearsal remains separate.
 
 ## Choose your practice path
 
-- **Part 1: UI practice.** Use the already running local marketplace and Langfuse from Course Setup. Prepare a fresh demo order in the regular interactive marketplace; keep the fixed test database unchanged. You do not need to create or reset a lab database just to repeat these UI questions.
+- **Part 1: UI practice.** Use the already running local marketplace and Langfuse from Course Setup. Prepare a fresh demo order in the test marketplace (`market_test`); keep the fixed evaluation database `market_eval` unchanged. You do not need to create or reset a lab database just to repeat these UI questions.
 - **Part 2: optional developer challenges.** If you want to change the history-selection code, use the disposable lab setup in the solution. The database-copy and script commands apply to this path, or to an automated instructor rehearsal.
 
 ## Starting state for the scripted developer lab
 
-Keep the fixed evaluation database unchanged. For scripted developer runs, create a disposable lab database from the same baseline for each comparison. Use the same model alias and mapping, history strategy, input questions, and initial marketplace state in each comparison. Record these settings with the results. Reset only the disposable lab between complete runs; never reset the fixed evaluation or interactive marketplace database.
+Keep the fixed evaluation database unchanged. For scripted developer runs, create a disposable lab database from the same baseline for each comparison. Use the same model alias and mapping, history strategy, input questions, and initial marketplace state in each comparison. Record these settings with the results. Reset only the disposable lab between complete runs; never reset the fixed evaluation or main marketplace database. A practice-UI reset is a separate operation, only when a clean seed is needed and no other user or runner is active.
 
 For developer implementations, store full conversation history in PostgreSQL. Apply history-selection changes only to the input selected for the next model call. Preserve complete tool-call/result pairs and current investigation metadata.
 
@@ -49,7 +60,7 @@ There are seven prior blocks, not eight to ten. An eight-block limit can include
 
 Make the question-block window configurable in a lab implementation. Compare the same saved conversation with windows of two, six, and eight blocks. Verify which original details are included, input size, and complete tool-call/result pairs. Increasing the window should recover an early detail only if its block now falls inside the window. Restore the production default of six afterwards.
 
-### Developer extension 2 — summary plus recent turns
+### Developer extension 2 — compaction plus sliding window
 
 This uses the same seven-block fixture and eighth recall question from extension one. Summarize blocks 1–5, and keep blocks 6–7 verbatim. The new input is the older-history summary plus the two recent complete blocks and the current recall question.
 
@@ -67,4 +78,4 @@ For both extensions record the selected blocks or summary, whether the original 
 
 ## Cleanup
 
-Restore the six-block selection policy and remove only disposable lab conversations/data. Retain sanitized results and settings so another person can reproduce the experiment. The fixed evaluation database must remain unchanged.
+If you edited source files yourself, undo those edits, restore the six-block sliding window and original selector, and restart the affected backend. The reference runner restores only its in-memory override. Remove only disposable lab conversations/data after saving results. Retain sanitized results and settings so another person can reproduce the experiment. The fixed evaluation database must remain unchanged.

@@ -115,7 +115,9 @@ course/exercises/chapter-06-model-and-gateway/
     example-results/       # only when useful and verified
 ```
 
-Use starter files and patches only where there is code/configuration to change; worksheet and diagnosis exercises need a worked example instead. Each exercise should state prerequisites, a starting checkpoint, the task, acceptance checks, expected time/cost and cleanup/reset steps where needed. Each solution should explain what changed, why and how to verify it, including expected facts/evidence rather than an identical model-generated answer. Keep credentials out of all distributed files. Use isolated learner/test fixtures for mutations and adversarial inputs; do not change shared demonstration agents or business data without an explicit setup step.
+Use starter files and patches only where there is code/configuration to change; worksheet and diagnosis exercises need a worked example instead. Each exercise and solution must explicitly name the UI URL/workspace, target database and cleanup/restoration steps. The default local learner path is the test UI (`http://127.0.0.1:5179/`) and disposable practice database `market_test`; main `market` and fixed evaluation baseline `market_eval` are separate. Name dedicated CLI/database labs and optional cloud environments explicitly. Code-changing exercises must explain how to restore original code/configuration and restart affected services; database cleanup does not revert source edits. Do not reset a shared practice database while anyone is using it.
+
+Each exercise should state prerequisites, a starting checkpoint, the task, acceptance checks, expected time/cost and cleanup/reset steps where needed. Each solution should explain what changed, why and how to verify it, including expected facts/evidence rather than an identical model-generated answer. Keep credentials out of all distributed files. Use isolated learner/test fixtures for mutations and adversarial inputs; do not change shared demonstration agents or business data without an explicit setup step.
 
 ## Promotional preview — separate from course lessons
 

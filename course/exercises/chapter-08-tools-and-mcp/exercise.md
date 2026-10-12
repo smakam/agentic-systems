@@ -1,5 +1,16 @@
 # Chapter 8 exercise: Tools and MCP
 
+## UI, database and cleanup
+
+**UI:** [test marketplace](http://127.0.0.1:5179/) from Course Setup; use the role/workspace named in each task. **Database:** disposable practice database `market_test`, separate from main `market` and the fixed evaluation baseline `market_eval`. Test UI changes do not update the main marketplace. Save your questions, results and traces locally.
+
+For order and balance comparisons, keep the practice database state fixed while comparing answers. For memory practice, use the same test login and delete only the uniquely labelled preference you create.
+
+**Developer and cloud exceptions:** the seller-balance tool runs in an isolated code copy, explicitly connected to `market_test` or a disposable copy of it; do not inherit a main-database connection. The tracking server reads its JSON fixture and needs no business database. Optional cloud HTTP MCP uses your own cloud UI, MCP endpoint and independent cloud database.
+
+**Cleanup:** stop the tracking process, delete only the exercise memory and restore temporary tool/client configuration. If you edited running application code, undo those edits and restart the affected backend. Read-only business questions do not require a database reset.
+
+
 The solution is separate so you can try the tasks before checking the reference implementation.
 
 ## Learning goal
@@ -8,7 +19,7 @@ Discover and call tools through MCP, distinguish connection transport from tool 
 
 ## Prerequisites
 
-Use the local environment from **Course Setup**. Cloud deployment is optional and uses your own endpoints/credentials. Keep experiment code in a separate lab checkout. Use the fixed test database for business reads; do not reset or alter its records. The tracking service uses the supplied JSON fixture and needs no database or carrier account.
+Use the local environment from **Course Setup**. Cloud deployment is optional and uses your own endpoints/credentials. Keep experiment code in a separate lab checkout. Use `market_test` for business reads; keep its records fixed during each comparison. The tracking service uses the supplied JSON fixture and needs no database or carrier account.
 
 ## Part 1: Repeat what was covered in the demo
 

@@ -1,5 +1,16 @@
 # Chapter 9 worked solution and measured result
 
+## UI, database and cleanup
+
+**UI:** [test marketplace](http://127.0.0.1:5179/) from Course Setup; use the role/workspace named in each task. **Database:** disposable practice database `market_test`, separate from main `market` and the fixed evaluation baseline `market_eval`. Test UI changes do not update the main marketplace. Save your questions, results and traces locally.
+
+Core policy and SQL-plus-policy questions use Support with OpenAI Agents SDK in the test UI.
+
+**Developer lab:** reindexing and chunking comparisons run through the supplied CLI against `ch09_rag_lab`, containing only synthetic lab documents. The normal test UI does not automatically query this separate corpus. Its policy changes do not replace the marketplace policies.
+
+**Cleanup:** save outputs and, when no lab runner is active, remove only `ch09_rag_lab` using the supplied command. Read-only UI practice needs no reset. Restore source/configuration changes if you used your own implementation.
+
+
 [rag_lab.py](rag_lab.py) implements the isolated lab using the actual gateway embedding alias and PostgreSQL pgvector cosine operator. No main/evaluation records, production ingestion or policy files are changed. The database-name guard permits only ch09_rag_lab. Three lab corpora retain source/version/line ranges, hashes and 1536-dimensional vectors. The indexed policy corpus is intentionally replaced sequentially; production retains immutable versions with effective-date filtering.
 
 ## Policy refresh

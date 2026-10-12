@@ -1,5 +1,16 @@
 # Chapter 8 worked solution
 
+## UI, database and cleanup
+
+**UI:** [test marketplace](http://127.0.0.1:5179/) from Course Setup; use the role/workspace named in each task. **Database:** disposable practice database `market_test`, separate from main `market` and the fixed evaluation baseline `market_eval`. Test UI changes do not update the main marketplace. Save your questions, results and traces locally.
+
+For order and balance comparisons, keep the practice database state fixed while comparing answers. For memory practice, use the same test login and delete only the uniquely labelled preference you create.
+
+**Developer and cloud exceptions:** the seller-balance tool runs in an isolated code copy, explicitly connected to `market_test` or a disposable copy of it; do not inherit a main-database connection. The tracking server reads its JSON fixture and needs no business database. Optional cloud HTTP MCP uses your own cloud UI, MCP endpoint and independent cloud database.
+
+**Cleanup:** stop the tracking process, delete only the exercise memory and restore temporary tool/client configuration. If you edited running application code, undo those edits and restart the affected backend. Read-only business questions do not require a database reset.
+
+
 This is a reference implementation and expected-output guide, not a claim that the owner has rehearsed every application trace.
 
 ## Core task
