@@ -142,7 +142,7 @@ For this setup chapter, confirm that the services are running and that you can o
 | LiteLLM dashboard | Open `http://localhost:4000/ui`, sign in with the local demo credentials in section 3, and confirm the dashboard loads |
 | Local Langfuse | Open `http://localhost:3000`, sign in with the local demo credentials in section 3, and open the local project |
 
-Use the documented main/test hostnames to keep login sessions separate. If a service is not ready, use section 9 before proceeding. A successful login verifies service access, not model answer quality or provider billing/access. Keep your selected provider key configured; Chapter Five verifies model/tool calls, business and policy evidence, and traces using the [first-agent verification checks](docs/FIRST-AGENT-VERIFICATION.md).
+Use the documented main/test hostnames to keep login sessions separate. If a service is not ready, use section 9 before proceeding. A successful login verifies service access, not model answer quality or provider billing/access. Keep your selected provider key configured; “Your First Agent, End to End” verifies model/tool calls, business and policy evidence, and traces using the [first-agent verification checks](docs/FIRST-AGENT-VERIFICATION.md).
 
 ## 5. Use the automatically available test workspace
 
@@ -228,9 +228,9 @@ Do not paste `.env`, authentication headers or full rendered Compose configurati
 
 ## 10. Optional cloud setup
 
-For a separately deployed marketplace, OpenAI Agents SDK, HTTP MCP service and cloud tracing, follow [CLOUD-SETUP.md](CLOUD-SETUP.md). It covers the optional Google Cloud path and the application, MCP and Langfuse URLs used in Chapters Five and Eight. This is not an option passed to `scripts/start.sh`, and local/cloud data does not synchronize automatically.
+For a separately deployed marketplace, OpenAI Agents SDK, HTTP MCP service and cloud tracing, follow [CLOUD-SETUP.md](CLOUD-SETUP.md). It covers the optional Google Cloud path and the application, MCP and Langfuse URLs used in “Your First Agent, End to End” and “Tools and MCP”. This is not an option passed to `scripts/start.sh`, and local/cloud data does not synchronize automatically.
 
-The cloud path currently uses OpenAI and Langfuse Cloud Japan. Existing deployed behavior is verified; a fresh-project installation rehearsal remains deferred. Local setup is sufficient for the required course path.
+The cloud path currently uses OpenAI and Langfuse Cloud in your chosen region. Existing deployed behavior is verified; a fresh-project installation rehearsal remains deferred. Local setup is sufficient for the required course path.
 
 ## 11. Later lessons: optional services and hosted platforms
 

@@ -25,8 +25,18 @@ variable "gateway_image" {
   default = ""
 }
 variable "app_origin" {
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
+  description = "Optional custom browser origin; empty derives the standard marketplace web URL from this project and region."
+}
+variable "langfuse_host" {
+  type        = string
+  default     = "https://jp.cloud.langfuse.com"
+  description = "Langfuse Cloud regional host matching the configured project keys. Default preserves the existing course deployment."
+  validation {
+    condition     = contains(["https://cloud.langfuse.com", "https://us.cloud.langfuse.com", "https://jp.cloud.langfuse.com", "https://hipaa.cloud.langfuse.com"], var.langfuse_host)
+    error_message = "Use the HTTPS Langfuse Cloud host for your project's region."
+  }
 }
 variable "langfuse_public_key" {
   type    = string
@@ -94,7 +104,7 @@ resource "google_cloud_run_v2_service" "gateway" {
       }
       env {
         name  = "LANGFUSE_HOST"
-        value = "https://jp.cloud.langfuse.com"
+        value = var.langfuse_host
       }
       env {
         name  = "LANGFUSE_PUBLIC_KEY"
@@ -206,7 +216,7 @@ resource "google_cloud_run_v2_service" "application" {
         mount_path = "/cloudsql"
       }
       dynamic "env" {
-        for_each = merge({ LITELLM_URL = "${google_cloud_run_v2_service.gateway[0].uri}/v1", GATEWAY_IAM_AUDIENCE = google_cloud_run_v2_service.gateway[0].uri, DB_POOL_SIZE = "2", DB_MAX_OVERFLOW = "2", ALLOWED_ORIGINS = var.app_origin, SECURE_COOKIES = "true", REMOTE_MCP_PORT = "8080", INITIALIZE_ON_STARTUP = "false", LANGFUSE_HOST = "https://jp.cloud.langfuse.com", LANGFUSE_PUBLIC_KEY = var.langfuse_public_key }, each.key == "mcp" ? { REMOTE_MCP_ALLOWED_HOSTS = "marketplace-mcp-${data.google_project.current.number}.${var.region}.run.app" } : { AGENT_TOOL_TRANSPORT = "mcp_http", SDK_MCP_URL = "https://marketplace-mcp-${data.google_project.current.number}.${var.region}.run.app/mcp", LYZR_AGENT_ID = var.lyzr_agent_id, GOOGLE_RUNTIME_RESOURCE = var.google_runtime_resource, MARKETPLACE_IDENTITY_NAMESPACE = var.project_id })
+        for_each = merge({ LITELLM_URL = "${google_cloud_run_v2_service.gateway[0].uri}/v1", GATEWAY_IAM_AUDIENCE = google_cloud_run_v2_service.gateway[0].uri, DB_POOL_SIZE = "2", DB_MAX_OVERFLOW = "2", ALLOWED_ORIGINS = var.app_origin != "" ? var.app_origin : "https://marketplace-web-${data.google_project.current.number}.${var.region}.run.app", SECURE_COOKIES = "true", REMOTE_MCP_PORT = "8080", INITIALIZE_ON_STARTUP = "false", LANGFUSE_HOST = var.langfuse_host, LANGFUSE_PUBLIC_KEY = var.langfuse_public_key }, each.key == "mcp" ? { REMOTE_MCP_ALLOWED_HOSTS = "marketplace-mcp-${data.google_project.current.number}.${var.region}.run.app" } : { AGENT_TOOL_TRANSPORT = "mcp_http", SDK_MCP_URL = "https://marketplace-mcp-${data.google_project.current.number}.${var.region}.run.app/mcp", LYZR_AGENT_ID = var.lyzr_agent_id, GOOGLE_RUNTIME_RESOURCE = var.google_runtime_resource, MARKETPLACE_IDENTITY_NAMESPACE = var.project_id })
         content {
           name  = env.key
           value = env.value

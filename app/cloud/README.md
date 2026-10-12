@@ -62,9 +62,11 @@ Set this URL to the intended Langfuse UI host (or project URL) for other deploym
 
 ## Configure Langfuse Cloud credentials
 
+For learner deployments, set `MARKETPLACE_LF_HOST` to the regional HTTPS host where your Langfuse project exists. Pass that same host as Terraform `langfuse_host` and the frontend build argument `VITE_LANGFUSE_URL`. The default Terraform host preserves the existing instructor deployment; the learner guide explains explicit region selection.
+
 The operator completed key entry on October 8. Both secret versions are enabled and API authentication passed. The steps below remain the repeatable setup procedure for a new learner project; trace delivery still needs a deployed-service check.
 
-Create a matching public/secret key pair in the **Marketplace support** project, Japan region. In Cloud Shell, run `scripts/configure-langfuse.sh` with `MARKETPLACE_GCP_PROJECT` set to the intended project. The October 8 operator copy is at `~/marketplace-cloud-review/configure-langfuse.sh`. The script accepts the secret through a hidden prompt and stdin, populates only the backend/gateway Langfuse secret versions, and writes the non-authenticating public key/host to a protected local configuration file. Never paste secrets into chat or Terraform. Key creation/entry is performed by the account owner.
+Create a matching public/secret key pair in your Langfuse project in the selected region. In Cloud Shell, run `scripts/configure-langfuse.sh` with `MARKETPLACE_GCP_PROJECT` set to the intended project. The October 8 operator copy is at `~/marketplace-cloud-review/configure-langfuse.sh`. The script accepts the secret through a hidden prompt and stdin, populates only the backend/gateway Langfuse secret versions, and writes the non-authenticating public key/host to a protected local configuration file. Never paste secrets into chat or Terraform. Key creation/entry is performed by the account owner.
 
 ## Pause the database between labs
 

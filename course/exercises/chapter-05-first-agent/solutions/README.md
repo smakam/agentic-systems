@@ -1,4 +1,4 @@
-# Chapter Five — worked solution
+# “Your First Agent, End to End” — worked solution
 
 This is an expected-results guide, not an exact model-answer script. Use current rows/events for your own references. All values below use the clean seed’s **one Canvas Weekender at ₹2,499** and the simulation’s 10% marketplace fee. Your edited listing/quantity may differ.
 
@@ -46,6 +46,6 @@ Validation receipts are recorded separately. Business-state checks can be determ
 
 ## Optional cloud walkthrough: expected observations
 
-After the optional [cloud setup](../../../../app/CLOUD-SETUP.md), the order question should complete with current cloud business records and retained evidence. The Support agent is the **OpenAI Agents SDK**, with its business tools reached through the authenticated HTTP MCP service. Open the trace for that exact question in your Langfuse Cloud Japan project; inspect model and tool observations alongside run/configuration metadata. Use your own trace ID rather than treating an instructor trace as your new run.
+After the optional [cloud setup](../../../../app/CLOUD-SETUP.md), the order question should complete with current cloud business records and retained evidence. The Support agent is the **OpenAI Agents SDK**, with its business tools reached through the authenticated HTTP MCP service. Open the trace for that exact question in your Langfuse Cloud in your chosen region project; inspect model and tool observations alongside run/configuration metadata. Use your own trace ID rather than treating an instructor trace as your new run.
 
 Do not require identical generated wording or local/cloud record parity: the databases are independent. This optional step does not require a purchase or reset. Existing deployed HTTP MCP behavior has been verified; fresh-project installation rehearsal remains deferred.

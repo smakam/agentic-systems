@@ -1,6 +1,6 @@
-# Chapter Five — first agent and marketplace practice
+# Your First Agent, End to End — marketplace practice
 
-Complete Chapter Four first. Keep Docker running. Use the configured OpenAI/OpenRouter route; arbitrary model substitutions are not validated against these checks. Start with gateway guardrails off, long-term memory off and memory changes off. All marketplace payments and shipping are simulated. Budget 45–60 minutes for the core, plus 30–45 minutes for the branch practice; those are planning estimates. Model questions are paid. The worked solution is separate so you can try first.
+Complete “Course Setup” first. Keep Docker running. Use the configured OpenAI/OpenRouter route; arbitrary model substitutions are not validated against these checks. Start with gateway guardrails off, long-term memory off and memory changes off. All marketplace payments and shipping are simulated. Budget 45–60 minutes for the core, plus 30–45 minutes for the branch practice; those are planning estimates. Model questions are paid. The worked solution is separate so you can try first.
 
 ## Starting point and workspace choice
 
@@ -37,7 +37,7 @@ Complete [CLOUD-SETUP.md](../../../app/CLOUD-SETUP.md) first. Skip this section 
 1. Open your own cloud marketplace URL and sign in to Support with the password chosen during cloud setup. Select **OpenAI Agents SDK** and start a new conversation.
 2. Ask: **“What products, quantities and sellers are in order-1? Retrieve current records.”**
 3. Check the completed answer and open its business-evidence links. Compare with your current cloud records; the cloud database is independent of the laptop.
-4. Open the corresponding trace in your **Langfuse Cloud Japan** project using the application link. Inspect model requests, tool calls, returned records and the final answer. Record the trace ID from your own run.
+4. Open the corresponding trace in your **Langfuse Cloud in your chosen region** project using the application link. Inspect model requests, tool calls, returned records and the final answer. Record the trace ID from your own run.
 5. Check run/configuration metadata for **HTTP MCP**. Local Compose uses stdio; identical tool names do not prove the transport.
 
 This is a read-only optional agent walkthrough. You do not need to repeat purchases, advance the cloud clock or reset either database. Keep observations locally for comparison with the solution. Stop the cloud database between labs only when no one is using it, following the cloud guide.

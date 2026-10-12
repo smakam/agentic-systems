@@ -9,3 +9,7 @@ lyzr_enabled = false
 lyzr_agent_id = ""
 google_runtime_project_id = ""
 google_runtime_resource = ""
+
+# Choose the Langfuse region where you create the project; use its matching keys.
+# EU: cloud.langfuse.com; US: us.cloud.langfuse.com; Japan: jp.cloud.langfuse.com
+langfuse_host = "https://cloud.langfuse.com"

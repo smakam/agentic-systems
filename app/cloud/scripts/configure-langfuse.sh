@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 : "${MARKETPLACE_GCP_PROJECT:?Set the intended marketplace Google project first}"
+# Configure the regional endpoint before reading or storing credentials.
+: "${MARKETPLACE_LF_HOST:?Set the HTTPS Langfuse Cloud host for your chosen region}"
+MARKETPLACE_LF_HOST="${MARKETPLACE_LF_HOST%/}"
+case "$MARKETPLACE_LF_HOST" in
+  https://cloud.langfuse.com|https://us.cloud.langfuse.com|https://jp.cloud.langfuse.com|https://hipaa.cloud.langfuse.com) ;;
+  *) printf '%s\n' 'Use the HTTPS Langfuse Cloud host matching your project region.' >&2; exit 2 ;;
+esac
 command -v gcloud >/dev/null
 printf 'Destination project: %s\n' "$MARKETPLACE_GCP_PROJECT"
 printf 'Paste the Marketplace support PUBLIC key: '
@@ -20,5 +27,5 @@ done
 unset MARKETPLACE_LF_SECRET_KEY
 # The public key identifies the project; it cannot authenticate without the secret.
 umask 077
-printf 'LANGFUSE_HOST=https://jp.cloud.langfuse.com\nLANGFUSE_PUBLIC_KEY=%s\n' "$MARKETPLACE_LF_PUBLIC_KEY" > langfuse-public.env
+printf 'LANGFUSE_HOST=%s\nLANGFUSE_PUBLIC_KEY=%s\n' "$MARKETPLACE_LF_HOST" "$MARKETPLACE_LF_PUBLIC_KEY" > langfuse-public.env
 printf 'Langfuse secrets stored in the two runtime-scoped secrets. Public configuration saved in langfuse-public.env.\n'
