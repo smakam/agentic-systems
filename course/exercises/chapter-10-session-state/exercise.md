@@ -1,6 +1,6 @@
 # Chapter 10 — Session state
 
-Status: instructions, executable reference solutions, offline checks and live validation are complete as of October 10. Final live checks used GPT-5.4 through an isolated OpenRouter gateway after direct OpenAI credits ran out. See [reference solution, measured results and runnable setup](solutions/README.md). Instructor UI rehearsal remains separate.
+Status: instructions, reference solutions and saved validation are available. Use the normal configured gateway for learner runs. Instructor UI rehearsal remains separate.
 
 ## Repeatable starting state
 
