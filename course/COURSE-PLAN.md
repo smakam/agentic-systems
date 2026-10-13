@@ -417,14 +417,16 @@ GPT-5.4 quantity follow-ups reused the same-conversation structured evidence wit
 
 ### 12. Runtime and hosting
 
-**Agreed chapter preparation — October 10, 2026:**
+**Agreed revision — October 13, 2026; owner review and recording rehearsal remain.**
 
-- **Slides:** framework versus hosting environment; documentation-backed framework/host overview; editable local Docker versus Cloud Run and independent chat/agent/middleware placement diagrams; host resources, lifecycle, connectivity, credentials and deadlines. Mention interrupted execution briefly; no separate restart/persistence demo.
-- **Demo:** read-only local Docker and existing Cloud Run configuration walkthrough, resource/timeout/concurrency settings, connections and external storage. No Cloud SQL startup is required.
-- **Exercise:** local chat/history → Cloud Run agent → authenticated HTTPS tunnel → local HTTP MCP → disposable baseline copy. The cloud agent calls OpenAI directly using the Responses API. Middleware embeddings retain the local gateway dependency. Fixed market_eval remains unchanged.
-- **Package:** [exercise](exercises/chapter-12-runtime-and-hosting/exercise.md), [worked solution](exercises/chapter-12-runtime-and-hosting/solutions/README.md), bounded reset/deploy/tunnel/validation/cleanup scripts, dedicated Compose overlay and stateless worker/local adapter.
-- **Validation:** both live questions completed with three model calls and two MCP invocations each, fresh cited evidence, confirmed investigation cleanup and saved local runs. Five contract tests passed. Docker/Cloud Run configuration readback passed. The fixed evaluation fingerprint matches the earlier recorded baseline.
-- **Status:** slides, notes, demo and exercise prepared and tested; temporary resources removed and Cloud SQL STOPPED confirmed. Owner review and rehearsal remain. Later platform chapters cover platform-specific deployment options.
+- **Opening:** agent model/tool loop; supporting framework/SDK capabilities; runtime and hosting; self-managed deployment versus a managed agent platform. Separate framework and hosting choices and compare control/portability with operational effort and product-specific constraints.
+- **Examples:** OpenAI Agents SDK, Google ADK, Claude Agent SDK, LangGraph, CrewAI, Microsoft Agent Framework (AutoGen + Semantic Kernel), and Strands Agents. Name managed offerings separately, including OpenAI Agents API, Gemini Enterprise Agent Platform, Claude Managed Agents, Amazon Bedrock AgentCore Runtime, Foundry Agent Service, LangSmith Deployment and CrewAI AMP. Details belong to Agentic Platforms.
+- **Deployment diagrams:** existing local test marketplace and full cloud marketplace. Chat backend and OpenAI Agents SDK share a container; local MCP is a stdio subprocess. Cloud tool transport uses the separate HTTP MCP Cloud Run service. Both full deployments route model calls through LiteLLM. Tool handlers connect to PostgreSQL/Cloud SQL; the application persists history, runs and evidence externally.
+- **Runtime capabilities:** distinguish infrastructure (compute, lifecycle/scaling, networking, identity/secrets, deadlines) from optional agent features (loop, context/history, model gateway, retrieval, observability/evaluation and guardrails). Generic Docker/Cloud Run does not automatically provide the latter.
+- **Demo:** read-only configuration walkthrough that follows chat-to-agent, agent-to-model gateway/provider, agent-to-MCP, tool-to-data, and history/run persistence. Inspect resources, scaling and secret references; distinguish configured from live-observed settings. No new deployment, reset, tunnel or Cloud SQL startup is required.
+- **Exercise:** six local deployment questions using the test UI and market_test practice database, plus six full-cloud deployment questions. Each answer cites file/service/trace evidence and includes verification status. Learners without cloud deployment inspect Terraform and mark configured/not deployed. Submit two annotated diagrams; a fresh model question is optional.
+- **Package:** [exercise](exercises/chapter-12-runtime-and-hosting/exercise.md), [reference answers](exercises/chapter-12-runtime-and-hosting/solutions/README.md), and worksheet preparation checks. The previous agent-only/tunnel experiment is preserved separately as [historical authoring evidence](authoring/chapter-12-hybrid-lab/README.md); it is not the current activity. Its October 10 execution/cleanup records do not establish a live cloud path today.
+- **Status:** revised materials are prepared for owner review. Existing local/cloud setup remains the learning reference; no fresh cloud deployment or paid model validation is claimed for this revision.
 
 ---
 

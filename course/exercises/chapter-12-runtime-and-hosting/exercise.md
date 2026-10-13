@@ -1,54 +1,64 @@
-# Chapter 12 — Host only the agent in Cloud Run
+# Runtime and Hosting — deployment walkthrough
 
-The local Docker setup is already complete. Move the agent process to your own Google Cloud project while chat, history, middleware and business data remain on your laptop.
+Document how the existing marketplace is deployed locally and in Google Cloud. Trace the connections among the chat application, OpenAI Agents SDK agent, LiteLLM model gateway, MCP tool handlers and persistent data.
 
-Path: local chat → Cloud Run agent → authenticated HTTPS tunnel → local HTTP MCP → disposable PostgreSQL copy. The agent calls OpenAI directly. LiteLLM still supplies the local middleware embedding dependency; it is not the agent model route in this exercise.
+This is a read-only inspection exercise. It requires no new agent service, tunnel, database reset, code change or deployment. Use the setup already prepared in [Course Setup](../../../app/LOCAL-SETUP.md). If you have deployed the full cloud marketplace, use [Cloud Setup](../../../app/CLOUD-SETUP.md) to identify its services.
 
-## Local UI startup
+## Environments and evidence
 
-The normal `./app/scripts/start.sh` command launches this lab UI at [localhost:5192](http://localhost:5192/) and preserves its `ch12_hosting_lab` database. The UI can open before cloud configuration, but the hosted-agent questions require the cloud agent, credentials and tunnel prepared below. Those steps configure the remote path; they are not required merely to launch the local UI. No startup command deploys cloud resources automatically.
+| Section | UI | Database | What to inspect |
+|---|---|---|---|
+| Local | Test marketplace at [127.0.0.1:5179](http://127.0.0.1:5179/), Support workspace, OpenAI Agents SDK | `market_test`, the mutable practice database | Existing Docker services, Compose configuration, SDK/MCP code, and optionally an existing trace |
+| Cloud | Your existing full cloud marketplace web URL, Support workspace, OpenAI Agents SDK | Your cloud marketplace database in Cloud SQL; identify the actual database name from your deployment | Existing Cloud Run services and Cloud SQL configuration, with secret **references** only |
+| Cloud without deployment | No cloud UI required | No database connection required | Terraform and example configuration; label every answer **configured / not deployed**, not live-observed |
 
-## Prerequisites
+The fixed evaluation database `market_eval` is not the local practice database. The separate historical hosted-agent UI on port 5192 and its `ch12_hosting_lab` database are not used by this worksheet. The cloud comparison concerns the **full cloud marketplace**, where web, MCP and LiteLLM services run in Google Cloud.
 
-Use the existing app setup, Docker, a running local gateway and PostgreSQL, and the unchanged `market_eval` baseline. Install cloudflared at `app/.remote-mcp/cloudflared` using the existing tunnel setup. You need Google Cloud billing, Cloud Run, Artifact Registry and Secret Manager enabled, an Artifact Registry Docker repository, deployment permissions, and a service account. Provision your own OpenAI key as a Secret Manager secret in your chosen project and give that service account Secret Accessor permission on it. The helper deliberately does not upload provider keys from the laptop. Do not use instructor credentials. Configure gcloud authentication; this machine also supports the existing local ADC Docker CLI fallback.
+Use these source files from the repository root:
 
-## Run from the repository root
+- Local: `app/compose.yaml`, `app/compose.memory.yaml`, `app/backend/marketplace/api.py`, `agent.py`, `mcp_client.py`, `tools.py`, and `db.py`.
+- Cloud: `app/cloud/terraform/services.tf`, `main.tf`, `variables.tf`, `outputs.tf`, and `app/backend/marketplace/http_mcp_client.py` / `remote_mcp.py`.
 
-```sh
-docker compose -f app/compose.yaml -f app/compose.ch12.yaml --profile chapter12 stop ch12-backend ch12-frontend ch12-mcp
-python3 course/exercises/chapter-12-runtime-and-hosting/solutions/cloud_lab.py prepare
-bash course/exercises/chapter-12-runtime-and-hosting/solutions/reset_lab.sh
-docker compose -f app/compose.yaml -f app/compose.ch12.yaml --profile chapter12 up -d --no-deps ch12-mcp
-python3 course/exercises/chapter-12-runtime-and-hosting/solutions/tunnel.py start
-```
+Do not share full resolved Compose output, private environment files, database passwords or API keys. Record setting names, non-secret targets, and Secret Manager resource references instead. A configured source value is evidence of intended configuration; it is not proof of the current live deployment.
 
-Keep the returned tunnel URL. Deploy with your actual project, region, repository, service account, provider secret name and HTTPS tunnel URL ending `/mcp`:
+## Part 1 — six local questions
 
-```sh
-python3 course/exercises/chapter-12-runtime-and-hosting/solutions/cloud_lab.py deploy --project YOUR_PROJECT --region YOUR_REGION --repository YOUR_REPOSITORY --service-account YOUR_SERVICE_ACCOUNT --openai-secret YOUR_PROVIDER_SECRET --mcp-url YOUR_TUNNEL_MCP_URL
-docker compose -f app/compose.yaml -f app/compose.ch12.yaml --profile chapter12 up -d --no-deps --force-recreate ch12-mcp
-docker compose -f app/compose.yaml -f app/compose.ch12.yaml --profile chapter12 up -d --no-deps ch12-backend ch12-frontend
-```
+1. **Where do the chat UI, backend and SDK agent run?** Name their Docker services or processes. Which components share a container, and which are separate?
+2. **How does the chat request reach the agent?** Follow browser → frontend/API route → backend handler → SDK invocation. Is the backend-to-agent call HTTP or in-process?
+3. **How does the agent reach LiteLLM and the model?** Identify the gateway address, configured model alias/provider route and where the actual model executes. Distinguish the local agent from the external model service.
+4. **How do MCP requests reach the tool handlers?** Identify the selected transport, how the MCP server starts, where its handlers execute and how they query business records. Do not mistake an MCP subprocess for a separate container.
+5. **Which database stores business data, history and evidence?** Identify the practice database and the roles of the tool read connection versus the application write connection. Explain what survives a backend restart.
+6. **Which controls come from Docker, the SDK and our app?** Identify the host configuration, SDK model-turn limit and app timeout/cost/history controls. Name which component provides tracing or gateway controls; do not attribute these automatically to Docker.
 
-Deployment supplies an application API key through Secret Manager. The public HTTPS endpoint rejects unauthenticated investigation calls; its health endpoint contains no secrets. `.ch12.env` is private and ignored by Git. Recreating MCP is necessary because deployment records the allowed tunnel hostname. Keep laptop and tunnel running throughout. If a deployment fails after creating resources, inspect the recorded state and use `deploy --resume` with the same arguments rather than generating another deployment.
+## Part 2 — six cloud questions
 
-Open http://localhost:5192, sign in as the supplied support demo user, select Support, SDK runtime, memory off, and create a new conversation. Ask “Why is the payout for order-2 held?” then “What delivery condition must change before that payout can be released?” Inspect the evidence and metrics: `direct_openai`, `remote_agent`, `mcp_http`, model/tool counts and confirmed investigation cleanup. The lab uses a compact dedicated prompt; it is a hosting exercise, not a quality benchmark against the full baseline.
+1. **Which project, region, services and images host the app?** Record the web, MCP and LiteLLM gateway services, their container images or revisions, and where the SDK agent executes.
+2. **How does the cloud chat request reach the SDK agent?** Follow the browser HTTPS request to the web service. Explain which chat/backend/agent components share its container or process.
+3. **How do model calls pass through the LiteLLM service?** Identify the web-to-gateway route, service identity/authentication configuration and external provider route. Does the full cloud marketplace bypass LiteLLM?
+4. **How does authenticated HTTP MCP reach tool handlers?** Identify the MCP endpoint, transport, authentication and allowed-host configuration, handler location and tool-to-database connection. Record secret references, never secret values.
+5. **Where are business data, history and evidence persisted?** Identify the Cloud SQL instance/database and which services read or write it. Is that data stored only inside a Cloud Run container? How is this different from the local deployment?
+6. **What resources, scaling, secrets and agent controls apply?** Record CPU, memory, request timeout, concurrency, minimum/maximum instances and service identity from your deployment or source configuration. Separate hosting controls from SDK/app/platform features, including history, observability, guardrails and retrieval.
 
-```sh
-python3 course/exercises/chapter-12-runtime-and-hosting/solutions/validate_path.py --output /tmp/ch12-results.json
-```
+If you have no cloud deployment, answer all six cloud questions from the supplied Terraform and label the results **configured / not deployed**. Leave actual project, image revision or service URL as **not deployed / unavailable** where appropriate. Creating a cloud deployment is optional and belongs to Cloud Setup; it is not a prerequisite for this exercise. Do not start Cloud SQL merely to read its configuration.
 
-The validator asks those two questions, checks current evidence/citations and the route, and confirms both saved runs. History remains in laptop Postgres; the cloud worker receives a bounded transcript and has no database connection. Failed requests do not append a partial turn. No mid-question checkpoint resume is implemented.
+## Document your answers
 
-## Submit and clean up
+For every question, include:
 
-Submit the three-component placement diagram, resource/timeout/concurrency settings, question results and route metrics. Include the cleanup confirmation; exclude keys and complete environment dumps.
+| Field | Record |
+|---|---|
+| Component or service | Its name and purpose |
+| Container/process and location | What runs together; what is external |
+| Connection | Caller, target, protocol and data purpose |
+| Supporting evidence | File and relevant setting/function, service configuration, or existing trace |
+| Verification status | **Observed**, **configured**, or **unavailable** |
 
-```sh
-python3 course/exercises/chapter-12-runtime-and-hosting/solutions/cloud_lab.py cleanup
-python3 course/exercises/chapter-12-runtime-and-hosting/solutions/tunnel.py stop
-docker compose -f app/compose.yaml -f app/compose.ch12.yaml --profile chapter12 stop ch12-backend ch12-frontend ch12-mcp
-bash course/exercises/chapter-12-runtime-and-hosting/solutions/reset_lab.sh
-```
+Draw one annotated diagram for each environment. Include chat → agent, agent → LiteLLM → model, agent → MCP → tool handlers → database, and the application’s history/run persistence. State the main deployment differences and which responsibilities would move to a managed agent platform.
 
-Cleanup targets only the recorded lab service, lab secrets and image. It preserves the provider secret, shared services and fixed `market_eval`. Save your results before resetting. Never use `docker compose down -v` for this exercise.
+You do not need a fresh model call. If you choose to inspect a fresh local trace, use the test Support workspace, SDK, memory off and normal mode, and ask: **“What is the current shipment status for order-2?”** This optional read consumes model credits and uses the current practice data; the worksheet does not require a fixed business answer or exact call count.
+
+## Completion and cleanup
+
+Complete twelve evidence-backed answers and two diagrams. Clearly distinguish live observations from intended source configuration. The worksheet makes no business-data changes and needs no reset, cloud cleanup or code restoration. If you started services for inspection, follow the normal setup guide’s stop/resume instructions and preserve data.
+
+Compare your work with the [reference answers](solutions/README.md) after completing the walkthrough.

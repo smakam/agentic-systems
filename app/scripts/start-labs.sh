@@ -41,7 +41,7 @@ CHECK_CONFIG
 then
   compose up -d --no-deps ch12-mcp
 else
-  printf 'Hosting UI is available; configure its cloud agent and authenticated HTTP MCP in the Runtime and Hosting exercise.\n'
+  printf 'Legacy hosting UI is available; the current deployment worksheet uses the standard test marketplace.\n'
 fi
 for backend in $new_backends; do
   compose exec -T "$backend" python -m marketplace.index || printf 'Lab vector indexing unavailable; configure the gateway and use Index documents in that lab UI.\n'

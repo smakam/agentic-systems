@@ -369,4 +369,4 @@ See [exercise](../course/exercises/chapter-12-runtime-and-hosting/exercise.md) a
 
 ## Starting all course workspaces
 
-`./scripts/start.sh` starts main and test plus the existing **Agent Loop** and **Runtime and Hosting** lab UIs. Use `./scripts/stop.sh` to stop them together without deleting data. See [Local setup](LOCAL-SETUP.md#chapter-specific-lab-environments) for the UI/database mapping and cloud prerequisites. Initializing an empty lab is separate from resetting an existing fixture; startup does not reset data or deploy cloud resources.
+`./scripts/start.sh` starts main and test plus the existing **Agent Loop** and legacy **Runtime and Hosting** lab UIs. Use `./scripts/stop.sh` to stop them together without deleting data. See [Local setup](LOCAL-SETUP.md#chapter-specific-lab-environments) for the UI/database mapping. The current Runtime and Hosting worksheet uses the standard test marketplace and full-cloud configuration; the legacy agent-only lab is not required. Initializing an empty lab is separate from resetting an existing fixture; startup does not reset data or deploy cloud resources.
