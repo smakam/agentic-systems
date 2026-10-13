@@ -16,7 +16,14 @@ Each case contains the question, golden facts and Nano's saved answer. Edit only
 
 ### 2. Grade each model answer
 
-Compare the answer with the golden facts. Assign **0 incorrect**, **1 partially correct**, or **2 correct**, and write a short fact-based reason. Grade the answer, not the question or golden reference. Equivalent wording is acceptable.
+In your copied `app/results/chapter-14/human-worksheet.json`, update each object in the `cases` array: replace `score: null` with **0 incorrect**, **1 partially correct**, or **2 correct**, and fill `reason` with a short fact-based explanation. Compare `model_answers` with `golden_facts`; leave `questions`, `golden_facts`, `model_answers` and `case_id` unchanged. Repeat for all five cases. Equivalent wording is acceptable.
+
+For example, a completed case contains these two fields (choose your own grade and reason):
+
+```json
+"score": 2,
+"reason": "The answer includes all required facts and matches the golden reference."
+```
 
 ### 3. Validate the completed JSON
 
