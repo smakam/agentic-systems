@@ -1,0 +1,27 @@
+{
+  "02": {
+    "correctness": 2,
+    "rationale": "No written rationale recorded.",
+    "note": "Historical human judgment on the original reference, retained unchanged. Clarified Claude v3 rubric can explain disagreement."
+  },
+  "09": {
+    "correctness": 1,
+    "rationale": "No written rationale recorded.",
+    "note": "Historical human judgment on the original reference, retained unchanged. Clarified Claude v3 rubric can explain disagreement."
+  },
+  "16": {
+    "correctness": 1,
+    "rationale": "No written rationale recorded.",
+    "note": "Historical human judgment on the original reference, retained unchanged. Clarified Claude v3 rubric can explain disagreement."
+  },
+  "23": {
+    "correctness": 0,
+    "rationale": "No written rationale recorded.",
+    "note": "Historical human judgment on the original reference, retained unchanged. Clarified Claude v3 rubric can explain disagreement."
+  },
+  "24": {
+    "correctness": 1,
+    "rationale": "No written rationale recorded.",
+    "note": "Historical human judgment on the original reference, retained unchanged. Clarified Claude v3 rubric can explain disagreement."
+  }
+}

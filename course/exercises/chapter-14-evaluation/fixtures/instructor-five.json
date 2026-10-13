@@ -1,0 +1,3960 @@
+{
+  "version": "chapter14-instructor-five-v1",
+  "cases": [
+    {
+      "case_id": "02",
+      "questions": [
+        "What products and quantities are in order-1, and who sells them?"
+      ],
+      "gold": "Canvas Weekender ×2, Cedar; Desk Lamp ×2, Northstar. Item, listing/product and seller joins.",
+      "original_reference": "Canvas Weekender ×2, Cedar; Desk Lamp ×2, Northstar. Item, listing/product and seller joins.",
+      "answers": [
+        "Interpretation: Order-1 contains two items: Canvas Weekender by Cedar & Co. and Desk Lamp by Northstar Goods, each with quantity 2.\nDemo date used: 2026-09-27 12:00:00+00:00 (demo clock).\nResult: \n- Canvas Weekender — Cedar & Co. — quantity 2\n- Desk Lamp — Northstar Goods — quantity 2\n[Citation: evidence-7d04a8b7e233]\nRevision: 1"
+      ],
+      "evidence": [
+        {
+          "evidence-0b6734e11cb1": {
+            "contract_version": "1.0",
+            "status": "ok",
+            "handle": "evidence-0b6734e11cb1",
+            "snapshot": {
+              "revision": 1,
+              "clock": "2026-09-27 12:00:00+00:00"
+            },
+            "document_revision": "fe36211d2849ebbe",
+            "attempt": 1,
+            "type": "catalog",
+            "ontology": {
+              "version": "1.1",
+              "currency": "INR",
+              "money_unit": "integer paise; divide by 100 for rupees",
+              "entities": {
+                "customers": {
+                  "label": "Customer",
+                  "description": "A buyer account that places marketplace orders.",
+                  "grain": "One row per buyer account.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Customer identifier used by orders.customer_id.",
+                    "username": "Demo buyer account name."
+                  },
+                  "notes": [
+                    "This restricted view exposes buyer identity only, not credentials or other account roles."
+                  ],
+                  "table": "analytics.customers"
+                },
+                "sellers": {
+                  "label": "Seller",
+                  "description": "An independent merchant offering products through marketplace listings.",
+                  "grain": "One row per seller.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Seller identifier used by listings and order items.",
+                    "name": "Human-readable seller name."
+                  },
+                  "table": "analytics.sellers"
+                },
+                "products": {
+                  "label": "Product",
+                  "description": "A product identity and category, independent of a seller offer.",
+                  "grain": "One row per product.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Product identifier referenced by listings.",
+                    "name": "Human-readable product name.",
+                    "category": "Product category used for catalog organization."
+                  },
+                  "table": "analytics.products"
+                },
+                "listings": {
+                  "label": "Listing",
+                  "description": "A seller offer for a product, with its current price and available stock.",
+                  "grain": "One row per seller offer.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Listing identifier referenced by purchased items.",
+                    "seller_id": "Seller owning this offer.",
+                    "product_id": "Product offered.",
+                    "price": "Current unit price in integer paise; not necessarily the historical purchase price.",
+                    "stock": "Units currently available to purchase; purchases reduce it and completed pre-payout refunds restore returned units."
+                  },
+                  "notes": [
+                    "Use order_items.unit_price for historical purchase values."
+                  ],
+                  "table": "analytics.listings"
+                },
+                "orders": {
+                  "label": "Order",
+                  "description": "A buyer purchase that can contain items from several sellers.",
+                  "grain": "One row per order.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Order identifier linking items, payment and tickets.",
+                    "customer_id": "Buyer identifier in customers.",
+                    "status": "Order-level status; successful simulated purchases currently create paid orders.",
+                    "created_at": "Purchase time on the demo clock."
+                  },
+                  "notes": [
+                    "Delivery, return, refund and payout statuses belong to separate entities; paid does not mean delivered or settled."
+                  ],
+                  "table": "analytics.orders"
+                },
+                "order_items": {
+                  "label": "Order item",
+                  "description": "A purchased listing within an order, retaining the seller, quantity and price at purchase.",
+                  "grain": "One row per purchased listing in an order, potentially containing multiple units.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Purchased item identifier used by shipment, allocation and returns.",
+                    "order_id": "Containing order.",
+                    "listing_id": "Listing purchased.",
+                    "seller_id": "Seller recorded at purchase.",
+                    "quantity": "Number of units purchased.",
+                    "unit_price": "Unit price at purchase in integer paise."
+                  },
+                  "notes": [
+                    "Item gross is quantity times unit_price. Aggregate at item or allocation grain before joining one-to-many records."
+                  ],
+                  "table": "analytics.order_items"
+                },
+                "payments": {
+                  "label": "Buyer payment",
+                  "description": "The simulated captured payment from a buyer for an entire order.",
+                  "grain": "One row per order payment in this baseline.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Payment identifier referenced by allocations and refunds.",
+                    "order_id": "Order funded by this payment.",
+                    "amount": "Original captured order total in integer paise; completed refunds are tracked separately.",
+                    "status": "Current simulated payment status; successful purchases create captured payments.",
+                    "currency": "Currency code; baseline uses INR."
+                  },
+                  "notes": [
+                    "A payment funds multiple item allocations. Do not sum its full amount again for every joined item. Payment is not a seller payout."
+                  ],
+                  "table": "analytics.payments"
+                },
+                "shipments": {
+                  "label": "Shipment",
+                  "description": "Fulfillment state and delivery time for the units of a purchased item.",
+                  "grain": "One row per order item in this baseline.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Shipment identifier used for dispatch and delivery commands.",
+                    "item_id": "Purchased item being fulfilled.",
+                    "quantity": "Number of units covered by this shipment.",
+                    "status": "pending, dispatched or delivered.",
+                    "delivered_at": "Delivery time on the demo clock; null before delivery."
+                  },
+                  "notes": [
+                    "Different items in one order can be delivered separately; splitting an individual item into multiple shipments is not implemented."
+                  ],
+                  "table": "analytics.shipments"
+                },
+                "allocations": {
+                  "label": "Payment allocation",
+                  "description": "The portion of a captured payment attributable to one purchased item, including settlement accounting.",
+                  "grain": "One row per order item.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Allocation identifier referenced by its payout.",
+                    "item_id": "Purchased item whose funds are allocated.",
+                    "payment_id": "Source order payment.",
+                    "gross": "Original item gross in integer paise.",
+                    "fee": "Current marketplace fee in integer paise, adjusted after completed refunds.",
+                    "refunded": "Cumulative completed refunds for this allocation in integer paise; failed refunds do not count.",
+                    "policy": "Recorded settlement policy version."
+                  },
+                  "notes": [
+                    "Remaining seller payable is gross minus fee minus refunded. Monetary accounting is at allocation grain."
+                  ],
+                  "table": "analytics.allocations"
+                },
+                "payouts": {
+                  "label": "Seller payout",
+                  "description": "Current settlement record for transferring an allocation's net funds to its seller.",
+                  "grain": "One current payout record per allocation, not one row per attempt.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Payout identifier referenced by operational events.",
+                    "allocation_id": "Allocation being settled; join to order_items for seller identity.",
+                    "amount": "Current net seller payable in integer paise; only completed status counts as paid out.",
+                    "status": "held, failed or completed in the implemented simulator."
+                  },
+                  "notes": [
+                    "Retries update this record; inspect events for attempt history. Eligibility is computed from delivery, the 24-hour hold and active returns; it is not a separate persisted status."
+                  ],
+                  "table": "analytics.payouts"
+                },
+                "returns": {
+                  "label": "Return request",
+                  "description": "A request to return some or all units of a purchased item.",
+                  "grain": "One row per return request; an item may have multiple requests.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Return identifier used by the refund record.",
+                    "item_id": "Purchased item being returned.",
+                    "quantity": "Number of units requested for return.",
+                    "status": "requested, approved, received, rejected, refunded or manual_review."
+                  },
+                  "notes": [
+                    "Receipt alone is not refund completion. Post-payout returns enter manual_review; automatic recovery is not implemented."
+                  ],
+                  "table": "analytics.returns"
+                },
+                "refunds": {
+                  "label": "Buyer refund",
+                  "description": "Current simulated refund record associated with one return and its source payment.",
+                  "grain": "One refund record per return; a retry updates that record.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Refund identifier used in events.",
+                    "return_id": "Return request being refunded.",
+                    "payment_id": "Original captured payment being refunded.",
+                    "amount": "Refund amount in integer paise.",
+                    "status": "completed or failed in the implemented simulator."
+                  },
+                  "notes": [
+                    "Only completed refunds change allocation.refunded and the fee. Do not sum failed attempts as money returned."
+                  ],
+                  "table": "analytics.refunds"
+                },
+                "events": {
+                  "label": "Business event",
+                  "description": "Durable evidence of a simulated business action or provider outcome.",
+                  "grain": "One row per recorded event.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Unique event identifier.",
+                    "entity_id": "Identifier of the affected record or demo-clock; resolve its entity type using kind and details.",
+                    "kind": "Event/action name, such as payment_captured, payout_failed, purchase or deliver.",
+                    "occurred_at": "Business occurrence time on the demo clock.",
+                    "recorded_at": "Timestamp when evidence was recorded; seeded history supplies fixed timestamps.",
+                    "revision": "Committed demo revision associated with this event.",
+                    "details": "Event-specific JSON evidence; its fields vary by kind."
+                  },
+                  "notes": [
+                    "entity_id is a polymorphic reference, not a foreign key to one table. Events can multiply monetary rows when joined; aggregate or filter before joining."
+                  ],
+                  "table": "analytics.events"
+                },
+                "tickets": {
+                  "label": "Support ticket",
+                  "description": "A recorded support issue associated with an order.",
+                  "grain": "One row per ticket.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Support ticket identifier.",
+                    "order_id": "Order associated with the issue.",
+                    "subject": "Short issue summary.",
+                    "status": "Recorded ticket status, such as open.",
+                    "message": "Recorded support statement; verify claims against authoritative records and events."
+                  },
+                  "notes": [
+                    "The baseline contains seeded tickets, not a complete ticket-management workflow."
+                  ],
+                  "table": "analytics.tickets"
+                },
+                "incidents": {
+                  "label": "Incident",
+                  "description": "A recorded operational issue with an explicitly described affected set and supporting evidence.",
+                  "grain": "One row per incident.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Incident identifier.",
+                    "title": "Short incident description.",
+                    "status": "Recorded confirmation or lifecycle status; the seeded incident is confirmed.",
+                    "affected_ids": "JSON array of affected record identifiers; interpret their entity types using evidence.",
+                    "evidence": "Recorded explanation or evidence references supporting the incident."
+                  },
+                  "notes": [
+                    "Do not infer wider impact or causation beyond the recorded evidence. The baseline contains seeded incident data."
+                  ],
+                  "table": "analytics.incidents"
+                },
+                "freshness": {
+                  "label": "Snapshot freshness",
+                  "description": "The current committed business revision and demo clock exposed to investigations.",
+                  "grain": "Exactly one row describing the current demo state.",
+                  "key": [],
+                  "fields": {
+                    "revision": "Monotonic business revision within a scenario; reset starts a new scenario at revision 1.",
+                    "clock": "Business as-of time controlled by the demo clock."
+                  },
+                  "notes": [
+                    "Direct analytics views have no asynchronous projection lag. Each investigation pins a repeatable-read snapshot; separate investigations may see different revisions."
+                  ],
+                  "table": "analytics.freshness"
+                },
+                "seller_balances": {
+                  "label": "Seller balance summary",
+                  "description": "An analytical view aggregating allocation and payout accounting for each seller.",
+                  "grain": "One row per seller, including sellers with no orders.",
+                  "key": [
+                    "seller_id"
+                  ],
+                  "fields": {
+                    "seller_id": "Seller identifier and unique row key.",
+                    "name": "Seller name.",
+                    "captured": "Sum of original allocation gross in integer paise.",
+                    "refunded": "Sum of completed allocation refunds in integer paise.",
+                    "fees": "Sum of current adjusted marketplace fees in integer paise.",
+                    "paid_out": "Sum of payout amounts with completed status, in integer paise.",
+                    "unpaid": "Remaining seller funds for non-completed payouts in integer paise; includes held and failed payouts."
+                  },
+                  "notes": [
+                    "captured = refunded + fees + unpaid + paid_out. Unpaid does not imply eligible for immediate release. Do not join this seller-level total to individual items and then sum it."
+                  ],
+                  "table": "analytics.seller_balances"
+                }
+              },
+              "relationships": [
+                {
+                  "from": "orders.customer_id",
+                  "to": "customers.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "order_items.order_id",
+                  "to": "orders.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "order_items.listing_id",
+                  "to": "listings.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "listings.product_id",
+                  "to": "products.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "order_items.seller_id",
+                  "to": "sellers.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "payments.order_id",
+                  "to": "orders.id",
+                  "cardinality": "one-to-one"
+                },
+                {
+                  "from": "allocations.item_id",
+                  "to": "order_items.id",
+                  "cardinality": "one-to-one"
+                },
+                {
+                  "from": "allocations.payment_id",
+                  "to": "payments.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "payouts.allocation_id",
+                  "to": "allocations.id",
+                  "cardinality": "one-to-one"
+                },
+                {
+                  "from": "shipments.item_id",
+                  "to": "order_items.id",
+                  "cardinality": "one-to-one in baseline; quantity tracked"
+                },
+                {
+                  "from": "returns.item_id",
+                  "to": "order_items.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "refunds.return_id",
+                  "to": "returns.id",
+                  "cardinality": "one-to-one"
+                },
+                {
+                  "from": "tickets.order_id",
+                  "to": "orders.id",
+                  "cardinality": "many-to-one"
+                }
+              ],
+              "metrics": {
+                "captured": "SUM(allocations.gross) at allocation grain, not payment amounts after an item join",
+                "refunded": "SUM(allocations.refunded), completed refunds only",
+                "fees": "SUM(allocations.fee), net of completed refund fee reversal",
+                "unpaid": "gross - fee - refunded for payouts not completed; includes held and failed, not necessarily eligible",
+                "paid_out": "SUM(payouts.amount) WHERE status = completed",
+                "reconciliation": "captured = refunded + fees + unpaid + paid_out"
+              },
+              "time": "Use the run's demo clock, not wall-clock time. Policy selection uses purchase date or the event date specified by the policy.",
+              "cautions": [
+                "Seller payout differs from buyer payment.",
+                "Return receipt differs from completed refund.",
+                "A failure on one payout does not prove all sellers are affected.",
+                "Events contain occurred and recorded timestamps.",
+                "Joining both returns and events can multiply monetary rows; aggregate at the proper grain first."
+              ]
+            },
+            "schema": [
+              {
+                "table_name": "allocations",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "item_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "payment_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "gross",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "fee",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "refunded",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "policy",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "customers",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "customers",
+                "column_name": "username",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "events",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "events",
+                "column_name": "entity_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "events",
+                "column_name": "kind",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "events",
+                "column_name": "occurred_at",
+                "data_type": "timestamp with time zone"
+              },
+              {
+                "table_name": "events",
+                "column_name": "recorded_at",
+                "data_type": "timestamp with time zone"
+              },
+              {
+                "table_name": "events",
+                "column_name": "revision",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "events",
+                "column_name": "details",
+                "data_type": "json"
+              },
+              {
+                "table_name": "freshness",
+                "column_name": "revision",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "freshness",
+                "column_name": "clock",
+                "data_type": "timestamp with time zone"
+              },
+              {
+                "table_name": "incidents",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "incidents",
+                "column_name": "title",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "incidents",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "incidents",
+                "column_name": "affected_ids",
+                "data_type": "json"
+              },
+              {
+                "table_name": "incidents",
+                "column_name": "evidence",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "listings",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "listings",
+                "column_name": "seller_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "listings",
+                "column_name": "product_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "listings",
+                "column_name": "price",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "listings",
+                "column_name": "stock",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "order_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "listing_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "seller_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "quantity",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "unit_price",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "orders",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "orders",
+                "column_name": "customer_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "orders",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "orders",
+                "column_name": "created_at",
+                "data_type": "timestamp with time zone"
+              },
+              {
+                "table_name": "payments",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payments",
+                "column_name": "order_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payments",
+                "column_name": "amount",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "payments",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payments",
+                "column_name": "currency",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payouts",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payouts",
+                "column_name": "allocation_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payouts",
+                "column_name": "amount",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "payouts",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "products",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "products",
+                "column_name": "name",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "products",
+                "column_name": "category",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "refunds",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "refunds",
+                "column_name": "return_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "refunds",
+                "column_name": "payment_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "refunds",
+                "column_name": "amount",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "refunds",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "returns",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "returns",
+                "column_name": "item_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "returns",
+                "column_name": "quantity",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "returns",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "seller_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "name",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "captured",
+                "data_type": "bigint"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "refunded",
+                "data_type": "bigint"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "fees",
+                "data_type": "bigint"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "paid_out",
+                "data_type": "bigint"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "unpaid",
+                "data_type": "bigint"
+              },
+              {
+                "table_name": "sellers",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "sellers",
+                "column_name": "name",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "shipments",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "shipments",
+                "column_name": "item_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "shipments",
+                "column_name": "quantity",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "shipments",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "shipments",
+                "column_name": "delivered_at",
+                "data_type": "timestamp with time zone"
+              },
+              {
+                "table_name": "tickets",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "tickets",
+                "column_name": "order_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "tickets",
+                "column_name": "subject",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "tickets",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "tickets",
+                "column_name": "message",
+                "data_type": "text"
+              }
+            ],
+            "business_names": [
+              {
+                "entity_type": "product",
+                "id": "product-1",
+                "name": "Canvas Weekender"
+              },
+              {
+                "entity_type": "product",
+                "id": "product-2",
+                "name": "Desk Lamp"
+              },
+              {
+                "entity_type": "product",
+                "id": "product-3",
+                "name": "Ceramic Mug Set"
+              },
+              {
+                "entity_type": "product",
+                "id": "product-4",
+                "name": "Trail Backpack"
+              },
+              {
+                "entity_type": "product",
+                "id": "product-5",
+                "name": "Wireless Keyboard"
+              },
+              {
+                "entity_type": "product",
+                "id": "product-6",
+                "name": "Linen Notebook"
+              },
+              {
+                "entity_type": "seller",
+                "id": "seller-1",
+                "name": "Cedar & Co."
+              },
+              {
+                "entity_type": "seller",
+                "id": "seller-2",
+                "name": "Northstar Goods"
+              },
+              {
+                "entity_type": "seller",
+                "id": "seller-3",
+                "name": "Everyday Studio"
+              }
+            ],
+            "business_names_truncated": false
+          },
+          "evidence-7d04a8b7e233": {
+            "contract_version": "1.0",
+            "status": "ok",
+            "handle": "evidence-7d04a8b7e233",
+            "snapshot": {
+              "revision": 1,
+              "clock": "2026-09-27 12:00:00+00:00"
+            },
+            "document_revision": "fe36211d2849ebbe",
+            "attempt": 1,
+            "type": "query",
+            "purpose": "fetch order items, product names and seller names for a specific order",
+            "sql": "SELECT oi.quantity AS quantity, s.name AS seller_name, p.name AS product_name FROM analytics.order_items AS oi JOIN analytics.orders AS o ON oi.order_id = o.id JOIN analytics.listings AS l ON oi.listing_id = l.id JOIN analytics.products AS p ON l.product_id = p.id JOIN analytics.sellers AS s ON oi.seller_id = s.id WHERE oi.order_id = %(order_id)s",
+            "params": {
+              "order_id": "order-1"
+            },
+            "rows": [
+              {
+                "quantity": 2,
+                "seller_name": "Cedar & Co.",
+                "product_name": "Canvas Weekender"
+              },
+              {
+                "quantity": 2,
+                "seller_name": "Northstar Goods",
+                "product_name": "Desk Lamp"
+              }
+            ],
+            "columns": [
+              "quantity",
+              "seller_name",
+              "product_name"
+            ],
+            "truncated": false,
+            "row_count": 2,
+            "elapsed_ms": 1,
+            "query_hash": "5905e079679f1a23ce6f64492a56d005396483e3268cbee4e4c1691258a417d4"
+          }
+        }
+      ],
+      "original_trace_ids": [
+        "88912b86a97e018c717162fb67869fc1"
+      ]
+    },
+    {
+      "case_id": "09",
+      "questions": [
+        "Has the payment gone through for order-1?"
+      ],
+      "gold": {
+        "essential_facts": [
+          "Distinguish captured buyer payment from seller payout. Accept either a clarification question or an explicitly qualified answer distinguishing both meanings.",
+          "Buyer payment captured; seller payout has a failure. Do not imply seller settlement completed."
+        ],
+        "evidence_requirements": [
+          "Any factual payment/payout statements must match retrieved records. Clarification alone needs no citation."
+        ],
+        "optional_details": [
+          "Enumerating every held or failed seller payout, amount and date."
+        ]
+      },
+      "original_reference": {
+        "essential_facts": [
+          "Distinguish captured buyer payment from seller payout. Accept either a clarification question or an explicitly qualified answer distinguishing both meanings.",
+          "Buyer payment captured; seller payout has a failure. Do not imply seller settlement completed."
+        ],
+        "evidence_requirements": [
+          "Any factual payment/payout statements must match retrieved records. Clarification alone needs no citation."
+        ],
+        "optional_details": [
+          "Enumerating every held or failed seller payout, amount and date."
+        ]
+      },
+      "answers": [
+        "Interpretation: The payment has gone through (captured) for order-1.\nDemo date used: 2026-09-27 12:00:00+00:00 (demo clock).\nResult: Order status = paid; Payment status = captured; Amount = 759600 paise = INR 7596.00; Payment ID = payment-1.\nCitation: [evidence:evidence-4dbc53f28e08]\nRevision: 1"
+      ],
+      "evidence": [
+        {
+          "evidence-2e32eb37a923": {
+            "contract_version": "1.0",
+            "status": "ok",
+            "handle": "evidence-2e32eb37a923",
+            "snapshot": {
+              "revision": 1,
+              "clock": "2026-09-27 12:00:00+00:00"
+            },
+            "document_revision": "fe36211d2849ebbe",
+            "attempt": 1,
+            "type": "catalog",
+            "ontology": {
+              "version": "1.1",
+              "currency": "INR",
+              "money_unit": "integer paise; divide by 100 for rupees",
+              "entities": {
+                "customers": {
+                  "label": "Customer",
+                  "description": "A buyer account that places marketplace orders.",
+                  "grain": "One row per buyer account.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Customer identifier used by orders.customer_id.",
+                    "username": "Demo buyer account name."
+                  },
+                  "notes": [
+                    "This restricted view exposes buyer identity only, not credentials or other account roles."
+                  ],
+                  "table": "analytics.customers"
+                },
+                "sellers": {
+                  "label": "Seller",
+                  "description": "An independent merchant offering products through marketplace listings.",
+                  "grain": "One row per seller.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Seller identifier used by listings and order items.",
+                    "name": "Human-readable seller name."
+                  },
+                  "table": "analytics.sellers"
+                },
+                "products": {
+                  "label": "Product",
+                  "description": "A product identity and category, independent of a seller offer.",
+                  "grain": "One row per product.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Product identifier referenced by listings.",
+                    "name": "Human-readable product name.",
+                    "category": "Product category used for catalog organization."
+                  },
+                  "table": "analytics.products"
+                },
+                "listings": {
+                  "label": "Listing",
+                  "description": "A seller offer for a product, with its current price and available stock.",
+                  "grain": "One row per seller offer.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Listing identifier referenced by purchased items.",
+                    "seller_id": "Seller owning this offer.",
+                    "product_id": "Product offered.",
+                    "price": "Current unit price in integer paise; not necessarily the historical purchase price.",
+                    "stock": "Units currently available to purchase; purchases reduce it and completed pre-payout refunds restore returned units."
+                  },
+                  "notes": [
+                    "Use order_items.unit_price for historical purchase values."
+                  ],
+                  "table": "analytics.listings"
+                },
+                "orders": {
+                  "label": "Order",
+                  "description": "A buyer purchase that can contain items from several sellers.",
+                  "grain": "One row per order.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Order identifier linking items, payment and tickets.",
+                    "customer_id": "Buyer identifier in customers.",
+                    "status": "Order-level status; successful simulated purchases currently create paid orders.",
+                    "created_at": "Purchase time on the demo clock."
+                  },
+                  "notes": [
+                    "Delivery, return, refund and payout statuses belong to separate entities; paid does not mean delivered or settled."
+                  ],
+                  "table": "analytics.orders"
+                },
+                "order_items": {
+                  "label": "Order item",
+                  "description": "A purchased listing within an order, retaining the seller, quantity and price at purchase.",
+                  "grain": "One row per purchased listing in an order, potentially containing multiple units.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Purchased item identifier used by shipment, allocation and returns.",
+                    "order_id": "Containing order.",
+                    "listing_id": "Listing purchased.",
+                    "seller_id": "Seller recorded at purchase.",
+                    "quantity": "Number of units purchased.",
+                    "unit_price": "Unit price at purchase in integer paise."
+                  },
+                  "notes": [
+                    "Item gross is quantity times unit_price. Aggregate at item or allocation grain before joining one-to-many records."
+                  ],
+                  "table": "analytics.order_items"
+                },
+                "payments": {
+                  "label": "Buyer payment",
+                  "description": "The simulated captured payment from a buyer for an entire order.",
+                  "grain": "One row per order payment in this baseline.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Payment identifier referenced by allocations and refunds.",
+                    "order_id": "Order funded by this payment.",
+                    "amount": "Original captured order total in integer paise; completed refunds are tracked separately.",
+                    "status": "Current simulated payment status; successful purchases create captured payments.",
+                    "currency": "Currency code; baseline uses INR."
+                  },
+                  "notes": [
+                    "A payment funds multiple item allocations. Do not sum its full amount again for every joined item. Payment is not a seller payout."
+                  ],
+                  "table": "analytics.payments"
+                },
+                "shipments": {
+                  "label": "Shipment",
+                  "description": "Fulfillment state and delivery time for the units of a purchased item.",
+                  "grain": "One row per order item in this baseline.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Shipment identifier used for dispatch and delivery commands.",
+                    "item_id": "Purchased item being fulfilled.",
+                    "quantity": "Number of units covered by this shipment.",
+                    "status": "pending, dispatched or delivered.",
+                    "delivered_at": "Delivery time on the demo clock; null before delivery."
+                  },
+                  "notes": [
+                    "Different items in one order can be delivered separately; splitting an individual item into multiple shipments is not implemented."
+                  ],
+                  "table": "analytics.shipments"
+                },
+                "allocations": {
+                  "label": "Payment allocation",
+                  "description": "The portion of a captured payment attributable to one purchased item, including settlement accounting.",
+                  "grain": "One row per order item.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Allocation identifier referenced by its payout.",
+                    "item_id": "Purchased item whose funds are allocated.",
+                    "payment_id": "Source order payment.",
+                    "gross": "Original item gross in integer paise.",
+                    "fee": "Current marketplace fee in integer paise, adjusted after completed refunds.",
+                    "refunded": "Cumulative completed refunds for this allocation in integer paise; failed refunds do not count.",
+                    "policy": "Recorded settlement policy version."
+                  },
+                  "notes": [
+                    "Remaining seller payable is gross minus fee minus refunded. Monetary accounting is at allocation grain."
+                  ],
+                  "table": "analytics.allocations"
+                },
+                "payouts": {
+                  "label": "Seller payout",
+                  "description": "Current settlement record for transferring an allocation's net funds to its seller.",
+                  "grain": "One current payout record per allocation, not one row per attempt.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Payout identifier referenced by operational events.",
+                    "allocation_id": "Allocation being settled; join to order_items for seller identity.",
+                    "amount": "Current net seller payable in integer paise; only completed status counts as paid out.",
+                    "status": "held, failed or completed in the implemented simulator."
+                  },
+                  "notes": [
+                    "Retries update this record; inspect events for attempt history. Eligibility is computed from delivery, the 24-hour hold and active returns; it is not a separate persisted status."
+                  ],
+                  "table": "analytics.payouts"
+                },
+                "returns": {
+                  "label": "Return request",
+                  "description": "A request to return some or all units of a purchased item.",
+                  "grain": "One row per return request; an item may have multiple requests.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Return identifier used by the refund record.",
+                    "item_id": "Purchased item being returned.",
+                    "quantity": "Number of units requested for return.",
+                    "status": "requested, approved, received, rejected, refunded or manual_review."
+                  },
+                  "notes": [
+                    "Receipt alone is not refund completion. Post-payout returns enter manual_review; automatic recovery is not implemented."
+                  ],
+                  "table": "analytics.returns"
+                },
+                "refunds": {
+                  "label": "Buyer refund",
+                  "description": "Current simulated refund record associated with one return and its source payment.",
+                  "grain": "One refund record per return; a retry updates that record.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Refund identifier used in events.",
+                    "return_id": "Return request being refunded.",
+                    "payment_id": "Original captured payment being refunded.",
+                    "amount": "Refund amount in integer paise.",
+                    "status": "completed or failed in the implemented simulator."
+                  },
+                  "notes": [
+                    "Only completed refunds change allocation.refunded and the fee. Do not sum failed attempts as money returned."
+                  ],
+                  "table": "analytics.refunds"
+                },
+                "events": {
+                  "label": "Business event",
+                  "description": "Durable evidence of a simulated business action or provider outcome.",
+                  "grain": "One row per recorded event.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Unique event identifier.",
+                    "entity_id": "Identifier of the affected record or demo-clock; resolve its entity type using kind and details.",
+                    "kind": "Event/action name, such as payment_captured, payout_failed, purchase or deliver.",
+                    "occurred_at": "Business occurrence time on the demo clock.",
+                    "recorded_at": "Timestamp when evidence was recorded; seeded history supplies fixed timestamps.",
+                    "revision": "Committed demo revision associated with this event.",
+                    "details": "Event-specific JSON evidence; its fields vary by kind."
+                  },
+                  "notes": [
+                    "entity_id is a polymorphic reference, not a foreign key to one table. Events can multiply monetary rows when joined; aggregate or filter before joining."
+                  ],
+                  "table": "analytics.events"
+                },
+                "tickets": {
+                  "label": "Support ticket",
+                  "description": "A recorded support issue associated with an order.",
+                  "grain": "One row per ticket.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Support ticket identifier.",
+                    "order_id": "Order associated with the issue.",
+                    "subject": "Short issue summary.",
+                    "status": "Recorded ticket status, such as open.",
+                    "message": "Recorded support statement; verify claims against authoritative records and events."
+                  },
+                  "notes": [
+                    "The baseline contains seeded tickets, not a complete ticket-management workflow."
+                  ],
+                  "table": "analytics.tickets"
+                },
+                "incidents": {
+                  "label": "Incident",
+                  "description": "A recorded operational issue with an explicitly described affected set and supporting evidence.",
+                  "grain": "One row per incident.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Incident identifier.",
+                    "title": "Short incident description.",
+                    "status": "Recorded confirmation or lifecycle status; the seeded incident is confirmed.",
+                    "affected_ids": "JSON array of affected record identifiers; interpret their entity types using evidence.",
+                    "evidence": "Recorded explanation or evidence references supporting the incident."
+                  },
+                  "notes": [
+                    "Do not infer wider impact or causation beyond the recorded evidence. The baseline contains seeded incident data."
+                  ],
+                  "table": "analytics.incidents"
+                },
+                "freshness": {
+                  "label": "Snapshot freshness",
+                  "description": "The current committed business revision and demo clock exposed to investigations.",
+                  "grain": "Exactly one row describing the current demo state.",
+                  "key": [],
+                  "fields": {
+                    "revision": "Monotonic business revision within a scenario; reset starts a new scenario at revision 1.",
+                    "clock": "Business as-of time controlled by the demo clock."
+                  },
+                  "notes": [
+                    "Direct analytics views have no asynchronous projection lag. Each investigation pins a repeatable-read snapshot; separate investigations may see different revisions."
+                  ],
+                  "table": "analytics.freshness"
+                },
+                "seller_balances": {
+                  "label": "Seller balance summary",
+                  "description": "An analytical view aggregating allocation and payout accounting for each seller.",
+                  "grain": "One row per seller, including sellers with no orders.",
+                  "key": [
+                    "seller_id"
+                  ],
+                  "fields": {
+                    "seller_id": "Seller identifier and unique row key.",
+                    "name": "Seller name.",
+                    "captured": "Sum of original allocation gross in integer paise.",
+                    "refunded": "Sum of completed allocation refunds in integer paise.",
+                    "fees": "Sum of current adjusted marketplace fees in integer paise.",
+                    "paid_out": "Sum of payout amounts with completed status, in integer paise.",
+                    "unpaid": "Remaining seller funds for non-completed payouts in integer paise; includes held and failed payouts."
+                  },
+                  "notes": [
+                    "captured = refunded + fees + unpaid + paid_out. Unpaid does not imply eligible for immediate release. Do not join this seller-level total to individual items and then sum it."
+                  ],
+                  "table": "analytics.seller_balances"
+                }
+              },
+              "relationships": [
+                {
+                  "from": "orders.customer_id",
+                  "to": "customers.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "order_items.order_id",
+                  "to": "orders.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "order_items.listing_id",
+                  "to": "listings.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "listings.product_id",
+                  "to": "products.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "order_items.seller_id",
+                  "to": "sellers.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "payments.order_id",
+                  "to": "orders.id",
+                  "cardinality": "one-to-one"
+                },
+                {
+                  "from": "allocations.item_id",
+                  "to": "order_items.id",
+                  "cardinality": "one-to-one"
+                },
+                {
+                  "from": "allocations.payment_id",
+                  "to": "payments.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "payouts.allocation_id",
+                  "to": "allocations.id",
+                  "cardinality": "one-to-one"
+                },
+                {
+                  "from": "shipments.item_id",
+                  "to": "order_items.id",
+                  "cardinality": "one-to-one in baseline; quantity tracked"
+                },
+                {
+                  "from": "returns.item_id",
+                  "to": "order_items.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "refunds.return_id",
+                  "to": "returns.id",
+                  "cardinality": "one-to-one"
+                },
+                {
+                  "from": "tickets.order_id",
+                  "to": "orders.id",
+                  "cardinality": "many-to-one"
+                }
+              ],
+              "metrics": {
+                "captured": "SUM(allocations.gross) at allocation grain, not payment amounts after an item join",
+                "refunded": "SUM(allocations.refunded), completed refunds only",
+                "fees": "SUM(allocations.fee), net of completed refund fee reversal",
+                "unpaid": "gross - fee - refunded for payouts not completed; includes held and failed, not necessarily eligible",
+                "paid_out": "SUM(payouts.amount) WHERE status = completed",
+                "reconciliation": "captured = refunded + fees + unpaid + paid_out"
+              },
+              "time": "Use the run's demo clock, not wall-clock time. Policy selection uses purchase date or the event date specified by the policy.",
+              "cautions": [
+                "Seller payout differs from buyer payment.",
+                "Return receipt differs from completed refund.",
+                "A failure on one payout does not prove all sellers are affected.",
+                "Events contain occurred and recorded timestamps.",
+                "Joining both returns and events can multiply monetary rows; aggregate at the proper grain first."
+              ]
+            },
+            "schema": [
+              {
+                "table_name": "allocations",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "item_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "payment_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "gross",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "fee",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "refunded",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "policy",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "customers",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "customers",
+                "column_name": "username",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "events",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "events",
+                "column_name": "entity_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "events",
+                "column_name": "kind",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "events",
+                "column_name": "occurred_at",
+                "data_type": "timestamp with time zone"
+              },
+              {
+                "table_name": "events",
+                "column_name": "recorded_at",
+                "data_type": "timestamp with time zone"
+              },
+              {
+                "table_name": "events",
+                "column_name": "revision",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "events",
+                "column_name": "details",
+                "data_type": "json"
+              },
+              {
+                "table_name": "freshness",
+                "column_name": "revision",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "freshness",
+                "column_name": "clock",
+                "data_type": "timestamp with time zone"
+              },
+              {
+                "table_name": "incidents",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "incidents",
+                "column_name": "title",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "incidents",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "incidents",
+                "column_name": "affected_ids",
+                "data_type": "json"
+              },
+              {
+                "table_name": "incidents",
+                "column_name": "evidence",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "listings",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "listings",
+                "column_name": "seller_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "listings",
+                "column_name": "product_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "listings",
+                "column_name": "price",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "listings",
+                "column_name": "stock",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "order_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "listing_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "seller_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "quantity",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "unit_price",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "orders",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "orders",
+                "column_name": "customer_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "orders",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "orders",
+                "column_name": "created_at",
+                "data_type": "timestamp with time zone"
+              },
+              {
+                "table_name": "payments",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payments",
+                "column_name": "order_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payments",
+                "column_name": "amount",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "payments",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payments",
+                "column_name": "currency",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payouts",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payouts",
+                "column_name": "allocation_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payouts",
+                "column_name": "amount",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "payouts",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "products",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "products",
+                "column_name": "name",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "products",
+                "column_name": "category",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "refunds",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "refunds",
+                "column_name": "return_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "refunds",
+                "column_name": "payment_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "refunds",
+                "column_name": "amount",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "refunds",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "returns",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "returns",
+                "column_name": "item_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "returns",
+                "column_name": "quantity",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "returns",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "seller_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "name",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "captured",
+                "data_type": "bigint"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "refunded",
+                "data_type": "bigint"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "fees",
+                "data_type": "bigint"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "paid_out",
+                "data_type": "bigint"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "unpaid",
+                "data_type": "bigint"
+              },
+              {
+                "table_name": "sellers",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "sellers",
+                "column_name": "name",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "shipments",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "shipments",
+                "column_name": "item_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "shipments",
+                "column_name": "quantity",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "shipments",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "shipments",
+                "column_name": "delivered_at",
+                "data_type": "timestamp with time zone"
+              },
+              {
+                "table_name": "tickets",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "tickets",
+                "column_name": "order_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "tickets",
+                "column_name": "subject",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "tickets",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "tickets",
+                "column_name": "message",
+                "data_type": "text"
+              }
+            ],
+            "business_names": [
+              {
+                "entity_type": "product",
+                "id": "product-1",
+                "name": "Canvas Weekender"
+              },
+              {
+                "entity_type": "product",
+                "id": "product-2",
+                "name": "Desk Lamp"
+              },
+              {
+                "entity_type": "product",
+                "id": "product-3",
+                "name": "Ceramic Mug Set"
+              },
+              {
+                "entity_type": "product",
+                "id": "product-4",
+                "name": "Trail Backpack"
+              },
+              {
+                "entity_type": "product",
+                "id": "product-5",
+                "name": "Wireless Keyboard"
+              },
+              {
+                "entity_type": "product",
+                "id": "product-6",
+                "name": "Linen Notebook"
+              },
+              {
+                "entity_type": "seller",
+                "id": "seller-1",
+                "name": "Cedar & Co."
+              },
+              {
+                "entity_type": "seller",
+                "id": "seller-2",
+                "name": "Northstar Goods"
+              },
+              {
+                "entity_type": "seller",
+                "id": "seller-3",
+                "name": "Everyday Studio"
+              }
+            ],
+            "business_names_truncated": false
+          },
+          "evidence-4dbc53f28e08": {
+            "contract_version": "1.0",
+            "status": "ok",
+            "handle": "evidence-4dbc53f28e08",
+            "snapshot": {
+              "revision": 1,
+              "clock": "2026-09-27 12:00:00+00:00"
+            },
+            "document_revision": "fe36211d2849ebbe",
+            "attempt": 1,
+            "type": "query",
+            "purpose": "Check payment status for specific order",
+            "sql": "SELECT o.id AS order_id, o.status AS order_status, p.id AS payment_id, p.status AS payment_status, p.amount AS amount_paise, p.currency AS currency FROM analytics.orders AS o JOIN analytics.payments AS p ON p.order_id = o.id WHERE o.id = %(order_id)s",
+            "params": {
+              "order_id": "order-1"
+            },
+            "rows": [
+              {
+                "order_id": "order-1",
+                "order_status": "paid",
+                "payment_id": "payment-1",
+                "payment_status": "captured",
+                "amount_paise": 759600,
+                "currency": "INR"
+              }
+            ],
+            "columns": [
+              "order_id",
+              "order_status",
+              "payment_id",
+              "payment_status",
+              "amount_paise",
+              "currency"
+            ],
+            "truncated": false,
+            "row_count": 1,
+            "elapsed_ms": 5,
+            "query_hash": "a01c0e24ca2be6760fa951954e5b15e0408edca530ee621e9abdedc23e339a08"
+          }
+        }
+      ],
+      "original_trace_ids": [
+        "b221e5637bce89293d6112a640ca72f0"
+      ]
+    },
+    {
+      "case_id": "16",
+      "questions": [
+        "Can the operator release the payout for ord-b8f486c950 now?"
+      ],
+      "gold": "No: one hour of the 24-hour hold remains. Delivery timestamp + clock + settlement policy; no claim of provider failure.",
+      "original_reference": "No: one hour of the 24-hour hold remains. Delivery timestamp + clock + settlement policy; no claim of provider failure.",
+      "answers": [
+        "Interpretation: The ord-b8f486c950 payout is currently held and cannot be released yet (payout status: held; amount 116910 paise = ₹1169.10).\n\nDemo date used: 2026-09-28 (clock in snapshot).\n\nResult: Payout remains on hold; no release action possible at this moment.\n\nCitation: [evidence:evidence-96e37ad1445c] (current payout_status and amount for order)\n\nRevision: 5"
+      ],
+      "evidence": [
+        {
+          "evidence-91a3077ef06a": {
+            "contract_version": "1.0",
+            "status": "ok",
+            "handle": "evidence-91a3077ef06a",
+            "snapshot": {
+              "revision": 5,
+              "clock": "2026-09-28 11:00:00+00:00"
+            },
+            "document_revision": "fe36211d2849ebbe",
+            "attempt": 1,
+            "type": "catalog",
+            "ontology": {
+              "version": "1.1",
+              "currency": "INR",
+              "money_unit": "integer paise; divide by 100 for rupees",
+              "entities": {
+                "customers": {
+                  "label": "Customer",
+                  "description": "A buyer account that places marketplace orders.",
+                  "grain": "One row per buyer account.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Customer identifier used by orders.customer_id.",
+                    "username": "Demo buyer account name."
+                  },
+                  "notes": [
+                    "This restricted view exposes buyer identity only, not credentials or other account roles."
+                  ],
+                  "table": "analytics.customers"
+                },
+                "sellers": {
+                  "label": "Seller",
+                  "description": "An independent merchant offering products through marketplace listings.",
+                  "grain": "One row per seller.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Seller identifier used by listings and order items.",
+                    "name": "Human-readable seller name."
+                  },
+                  "table": "analytics.sellers"
+                },
+                "products": {
+                  "label": "Product",
+                  "description": "A product identity and category, independent of a seller offer.",
+                  "grain": "One row per product.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Product identifier referenced by listings.",
+                    "name": "Human-readable product name.",
+                    "category": "Product category used for catalog organization."
+                  },
+                  "table": "analytics.products"
+                },
+                "listings": {
+                  "label": "Listing",
+                  "description": "A seller offer for a product, with its current price and available stock.",
+                  "grain": "One row per seller offer.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Listing identifier referenced by purchased items.",
+                    "seller_id": "Seller owning this offer.",
+                    "product_id": "Product offered.",
+                    "price": "Current unit price in integer paise; not necessarily the historical purchase price.",
+                    "stock": "Units currently available to purchase; purchases reduce it and completed pre-payout refunds restore returned units."
+                  },
+                  "notes": [
+                    "Use order_items.unit_price for historical purchase values."
+                  ],
+                  "table": "analytics.listings"
+                },
+                "orders": {
+                  "label": "Order",
+                  "description": "A buyer purchase that can contain items from several sellers.",
+                  "grain": "One row per order.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Order identifier linking items, payment and tickets.",
+                    "customer_id": "Buyer identifier in customers.",
+                    "status": "Order-level status; successful simulated purchases currently create paid orders.",
+                    "created_at": "Purchase time on the demo clock."
+                  },
+                  "notes": [
+                    "Delivery, return, refund and payout statuses belong to separate entities; paid does not mean delivered or settled."
+                  ],
+                  "table": "analytics.orders"
+                },
+                "order_items": {
+                  "label": "Order item",
+                  "description": "A purchased listing within an order, retaining the seller, quantity and price at purchase.",
+                  "grain": "One row per purchased listing in an order, potentially containing multiple units.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Purchased item identifier used by shipment, allocation and returns.",
+                    "order_id": "Containing order.",
+                    "listing_id": "Listing purchased.",
+                    "seller_id": "Seller recorded at purchase.",
+                    "quantity": "Number of units purchased.",
+                    "unit_price": "Unit price at purchase in integer paise."
+                  },
+                  "notes": [
+                    "Item gross is quantity times unit_price. Aggregate at item or allocation grain before joining one-to-many records."
+                  ],
+                  "table": "analytics.order_items"
+                },
+                "payments": {
+                  "label": "Buyer payment",
+                  "description": "The simulated captured payment from a buyer for an entire order.",
+                  "grain": "One row per order payment in this baseline.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Payment identifier referenced by allocations and refunds.",
+                    "order_id": "Order funded by this payment.",
+                    "amount": "Original captured order total in integer paise; completed refunds are tracked separately.",
+                    "status": "Current simulated payment status; successful purchases create captured payments.",
+                    "currency": "Currency code; baseline uses INR."
+                  },
+                  "notes": [
+                    "A payment funds multiple item allocations. Do not sum its full amount again for every joined item. Payment is not a seller payout."
+                  ],
+                  "table": "analytics.payments"
+                },
+                "shipments": {
+                  "label": "Shipment",
+                  "description": "Fulfillment state and delivery time for the units of a purchased item.",
+                  "grain": "One row per order item in this baseline.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Shipment identifier used for dispatch and delivery commands.",
+                    "item_id": "Purchased item being fulfilled.",
+                    "quantity": "Number of units covered by this shipment.",
+                    "status": "pending, dispatched or delivered.",
+                    "delivered_at": "Delivery time on the demo clock; null before delivery."
+                  },
+                  "notes": [
+                    "Different items in one order can be delivered separately; splitting an individual item into multiple shipments is not implemented."
+                  ],
+                  "table": "analytics.shipments"
+                },
+                "allocations": {
+                  "label": "Payment allocation",
+                  "description": "The portion of a captured payment attributable to one purchased item, including settlement accounting.",
+                  "grain": "One row per order item.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Allocation identifier referenced by its payout.",
+                    "item_id": "Purchased item whose funds are allocated.",
+                    "payment_id": "Source order payment.",
+                    "gross": "Original item gross in integer paise.",
+                    "fee": "Current marketplace fee in integer paise, adjusted after completed refunds.",
+                    "refunded": "Cumulative completed refunds for this allocation in integer paise; failed refunds do not count.",
+                    "policy": "Recorded settlement policy version."
+                  },
+                  "notes": [
+                    "Remaining seller payable is gross minus fee minus refunded. Monetary accounting is at allocation grain."
+                  ],
+                  "table": "analytics.allocations"
+                },
+                "payouts": {
+                  "label": "Seller payout",
+                  "description": "Current settlement record for transferring an allocation's net funds to its seller.",
+                  "grain": "One current payout record per allocation, not one row per attempt.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Payout identifier referenced by operational events.",
+                    "allocation_id": "Allocation being settled; join to order_items for seller identity.",
+                    "amount": "Current net seller payable in integer paise; only completed status counts as paid out.",
+                    "status": "held, failed or completed in the implemented simulator."
+                  },
+                  "notes": [
+                    "Retries update this record; inspect events for attempt history. Eligibility is computed from delivery, the 24-hour hold and active returns; it is not a separate persisted status."
+                  ],
+                  "table": "analytics.payouts"
+                },
+                "returns": {
+                  "label": "Return request",
+                  "description": "A request to return some or all units of a purchased item.",
+                  "grain": "One row per return request; an item may have multiple requests.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Return identifier used by the refund record.",
+                    "item_id": "Purchased item being returned.",
+                    "quantity": "Number of units requested for return.",
+                    "status": "requested, approved, received, rejected, refunded or manual_review."
+                  },
+                  "notes": [
+                    "Receipt alone is not refund completion. Post-payout returns enter manual_review; automatic recovery is not implemented."
+                  ],
+                  "table": "analytics.returns"
+                },
+                "refunds": {
+                  "label": "Buyer refund",
+                  "description": "Current simulated refund record associated with one return and its source payment.",
+                  "grain": "One refund record per return; a retry updates that record.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Refund identifier used in events.",
+                    "return_id": "Return request being refunded.",
+                    "payment_id": "Original captured payment being refunded.",
+                    "amount": "Refund amount in integer paise.",
+                    "status": "completed or failed in the implemented simulator."
+                  },
+                  "notes": [
+                    "Only completed refunds change allocation.refunded and the fee. Do not sum failed attempts as money returned."
+                  ],
+                  "table": "analytics.refunds"
+                },
+                "events": {
+                  "label": "Business event",
+                  "description": "Durable evidence of a simulated business action or provider outcome.",
+                  "grain": "One row per recorded event.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Unique event identifier.",
+                    "entity_id": "Identifier of the affected record or demo-clock; resolve its entity type using kind and details.",
+                    "kind": "Event/action name, such as payment_captured, payout_failed, purchase or deliver.",
+                    "occurred_at": "Business occurrence time on the demo clock.",
+                    "recorded_at": "Timestamp when evidence was recorded; seeded history supplies fixed timestamps.",
+                    "revision": "Committed demo revision associated with this event.",
+                    "details": "Event-specific JSON evidence; its fields vary by kind."
+                  },
+                  "notes": [
+                    "entity_id is a polymorphic reference, not a foreign key to one table. Events can multiply monetary rows when joined; aggregate or filter before joining."
+                  ],
+                  "table": "analytics.events"
+                },
+                "tickets": {
+                  "label": "Support ticket",
+                  "description": "A recorded support issue associated with an order.",
+                  "grain": "One row per ticket.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Support ticket identifier.",
+                    "order_id": "Order associated with the issue.",
+                    "subject": "Short issue summary.",
+                    "status": "Recorded ticket status, such as open.",
+                    "message": "Recorded support statement; verify claims against authoritative records and events."
+                  },
+                  "notes": [
+                    "The baseline contains seeded tickets, not a complete ticket-management workflow."
+                  ],
+                  "table": "analytics.tickets"
+                },
+                "incidents": {
+                  "label": "Incident",
+                  "description": "A recorded operational issue with an explicitly described affected set and supporting evidence.",
+                  "grain": "One row per incident.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Incident identifier.",
+                    "title": "Short incident description.",
+                    "status": "Recorded confirmation or lifecycle status; the seeded incident is confirmed.",
+                    "affected_ids": "JSON array of affected record identifiers; interpret their entity types using evidence.",
+                    "evidence": "Recorded explanation or evidence references supporting the incident."
+                  },
+                  "notes": [
+                    "Do not infer wider impact or causation beyond the recorded evidence. The baseline contains seeded incident data."
+                  ],
+                  "table": "analytics.incidents"
+                },
+                "freshness": {
+                  "label": "Snapshot freshness",
+                  "description": "The current committed business revision and demo clock exposed to investigations.",
+                  "grain": "Exactly one row describing the current demo state.",
+                  "key": [],
+                  "fields": {
+                    "revision": "Monotonic business revision within a scenario; reset starts a new scenario at revision 1.",
+                    "clock": "Business as-of time controlled by the demo clock."
+                  },
+                  "notes": [
+                    "Direct analytics views have no asynchronous projection lag. Each investigation pins a repeatable-read snapshot; separate investigations may see different revisions."
+                  ],
+                  "table": "analytics.freshness"
+                },
+                "seller_balances": {
+                  "label": "Seller balance summary",
+                  "description": "An analytical view aggregating allocation and payout accounting for each seller.",
+                  "grain": "One row per seller, including sellers with no orders.",
+                  "key": [
+                    "seller_id"
+                  ],
+                  "fields": {
+                    "seller_id": "Seller identifier and unique row key.",
+                    "name": "Seller name.",
+                    "captured": "Sum of original allocation gross in integer paise.",
+                    "refunded": "Sum of completed allocation refunds in integer paise.",
+                    "fees": "Sum of current adjusted marketplace fees in integer paise.",
+                    "paid_out": "Sum of payout amounts with completed status, in integer paise.",
+                    "unpaid": "Remaining seller funds for non-completed payouts in integer paise; includes held and failed payouts."
+                  },
+                  "notes": [
+                    "captured = refunded + fees + unpaid + paid_out. Unpaid does not imply eligible for immediate release. Do not join this seller-level total to individual items and then sum it."
+                  ],
+                  "table": "analytics.seller_balances"
+                }
+              },
+              "relationships": [
+                {
+                  "from": "orders.customer_id",
+                  "to": "customers.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "order_items.order_id",
+                  "to": "orders.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "order_items.listing_id",
+                  "to": "listings.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "listings.product_id",
+                  "to": "products.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "order_items.seller_id",
+                  "to": "sellers.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "payments.order_id",
+                  "to": "orders.id",
+                  "cardinality": "one-to-one"
+                },
+                {
+                  "from": "allocations.item_id",
+                  "to": "order_items.id",
+                  "cardinality": "one-to-one"
+                },
+                {
+                  "from": "allocations.payment_id",
+                  "to": "payments.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "payouts.allocation_id",
+                  "to": "allocations.id",
+                  "cardinality": "one-to-one"
+                },
+                {
+                  "from": "shipments.item_id",
+                  "to": "order_items.id",
+                  "cardinality": "one-to-one in baseline; quantity tracked"
+                },
+                {
+                  "from": "returns.item_id",
+                  "to": "order_items.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "refunds.return_id",
+                  "to": "returns.id",
+                  "cardinality": "one-to-one"
+                },
+                {
+                  "from": "tickets.order_id",
+                  "to": "orders.id",
+                  "cardinality": "many-to-one"
+                }
+              ],
+              "metrics": {
+                "captured": "SUM(allocations.gross) at allocation grain, not payment amounts after an item join",
+                "refunded": "SUM(allocations.refunded), completed refunds only",
+                "fees": "SUM(allocations.fee), net of completed refund fee reversal",
+                "unpaid": "gross - fee - refunded for payouts not completed; includes held and failed, not necessarily eligible",
+                "paid_out": "SUM(payouts.amount) WHERE status = completed",
+                "reconciliation": "captured = refunded + fees + unpaid + paid_out"
+              },
+              "time": "Use the run's demo clock, not wall-clock time. Policy selection uses purchase date or the event date specified by the policy.",
+              "cautions": [
+                "Seller payout differs from buyer payment.",
+                "Return receipt differs from completed refund.",
+                "A failure on one payout does not prove all sellers are affected.",
+                "Events contain occurred and recorded timestamps.",
+                "Joining both returns and events can multiply monetary rows; aggregate at the proper grain first."
+              ]
+            },
+            "schema": [
+              {
+                "table_name": "allocations",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "item_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "payment_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "gross",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "fee",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "refunded",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "policy",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "customers",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "customers",
+                "column_name": "username",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "events",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "events",
+                "column_name": "entity_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "events",
+                "column_name": "kind",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "events",
+                "column_name": "occurred_at",
+                "data_type": "timestamp with time zone"
+              },
+              {
+                "table_name": "events",
+                "column_name": "recorded_at",
+                "data_type": "timestamp with time zone"
+              },
+              {
+                "table_name": "events",
+                "column_name": "revision",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "events",
+                "column_name": "details",
+                "data_type": "json"
+              },
+              {
+                "table_name": "freshness",
+                "column_name": "revision",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "freshness",
+                "column_name": "clock",
+                "data_type": "timestamp with time zone"
+              },
+              {
+                "table_name": "incidents",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "incidents",
+                "column_name": "title",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "incidents",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "incidents",
+                "column_name": "affected_ids",
+                "data_type": "json"
+              },
+              {
+                "table_name": "incidents",
+                "column_name": "evidence",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "listings",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "listings",
+                "column_name": "seller_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "listings",
+                "column_name": "product_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "listings",
+                "column_name": "price",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "listings",
+                "column_name": "stock",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "order_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "listing_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "seller_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "quantity",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "unit_price",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "orders",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "orders",
+                "column_name": "customer_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "orders",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "orders",
+                "column_name": "created_at",
+                "data_type": "timestamp with time zone"
+              },
+              {
+                "table_name": "payments",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payments",
+                "column_name": "order_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payments",
+                "column_name": "amount",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "payments",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payments",
+                "column_name": "currency",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payouts",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payouts",
+                "column_name": "allocation_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payouts",
+                "column_name": "amount",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "payouts",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "products",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "products",
+                "column_name": "name",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "products",
+                "column_name": "category",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "refunds",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "refunds",
+                "column_name": "return_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "refunds",
+                "column_name": "payment_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "refunds",
+                "column_name": "amount",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "refunds",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "returns",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "returns",
+                "column_name": "item_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "returns",
+                "column_name": "quantity",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "returns",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "seller_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "name",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "captured",
+                "data_type": "bigint"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "refunded",
+                "data_type": "bigint"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "fees",
+                "data_type": "bigint"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "paid_out",
+                "data_type": "bigint"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "unpaid",
+                "data_type": "bigint"
+              },
+              {
+                "table_name": "sellers",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "sellers",
+                "column_name": "name",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "shipments",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "shipments",
+                "column_name": "item_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "shipments",
+                "column_name": "quantity",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "shipments",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "shipments",
+                "column_name": "delivered_at",
+                "data_type": "timestamp with time zone"
+              },
+              {
+                "table_name": "tickets",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "tickets",
+                "column_name": "order_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "tickets",
+                "column_name": "subject",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "tickets",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "tickets",
+                "column_name": "message",
+                "data_type": "text"
+              }
+            ],
+            "business_names": [
+              {
+                "entity_type": "product",
+                "id": "product-1",
+                "name": "Canvas Weekender"
+              },
+              {
+                "entity_type": "product",
+                "id": "product-2",
+                "name": "Desk Lamp"
+              },
+              {
+                "entity_type": "product",
+                "id": "product-3",
+                "name": "Ceramic Mug Set"
+              },
+              {
+                "entity_type": "product",
+                "id": "product-4",
+                "name": "Trail Backpack"
+              },
+              {
+                "entity_type": "product",
+                "id": "product-5",
+                "name": "Wireless Keyboard"
+              },
+              {
+                "entity_type": "product",
+                "id": "product-6",
+                "name": "Linen Notebook"
+              },
+              {
+                "entity_type": "seller",
+                "id": "seller-1",
+                "name": "Cedar & Co."
+              },
+              {
+                "entity_type": "seller",
+                "id": "seller-2",
+                "name": "Northstar Goods"
+              },
+              {
+                "entity_type": "seller",
+                "id": "seller-3",
+                "name": "Everyday Studio"
+              }
+            ],
+            "business_names_truncated": false
+          },
+          "evidence-47741af74287": {
+            "contract_version": "1.0",
+            "status": "empty",
+            "handle": "evidence-47741af74287",
+            "snapshot": {
+              "revision": 5,
+              "clock": "2026-09-28 11:00:00+00:00"
+            },
+            "document_revision": "fe36211d2849ebbe",
+            "attempt": 1,
+            "type": "query",
+            "purpose": "check payout status for today's orders",
+            "sql": "SELECT o.id AS order_id, o.created_at, p.id AS payment_id, p.amount AS payment_amount, p.status AS payment_status, pa.id AS payout_id, pa.amount AS payout_amount, pa.status AS payout_status FROM analytics.orders AS o JOIN analytics.order_items AS oi ON oi.order_id = o.id JOIN analytics.allocations AS a ON a.item_id = oi.id LEFT JOIN analytics.payouts AS pa ON pa.allocation_id = a.id LEFT JOIN analytics.payments AS p ON p.id = a.payment_id WHERE o.id = %(order_id)s AND o.created_at >= %(start)s AND o.created_at < %(end)s",
+            "params": {
+              "order_id": "ord-b8f486c950",
+              "start": "2026-09-28 00:00:00+00:00",
+              "end": "2026-09-29 00:00:00+00:00"
+            },
+            "rows": [],
+            "columns": [
+              "order_id",
+              "created_at",
+              "payment_id",
+              "payment_amount",
+              "payment_status",
+              "payout_id",
+              "payout_amount",
+              "payout_status"
+            ],
+            "truncated": false,
+            "row_count": 0,
+            "elapsed_ms": 6,
+            "query_hash": "7a55f9714d995c20a1770fac6bfb7d3867b2bebdbe9baa98d00cf5e9f436151b"
+          },
+          "evidence-96e37ad1445c": {
+            "contract_version": "1.0",
+            "status": "ok",
+            "handle": "evidence-96e37ad1445c",
+            "snapshot": {
+              "revision": 5,
+              "clock": "2026-09-28 11:00:00+00:00"
+            },
+            "document_revision": "fe36211d2849ebbe",
+            "attempt": 1,
+            "type": "query",
+            "purpose": "Current order, return, refund and payout records; allocation amounts repeat across multiple returns",
+            "sql": "SELECT i.order_id, i.id AS item_id, i.quantity, r.id AS return_id, r.status AS return_status, r.quantity AS return_quantity, f.id AS refund_id, f.status AS refund_status, f.amount AS refund_amount_paise, a.gross AS gross_paise, a.refunded AS refunded_paise, a.fee AS fee_paise, p.id AS payout_id, p.status AS payout_status, p.amount AS payout_amount_paise FROM analytics.order_items AS i LEFT JOIN analytics.returns AS r ON r.item_id = i.id LEFT JOIN analytics.refunds AS f ON f.return_id = r.id LEFT JOIN analytics.allocations AS a ON a.item_id = i.id LEFT JOIN analytics.payouts AS p ON p.allocation_id = a.id WHERE i.order_id = %(order_id)s ORDER BY i.id, r.id",
+            "params": {
+              "order_id": "ord-b8f486c950"
+            },
+            "rows": [
+              {
+                "order_id": "ord-b8f486c950",
+                "item_id": "item-0ce5d5feaf",
+                "quantity": 1,
+                "return_id": null,
+                "return_status": null,
+                "return_quantity": null,
+                "refund_id": null,
+                "refund_status": null,
+                "refund_amount_paise": null,
+                "gross_paise": 129900,
+                "refunded_paise": 0,
+                "fee_paise": 12990,
+                "payout_id": "payout-4dcc6daeaa",
+                "payout_status": "held",
+                "payout_amount_paise": 116910
+              }
+            ],
+            "columns": [
+              "order_id",
+              "item_id",
+              "quantity",
+              "return_id",
+              "return_status",
+              "return_quantity",
+              "refund_id",
+              "refund_status",
+              "refund_amount_paise",
+              "gross_paise",
+              "refunded_paise",
+              "fee_paise",
+              "payout_id",
+              "payout_status",
+              "payout_amount_paise"
+            ],
+            "truncated": false,
+            "row_count": 1,
+            "elapsed_ms": 2,
+            "query_hash": "90091f3e7e9451665875baa1de4b2a995d992594f57d4d318f62542faaf4837d"
+          },
+          "evidence-68065407516b": {
+            "contract_version": "1.0",
+            "status": "ok",
+            "handle": "evidence-68065407516b",
+            "snapshot": {
+              "revision": 5,
+              "clock": "2026-09-28 11:00:00+00:00"
+            },
+            "document_revision": "fe36211d2849ebbe",
+            "attempt": 1,
+            "type": "query",
+            "purpose": "Recorded order event timeline, including failed and successful attempts",
+            "sql": "WITH items AS (SELECT id FROM analytics.order_items WHERE order_id = %(order_id)s), return_ids AS (SELECT id FROM analytics.returns WHERE item_id IN (SELECT id FROM items)), allocation_ids AS (SELECT id FROM analytics.allocations WHERE item_id IN (SELECT id FROM items)), related AS (SELECT id FROM analytics.orders WHERE id = %(order_id)s UNION SELECT id FROM items UNION SELECT id FROM return_ids UNION SELECT id FROM allocation_ids UNION SELECT id FROM analytics.refunds WHERE return_id IN (SELECT id FROM return_ids) UNION SELECT id FROM analytics.payouts WHERE allocation_id IN (SELECT id FROM allocation_ids) UNION SELECT id FROM analytics.shipments WHERE item_id IN (SELECT id FROM items) UNION SELECT id FROM analytics.payments WHERE order_id = %(order_id)s) SELECT e.revision, e.kind, e.entity_id, e.details, e.occurred_at, e.recorded_at FROM analytics.events AS e WHERE e.entity_id IN (SELECT id FROM related) OR e.details ->> 'id' IN (SELECT id FROM related) ORDER BY e.revision, e.recorded_at, e.id",
+            "params": {
+              "order_id": "ord-b8f486c950"
+            },
+            "rows": [
+              {
+                "revision": 2,
+                "kind": "purchase",
+                "entity_id": "ord-b8f486c950",
+                "details": {
+                  "actor": "buyer",
+                  "items": [
+                    {
+                      "listing_id": "listing-2",
+                      "quantity": 1
+                    }
+                  ]
+                },
+                "occurred_at": "2026-09-27 12:00:00+00:00",
+                "recorded_at": "2026-09-27 12:00:00.000002+00:00"
+              },
+              {
+                "revision": 3,
+                "kind": "dispatch",
+                "entity_id": "ship-fb9a0419cc",
+                "details": {
+                  "actor": "operator",
+                  "id": "ship-fb9a0419cc"
+                },
+                "occurred_at": "2026-09-27 12:00:00+00:00",
+                "recorded_at": "2026-09-27 12:00:00.000003+00:00"
+              },
+              {
+                "revision": 4,
+                "kind": "deliver",
+                "entity_id": "ship-fb9a0419cc",
+                "details": {
+                  "actor": "operator",
+                  "id": "ship-fb9a0419cc"
+                },
+                "occurred_at": "2026-09-27 12:00:00+00:00",
+                "recorded_at": "2026-09-27 12:00:00.000004+00:00"
+              }
+            ],
+            "columns": [
+              "revision",
+              "kind",
+              "entity_id",
+              "details",
+              "occurred_at",
+              "recorded_at"
+            ],
+            "truncated": false,
+            "row_count": 3,
+            "elapsed_ms": 1,
+            "query_hash": "3da83f8f871d9cbef1aa31e39233dea1d8ec979a08f4cfbf94a27cd37712653e"
+          }
+        }
+      ],
+      "original_trace_ids": [
+        "21c02f240368a527fd5e176916e9b741"
+      ]
+    },
+    {
+      "case_id": "21",
+      "questions": [
+        "Explain the refund history for ord-aaa1768930."
+      ],
+      "gold": "Failed attempt then completed retry; total refunded 1,899 exactly once; return refunded; no seller payout due. Chronological event evidence and current balances.",
+      "original_reference": "Failed attempt then completed retry; total refunded 1,899 exactly once; return refunded; no seller payout due. Chronological event evidence and current balances.",
+      "answers": [
+        "Short summary:\n- Refund path completed for ord-aaa1768930; initial refund attempt failed, then completed. No payout due - fully refunded. [evidence:evidence-6e406a541b21]\n\nChronological business steps:\n- Purchase: order placed for item-ebe8569888. [evidence-6e406a541b21]\n- Dispatch and deliver: item dispatched and delivered to buyer. [evidence-6e406a541b21]\n- Return flow: buyer requested return; operator approved; item received back. [evidence-6e406a541b21]\n- Refund attempts: refund initiated, first outcome failed, then completed. [evidence-6e406a541b21]\n\nFinal refund and seller payable amounts:\n- Refund amount: 1899.00 INR (189900 paise) completed. Payout amount: 0 paise. Therefore: No payout due - fully refunded. [evidence:evidence-6e406a541b21]"
+      ],
+      "evidence": [
+        {
+          "evidence-6e406a541b21": {
+            "contract_version": "1.0",
+            "status": "ok",
+            "handle": "evidence-6e406a541b21",
+            "snapshot": {
+              "revision": 9,
+              "clock": "2026-09-27 12:00:00+00:00"
+            },
+            "document_revision": "fe36211d2849ebbe",
+            "attempt": 1,
+            "type": "query",
+            "purpose": "Current order, return, refund and payout records; allocation amounts repeat across multiple returns",
+            "sql": "SELECT i.order_id, i.id AS item_id, i.quantity, r.id AS return_id, r.status AS return_status, r.quantity AS return_quantity, f.id AS refund_id, f.status AS refund_status, f.amount AS refund_amount_paise, a.gross AS gross_paise, a.refunded AS refunded_paise, a.fee AS fee_paise, p.id AS payout_id, p.status AS payout_status, p.amount AS payout_amount_paise FROM analytics.order_items AS i LEFT JOIN analytics.returns AS r ON r.item_id = i.id LEFT JOIN analytics.refunds AS f ON f.return_id = r.id LEFT JOIN analytics.allocations AS a ON a.item_id = i.id LEFT JOIN analytics.payouts AS p ON p.allocation_id = a.id WHERE i.order_id = %(order_id)s ORDER BY i.id, r.id",
+            "params": {
+              "order_id": "ord-aaa1768930"
+            },
+            "rows": [
+              {
+                "order_id": "ord-aaa1768930",
+                "item_id": "item-ebe8569888",
+                "quantity": 1,
+                "return_id": "ret-971ffee3c4",
+                "return_status": "refunded",
+                "return_quantity": 1,
+                "refund_id": "refund-ec2b615e98",
+                "refund_status": "completed",
+                "refund_amount_paise": 189900,
+                "gross_paise": 189900,
+                "refunded_paise": 189900,
+                "fee_paise": 0,
+                "payout_id": "payout-01db5b4c4e",
+                "payout_status": "held",
+                "payout_amount_paise": 0
+              }
+            ],
+            "columns": [
+              "order_id",
+              "item_id",
+              "quantity",
+              "return_id",
+              "return_status",
+              "return_quantity",
+              "refund_id",
+              "refund_status",
+              "refund_amount_paise",
+              "gross_paise",
+              "refunded_paise",
+              "fee_paise",
+              "payout_id",
+              "payout_status",
+              "payout_amount_paise"
+            ],
+            "truncated": false,
+            "row_count": 1,
+            "elapsed_ms": 1,
+            "query_hash": "90091f3e7e9451665875baa1de4b2a995d992594f57d4d318f62542faaf4837d"
+          },
+          "evidence-94712b669c4f": {
+            "contract_version": "1.0",
+            "status": "ok",
+            "handle": "evidence-94712b669c4f",
+            "snapshot": {
+              "revision": 9,
+              "clock": "2026-09-27 12:00:00+00:00"
+            },
+            "document_revision": "fe36211d2849ebbe",
+            "attempt": 1,
+            "type": "query",
+            "purpose": "Recorded order event timeline, including failed and successful attempts",
+            "sql": "WITH items AS (SELECT id FROM analytics.order_items WHERE order_id = %(order_id)s), return_ids AS (SELECT id FROM analytics.returns WHERE item_id IN (SELECT id FROM items)), allocation_ids AS (SELECT id FROM analytics.allocations WHERE item_id IN (SELECT id FROM items)), related AS (SELECT id FROM analytics.orders WHERE id = %(order_id)s UNION SELECT id FROM items UNION SELECT id FROM return_ids UNION SELECT id FROM allocation_ids UNION SELECT id FROM analytics.refunds WHERE return_id IN (SELECT id FROM return_ids) UNION SELECT id FROM analytics.payouts WHERE allocation_id IN (SELECT id FROM allocation_ids) UNION SELECT id FROM analytics.shipments WHERE item_id IN (SELECT id FROM items) UNION SELECT id FROM analytics.payments WHERE order_id = %(order_id)s) SELECT e.revision, e.kind, e.entity_id, e.details, e.occurred_at, e.recorded_at FROM analytics.events AS e WHERE e.entity_id IN (SELECT id FROM related) OR e.details ->> 'id' IN (SELECT id FROM related) ORDER BY e.revision, e.recorded_at, e.id",
+            "params": {
+              "order_id": "ord-aaa1768930"
+            },
+            "rows": [
+              {
+                "revision": 2,
+                "kind": "purchase",
+                "entity_id": "ord-aaa1768930",
+                "details": {
+                  "actor": "buyer",
+                  "items": [
+                    {
+                      "listing_id": "listing-4",
+                      "quantity": 1
+                    }
+                  ]
+                },
+                "occurred_at": "2026-09-27 12:00:00+00:00",
+                "recorded_at": "2026-09-27 12:00:00.000002+00:00"
+              },
+              {
+                "revision": 3,
+                "kind": "dispatch",
+                "entity_id": "ship-275a6eb703",
+                "details": {
+                  "actor": "operator",
+                  "id": "ship-275a6eb703"
+                },
+                "occurred_at": "2026-09-27 12:00:00+00:00",
+                "recorded_at": "2026-09-27 12:00:00.000003+00:00"
+              },
+              {
+                "revision": 4,
+                "kind": "deliver",
+                "entity_id": "ship-275a6eb703",
+                "details": {
+                  "actor": "operator",
+                  "id": "ship-275a6eb703"
+                },
+                "occurred_at": "2026-09-27 12:00:00+00:00",
+                "recorded_at": "2026-09-27 12:00:00.000004+00:00"
+              },
+              {
+                "revision": 5,
+                "kind": "request_return",
+                "entity_id": "ret-971ffee3c4",
+                "details": {
+                  "actor": "buyer",
+                  "id": "item-ebe8569888",
+                  "quantity": 1
+                },
+                "occurred_at": "2026-09-27 12:00:00+00:00",
+                "recorded_at": "2026-09-27 12:00:00.000005+00:00"
+              },
+              {
+                "revision": 6,
+                "kind": "approve_return",
+                "entity_id": "ret-971ffee3c4",
+                "details": {
+                  "actor": "operator",
+                  "id": "ret-971ffee3c4"
+                },
+                "occurred_at": "2026-09-27 12:00:00+00:00",
+                "recorded_at": "2026-09-27 12:00:00.000006+00:00"
+              },
+              {
+                "revision": 7,
+                "kind": "receive_return",
+                "entity_id": "ret-971ffee3c4",
+                "details": {
+                  "actor": "operator",
+                  "id": "ret-971ffee3c4"
+                },
+                "occurred_at": "2026-09-27 12:00:00+00:00",
+                "recorded_at": "2026-09-27 12:00:00.000007+00:00"
+              },
+              {
+                "revision": 8,
+                "kind": "refund",
+                "entity_id": "refund-ec2b615e98",
+                "details": {
+                  "actor": "operator",
+                  "id": "ret-971ffee3c4",
+                  "outcome": "failed"
+                },
+                "occurred_at": "2026-09-27 12:00:00+00:00",
+                "recorded_at": "2026-09-27 12:00:00.000008+00:00"
+              },
+              {
+                "revision": 9,
+                "kind": "refund",
+                "entity_id": "refund-ec2b615e98",
+                "details": {
+                  "actor": "operator",
+                  "id": "ret-971ffee3c4",
+                  "outcome": "completed"
+                },
+                "occurred_at": "2026-09-27 12:00:00+00:00",
+                "recorded_at": "2026-09-27 12:00:00.000009+00:00"
+              }
+            ],
+            "columns": [
+              "revision",
+              "kind",
+              "entity_id",
+              "details",
+              "occurred_at",
+              "recorded_at"
+            ],
+            "truncated": false,
+            "row_count": 8,
+            "elapsed_ms": 1,
+            "query_hash": "3da83f8f871d9cbef1aa31e39233dea1d8ec979a08f4cfbf94a27cd37712653e"
+          }
+        }
+      ],
+      "original_trace_ids": [
+        "b29de88aa6f471236d3495b94cb54d36"
+      ]
+    },
+    {
+      "case_id": "23",
+      "questions": [
+        "Did the payout incident affect every seller?"
+      ],
+      "gold": {
+        "essential_facts": [
+          "Only payout-1, belonging to Cedar, has documented incident impact; broader impact is unproven.",
+          "Do not assert other sellers were definitely unaffected or treat held payouts as failed."
+        ],
+        "evidence_requirements": [
+          "Incident affected set and relationship to seller; equivalent incident/event evidence accepted."
+        ],
+        "optional_details": [
+          "Listing all sellers or fetching redundant underlying event when incident evidence suffices."
+        ]
+      },
+      "original_reference": {
+        "essential_facts": [
+          "Only payout-1, belonging to Cedar, has documented incident impact; broader impact is unproven.",
+          "Do not assert other sellers were definitely unaffected or treat held payouts as failed."
+        ],
+        "evidence_requirements": [
+          "Incident affected set and relationship to seller; equivalent incident/event evidence accepted."
+        ],
+        "optional_details": [
+          "Listing all sellers or fetching redundant underlying event when incident evidence suffices."
+        ]
+      },
+      "answers": [
+        "Ambiguity: does “Cedar” refer to Cedar & Co. (seller-1) or to a product whose name includes Cedar? Please confirm which you mean."
+      ],
+      "evidence": [
+        {
+          "evidence-b76748ad24a0": {
+            "contract_version": "1.0",
+            "status": "ok",
+            "handle": "evidence-b76748ad24a0",
+            "snapshot": {
+              "revision": 1,
+              "clock": "2026-09-27 12:00:00+00:00"
+            },
+            "document_revision": "fe36211d2849ebbe",
+            "attempt": 1,
+            "type": "catalog",
+            "ontology": {
+              "version": "1.1",
+              "currency": "INR",
+              "money_unit": "integer paise; divide by 100 for rupees",
+              "entities": {
+                "customers": {
+                  "label": "Customer",
+                  "description": "A buyer account that places marketplace orders.",
+                  "grain": "One row per buyer account.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Customer identifier used by orders.customer_id.",
+                    "username": "Demo buyer account name."
+                  },
+                  "notes": [
+                    "This restricted view exposes buyer identity only, not credentials or other account roles."
+                  ],
+                  "table": "analytics.customers"
+                },
+                "sellers": {
+                  "label": "Seller",
+                  "description": "An independent merchant offering products through marketplace listings.",
+                  "grain": "One row per seller.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Seller identifier used by listings and order items.",
+                    "name": "Human-readable seller name."
+                  },
+                  "table": "analytics.sellers"
+                },
+                "products": {
+                  "label": "Product",
+                  "description": "A product identity and category, independent of a seller offer.",
+                  "grain": "One row per product.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Product identifier referenced by listings.",
+                    "name": "Human-readable product name.",
+                    "category": "Product category used for catalog organization."
+                  },
+                  "table": "analytics.products"
+                },
+                "listings": {
+                  "label": "Listing",
+                  "description": "A seller offer for a product, with its current price and available stock.",
+                  "grain": "One row per seller offer.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Listing identifier referenced by purchased items.",
+                    "seller_id": "Seller owning this offer.",
+                    "product_id": "Product offered.",
+                    "price": "Current unit price in integer paise; not necessarily the historical purchase price.",
+                    "stock": "Units currently available to purchase; purchases reduce it and completed pre-payout refunds restore returned units."
+                  },
+                  "notes": [
+                    "Use order_items.unit_price for historical purchase values."
+                  ],
+                  "table": "analytics.listings"
+                },
+                "orders": {
+                  "label": "Order",
+                  "description": "A buyer purchase that can contain items from several sellers.",
+                  "grain": "One row per order.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Order identifier linking items, payment and tickets.",
+                    "customer_id": "Buyer identifier in customers.",
+                    "status": "Order-level status; successful simulated purchases currently create paid orders.",
+                    "created_at": "Purchase time on the demo clock."
+                  },
+                  "notes": [
+                    "Delivery, return, refund and payout statuses belong to separate entities; paid does not mean delivered or settled."
+                  ],
+                  "table": "analytics.orders"
+                },
+                "order_items": {
+                  "label": "Order item",
+                  "description": "A purchased listing within an order, retaining the seller, quantity and price at purchase.",
+                  "grain": "One row per purchased listing in an order, potentially containing multiple units.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Purchased item identifier used by shipment, allocation and returns.",
+                    "order_id": "Containing order.",
+                    "listing_id": "Listing purchased.",
+                    "seller_id": "Seller recorded at purchase.",
+                    "quantity": "Number of units purchased.",
+                    "unit_price": "Unit price at purchase in integer paise."
+                  },
+                  "notes": [
+                    "Item gross is quantity times unit_price. Aggregate at item or allocation grain before joining one-to-many records."
+                  ],
+                  "table": "analytics.order_items"
+                },
+                "payments": {
+                  "label": "Buyer payment",
+                  "description": "The simulated captured payment from a buyer for an entire order.",
+                  "grain": "One row per order payment in this baseline.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Payment identifier referenced by allocations and refunds.",
+                    "order_id": "Order funded by this payment.",
+                    "amount": "Original captured order total in integer paise; completed refunds are tracked separately.",
+                    "status": "Current simulated payment status; successful purchases create captured payments.",
+                    "currency": "Currency code; baseline uses INR."
+                  },
+                  "notes": [
+                    "A payment funds multiple item allocations. Do not sum its full amount again for every joined item. Payment is not a seller payout."
+                  ],
+                  "table": "analytics.payments"
+                },
+                "shipments": {
+                  "label": "Shipment",
+                  "description": "Fulfillment state and delivery time for the units of a purchased item.",
+                  "grain": "One row per order item in this baseline.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Shipment identifier used for dispatch and delivery commands.",
+                    "item_id": "Purchased item being fulfilled.",
+                    "quantity": "Number of units covered by this shipment.",
+                    "status": "pending, dispatched or delivered.",
+                    "delivered_at": "Delivery time on the demo clock; null before delivery."
+                  },
+                  "notes": [
+                    "Different items in one order can be delivered separately; splitting an individual item into multiple shipments is not implemented."
+                  ],
+                  "table": "analytics.shipments"
+                },
+                "allocations": {
+                  "label": "Payment allocation",
+                  "description": "The portion of a captured payment attributable to one purchased item, including settlement accounting.",
+                  "grain": "One row per order item.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Allocation identifier referenced by its payout.",
+                    "item_id": "Purchased item whose funds are allocated.",
+                    "payment_id": "Source order payment.",
+                    "gross": "Original item gross in integer paise.",
+                    "fee": "Current marketplace fee in integer paise, adjusted after completed refunds.",
+                    "refunded": "Cumulative completed refunds for this allocation in integer paise; failed refunds do not count.",
+                    "policy": "Recorded settlement policy version."
+                  },
+                  "notes": [
+                    "Remaining seller payable is gross minus fee minus refunded. Monetary accounting is at allocation grain."
+                  ],
+                  "table": "analytics.allocations"
+                },
+                "payouts": {
+                  "label": "Seller payout",
+                  "description": "Current settlement record for transferring an allocation's net funds to its seller.",
+                  "grain": "One current payout record per allocation, not one row per attempt.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Payout identifier referenced by operational events.",
+                    "allocation_id": "Allocation being settled; join to order_items for seller identity.",
+                    "amount": "Current net seller payable in integer paise; only completed status counts as paid out.",
+                    "status": "held, failed or completed in the implemented simulator."
+                  },
+                  "notes": [
+                    "Retries update this record; inspect events for attempt history. Eligibility is computed from delivery, the 24-hour hold and active returns; it is not a separate persisted status."
+                  ],
+                  "table": "analytics.payouts"
+                },
+                "returns": {
+                  "label": "Return request",
+                  "description": "A request to return some or all units of a purchased item.",
+                  "grain": "One row per return request; an item may have multiple requests.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Return identifier used by the refund record.",
+                    "item_id": "Purchased item being returned.",
+                    "quantity": "Number of units requested for return.",
+                    "status": "requested, approved, received, rejected, refunded or manual_review."
+                  },
+                  "notes": [
+                    "Receipt alone is not refund completion. Post-payout returns enter manual_review; automatic recovery is not implemented."
+                  ],
+                  "table": "analytics.returns"
+                },
+                "refunds": {
+                  "label": "Buyer refund",
+                  "description": "Current simulated refund record associated with one return and its source payment.",
+                  "grain": "One refund record per return; a retry updates that record.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Refund identifier used in events.",
+                    "return_id": "Return request being refunded.",
+                    "payment_id": "Original captured payment being refunded.",
+                    "amount": "Refund amount in integer paise.",
+                    "status": "completed or failed in the implemented simulator."
+                  },
+                  "notes": [
+                    "Only completed refunds change allocation.refunded and the fee. Do not sum failed attempts as money returned."
+                  ],
+                  "table": "analytics.refunds"
+                },
+                "events": {
+                  "label": "Business event",
+                  "description": "Durable evidence of a simulated business action or provider outcome.",
+                  "grain": "One row per recorded event.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Unique event identifier.",
+                    "entity_id": "Identifier of the affected record or demo-clock; resolve its entity type using kind and details.",
+                    "kind": "Event/action name, such as payment_captured, payout_failed, purchase or deliver.",
+                    "occurred_at": "Business occurrence time on the demo clock.",
+                    "recorded_at": "Timestamp when evidence was recorded; seeded history supplies fixed timestamps.",
+                    "revision": "Committed demo revision associated with this event.",
+                    "details": "Event-specific JSON evidence; its fields vary by kind."
+                  },
+                  "notes": [
+                    "entity_id is a polymorphic reference, not a foreign key to one table. Events can multiply monetary rows when joined; aggregate or filter before joining."
+                  ],
+                  "table": "analytics.events"
+                },
+                "tickets": {
+                  "label": "Support ticket",
+                  "description": "A recorded support issue associated with an order.",
+                  "grain": "One row per ticket.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Support ticket identifier.",
+                    "order_id": "Order associated with the issue.",
+                    "subject": "Short issue summary.",
+                    "status": "Recorded ticket status, such as open.",
+                    "message": "Recorded support statement; verify claims against authoritative records and events."
+                  },
+                  "notes": [
+                    "The baseline contains seeded tickets, not a complete ticket-management workflow."
+                  ],
+                  "table": "analytics.tickets"
+                },
+                "incidents": {
+                  "label": "Incident",
+                  "description": "A recorded operational issue with an explicitly described affected set and supporting evidence.",
+                  "grain": "One row per incident.",
+                  "key": [
+                    "id"
+                  ],
+                  "fields": {
+                    "id": "Incident identifier.",
+                    "title": "Short incident description.",
+                    "status": "Recorded confirmation or lifecycle status; the seeded incident is confirmed.",
+                    "affected_ids": "JSON array of affected record identifiers; interpret their entity types using evidence.",
+                    "evidence": "Recorded explanation or evidence references supporting the incident."
+                  },
+                  "notes": [
+                    "Do not infer wider impact or causation beyond the recorded evidence. The baseline contains seeded incident data."
+                  ],
+                  "table": "analytics.incidents"
+                },
+                "freshness": {
+                  "label": "Snapshot freshness",
+                  "description": "The current committed business revision and demo clock exposed to investigations.",
+                  "grain": "Exactly one row describing the current demo state.",
+                  "key": [],
+                  "fields": {
+                    "revision": "Monotonic business revision within a scenario; reset starts a new scenario at revision 1.",
+                    "clock": "Business as-of time controlled by the demo clock."
+                  },
+                  "notes": [
+                    "Direct analytics views have no asynchronous projection lag. Each investigation pins a repeatable-read snapshot; separate investigations may see different revisions."
+                  ],
+                  "table": "analytics.freshness"
+                },
+                "seller_balances": {
+                  "label": "Seller balance summary",
+                  "description": "An analytical view aggregating allocation and payout accounting for each seller.",
+                  "grain": "One row per seller, including sellers with no orders.",
+                  "key": [
+                    "seller_id"
+                  ],
+                  "fields": {
+                    "seller_id": "Seller identifier and unique row key.",
+                    "name": "Seller name.",
+                    "captured": "Sum of original allocation gross in integer paise.",
+                    "refunded": "Sum of completed allocation refunds in integer paise.",
+                    "fees": "Sum of current adjusted marketplace fees in integer paise.",
+                    "paid_out": "Sum of payout amounts with completed status, in integer paise.",
+                    "unpaid": "Remaining seller funds for non-completed payouts in integer paise; includes held and failed payouts."
+                  },
+                  "notes": [
+                    "captured = refunded + fees + unpaid + paid_out. Unpaid does not imply eligible for immediate release. Do not join this seller-level total to individual items and then sum it."
+                  ],
+                  "table": "analytics.seller_balances"
+                }
+              },
+              "relationships": [
+                {
+                  "from": "orders.customer_id",
+                  "to": "customers.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "order_items.order_id",
+                  "to": "orders.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "order_items.listing_id",
+                  "to": "listings.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "listings.product_id",
+                  "to": "products.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "order_items.seller_id",
+                  "to": "sellers.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "payments.order_id",
+                  "to": "orders.id",
+                  "cardinality": "one-to-one"
+                },
+                {
+                  "from": "allocations.item_id",
+                  "to": "order_items.id",
+                  "cardinality": "one-to-one"
+                },
+                {
+                  "from": "allocations.payment_id",
+                  "to": "payments.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "payouts.allocation_id",
+                  "to": "allocations.id",
+                  "cardinality": "one-to-one"
+                },
+                {
+                  "from": "shipments.item_id",
+                  "to": "order_items.id",
+                  "cardinality": "one-to-one in baseline; quantity tracked"
+                },
+                {
+                  "from": "returns.item_id",
+                  "to": "order_items.id",
+                  "cardinality": "many-to-one"
+                },
+                {
+                  "from": "refunds.return_id",
+                  "to": "returns.id",
+                  "cardinality": "one-to-one"
+                },
+                {
+                  "from": "tickets.order_id",
+                  "to": "orders.id",
+                  "cardinality": "many-to-one"
+                }
+              ],
+              "metrics": {
+                "captured": "SUM(allocations.gross) at allocation grain, not payment amounts after an item join",
+                "refunded": "SUM(allocations.refunded), completed refunds only",
+                "fees": "SUM(allocations.fee), net of completed refund fee reversal",
+                "unpaid": "gross - fee - refunded for payouts not completed; includes held and failed, not necessarily eligible",
+                "paid_out": "SUM(payouts.amount) WHERE status = completed",
+                "reconciliation": "captured = refunded + fees + unpaid + paid_out"
+              },
+              "time": "Use the run's demo clock, not wall-clock time. Policy selection uses purchase date or the event date specified by the policy.",
+              "cautions": [
+                "Seller payout differs from buyer payment.",
+                "Return receipt differs from completed refund.",
+                "A failure on one payout does not prove all sellers are affected.",
+                "Events contain occurred and recorded timestamps.",
+                "Joining both returns and events can multiply monetary rows; aggregate at the proper grain first."
+              ]
+            },
+            "schema": [
+              {
+                "table_name": "allocations",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "item_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "payment_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "gross",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "fee",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "refunded",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "allocations",
+                "column_name": "policy",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "customers",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "customers",
+                "column_name": "username",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "events",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "events",
+                "column_name": "entity_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "events",
+                "column_name": "kind",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "events",
+                "column_name": "occurred_at",
+                "data_type": "timestamp with time zone"
+              },
+              {
+                "table_name": "events",
+                "column_name": "recorded_at",
+                "data_type": "timestamp with time zone"
+              },
+              {
+                "table_name": "events",
+                "column_name": "revision",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "events",
+                "column_name": "details",
+                "data_type": "json"
+              },
+              {
+                "table_name": "freshness",
+                "column_name": "revision",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "freshness",
+                "column_name": "clock",
+                "data_type": "timestamp with time zone"
+              },
+              {
+                "table_name": "incidents",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "incidents",
+                "column_name": "title",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "incidents",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "incidents",
+                "column_name": "affected_ids",
+                "data_type": "json"
+              },
+              {
+                "table_name": "incidents",
+                "column_name": "evidence",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "listings",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "listings",
+                "column_name": "seller_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "listings",
+                "column_name": "product_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "listings",
+                "column_name": "price",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "listings",
+                "column_name": "stock",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "order_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "listing_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "seller_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "quantity",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "order_items",
+                "column_name": "unit_price",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "orders",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "orders",
+                "column_name": "customer_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "orders",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "orders",
+                "column_name": "created_at",
+                "data_type": "timestamp with time zone"
+              },
+              {
+                "table_name": "payments",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payments",
+                "column_name": "order_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payments",
+                "column_name": "amount",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "payments",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payments",
+                "column_name": "currency",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payouts",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payouts",
+                "column_name": "allocation_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "payouts",
+                "column_name": "amount",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "payouts",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "products",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "products",
+                "column_name": "name",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "products",
+                "column_name": "category",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "refunds",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "refunds",
+                "column_name": "return_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "refunds",
+                "column_name": "payment_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "refunds",
+                "column_name": "amount",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "refunds",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "returns",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "returns",
+                "column_name": "item_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "returns",
+                "column_name": "quantity",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "returns",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "seller_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "name",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "captured",
+                "data_type": "bigint"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "refunded",
+                "data_type": "bigint"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "fees",
+                "data_type": "bigint"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "paid_out",
+                "data_type": "bigint"
+              },
+              {
+                "table_name": "seller_balances",
+                "column_name": "unpaid",
+                "data_type": "bigint"
+              },
+              {
+                "table_name": "sellers",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "sellers",
+                "column_name": "name",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "shipments",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "shipments",
+                "column_name": "item_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "shipments",
+                "column_name": "quantity",
+                "data_type": "integer"
+              },
+              {
+                "table_name": "shipments",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "shipments",
+                "column_name": "delivered_at",
+                "data_type": "timestamp with time zone"
+              },
+              {
+                "table_name": "tickets",
+                "column_name": "id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "tickets",
+                "column_name": "order_id",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "tickets",
+                "column_name": "subject",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "tickets",
+                "column_name": "status",
+                "data_type": "character varying"
+              },
+              {
+                "table_name": "tickets",
+                "column_name": "message",
+                "data_type": "text"
+              }
+            ],
+            "business_names": [
+              {
+                "entity_type": "product",
+                "id": "product-1",
+                "name": "Canvas Weekender"
+              },
+              {
+                "entity_type": "product",
+                "id": "product-2",
+                "name": "Desk Lamp"
+              },
+              {
+                "entity_type": "product",
+                "id": "product-3",
+                "name": "Ceramic Mug Set"
+              },
+              {
+                "entity_type": "product",
+                "id": "product-4",
+                "name": "Trail Backpack"
+              },
+              {
+                "entity_type": "product",
+                "id": "product-5",
+                "name": "Wireless Keyboard"
+              },
+              {
+                "entity_type": "product",
+                "id": "product-6",
+                "name": "Linen Notebook"
+              },
+              {
+                "entity_type": "seller",
+                "id": "seller-1",
+                "name": "Cedar & Co."
+              },
+              {
+                "entity_type": "seller",
+                "id": "seller-2",
+                "name": "Northstar Goods"
+              },
+              {
+                "entity_type": "seller",
+                "id": "seller-3",
+                "name": "Everyday Studio"
+              }
+            ],
+            "business_names_truncated": false
+          }
+        }
+      ],
+      "original_trace_ids": [
+        "ca80630141fd2133fa2b9fa8d521aba8"
+      ]
+    }
+  ]
+}

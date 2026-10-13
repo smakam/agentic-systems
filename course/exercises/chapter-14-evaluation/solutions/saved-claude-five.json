@@ -1,0 +1,22 @@
+{
+  "02": {
+    "correctness": 2,
+    "rationale": "The answer lists both products, their quantities and their sellers, and all three match the fixture. The cited query performs the required item, listing, product and seller joins for order-1. The snapshot revision and demo clock are stated. The answer is concise and clear."
+  },
+  "09": {
+    "correctness": 1,
+    "rationale": "The buyer-payment facts are accurate and cited: captured, INR 7596.00, revision 1. However, the question is ambiguous between buyer payment and seller payout. The answer covers only the buyer-payment meaning, with no clarification and no payout retrieval. It therefore omits the seller payout failure that the gold requires. There is no explicit misstatement of payout status, so this is partial rather than incorrect. The display uses internal field-style formatting and raw paise, which is understandable but technical."
+  },
+  "16": {
+    "correctness": 1,
+    "rationale": "The central conclusion (not releasable now) is correct, and the payout amount of ₹1,169.10 is accurate. However, the answer omits the actual reason: the 24-hour post-delivery hold has about one hour remaining. It cites neither the delivery timestamp nor the settlement policy, and instead leans on the 'held' status, which is not an eligibility determinant. This leaves a material explanation and support gap."
+  },
+  "21": {
+    "correctness": 2,
+    "rationale": "The answer is accurate on every gold proposition: a failed attempt followed by a completed retry, a single 1,899 INR refund, a fully refunded return, and no seller payout due. The retrieved evidence covers both the chronological events and the current allocation and payout state. The only flaw is citation misattribution: the timeline is cited to the order-state query rather than the event query. The claims are true and supported by the retrieved evidence set, so this is treated as a presentation and traceability issue rather than a factual gap. The answer does not state the snapshot revision. It also does not explicitly stress that the retry did not double-refund, though the amounts imply this."
+  },
+  "23": {
+    "correctness": 0,
+    "rationale": "The user asked whether the payout incident affected every seller. The question is unambiguous and answerable. The incidents table records affected_ids = [payout-1], and payout-1 belongs to Cedar & Co. via allocation-1 and item-1; broader impact is explicitly unproven. The candidate did not answer. Instead it asked for clarification about 'Cedar', a term absent from the question, so the clarification is unwarranted. The only evidence retrieved was the schema/ontology catalog. No incident, event or payout records were fetched, so the evidence requirement (incident affected set and its link to a seller) is unmet. The answer gives no meaningful content toward the question."
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "version": "chapter14-structured-five-v1",
+  "cases": [
+    {
+      "case_id": "item-1",
+      "question": "For item-1 in order-1, query the current shipment status and purchased quantity. Return only one JSON object with fields shipment_status (string), quantity (integer), and evidence (array of evidence citations). Do not put the JSON in a Markdown fence.",
+      "expected": {
+        "shipment_status": "delivered",
+        "quantity": 2
+      },
+      "output": {
+        "shipment_status": "delivered",
+        "quantity": 2,
+        "evidence": [
+          "[evidence:evidence-d02b62b87cec]"
+        ]
+      },
+      "original_trace_id": "d487bf032933a1511afcfe05417e89e8"
+    },
+    {
+      "case_id": "item-2",
+      "question": "For item-2 in order-1, query the current shipment status and purchased quantity. Return only one JSON object with fields shipment_status (string), quantity (integer), and evidence (array of evidence citations). Do not put the JSON in a Markdown fence.",
+      "expected": {
+        "shipment_status": "delivered",
+        "quantity": 2
+      },
+      "output": {
+        "shipment_status": "delivered",
+        "quantity": 2,
+        "evidence": [
+          "[evidence:evidence-37af893fa322]"
+        ]
+      },
+      "original_trace_id": "44f0145bb46c83f7fa274b79e00d1e0f"
+    },
+    {
+      "case_id": "item-3",
+      "question": "For item-3 in order-2, query the current shipment status and purchased quantity. Return only one JSON object with fields shipment_status (string), quantity (integer), and evidence (array of evidence citations). Do not put the JSON in a Markdown fence.",
+      "expected": {
+        "shipment_status": "pending",
+        "quantity": 2
+      },
+      "output": {
+        "shipment_status": "pending",
+        "quantity": 2,
+        "evidence": [
+          "[evidence:evidence-a040d31a1b7a]"
+        ]
+      },
+      "original_trace_id": "35719466d04beaca2f5458c5bd703bc4"
+    },
+    {
+      "case_id": "order-1-all-items",
+      "question": "For all items in order-1, query the current shipment status and total purchased quantity across the order. Return only one JSON object with fields shipment_status (string), quantity (integer), and evidence (array of evidence citations). Do not put the JSON in a Markdown fence.",
+      "expected": {
+        "shipment_status": "delivered",
+        "quantity": 4
+      },
+      "output": {
+        "shipment_status": "delivered",
+        "quantity": 4,
+        "evidence": [
+          "[evidence:evidence-28626c780a1c]"
+        ]
+      },
+      "original_trace_id": "3fd440e44f389b3990632740de546527"
+    },
+    {
+      "case_id": "order-2-all-items",
+      "question": "For all items in order-2, query the current shipment status and total purchased quantity across the order. Return only one JSON object with fields shipment_status (string), quantity (integer), and evidence (array of evidence citations). Do not put the JSON in a Markdown fence.",
+      "expected": {
+        "shipment_status": "pending",
+        "quantity": 2
+      },
+      "output": {
+        "shipment_status": "pending",
+        "quantity": 2,
+        "evidence": [
+          "[evidence:evidence-445b1018e90e]"
+        ]
+      },
+      "original_trace_id": "a9c6f9eca33726986963e6cf9961747a"
+    }
+  ]
+}

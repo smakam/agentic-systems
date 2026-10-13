@@ -1,0 +1,180 @@
+{
+  "mode": "live_claude",
+  "rubric": "chapter14-demo-v1",
+  "candidate_generation": "supplied saved answers; no candidate calls",
+  "paid_call_attempts": 5,
+  "results": [
+    {
+      "case_id": "02",
+      "grade": {
+        "correctness": 2,
+        "rationale": "The answer correctly lists both items in order-1: Canvas Weekender ×2 sold by Cedar & Co., and Desk Lamp ×2 sold by Northstar Goods. This matches the gold requirements. The cited query evidence supports the answer. It joins order_items to listings, products and sellers for order-1, and it returns exactly these two untruncated rows."
+      },
+      "usage": {
+        "completion_tokens": 138,
+        "prompt_tokens": 8608,
+        "total_tokens": 8746,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "text_tokens": 138
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "text_tokens": 8608,
+          "cache_write_tokens": 0,
+          "cache_creation_tokens": 0,
+          "cache_creation_token_details": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          }
+        },
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "inference_geo": "global",
+        "service_tier": "standard"
+      },
+      "gateway_model": "eval-judge",
+      "gateway_estimated_usd": 0.037191999999999996,
+      "elapsed_seconds": 3.128
+    },
+    {
+      "case_id": "09",
+      "grade": {
+        "correctness": 1,
+        "rationale": "The buyer-payment facts are correct and backed by the cited query (evidence-4dbc53f28e08): order-1 has status paid, payment-1 is captured, and the amount is 759600 paise (INR 7596.00). The answer misses an essential requirement, though. It reads the question only as buyer payment capture. It does not ask for clarification or explain that a captured buyer payment is different from a seller payout. It also never mentions that the seller payout for order-1 has a failure. Saying only that 'the payment has gone through' could lead the user to think the sellers were paid. The answer is accurate as far as it goes but materially incomplete."
+      },
+      "usage": {
+        "completion_tokens": 405,
+        "prompt_tokens": 8620,
+        "total_tokens": 9025,
+        "completion_tokens_details": {
+          "reasoning_tokens": 177,
+          "text_tokens": 228
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "text_tokens": 8620,
+          "cache_write_tokens": 0,
+          "cache_creation_tokens": 0,
+          "cache_creation_token_details": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          }
+        },
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "inference_geo": "global",
+        "service_tier": "standard"
+      },
+      "gateway_model": "eval-judge",
+      "gateway_estimated_usd": 0.04258,
+      "elapsed_seconds": 4.78
+    },
+    {
+      "case_id": "16",
+      "grade": {
+        "correctness": 1,
+        "rationale": "The conclusion is right: the payout cannot be released yet. The reasoning behind it is incomplete and partly wrong. The answer treats the payout's 'held' status as the blocker. Per the ontology, though, eligibility is computed from delivery, the 24-hour hold and active returns, not from the persisted status. It does not cite the delivery timestamp (2026-09-27 12:00 per evidence-68065407516b) or the 24-hour hold policy. It also never reaches the key finding that about one hour of the hold remains against the 2026-09-28 11:00 clock. It makes no false provider-failure claim, but it lacks the required evidence and the specific reason."
+      },
+      "usage": {
+        "completion_tokens": 407,
+        "prompt_tokens": 10674,
+        "total_tokens": 11081,
+        "completion_tokens_details": {
+          "reasoning_tokens": 167,
+          "text_tokens": 240
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "text_tokens": 10674,
+          "cache_write_tokens": 0,
+          "cache_creation_tokens": 0,
+          "cache_creation_token_details": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          }
+        },
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "inference_geo": "global",
+        "service_tier": "standard"
+      },
+      "gateway_model": "eval-judge",
+      "gateway_estimated_usd": 0.050836,
+      "elapsed_seconds": 5.927
+    },
+    {
+      "case_id": "21",
+      "grade": {
+        "correctness": 1,
+        "rationale": "The facts are right but the timeline is not supported by the evidence the answer cites, so the answer is materially incomplete. What it gets right: it reports the failed refund attempt followed by the completed retry, the 1,899.00 INR (189900 paise) refund, a 0 payout and no seller payout due. It also gives the business steps in order. All of this matches the retrieved records. The problem: every claim, including the purchase/dispatch/delivery/return steps and the failed-then-completed refund sequence, is cited to evidence-6e406a541b21. That record is the current-balances query and holds only the final state: refund completed, return refunded, payout held at 0. The event timeline that shows the failed attempt and the retry is in evidence-94712b669c4f, which the answer never cites. The answer also does not explicitly state that the refund was applied exactly once, though the single refund row implies it. It does not mention the return's 'refunded' status."
+      },
+      "usage": {
+        "completion_tokens": 565,
+        "prompt_tokens": 3245,
+        "total_tokens": 3810,
+        "completion_tokens_details": {
+          "reasoning_tokens": 242,
+          "text_tokens": 323
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "text_tokens": 3245,
+          "cache_write_tokens": 0,
+          "cache_creation_tokens": 0,
+          "cache_creation_token_details": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          }
+        },
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "inference_geo": "global",
+        "service_tier": "standard"
+      },
+      "gateway_model": "eval-judge",
+      "gateway_estimated_usd": 0.024280000000000003,
+      "elapsed_seconds": 6.189
+    },
+    {
+      "case_id": "23",
+      "grade": {
+        "correctness": 0,
+        "rationale": "The answer does not address the question. Instead it asks whether 'Cedar' means the seller or a product, but the question never mentions Cedar, so the clarification is unnecessary. It omits the required finding: only payout-1, belonging to Cedar, has documented incident impact, and broader impact is unproven. The retrieved evidence is only the catalog and business-name lookup; no incident affected-set evidence was retrieved to support any conclusion."
+      },
+      "usage": {
+        "completion_tokens": 262,
+        "prompt_tokens": 8066,
+        "total_tokens": 8328,
+        "completion_tokens_details": {
+          "reasoning_tokens": 98,
+          "text_tokens": 164
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "text_tokens": 8066,
+          "cache_write_tokens": 0,
+          "cache_creation_tokens": 0,
+          "cache_creation_token_details": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          }
+        },
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "inference_geo": "global",
+        "service_tier": "standard"
+      },
+      "gateway_model": "eval-judge",
+      "gateway_estimated_usd": 0.037504,
+      "elapsed_seconds": 3.83
+    }
+  ],
+  "known_gateway_cost_usd": 0.192392,
+  "status": "complete",
+  "langfuse": {
+    "dataset": "chapter14-claude-v1",
+    "run_name": "chapter14-claude-five-live",
+    "url": "http://localhost:3000/project/marketplace-support/datasets/cmv6hmtqx0017r007w81poch4/runs/fd1dd08edbe5c45c"
+  }
+}

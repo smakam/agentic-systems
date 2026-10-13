@@ -1,0 +1,8 @@
+{
+  "items": 5,
+  "dataset": "chapter14-learner-structured-v1",
+  "run_name": "chapter14-learner-structured-five-verified",
+  "url": "http://localhost:3000/project/marketplace-support/datasets/cmv6hmqu7000zr007xhipuzc3/runs/be050944b1be5043",
+  "model_calls": 0,
+  "grading": "native rule executes asynchronously, not in this script"
+}
