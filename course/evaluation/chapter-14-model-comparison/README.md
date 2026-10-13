@@ -21,7 +21,7 @@ Exact grade agreement: nano 15/18 and GPT-5.4 16/18.
 
 Display numbers are sequential; source case identifiers are preserved. Golden facts appear next to each question. Select a score to open that model’s saved answer and human/Claude grading reasons. Both graders assessed the same saved model answer.
 
-| No. | Source case | Question | Expected answer / golden facts | Nano human | Nano Claude | GPT-5.4 human | GPT-5.4 Claude |
+| No. | Source case | Question | Expected answer / golden facts | GPT-5 nano — Human evaluation | GPT-5 nano — Claude evaluation | GPT-5.4 — Human evaluation | GPT-5.4 — Claude evaluation |
 | ---: | --- | --- | --- | --- | --- | --- | --- |
 | [1](case-details.md#case-1) | 02 | What products and quantities are in order-1, and who sells them? | Canvas Weekender ×2, Cedar; Desk Lamp ×2, Northstar. Item, listing/product and seller joins. | [correct (2)](case-details.md#case-1-nano-human) | [correct (2)](case-details.md#case-1-nano-claude) | [correct (2)](case-details.md#case-1-gpt54-human) | [correct (2)](case-details.md#case-1-gpt54-claude) |
 | [2](case-details.md#case-2) | 04 | Show orders placed today for Cedar & Co. that are not yet delivered. | Exactly the new Cedar order; exclude Northstar and the pre-midnight control. UTC day boundary and current shipment state. | [correct (2)](case-details.md#case-2-nano-human) | [correct (2)](case-details.md#case-2-nano-claude) | [correct (2)](case-details.md#case-2-gpt54-human) | [correct (2)](case-details.md#case-2-gpt54-claude) |
