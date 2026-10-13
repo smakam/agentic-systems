@@ -1,0 +1,34 @@
+{
+  "observations": 3,
+  "rows": [
+    {
+      "case": "item-1",
+      "score": [
+        {
+          "value": "correct",
+          "source": "EVAL"
+        }
+      ]
+    },
+    {
+      "case": "item-2",
+      "score": [
+        {
+          "value": "correct",
+          "source": "EVAL"
+        }
+      ]
+    },
+    {
+      "case": "item-3",
+      "score": [
+        {
+          "value": "correct",
+          "source": "EVAL"
+        }
+      ]
+    }
+  ],
+  "model_calls": 0,
+  "run": "chapter14-instructor-structured-three"
+}
