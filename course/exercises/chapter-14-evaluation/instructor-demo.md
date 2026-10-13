@@ -1,0 +1,102 @@
+# Chapter 14 — Instructor demo walkthrough
+
+Approved sequence: five saved semantic answers judged by Claude in our script, followed by three saved structured answers graded natively by Langfuse. The learner activities reuse supplied outputs and make no model calls.
+
+## Preparation
+
+Run commands from the application repository root. Start the existing local lab; the UI is `http://localhost:3000`, project `marketplace-support`. The portable files are in `course/exercises/chapter-14-evaluation/`. Command outputs persist under `app/results/chapter-14/` through the existing `/results` mount.
+
+Keep the two axes separate: offline versus production describes the data/lifecycle; script versus native describes where grading executes. Candidate answers are reused here. Gold/reference data goes to evaluators, not candidate model context. Do not reset the interactive marketplace or call the candidate agent during these activities.
+
+## Part A — Our script executes the Claude judge
+
+Use `fixtures/instructor-five.json`: nano cases **02, 09, 16, 21, 23**. They cover product/quantity lookup, payment/payout ambiguity, payout eligibility, refund-event reasoning and incident attribution. Human learner cases are a different set: **02, 09, 16, 23, 24**.
+
+1. Open [the frozen 18-case paired report](https://github.com/smakam/agentic-systems/blob/2e08d4c9a9a8116c16e64de141d81338ac96deb6/course/evaluation/chapter-14-model-comparison/README.md). Explain that its saved September answers, original human labels and September Claude-v3 calibration remain historical evidence.
+2. Inspect the five supplied question/answer/gold cases and the current judge rubric. Correctness is **0 incorrect, 1 partially correct, 2 correct**. Accept equivalent wording; separate essential facts, evidence requirements and optional detail. Human readability grades do not exist in the paired report.
+3. Preview the fixture without any paid call:
+
+```sh
+docker compose -p marketplace-lab -f app/compose.yaml --profile evaluation run --rm --no-deps -v "$PWD/course/exercises/chapter-14-evaluation:/exercise:ro" eval-runner python /exercise/run_claude_demo.py
+```
+
+4. The instructor may replay supplied historical Claude-v3 grades without model calls:
+
+```sh
+docker compose -p marketplace-lab -f app/compose.yaml --profile evaluation run --rm --no-deps -v "$PWD/course/exercises/chapter-14-evaluation:/exercise:ro" eval-runner python /exercise/run_claude_demo.py --replay-saved --publish --run-name chapter14-claude-replay --output /results/chapter-14/claude-replay.json
+```
+
+This is **historical grade replay**, not a fresh judge execution.
+
+5. To demonstrate live external judging, use the explicit paid switch:
+
+```sh
+docker compose -p marketplace-lab -f app/compose.yaml --profile evaluation run --rm --no-deps -v "$PWD/course/exercises/chapter-14-evaluation:/exercise:ro" eval-runner python /exercise/run_claude_demo.py --live-judge --publish --run-name chapter14-claude-five --output /results/chapter-14/claude-demo.json
+```
+
+The script makes at most five Claude calls, uses the restricted judge gateway identity, saves progress and stops on invalid/truncated grades or missing cost metadata. It does not automatically retry. The budget is an estimated stopping threshold, not a billing cap. Default preview does not publish or call a model. Check saved progress before repeating any failed/unknown run.
+
+6. Open [the verified fresh teaching run](http://localhost:3000/project/marketplace-support/experiments/results?baseline=fd1dd08edbe5c45c). The October 13 run made five judge calls, with gateway-estimated cost **USD 0.192392**, not an invoice. Grades: `02=2`, `09=1`, `16=1`, `21=1`, `23=0`.
+7. Explain that its rubric is **chapter14-demo-v1**, distinct from historical **market-judge-v3**. Case 21 differs from its historical v3 grade of 2. Inspect reasons and human/reference expectations; do not overwrite the 18-case report or present this as a new candidate-model comparison. The candidate answers did not change.
+8. Open input, expected requirements, answer, score and reason in Langfuse. The score was computed by **our script**, then imported with source **API**. UI readback confirmed `claude_correctness` mean **1.00** across `2, 1, 1, 1, 0`. Langfuse stores/displays it; it did not execute the Claude grader in this path.
+
+The initial unsupported temperature argument was rejected before a provider call and removed. That setup failure is distinct from the verified five-call run.
+
+## Part B — Langfuse executes structured code evaluation
+
+1. Open [the verified three-answer experiment](http://localhost:3000/project/marketplace-support/experiments/results?baseline=6dc4fb9e6e208ede).
+2. Confirm three real-agent questions and independent expected fields:
+
+| Scope | Shipment status | Quantity |
+| --- | --- | ---: |
+| item-1 / order-1 | delivered | 2 |
+| item-2 / order-1 | delivered | 2 |
+| item-3 / order-2 | pending | 2 |
+
+The original candidate executions used `support-model`, configured GPT-5.4, in isolated `market_eval`. Reference records were read before and after each answer, outside the candidate context. They were paid executions; inspecting or importing these supplied outputs does not repeat them.
+
+3. Show the actual output JSON, expected output and native `schema_valid`, `status_matches`, `quantity_matches`, `structured_grade` scores. The verified original batch is correct **3/3**.
+4. Open [the native evaluator](http://localhost:3000/project/marketplace-support/evals/v2/cbbcc51f-decd-4305-a46b-a9d38d5cd390), whose source is `structured-evaluator.ts` in the package. Its rule targets canonical experiment-task observations named `chapter14-structured-answer`, with 100% sampling. The Langfuse worker executes the TypeScript; persisted native scores have source `EVAL`.
+5. Explain the grading contract: both fields match → correct; correct status/wrong quantity → partial; wrong status → incorrect; invalid schema → invalid_output; missing reference → not_assessable. The partial-credit policy is an explicit teaching rubric, not a universal business rule.
+6. Inspect `original_trace_id` on a result observation to open the original candidate question, catalog/tools, evidence and final generation. Imported task cost/duration describes import/scoring, not the original agent’s cost/latency.
+7. Optionally show [separate authored controls](http://localhost:3000/project/marketplace-support/experiments/results?baseline=76a7f9fb9749d591) for correct/partial/incorrect branches. These controls are not model failures.
+
+Exact structured checks do not establish semantic causal correctness or citation grounding. Human annotation and LLM judges are platform capabilities; neither was executed natively in this structured experiment.
+
+## Learner Part A — Human grades and import
+
+Use `fixtures/human-five.json` and `fixtures/human-review-template.json`. Learners review five supplied questions, outputs and gold; assign correct/partial/incorrect with a reason for every case. Copy the template to `app/results/chapter-14/human-reviews.json`, then fill it before publishing.
+
+```sh
+docker compose -p marketplace-lab -f app/compose.yaml --profile evaluation run --rm --no-deps -v "$PWD/course/exercises/chapter-14-evaluation:/exercise:ro" eval-runner python /exercise/publish_human_reviews.py /results/chapter-14/human-reviews.json --publish --run-name chapter14-my-human-review
+```
+
+This validates/imports grades and makes no model calls. [The historically replayed five human grades](http://localhost:3000/project/marketplace-support/experiments/results?baseline=76b67009f35eb7fd) verify the import path, **not new human review or adjudication**. Compare reasons rather than force agreement with supplied historical labels.
+
+## Learner Part B — Native code evaluation of five supplied outputs
+
+`fixtures/structured-five.json` contains three item outputs plus two order aggregate outputs (`order-1 → delivered, 4`; `order-2 → pending, 2`), independent pre/post database references and original traces. Reuse these outputs; do not call the candidate agent.
+
+For a local self-hosted setup, include the supplied trusted TypeScript dispatcher overlay:
+
+```sh
+docker compose -p marketplace-lab -f app/compose.yaml -f course/exercises/chapter-14-evaluation/compose.code-eval.yaml up -d --no-deps langfuse-worker langfuse-web
+```
+
+Only the Langfuse web/worker services are targeted. This is a trusted-code local lab configuration, not a sandbox for arbitrary code. Python native evaluation needs a different dispatcher. Import the outputs, then inspect/reuse the existing evaluator/rule or create a TypeScript code evaluator from `structured-evaluator.ts`. Test one imported matching observation. Enable its `chapter14-structured-answer` name rule at 100% sampling, including past matching observations. In a shared project, also filter by your experiment/dataset so only your five cases are scored.
+
+```sh
+docker compose -p marketplace-lab -f app/compose.yaml --profile evaluation run --rm --no-deps -v "$PWD/course/exercises/chapter-14-evaluation:/exercise:ro" eval-runner python /exercise/upload_structured_answers.py --publish --run-name chapter14-my-structured-review
+```
+
+[The verified five-output experiment](http://localhost:3000/project/marketplace-support/experiments/results?baseline=be050944b1be5043) has been read back in the UI: **correct 5/5**, with `schema_valid`, `status_matches`, and `quantity_matches` all **100%**, native source **EVAL**. Native scores execute asynchronously; **upload success alone is not score completion**. Learners must check their own scores and source before reporting outcomes.
+
+Record fixture version, experiment URL, input/expected/actual output, each check and reason. The scripts make no model calls; original answer-generation costs and infrastructure costs are separate. `solutions/README.md` holds separate worked findings. Do not submit credentials.
+
+## Production evaluation discussion
+
+The production diagram remains proposed: **all thumbs-down runs** receive targeted review/evaluation; **only positive/unrated runs** are sampled. Inspect answer/evidence/trace and distinguish agent error, mistaken feedback and ambiguous criteria. After inspecting the answer/evidence/trace, a reviewer approves independently supported reference answers and criteria. A useful golden test case may be retained whether the outcome is an agent error or mistaken feedback/ambiguous criteria; confirmed agent errors additionally require fixing and rerunning regression evaluation. Feedback itself never becomes gold automatically. Feedback exists; the automatic production selector/pipeline does not.
+
+## Verified package checks
+
+The package README, exercise, separate solutions and `solutions/validated-runs.json` record four offline checks, the paid five-call teacher run, the labelled historical human import and native five-case scoring readback. Historical human solution grades are `2, 1, 1, 0, 1`; some recorded reasons are absent. Students must supply their own rationale, discuss disagreements and avoid silently rewriting old labels. Native controls are deliberately authored examples. These teaching subsets do not establish model rankings, judge accuracy or production readiness.
