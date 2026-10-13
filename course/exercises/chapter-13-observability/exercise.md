@@ -2,6 +2,17 @@
 
 Use your local Langfuse. The supplied fixture contains fictional traces with fixed symptoms, timings, usage and dollar values. No model calls, marketplace purchases or database edits are required. These costs demonstrate analytics; they are not provider charges or performance measurements.
 
+## Exercise environment
+
+| Item | Use for this exercise |
+|---|---|
+| UI | Local Langfuse at `http://localhost:3000` |
+| Telemetry store | The local Langfuse project selected by your API keys |
+| Input data | The supplied six-case fictional trace fixture |
+| Marketplace UI / business database | Not used; leave marketplace and evaluation data unchanged |
+
+The instructor dashboard uses a saved synthetic cohort, followed by an optional contrast with a recorded Agent Loop recovery trace. Your exercise creates its own batch, trace and session identifiers; do not depend on the instructor's references. Instrumentation and real model/tool calls are illustrated by the recorded run, while the fictional batch provides repeatable monitoring values.
+
 ## Prepare and verify
 
 Start the existing local Langfuse services using the application setup guide. Obtain this project's public and secret API keys from Settings. In your terminal set `LANGFUSE_BASE_URL=http://localhost:3000`, `LANGFUSE_PUBLIC_KEY` and `LANGFUSE_SECRET_KEY`. Keep credentials out of submitted files.
