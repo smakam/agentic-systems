@@ -63,6 +63,17 @@ def main():
         result = render_config((ROOT / "infra/litellm.yaml").read_text(), provider)
     except ValueError as error:
         raise SystemExit(str(error))
+    # Keep prepared native-routing aliases when changing the inference provider.
+    routing_models = ROOT / "infra/routing-demo.models.yaml"
+    if routing_models.exists():
+        result = result.replace("\nlitellm_settings:", "\n" + routing_models.read_text() + "\nlitellm_settings:", 1)
+    # Preserve the optional Lakera guardrail when switching inference routes.
+    # Keep credential values out of the generated configuration.
+    if os.environ.get("LAKERA_API_KEY") or values.get("LAKERA_API_KEY"):
+        fragment = (ROOT / "infra/lakera-guardrail.fragment.yaml").read_text()
+        if os.environ.get("LAKERA_PROJECT_ID") or values.get("LAKERA_PROJECT_ID"):
+            fragment += "      project_id: os.environ/LAKERA_PROJECT_ID\n"
+        result += "\n" + fragment
     (ROOT / "infra/litellm.provider.generated.yaml").write_text(result)
     print("Inference provider: " + provider + " (chat, embeddings and OpenAI evaluation models)")
 

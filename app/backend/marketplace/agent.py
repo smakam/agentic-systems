@@ -208,19 +208,27 @@ For counts and aggregates, lead with the count and state the actual date range u
     from .security_marker import marker_instructions
     instructions += '\n' + marker_instructions(marker_mode)
     agent=Agent(name='Marketplace support',instructions=instructions,model=model,model_settings=ModelSettings(max_tokens=MAX_COMPLETION_TOKENS,reasoning=Reasoning(effort="low"),parallel_tool_calls=False,extra_body={"guardrails":PROFILES[guardrail]} if guardrail!="off" else None),tools=direct_tools,mcp_servers=([server] if server and not memory_only else [])+([memory_server] if memory_server else []))
+    route = config.get('routing')
+    if route:
+        agent.model_settings.extra_body = {
+            **(agent.model_settings.extra_body or {}),
+            'metadata': {'session_id': route['session_id'], 'marketplace_routing_policy': route['policy'],
+                         'marketplace_routing_classifier': route.get('classifier'), 'marketplace_routing_scope': route.get('scope')},
+        }
     status='completed'; final=''; metrics={}; order_ids=[]; history=[]
     try:
         if memory_start_error is not None:
             raise RuntimeError('Local memory MCP initialization failed') from memory_start_error
         connection={'mcp_transport':getattr(server,'transport_kind','stdio') if server else 'direct'}
         if getattr(server,'endpoint',None): connection['mcp_endpoint_host']=server.endpoint
-        span=lf.start_as_current_observation(name='support-investigation',as_type='span',input=question,metadata={'run_id':run_id,'revision':ctx.snapshot['revision'],'conversation_id':conversation_id,'guardrail':guardrail,'source_authority':source_authority,**connection}) if lf else nullcontext()
+        span=lf.start_as_current_observation(name='support-investigation',as_type='span',input=question,metadata={'run_id':run_id,'revision':ctx.snapshot['revision'],'conversation_id':conversation_id,'guardrail':guardrail,'source_authority':source_authority,**connection,**({'routing_policy':route['policy'],'routing_classifier':route.get('classifier'),'routing_scope':route.get('scope'),'requested_router':route['alias'],'routing_session_id':route['session_id'],'routing_classifier_model':route.get('classifier_model')} if route else {})}) if lf else nullcontext()
         with span as observation:
             if observation:
                 metrics['trace_id']=observation.trace_id
                 agent.model_settings.extra_body={
                     **(agent.model_settings.extra_body or {}),
                     'metadata':{
+                        **((agent.model_settings.extra_body or {}).get('metadata') or {}),
                         'marketplace_trace_id':observation.trace_id,
                         'marketplace_parent_id':observation.id,
                         'marketplace_run_id':run_id,
@@ -263,6 +271,12 @@ For counts and aggregates, lead with the count and state the actual date range u
         metrics.update(error_type=type(e).__name__,usage_status='Incomplete app usage on failed run; inspect Langfuse model spans for billed attempts')
     finally:
         if status!='completed':metrics.setdefault('usage_status','Reported completed-call usage only; failed or interrupted API calls may incur unreported charges')
+        if config.get('routing'):
+            from .routing_demo import observed_calls
+            calls = observed_calls()
+            models = list(dict.fromkeys(c['answer_model'] for c in calls))
+            metrics['routing'] = {**config['routing'], 'answer_models': models, 'model_calls': calls,
+                'cost_basis': 'Gateway answer-call estimates; native classifier overhead recorded separately in gateway routing decisions'}
         metrics.update(input_tokens=hooks.input_tokens,output_tokens=hooks.output_tokens,cached_input_tokens=hooks.cached_tokens,
                        requests=hooks.requests,estimated_model_cost_usd=round(hooks.cost,8))
         if evaluation_config:

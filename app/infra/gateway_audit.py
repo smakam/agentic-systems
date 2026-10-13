@@ -59,12 +59,16 @@ class ProviderInputAudit(CustomLogger):
                     'model': body.get('model'),
                     'run_id': metadata.get('marketplace_run_id'),
                     'selected_guardrails': metadata.get('marketplace_guardrails', []),
+                    'routing_policy': metadata.get('marketplace_routing_policy'),
+                    'routing_scope': metadata.get('marketplace_routing_scope'),
+                    'routing_classifier': metadata.get('marketplace_routing_classifier'),
+                    'routing_decision': {k: v for k, v in (metadata.get('routing_decision') or {}).items() if k in ('router_model_name', 'routed_model', 'cause', 'tier', 'score', 'classifier_model', 'classifier_cost', 'conversation_continuing')},
                     'note': 'Input audit only; not another model generation or proof of provider receipt. Original app trace is not scrubbed.',
                 }),
             }
             span = {
                 'traceId': trace_id, 'spanId': secrets.token_hex(8),
-                'name': 'Gateway output → Model input', 'kind': 1,
+                'name': 'Gateway routing decision → Model input' if metadata.get('routing_decision') else 'Gateway output → Model input', 'kind': 1,
                 'startTimeUnixNano': now, 'endTimeUnixNano': now,
                 'attributes': [{'key': k, 'value': {'stringValue': v}} for k, v in attrs.items()],
                 'status': {'code': 1},
@@ -78,7 +82,7 @@ class ProviderInputAudit(CustomLogger):
             response = httpx.post(
                 os.environ['LANGFUSE_HOST'].rstrip('/') + '/api/public/otel/v1/traces',
                 auth=(os.environ['LANGFUSE_PUBLIC_KEY'], os.environ['LANGFUSE_SECRET_KEY']),
-                json=payload, timeout=3,
+                json=payload, headers={'x-langfuse-ingestion-version': '4'}, timeout=3,
             )
             response.raise_for_status()
         except Exception:

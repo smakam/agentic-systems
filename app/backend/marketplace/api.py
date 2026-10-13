@@ -186,6 +186,14 @@ class Question(BaseModel):
     source_authority:bool=True
     marker_mode:str="off"
     loop_mode:Literal['normal','tool_error','turn_limit']='normal'
+    routing_policy:str='off'
+
+@app.get('/api/routing-demo')
+def routing_demo_options(user=Depends(identity)):
+    role(user, 'support', 'operator')
+    from .routing_demo import enabled, POLICIES
+    available = enabled()
+    return {'enabled': available, 'profiles': [{'id': k, **v} for k, v in POLICIES.items()] if available else []}
 
 @app.get('/api/hosting-lab')
 def hosting_lab_options(user=Depends(identity)):
@@ -203,6 +211,9 @@ def loop_lab_options(user=Depends(identity)):
 async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session)):
     conv=owned(db,user,cid)
     runtime=runtime_binding(conv)['runtime']
+    from .routing_demo import validate as validate_routing, configuration as routing_configuration, capture_calls
+    try: validate_routing(body.routing_policy, runtime)
+    except ValueError as exc: raise HTTPException(403, str(exc))
     from .loop_lab import validate as validate_loop, enabled as loop_enabled
     try: validate_loop(body.loop_mode,runtime)
     except ValueError as exc: raise HTTPException(403,str(exc))
@@ -223,6 +234,9 @@ async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session
         if not acquired: raise HTTPException(409,'This conversation already has a running question')
         corpus_locked=False
         try:
+            prior = db.scalars(select(Run).where(Run.conversation_id == cid).order_by(Run.created_at)).first()
+            if prior and (prior.metrics or {}).get('routing', {}).get('policy', 'off') != body.routing_policy:
+                raise HTTPException(400, 'Start a fresh conversation before changing the routing policy')
             if is_test() and runtime=='sdk':
                 corpus_locked=lock.execute(text('SELECT pg_try_advisory_lock_shared(hashtext(:key))'),{'key':LOCK}).scalar()
                 if not corpus_locked: raise HTTPException(409,'A document fixture is changing; wait and retry')
@@ -242,8 +256,13 @@ async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session
                     raise HTTPException(502,str(exc)) from None
             from .agent import answer
             lab_config={'loop_mode':body.loop_mode,'tool_transport':'mcp','model':os.getenv('OPENAI_MODEL','gpt-5.4')} if loop_enabled() else None
-            from .gateway_identity import for_role
-            with for_role(user.role):
+            from .gateway_identity import for_role, for_key
+            route_config = routing_configuration(body.routing_policy, cid)
+            if route_config:
+                if lab_config: raise HTTPException(400, 'Routing and loop-lab comparisons require separate conversations')
+                lab_config = route_config
+            key_context = for_key(os.environ['EVAL_GATEWAY_KEY']) if route_config else for_role(user.role)
+            with key_context, capture_calls():
                 return await answer(cid,body.question,evaluation_config=lab_config,memory_enabled=body.memory_enabled,memory_write=body.memory_write,guardrail=body.guardrail,source_authority=body.source_authority,marker_mode=body.marker_mode,suppress_catalog=body.suppress_catalog,suppress_documents=body.suppress_documents)
         finally:
             if corpus_locked: lock.execute(text('SELECT pg_advisory_unlock_shared(hashtext(:key))'),{'key':LOCK})

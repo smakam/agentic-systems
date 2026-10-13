@@ -370,3 +370,14 @@ See [exercise](../course/exercises/chapter-12-runtime-and-hosting/exercise.md) a
 ## Starting all course workspaces
 
 `./scripts/start.sh` starts main and test plus the existing **Agent Loop** and legacy **Runtime and Hosting** lab UIs. Use `./scripts/stop.sh` to stop them together without deleting data. See [Local setup](LOCAL-SETUP.md#chapter-specific-lab-environments) for the UI/database mapping. The current Runtime and Hosting worksheet uses the standard test marketplace and full-cloud configuration; the legacy agent-only lab is not required. Initializing an empty lab is separate from resetting an existing fixture; startup does not reset data or deploy cloud resources.
+
+
+### Chapter 16 native routing demo
+
+The test SDK workspace at `http://127.0.0.1:5179/` exposes **Model routing demo**: fixed GPT-5 Nano / GPT-5 or native LiteLLM routing. Keyword rules use question scope; the LLM classifier (GPT-5 Nano) supports conversation or question scope. Changing a policy starts a new conversation. The backend supplies an authenticated conversation session ID; classification and pinning happen inside LiteLLM, not in an app runner.
+
+Follow the [numbered instructor walkthrough](../course/exercises/chapter-16-model-routing/instructor-demo.md). Prepared routes are in [routing-demo.models.yaml](infra/routing-demo.models.yaml). `scripts/start.sh` regenerates the provider config; standalone restarts must retain `LITELLM_CONFIG_PATH=./infra/litellm.provider.generated.yaml`. Provision existing keys with `python3 scripts/provision-gateway-keys.py` after startup. Rebuild the test backend/frontend after source changes. The existing security filters are retained.
+
+LiteLLM 1.102.1 applies license limits to customized heuristic and custom-prompt routers. This lab uses one keyword profile and the same shipped LLM prompt for both scopes; the historical business rubric is explained separately. SIMPLE maps to Nano; MEDIUM / COMPLEX / REASONING map to GPT-5. No licensing state or vendor code is changed.
+
+A routing result links to its Langfuse trace. **Gateway routing decision → Model input** records the native tier, model alias, cause and available classifier cost; the generation records the actual provider model. `llm_classifier`, `session_affinity_pin` and `user_turn_continuation` distinguish fresh decisions from reuse. The test app's conservative budget estimate excludes gateway classifier overhead; use all relevant observations for complete cost analysis. Original trace text is not globally scrubbed by a guardrail.

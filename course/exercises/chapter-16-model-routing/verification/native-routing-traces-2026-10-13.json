@@ -1,0 +1,397 @@
+[
+  {
+    "trace_id": "c9e62800ce31006e87794ce74c884b78",
+    "routing_policy": "llm_conversation",
+    "answer_models": [
+      "gpt-5-nano-2025-08-07"
+    ],
+    "observations": [
+      {
+        "name": "Gateway routing decision \u2192 Model input",
+        "model": "",
+        "metadata": {
+          "routing_decision.conversation_continuing": true,
+          "routing_decision.tier": "SIMPLE",
+          "routing_decision.cause": "session_affinity_pin",
+          "routing_decision.routed_model": "eval-nano",
+          "routing_decision.router_model_name": "ch16-llm-conversation",
+          "routing_classifier": "llm",
+          "routing_scope": "conversation",
+          "routing_policy": "llm_conversation"
+        }
+      },
+      {
+        "name": "generation",
+        "model": "gpt-5-nano-2025-08-07",
+        "metadata": {
+          "actual_answer_model": "gpt-5-nano-2025-08-07"
+        }
+      },
+      {
+        "name": "Gateway routing decision \u2192 Model input",
+        "model": "",
+        "metadata": {
+          "routing_decision.conversation_continuing": false,
+          "routing_decision.classifier_cost": 0.00010339999999999999,
+          "routing_decision.classifier_model": "eval-nano",
+          "routing_decision.tier": "SIMPLE",
+          "routing_decision.cause": "llm_classifier",
+          "routing_decision.routed_model": "eval-nano",
+          "routing_decision.router_model_name": "ch16-llm-conversation",
+          "routing_classifier": "llm",
+          "routing_scope": "conversation",
+          "routing_policy": "llm_conversation"
+        }
+      },
+      {
+        "name": "Gateway output \u2192 Model input",
+        "model": "",
+        "metadata": {
+          "routing_classifier": "llm",
+          "routing_scope": "conversation",
+          "routing_policy": "llm_conversation"
+        }
+      },
+      {
+        "name": "generation",
+        "model": "gpt-5-nano-2025-08-07",
+        "metadata": {
+          "actual_answer_model": "gpt-5-nano-2025-08-07"
+        }
+      },
+      {
+        "name": "support-investigation",
+        "model": "",
+        "metadata": {
+          "routing_classifier_model": "eval-nano",
+          "routing_session_id": "chapter16:chat-461b2146d2:llm_conversation",
+          "routing_scope": "conversation",
+          "routing_classifier": "llm",
+          "routing_policy": "llm_conversation"
+        }
+      }
+    ]
+  },
+  {
+    "trace_id": "d4cbf072a1361ff7a4e6879836833051",
+    "routing_policy": "llm_conversation",
+    "answer_models": [
+      "gpt-5-nano-2025-08-07"
+    ],
+    "observations": [
+      {
+        "name": "Gateway routing decision \u2192 Model input",
+        "model": "",
+        "metadata": {
+          "routing_decision.conversation_continuing": true,
+          "routing_decision.tier": "SIMPLE",
+          "routing_decision.cause": "session_affinity_pin",
+          "routing_decision.routed_model": "eval-nano",
+          "routing_decision.router_model_name": "ch16-llm-conversation",
+          "routing_classifier": "llm",
+          "routing_scope": "conversation",
+          "routing_policy": "llm_conversation"
+        }
+      },
+      {
+        "name": "generation",
+        "model": "gpt-5-nano-2025-08-07",
+        "metadata": {
+          "actual_answer_model": "gpt-5-nano-2025-08-07"
+        }
+      },
+      {
+        "name": "Gateway routing decision \u2192 Model input",
+        "model": "",
+        "metadata": {
+          "routing_decision.conversation_continuing": true,
+          "routing_decision.tier": "SIMPLE",
+          "routing_decision.cause": "session_affinity_pin",
+          "routing_decision.routed_model": "eval-nano",
+          "routing_decision.router_model_name": "ch16-llm-conversation",
+          "routing_classifier": "llm",
+          "routing_scope": "conversation",
+          "routing_policy": "llm_conversation"
+        }
+      },
+      {
+        "name": "generation",
+        "model": "gpt-5-nano-2025-08-07",
+        "metadata": {
+          "actual_answer_model": "gpt-5-nano-2025-08-07"
+        }
+      },
+      {
+        "name": "support-investigation",
+        "model": "",
+        "metadata": {
+          "routing_classifier_model": "eval-nano",
+          "routing_session_id": "chapter16:chat-461b2146d2:llm_conversation",
+          "routing_scope": "conversation",
+          "routing_classifier": "llm",
+          "routing_policy": "llm_conversation"
+        }
+      }
+    ]
+  },
+  {
+    "trace_id": "9867c85d7d33b7f7c00de188c6bf70f8",
+    "routing_policy": "llm_conversation",
+    "answer_models": [
+      "gpt-5-nano-2025-08-07"
+    ],
+    "observations": [
+      {
+        "name": "Gateway routing decision \u2192 Model input",
+        "model": "",
+        "metadata": {
+          "routing_decision.conversation_continuing": true,
+          "routing_decision.tier": "SIMPLE",
+          "routing_decision.cause": "session_affinity_pin",
+          "routing_decision.routed_model": "eval-nano",
+          "routing_decision.router_model_name": "ch16-llm-conversation",
+          "routing_classifier": "llm",
+          "routing_scope": "conversation",
+          "routing_policy": "llm_conversation"
+        }
+      },
+      {
+        "name": "generation",
+        "model": "gpt-5-nano-2025-08-07",
+        "metadata": {
+          "actual_answer_model": "gpt-5-nano-2025-08-07"
+        }
+      },
+      {
+        "name": "support-investigation",
+        "model": "",
+        "metadata": {
+          "routing_classifier_model": "eval-nano",
+          "routing_session_id": "chapter16:chat-461b2146d2:llm_conversation",
+          "routing_scope": "conversation",
+          "routing_classifier": "llm",
+          "routing_policy": "llm_conversation"
+        }
+      }
+    ]
+  },
+  {
+    "trace_id": "48265bb4731ebd5fa7f91cc50aa91768",
+    "routing_policy": "llm_question",
+    "answer_models": [
+      "gpt-5-nano-2025-08-07"
+    ],
+    "observations": [
+      {
+        "name": "Gateway routing decision \u2192 Model input",
+        "model": "",
+        "metadata": {
+          "routing_decision.conversation_continuing": true,
+          "routing_decision.tier": "SIMPLE",
+          "routing_decision.cause": "user_turn_continuation",
+          "routing_decision.routed_model": "eval-nano",
+          "routing_decision.router_model_name": "ch16-llm-question",
+          "routing_classifier": "llm",
+          "routing_scope": "question",
+          "routing_policy": "llm_question"
+        }
+      },
+      {
+        "name": "generation",
+        "model": "gpt-5-nano-2025-08-07",
+        "metadata": {
+          "actual_answer_model": "gpt-5-nano-2025-08-07"
+        }
+      },
+      {
+        "name": "Gateway routing decision \u2192 Model input",
+        "model": "",
+        "metadata": {
+          "routing_decision.conversation_continuing": false,
+          "routing_decision.classifier_cost": 4.8360000000000005e-05,
+          "routing_decision.classifier_model": "eval-nano",
+          "routing_decision.tier": "SIMPLE",
+          "routing_decision.cause": "llm_classifier",
+          "routing_decision.routed_model": "eval-nano",
+          "routing_decision.router_model_name": "ch16-llm-question",
+          "routing_classifier": "llm",
+          "routing_scope": "question",
+          "routing_policy": "llm_question"
+        }
+      },
+      {
+        "name": "Gateway output \u2192 Model input",
+        "model": "",
+        "metadata": {
+          "routing_classifier": "llm",
+          "routing_scope": "question",
+          "routing_policy": "llm_question"
+        }
+      },
+      {
+        "name": "generation",
+        "model": "gpt-5-nano-2025-08-07",
+        "metadata": {
+          "actual_answer_model": "gpt-5-nano-2025-08-07"
+        }
+      },
+      {
+        "name": "support-investigation",
+        "model": "",
+        "metadata": {
+          "routing_classifier_model": "eval-nano",
+          "routing_session_id": "chapter16:chat-baa8a2edc7:llm_question",
+          "routing_scope": "question",
+          "routing_classifier": "llm",
+          "routing_policy": "llm_question"
+        }
+      }
+    ]
+  },
+  {
+    "trace_id": "2ab13950155607a38bd028108f84e9fe",
+    "routing_policy": "llm_question",
+    "answer_models": [
+      "gpt-5-2025-08-07"
+    ],
+    "observations": [
+      {
+        "name": "Gateway routing decision \u2192 Model input",
+        "model": "",
+        "metadata": {
+          "routing_decision.conversation_continuing": true,
+          "routing_decision.tier": "REASONING",
+          "routing_decision.cause": "user_turn_continuation",
+          "routing_decision.routed_model": "eval-5",
+          "routing_decision.router_model_name": "ch16-llm-question",
+          "routing_classifier": "llm",
+          "routing_scope": "question",
+          "routing_policy": "llm_question"
+        }
+      },
+      {
+        "name": "generation",
+        "model": "gpt-5-2025-08-07",
+        "metadata": {
+          "actual_answer_model": "gpt-5-2025-08-07"
+        }
+      },
+      {
+        "name": "Gateway routing decision \u2192 Model input",
+        "model": "",
+        "metadata": {
+          "routing_decision.conversation_continuing": true,
+          "routing_decision.tier": "REASONING",
+          "routing_decision.cause": "user_turn_continuation",
+          "routing_decision.routed_model": "eval-5",
+          "routing_decision.router_model_name": "ch16-llm-question",
+          "routing_classifier": "llm",
+          "routing_scope": "question",
+          "routing_policy": "llm_question"
+        }
+      },
+      {
+        "name": "generation",
+        "model": "gpt-5-2025-08-07",
+        "metadata": {
+          "actual_answer_model": "gpt-5-2025-08-07"
+        }
+      },
+      {
+        "name": "Gateway routing decision \u2192 Model input",
+        "model": "",
+        "metadata": {
+          "routing_decision.conversation_continuing": true,
+          "routing_decision.classifier_cost": 0.00011191,
+          "routing_decision.classifier_model": "eval-nano",
+          "routing_decision.tier": "REASONING",
+          "routing_decision.cause": "llm_classifier",
+          "routing_decision.routed_model": "eval-5",
+          "routing_decision.router_model_name": "ch16-llm-question",
+          "routing_classifier": "llm",
+          "routing_scope": "question",
+          "routing_policy": "llm_question"
+        }
+      },
+      {
+        "name": "Gateway output \u2192 Model input",
+        "model": "",
+        "metadata": {
+          "routing_classifier": "llm",
+          "routing_scope": "question",
+          "routing_policy": "llm_question"
+        }
+      },
+      {
+        "name": "generation",
+        "model": "gpt-5-2025-08-07",
+        "metadata": {
+          "actual_answer_model": "gpt-5-2025-08-07"
+        }
+      },
+      {
+        "name": "support-investigation",
+        "model": "",
+        "metadata": {
+          "routing_classifier_model": "eval-nano",
+          "routing_session_id": "chapter16:chat-baa8a2edc7:llm_question",
+          "routing_scope": "question",
+          "routing_classifier": "llm",
+          "routing_policy": "llm_question"
+        }
+      }
+    ]
+  },
+  {
+    "trace_id": "a0ff24e74d80a809e441ed76932144e9",
+    "routing_policy": "llm_question",
+    "answer_models": [
+      "gpt-5-2025-08-07"
+    ],
+    "observations": [
+      {
+        "name": "Gateway routing decision \u2192 Model input",
+        "model": "",
+        "metadata": {
+          "routing_decision.conversation_continuing": true,
+          "routing_decision.classifier_cost": 0.00010331,
+          "routing_decision.classifier_model": "eval-nano",
+          "routing_decision.tier": "MEDIUM",
+          "routing_decision.cause": "llm_classifier",
+          "routing_decision.routed_model": "eval-5",
+          "routing_decision.router_model_name": "ch16-llm-question",
+          "routing_classifier": "llm",
+          "routing_scope": "question",
+          "routing_policy": "llm_question"
+        }
+      },
+      {
+        "name": "Gateway output \u2192 Model input",
+        "model": "",
+        "metadata": {
+          "routing_classifier": "llm",
+          "routing_scope": "question",
+          "routing_policy": "llm_question"
+        }
+      },
+      {
+        "name": "generation",
+        "model": "gpt-5-2025-08-07",
+        "metadata": {
+          "actual_answer_model": "gpt-5-2025-08-07"
+        }
+      },
+      {
+        "name": "support-investigation",
+        "model": "",
+        "metadata": {
+          "routing_classifier_model": "eval-nano",
+          "routing_session_id": "chapter16:chat-baa8a2edc7:llm_question",
+          "routing_scope": "question",
+          "routing_classifier": "llm",
+          "routing_policy": "llm_question"
+        }
+      }
+    ]
+  }
+]

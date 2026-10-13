@@ -12,12 +12,17 @@ for attempt in range(20):
  try:call('/health/liveliness');break
  except (OSError,ValueError):time.sleep(2)
 else:raise SystemExit('Gateway not ready')
-for name,alias,models in [('SUPPORT_GATEWAY_KEY','marketplace-support',['support-model','embedding']),('OPERATOR_GATEWAY_KEY','marketplace-operator',['support-model','embedding']),('EVAL_GATEWAY_KEY','marketplace-evaluation',['eval-nano','eval-54','eval-5','support-model','embedding']),('JUDGE_GATEWAY_KEY','marketplace-judge',['eval-judge'])]:
+for name,alias,models in [('SUPPORT_GATEWAY_KEY','marketplace-support',['support-model','embedding']),('OPERATOR_GATEWAY_KEY','marketplace-operator',['support-model','embedding']),('EVAL_GATEWAY_KEY','marketplace-evaluation',['eval-nano','eval-54','eval-5','support-model','embedding']+['ch16-keyword-question','ch16-llm-conversation','ch16-llm-question']),('JUDGE_GATEWAY_KEY','marketplace-judge',['eval-judge'])]:
  key=values.get(name)
  if key:
   import urllib.parse
   info=call('/key/info?'+urllib.parse.urlencode({'key':key}))['info']
-  if set(info['models'])!=set(models):raise SystemExit('Existing '+name+' has different permissions; review before updating')
+  if set(info['models'])!=set(models):
+   additions=set(models)-set(info['models'])
+   native_routes=set(['ch16-keyword-conversation','ch16-keyword-question','ch16-llm-conversation','ch16-llm-question'])
+   if name=='EVAL_GATEWAY_KEY' and (set(info['models']) ^ set(models)) <= native_routes and (set(info['models']) - native_routes) == (set(models) - native_routes):
+    call('/key/update','POST',{'key':key,'models':models})
+   else:raise SystemExit('Existing '+name+' has different permissions; review before updating')
  else:
   key=call('/key/generate','POST',{'key_alias':alias,'models':models,'metadata':{'purpose':alias,'project':'marketplace-lab'}})['key']
   lines=[l for l in contents.splitlines() if not l.startswith(name+'=')];lines.append(name+'='+key)

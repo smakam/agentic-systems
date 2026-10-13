@@ -38,7 +38,8 @@ def client(*, judge=False):
     key=os.getenv("JUDGE_GATEWAY_KEY") if judge else current_key()
     if not key: raise RuntimeError("Gateway virtual key missing; run scripts/start.sh")
     from .gateway_cost import record_gateway_cost
-    http_options={'event_hooks': {'response': [record_gateway_cost]}}
+    from .routing_demo import record_routing_call
+    http_options={'event_hooks': {'response': [record_gateway_cost, record_routing_call]}}
     options={}
     audience=os.getenv('GATEWAY_IAM_AUDIENCE')
     # Scale-to-zero gateways need time for container and dependency startup.
