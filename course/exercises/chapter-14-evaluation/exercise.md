@@ -1,57 +1,77 @@
-# Chapter 14: Evaluation
+# Chapter 14 — Learner exercise
 
-Use five supplied model answers for human grading and five supplied structured answers for native Langfuse grading. Both exercises make **no model API calls**. The provided outputs are real saved marketplace answers. Local Langfuse runs at http://localhost:3000 in the `marketplace-support` project.
+Two tasks: human-grade five supplied answers, then use Langfuse's native code evaluator on three structured answers. All questions, candidate answers and golden references are provided. No model calls are required.
 
-Run commands from the repository root. The app's existing Docker image includes the required Python packages. Its `eval-runner` service mounts `app/results` as `/results`. These activities do not reset or modify marketplace business records. Keep your reviews and imports under `app/results/chapter-14`.
+## Before starting
 
-## Part 1: Human evaluation
+Use the existing local marketplace lab and Langfuse project **marketplace-support**. Run upload commands from the application repository root. The native TypeScript evaluator and local dispatcher must already be configured; reuse **Chapter14 structured order comparison**. Setup instructions are in the package README. Keep solutions closed until you finish.
 
-1. Read `fixtures/human-five.json`. For each case, inspect the question, supplied answer, independent golden requirements, and evidence. The golden reference is for evaluation only and was not supplied to the answering model.
-2. Copy `fixtures/human-review-template.json` to `app/results/chapter-14/human-reviews.json`.
-3. Assign a correctness score: **0 incorrect**, **1 partially correct**, or **2 correct**. Add a specific reason using the golden requirements and evidence. Equivalent wording is acceptable. Do not penalize an omitted optional detail or assume a valid citation proves the claim.
-4. Validate your completed file without contacting Langfuse or a model:
+## Part A — Human evaluation of five answers
 
-```sh
-docker compose -p marketplace-lab -f app/compose.yaml --profile evaluation run --rm --no-deps -v "$PWD/course/exercises/chapter-14-evaluation:/exercise:ro" eval-runner python /exercise/publish_human_reviews.py /results/chapter-14/human-reviews.json
-```
+### 1. Copy and open the worksheet
 
-5. Add `--publish --run-name chapter14-my-human-review` to the command to import your grades. Open the returned URL, or find that run in Langfuse **Datasets → chapter14-human-v1 → Experiments**. Check that there are five answers and a `human_correctness` score plus your reason for each.
-6. Compare your decisions with the separate solution after completing your review. A disagreement needs analysis of facts and the rubric. It does not automatically mean either reviewer is wrong.
+Copy `course/exercises/chapter-14-evaluation/fixtures/human-worksheet.json` to `app/results/chapter-14/human-worksheet.json`.
 
-Do not use the historical human solution file as your own review. It is retained to discuss reference/rubric differences and missing reasons.
+Each case contains the question, golden facts and Nano's saved answer. Edit only **score** and **reason**.
 
-## Part 2: Native structured comparison
+### 2. Grade each model answer
 
-### One-time local setup
+Compare the answer with the golden facts. Assign **0 incorrect**, **1 partially correct**, or **2 correct**, and write a short fact-based reason. Grade the answer, not the question or golden reference. Equivalent wording is acceptable.
 
-Enable the trusted local TypeScript evaluator runtime. This restarts only Langfuse's web and worker services and preserves their volumes:
+### 3. Validate the completed JSON
 
 ```sh
-docker compose -p marketplace-lab -f app/compose.yaml -f course/exercises/chapter-14-evaluation/compose.code-eval.yaml up -d --no-deps langfuse-worker langfuse-web
+docker compose -p marketplace-lab -f app/compose.yaml --profile evaluation \
+  run --rm --no-deps \
+  -v "$PWD/course/exercises/chapter-14-evaluation:/exercise:ro" \
+  eval-runner python /exercise/publish_human_reviews.py \
+  /results/chapter-14/human-worksheet.json
 ```
 
-The local dispatcher executes trusted evaluator code inside the worker. Use the supplied evaluator for this course lab. This setup is not a sandbox for arbitrary code or a production deployment pattern.
+**Expected:** five validated reviews and zero model calls. Missing scores, invalid values, blank reasons or changed question/gold/answer fields are rejected.
 
-### Import and grade
-
-1. Read `fixtures/structured-five.json`. It contains five questions, independently recorded expected fields, actual saved JSON answers, and original trace references. Three questions concern an individual order item; two concern the total quantity across an order.
-2. Import the supplied answers. This does not call the agent or any model:
+### 4. Upload your human grades to Langfuse
 
 ```sh
-docker compose -p marketplace-lab -f app/compose.yaml --profile evaluation run --rm --no-deps -v "$PWD/course/exercises/chapter-14-evaluation:/exercise:ro" eval-runner python /exercise/upload_structured_answers.py --publish --run-name chapter14-my-structured-review
+docker compose -p marketplace-lab -f app/compose.yaml --profile evaluation \
+  run --rm --no-deps \
+  -v "$PWD/course/exercises/chapter-14-evaluation:/exercise:ro" \
+  eval-runner python /exercise/publish_human_reviews.py \
+  /results/chapter-14/human-worksheet.json \
+  --publish --run-name chapter14-my-human-review
 ```
 
-3. In Langfuse, open **Evaluators → New evaluator → New code evaluator**. Choose **TypeScript** and replace the template with `structured-evaluator.ts`. Name it **Chapter14 structured order comparison**. If your project already has that evaluator and its matching rule, inspect and reuse it instead of making a duplicate.
-4. In the test panel, filter by observation name `chapter14-structured-answer`, select one imported answer, and run the test. Verify that reference and actual status/quantity are visible and the code emits the four scores below.
-5. Save the evaluator. Reuse that name filter as a rule with 100% sampling. Enable scoring of past matching observations for the imported cases. The native worker computes the grades asynchronously; the upload script does not grade them. In a shared project, use your experiment or dataset filter too to isolate your own five cases.
-6. Open the imported run in **Experiments**. Select only your run as baseline. Confirm five rows and examine:
-   - `schema_valid`
-   - `status_matches`
-   - `quantity_matches`
-   - `structured_grade`
-7. Explain why all five supplied answers are correct under this narrow contract. Use the separately labelled evaluator controls to see partial and incorrect outcomes; do not describe those authored controls as real model failures.
-8. Inspect one answer observation and its `original_trace_id` metadata. Open that original trace to see the agent's question, model/tool sequence, evidence, latency and token usage. The imported task's duration and model cost describe import work, not the original agent execution.
+**Expected:** a printed experiment URL. Open it and check all five answers, scores and comments. Langfuse displays your imported human grades; it does not grade them again. Use a new run name for another submission.
 
-## Completion
+## Part B — Native evaluation of three structured answers
 
-Retain your five human grades with reasons, the two Langfuse result links or screenshots, and a short explanation of what exact field checks prove and what they leave untested. This evaluator does not establish semantic correctness of a policy explanation or citation grounding. No new candidate or Claude calls are required for either exercise.
+### 1. Inspect the supplied JSON
+
+Open `fixtures/structured-three.json` in this package. Each item has a question, expected shipment status and quantity, and an actual recorded GPT-5.4 answer. Do not generate new model answers.
+
+### 2. Import the three outputs
+
+```sh
+docker compose -p marketplace-lab -f app/compose.yaml --profile evaluation \
+  run --rm --no-deps \
+  -v "$PWD/course/exercises/chapter-14-evaluation:/exercise:ro" \
+  eval-runner python /exercise/upload_structured_answers.py \
+  --fixture structured-three.json --publish \
+  --run-name chapter14-my-structured-review
+```
+
+**Expected:** three imported items, zero model calls and an experiment URL. This script imports answers, not grades.
+
+### 3. Use the native evaluator
+
+In Langfuse, open **Evaluators → Chapter14 structured order comparison**. Inspect the TypeScript source, select one matching imported observation to test the field mapping, and confirm the rule targets `chapter14-structured-answer` at 100% sampling. Reuse the existing rule. If using a shared project, restrict it to your dataset/experiment where appropriate.
+
+The Langfuse worker executes the comparison asynchronously. If the rule was created after import, include past matching observations. Upload completion alone does not mean grading finished.
+
+### 4. Inspect the experiment results
+
+Open the URL printed by the import command. Compare question, golden fields, actual JSON and scores. Record `schema_valid`, `status_matches`, `quantity_matches`, and `structured_grade`. Confirm source **EVAL** for native scoring. Explain what each check proves; these field checks do not establish citation grounding or full semantic correctness.
+
+## Submit
+
+Provide your completed human worksheet, both experiment URLs, one explanation of a human grade, and the three native results with field checks. Keep human grades and native code results distinct. Do not include credentials. Compare with the separate solutions after submission.

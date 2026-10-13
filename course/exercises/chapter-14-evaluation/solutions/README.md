@@ -21,10 +21,8 @@ A disagreement with the historical labels should be documented and reviewed, not
 | item-1 in order-1 | delivered | 2 | correct |
 | item-2 in order-1 | delivered | 2 | correct |
 | item-3 in order-2 | pending | 2 | correct |
-| all items in order-1 | delivered | 4 | correct |
-| all items in order-2 | pending | 2 | correct |
 
-All five supplied answers are actual recorded agent outputs. Reference fields come from independent database queries taken before each run and rechecked afterward. Candidate traces and output provenance are in the fixture.
+All three supplied answers are actual recorded agent outputs. The older five-case fixture remains as optional preparation history. Reference fields come from independent database queries taken before each run and rechecked afterward. Candidate traces and output provenance are in the fixture.
 
 The native evaluator requires valid JSON fields. Matching status and quantity gives `correct`; correct status with incorrect quantity gives `partial`; incorrect status gives `incorrect`; invalid schema gives `invalid_output`; missing reference gives `not_assessable`. This teaching contract treats shipment status as critical. It allows additional evidence fields but does not assess their entailment.
 

@@ -1,0 +1,108 @@
+{
+  "version": "chapter14-human-worksheet-v1",
+  "rubric": {
+    "0": "incorrect",
+    "1": "partially correct",
+    "2": "correct"
+  },
+  "cases": [
+    {
+      "number": 1,
+      "case_id": "02",
+      "questions": [
+        "What products and quantities are in order-1, and who sells them?"
+      ],
+      "golden_facts": "Canvas Weekender ×2, Cedar; Desk Lamp ×2, Northstar. Item, listing/product and seller joins.",
+      "model_answers": [
+        "Interpretation: Order-1 contains two items: Canvas Weekender by Cedar & Co. and Desk Lamp by Northstar Goods, each with quantity 2.\nDemo date used: 2026-09-27 12:00:00+00:00 (demo clock).\nResult: \n- Canvas Weekender — Cedar & Co. — quantity 2\n- Desk Lamp — Northstar Goods — quantity 2\n[Citation: evidence-7d04a8b7e233]\nRevision: 1"
+      ],
+      "score": null,
+      "reason": ""
+    },
+    {
+      "number": 2,
+      "case_id": "09",
+      "questions": [
+        "Has the payment gone through for order-1?"
+      ],
+      "golden_facts": {
+        "essential_facts": [
+          "Distinguish captured buyer payment from seller payout. Accept either a clarification question or an explicitly qualified answer distinguishing both meanings.",
+          "Buyer payment captured; seller payout has a failure. Do not imply seller settlement completed."
+        ],
+        "evidence_requirements": [
+          "Any factual payment/payout statements must match retrieved records. Clarification alone needs no citation."
+        ],
+        "optional_details": [
+          "Enumerating every held or failed seller payout, amount and date."
+        ]
+      },
+      "model_answers": [
+        "Interpretation: The payment has gone through (captured) for order-1.\nDemo date used: 2026-09-27 12:00:00+00:00 (demo clock).\nResult: Order status = paid; Payment status = captured; Amount = 759600 paise = INR 7596.00; Payment ID = payment-1.\nCitation: [evidence:evidence-4dbc53f28e08]\nRevision: 1"
+      ],
+      "score": null,
+      "reason": ""
+    },
+    {
+      "number": 3,
+      "case_id": "16",
+      "questions": [
+        "Can the operator release the payout for ord-b8f486c950 now?"
+      ],
+      "golden_facts": "No: one hour of the 24-hour hold remains. Delivery timestamp + clock + settlement policy; no claim of provider failure.",
+      "model_answers": [
+        "Interpretation: The ord-b8f486c950 payout is currently held and cannot be released yet (payout status: held; amount 116910 paise = ₹1169.10).\n\nDemo date used: 2026-09-28 (clock in snapshot).\n\nResult: Payout remains on hold; no release action possible at this moment.\n\nCitation: [evidence:evidence-96e37ad1445c] (current payout_status and amount for order)\n\nRevision: 5"
+      ],
+      "score": null,
+      "reason": ""
+    },
+    {
+      "number": 4,
+      "case_id": "23",
+      "questions": [
+        "Did the payout incident affect every seller?"
+      ],
+      "golden_facts": {
+        "essential_facts": [
+          "Only payout-1, belonging to Cedar, has documented incident impact; broader impact is unproven.",
+          "Do not assert other sellers were definitely unaffected or treat held payouts as failed."
+        ],
+        "evidence_requirements": [
+          "Incident affected set and relationship to seller; equivalent incident/event evidence accepted."
+        ],
+        "optional_details": [
+          "Listing all sellers or fetching redundant underlying event when incident evidence suffices."
+        ]
+      },
+      "model_answers": [
+        "Ambiguity: does “Cedar” refer to Cedar & Co. (seller-1) or to a product whose name includes Cedar? Please confirm which you mean."
+      ],
+      "score": null,
+      "reason": ""
+    },
+    {
+      "number": 5,
+      "case_id": "24",
+      "questions": [
+        "After returning one Canvas Weekender, what remains payable to Cedar?"
+      ],
+      "golden_facts": {
+        "essential_facts": [
+          "Remaining unpaid payable to Cedar is INR 2249.10 after one unit refund.",
+          "Correct calculation: original gross 4998 minus refund 2499 minus adjusted fee 249.90, or remaining gross 2499 minus fee 249.90."
+        ],
+        "evidence_requirements": [
+          "Quantity and refund/allocation evidence supports amounts and seller scope."
+        ],
+        "optional_details": [
+          "Explicitly restating one unit remains, printing intermediate remaining gross, or explaining 10 percent fee when equivalent calculation is supplied."
+        ]
+      },
+      "model_answers": [
+        "Interpretation: Cedar & Co. (seller-1) remains payable 2249.10 INR after returning one Canvas Weekender.\n\nDemo date: 2026-09-27 12:00:00+00:00 (clock in snapshot).\n\nResult: 224910 paise unpaid.\n\nCitation: [evidence:evidence-c3b9ea0cba68]\n\nRevision: 5"
+      ],
+      "score": null,
+      "reason": ""
+    }
+  ]
+}

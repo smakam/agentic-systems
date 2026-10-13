@@ -4,14 +4,14 @@
 
 This package separates three grading methods and two integration paths:
 
-- **Instructor:** Claude judges five supplied answers externally, then the script publishes the scores to Langfuse. Native Langfuse code evaluation demonstrates three already verified structured answers.
-- **Learner:** Human-grade five supplied answers and import their grades. Import five supplied structured outputs and let the native Langfuse worker perform field comparisons.
+- **Instructor:** Walk through five golden cases, saved Nano answers and imported Claude grades; then three golden cases, the native TypeScript evaluator and its recorded results. No scripts or model calls during the demo.
+- **Learner:** Human-grade five supplied answers and import their grades. Import three supplied structured outputs and let the native Langfuse worker perform field comparisons.
 
 The learner exercises make no model API calls. Candidate answers and golden references are supplied. Instructor live Claude judging is paid and requires an explicit flag. Preparing the package generated the five structured answers once, outside learner execution.
 
 Read [the exercise](exercise.md) and keep [the solutions](solutions/README.md) separate until the learner finishes.
 
-## Instructor script
+## Optional preparation scripts
 
 From the repository root, inspect the five-case selection without model calls:
 
@@ -19,7 +19,7 @@ From the repository root, inspect the five-case selection without model calls:
 docker compose -p marketplace-lab -f app/compose.yaml --profile evaluation run --rm --no-deps -v "$PWD/course/exercises/chapter-14-evaluation:/exercise:ro" eval-runner python /exercise/run_claude_demo.py
 ```
 
-For a recording rehearsal using saved Claude assessments, append `--replay-saved --publish`. This produces no candidate or judge calls. Its grades remain explicitly labelled historical replay.
+To import the verified teaching grades with model metadata, append `--import-verified --publish` and a unique `--run-name`. This makes no candidate or judge calls. `--replay-saved` separately preserves older historical Claude v3 judgments; those differ from the teaching run.
 
 For a fresh five-case Claude demonstration:
 

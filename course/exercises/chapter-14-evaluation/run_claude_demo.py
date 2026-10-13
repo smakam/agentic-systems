@@ -36,14 +36,38 @@ def judge_once(case, base_url, key):
     return {'grade':grade,'usage':raw.get('usage'),'gateway_model':raw.get('model'),
         'gateway_estimated_usd':cost,'elapsed_seconds':round(time.monotonic()-started,3)}
 
+def read_verified_grades(path, case_ids):
+    source=json.loads(Path(path).read_text())
+    if source.get('status')!='complete':raise ValueError('Only a complete saved judge run can be imported')
+    results=source.get('results',[])
+    ids=[r['case_id'] for r in results]
+    if len(ids)!=len(case_ids) or len(set(ids))!=len(ids) or set(ids)!=set(case_ids):
+        raise ValueError('Saved result case IDs must match the selected cases exactly')
+    return {r['case_id']:validate_grade(r['grade']) for r in results},source
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    mode=p.add_mutually_exclusive_group();mode.add_argument('--live-judge',action='store_true');mode.add_argument('--replay-saved',action='store_true')
+    mode=p.add_mutually_exclusive_group();mode.add_argument('--live-judge',action='store_true');mode.add_argument('--replay-saved',action='store_true');mode.add_argument('--import-verified',action='store_true')
     p.add_argument('--publish',action='store_true');p.add_argument('--output',default='/results/chapter-14/claude-demo.json')
     p.add_argument('--run-name',default='chapter14-claude-five');p.add_argument('--budget-usd',type=float,default=1.50)
     args=p.parse_args();cases=load_cases('instructor-five.json')
-    if not args.live_judge and not args.replay_saved:
+    if not args.live_judge and not args.replay_saved and not args.import_verified:
         print(json.dumps({'cases':[c['case_id'] for c in cases],'mode':'preview','paid_calls':0,'publish':False}));return
+    if args.import_verified:
+        grades,source=read_verified_grades(ROOT/'solutions/verified-claude-five.json',[c['case_id'] for c in cases])
+        provenance={'answer_model':'gpt-5-nano-2025-08-07','judge_model':'claude-opus-5-5',
+           'judge_model_identity_basis':'configured LiteLLM route; saved response reports eval-judge alias',
+           'judge_gateway_alias':'eval-judge','grading_method':'external Claude judge; saved grades imported',
+           'rubric':source['rubric'],'source_results':'solutions/verified-claude-five.json',
+           'original_judge_cost_estimate_usd':source['known_gateway_cost_usd'],
+           'model_summary':'Answer model: GPT-5 nano (2025-08-07). Judge: Claude Opus 5.5 (configured gateway route).'}
+        state={'mode':'import_verified_claude','status':'complete','paid_call_attempts':0,
+           'candidate_generation':'reused supplied answers','rubric':source['rubric'],
+           'results':[{'case_id':c['case_id'],'grade':grades[c['case_id']]} for c in cases],
+           'provenance':provenance,'known_gateway_cost_usd':0.0,'model_calls':0}
+        if args.publish:state['langfuse']=publish_grades(cases,grades,'claude',args.run_name,provenance)
+        save(args.output,state)
+        print(json.dumps({'mode':state['mode'],'cases':len(cases),'model_calls':0,'paid_call_attempts':0,'langfuse':state.get('langfuse')}));return
     key=os.getenv('JUDGE_GATEWAY_KEY');url=os.getenv('LITELLM_URL','http://litellm:4000/v1')
     if args.live_judge and not key:raise SystemExit('JUDGE_GATEWAY_KEY is required for live judging')
     saved=json.loads((ROOT/'solutions/saved-claude-five.json').read_text())
