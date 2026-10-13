@@ -510,21 +510,21 @@ isolation machinery is implemented; this learner walkthrough remains to prepare.
 
 ### 15. Guardrails and Agent Security
 
-**Draft learner practice — for review, not finalized:**
+**Prepared learner practice — owner rehearsal pending:**
 
-- **Exercise:** Compare a normal support request with a synthetic injection or forged-policy request in the isolated test workspace.
-- **Solution to prepare:** Safe test inputs, expected enforcement boundaries, observed outcomes and limitations; do not assume every attack is blocked.
+- **Exercise:** Compare the four existing UI cases: built-in input masking, output-only masking, Presidio card blocking and Lakera on retrieved content. Record settings, enforcement points, trace evidence and limitations; review supplied harmless and missed-detection cases. [Exercise](exercises/chapter-15-guardrails-security/exercise.md) · [Worksheet](exercises/chapter-15-guardrails-security/worksheet.md).
+- **Separate solutions:** [Recorded observations and grading criteria](exercises/chapter-15-guardrails-security/solutions/README.md); do not assume every fresh attack is blocked. [Instructor walkthrough](exercises/chapter-15-guardrails-security/instructor-demo.md) gives individual numbered cases.
 
 - **Learning objective:** Distinguish model refusal, prompt guidance, gateway screening and enforceable tool boundaries; explain their limits using OWASP.
 - **Relationship to other sections:** Monitoring, tracing and evaluation remain separate sections. Chapter 2 briefly identifies guardrails on the component map; there is no separate guardrails lesson in Section C. All detailed guardrail demos live here.
 - **Main teaching guide:** [Combined demos and OWASP teaching notes](../app/docs/SECURITY-CHAPTER-DEMO.md).
-- **Hands-on:** Forged-policy comparison (B2/B3), built-in privacy and Presidio (C/D), direct and RAG-based Lakera injection cases (E1/E2), plus the manual private-instruction selector in the test Support chat; the added system text is visible before the learner asks the question.
+- **Core teaching walkthrough:** Four existing UI comparisons: built-in input privacy, output-only privacy, Presidio card blocking and Lakera on retrieved content. Forged-policy/source-authority, direct injection and private-context trials remain supporting examples with their existing evidence; the memory-permission demo remains excluded from this chapter.
 - **Observed results:** Latest forged-exception answers both retained held/unpaid status; source authority On improved clarity. Lakera blocked instruction attacks, whereas factual poisoning is a separate problem. Post-filter input audit showed synthetic PII masking. Retain misses and false blocks in the historical reports.
 - **Marker status:** Earlier visible-marker/private-marker probe completed; the user reports validating the revised same-lantern comparison on October 7. This is user acceptance, not a new independently reviewed trace.
 - **OWASP notes for later slides:** Tool misuse and output validation; least privilege and user-bound authority; memory/context poisoning; trust in MCP servers and other agents; human approval for consequential actions; execution budgets; prompts are not secret storage. General cloud/infrastructure security remains outside scope.
 - **Removed from this lesson:** The memory-permission walkthrough and any proposed read-by-ID tool. Existing ownership tests remain memory-chapter evidence; no new authorization feature is needed solely for this course lesson.
 - **References:** [OWASP course map](../app/docs/OWASP-SECURITY-MAP.md), [support results](../app/results/security-support-ui-2026-10-07/REPORT.md), [gateway input audit](../app/results/gateway-input-audit-2026-10-07/REPORT.md), [historical boundary/marker report](../app/results/security-boundaries-2026-10-07/REPORT.md). These are bounded examples, not full OWASP coverage.
-- **Pending:** User reports validating the revised lantern comparison on October 7; bounded security lab accepted. No fresh trace export was reviewed in this acceptance update. After required experiments and outline finalization, create slides, speaker notes and homework, refine recording demos, then record.
+- **Current teaching package:** Sixteen-slide review draft, embedded/exported numbered notes, four-case instructor guide, learner worksheet and separate solutions prepared October 13. Architecture/implementation and prevention/detection/response are each consolidated. Historical security lab acceptance remains user-reported; no new paid security run was made during authoring. Owner rehearsal and recording remain.
 
 #### Supporting experiment evidence and historical results
 
