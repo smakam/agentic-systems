@@ -9,6 +9,8 @@ This package separates three grading methods and two integration paths:
 
 The learner exercises make no model API calls. Candidate answers and golden references are supplied. Instructor live Claude judging is paid and requires an explicit flag. Preparing the package generated the five structured answers once, outside learner execution.
 
+The learner `fixtures/` folder contains only `human-worksheet.json` and `structured-three.json`. Script reference data and earlier templates are kept in `preparation/fixtures/`.
+
 Read [the exercise](exercise.md) and keep [the solutions](solutions/README.md) separate until the learner finishes.
 
 ## Optional preparation scripts

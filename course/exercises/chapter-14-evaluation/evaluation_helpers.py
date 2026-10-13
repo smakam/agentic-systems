@@ -4,7 +4,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 LABELS = {0: 'incorrect', 1: 'partial', 2: 'correct'}
 def load_cases(name, expected_count=5):
-    data = json.loads((ROOT / 'fixtures' / name).read_text())
+    path = ROOT / 'fixtures' / name
+    if not path.exists():
+        path = ROOT / 'preparation' / 'fixtures' / name
+    data = json.loads(path.read_text())
     cases = data['cases']
     ids = [c['case_id'] for c in cases]
     if len(ids) != expected_count or len(set(ids)) != expected_count:
