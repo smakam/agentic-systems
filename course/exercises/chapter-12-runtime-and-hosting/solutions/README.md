@@ -1,6 +1,6 @@
 # Runtime and Hosting — reference answers
 
-This solution mirrors the deployment walkthrough: six local questions followed by six cloud questions. It describes the **standard local test marketplace** and the **full Google Cloud marketplace**. Verify your actual configuration; the table’s source values are not fresh live-service observations.
+This solution mirrors the deployment walkthrough: six local questions followed by six optional cloud questions. It describes the **standard local test marketplace** and the **full Google Cloud marketplace**. Verify your actual configuration; the table’s source values are not fresh live-service observations.
 
 ## Part 1 — local deployment
 
@@ -15,7 +15,9 @@ This solution mirrors the deployment walkthrough: six local questions followed b
 
 Local diagram: browser/test frontend → chat API + OpenAI Agents SDK in test backend → stdio MCP subprocess/tool handlers → `market_test`; the SDK separately calls LiteLLM → configured external model. Add an application persistence connection to PostgreSQL for history, runs and evidence.
 
-## Part 2 — full cloud deployment
+## Part 2 — full cloud deployment (optional)
+
+Use these reference answers only if you completed the cloud section using your existing cloud deployment. Learners without a deployment can skip this section.
 
 | Question | Reference answer | Evidence to inspect |
 |---|---|---|
@@ -34,7 +36,7 @@ Cloud diagram: browser → web service (chat backend + SDK) → HTTP MCP service
 - **Configured:** specified by source or example configuration, without checking a running deployment.
 - **Unavailable:** you have no deployment or access to the particular live setting. State that limitation explicitly.
 
-No cloud deployment is required to complete the source-based cloud comparison. The worksheet does not require a tunnel, the historical port-5192 UI, a fresh model call or a database reset. Live diagrams should match the learner’s selected configuration, not blindly copy these source defaults.
+No cloud deployment is required for the worksheet; learners without one complete the local section only. Source configuration may help explain a deployed setting, but does not replace the optional section’s deployment prerequisite. The worksheet does not require a tunnel, the historical port-5192 UI, a fresh model call or a database reset. Live diagrams should match the learner’s selected configuration, not blindly copy these source defaults.
 
 For infrastructure behavior, see [Cloud Run configuration](https://docs.cloud.google.com/run/docs/configuring) and [container runtime contract](https://docs.cloud.google.com/run/docs/container-contract). Compare optional agent-platform features in the later **Agentic Platforms** section.
 
