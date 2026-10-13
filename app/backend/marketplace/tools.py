@@ -6,7 +6,7 @@ from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
 import sqlglot
 from sqlglot import exp
-from openai import AsyncOpenAI
+from openai import AsyncOpenAI, DefaultAsyncHttpxClient
 from .seed import DATA
 
 TABLES={'sellers','products','listings','orders','order_items','payments','shipments','allocations','payouts','returns','refunds','events','tickets','incidents','customers','freshness','seller_balances'}
@@ -37,14 +37,16 @@ def client(*, judge=False):
     from .gateway_identity import current_key
     key=os.getenv("JUDGE_GATEWAY_KEY") if judge else current_key()
     if not key: raise RuntimeError("Gateway virtual key missing; run scripts/start.sh")
+    from .gateway_cost import record_gateway_cost
+    http_options={'event_hooks': {'response': [record_gateway_cost]}}
     options={}
     audience=os.getenv('GATEWAY_IAM_AUDIENCE')
     # Scale-to-zero gateways need time for container and dependency startup.
     timeout=float(os.getenv('GATEWAY_REQUEST_TIMEOUT_SECONDS', '120' if audience else '40'))
     if audience:
-        import httpx
         from .cloud_auth import CloudRunAuth
-        options['http_client']=httpx.AsyncClient(auth=CloudRunAuth(audience),timeout=timeout)
+        http_options['auth']=CloudRunAuth(audience)
+    options['http_client']=DefaultAsyncHttpxClient(timeout=timeout,**http_options)
     return AsyncOpenAI(base_url=os.getenv('LITELLM_URL','http://localhost:4000/v1'),api_key=key,max_retries=0,timeout=timeout,**options)
 
 class ReadContext:
