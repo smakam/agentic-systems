@@ -37,3 +37,5 @@
 .answer-feedback button[aria-pressed="true"]{background:#e0eee6;border-color:#36765b}
 
 .answer-table{overflow-x:auto;margin:16px 0;border:1px solid #e0e5dc;border-radius:8px}.answer-table table{display:table;width:100%;font-size:13px}.answer-table th{font-size:12px;background:#f3f6ef;color:#385238;vertical-align:top}.answer-table td{white-space:normal;vertical-align:top;padding:12px;overflow-wrap:anywhere}.answer-table th{padding:12px}.answer .citation{white-space:normal}.answer li{margin:.35em 0}
+
+.run-metrics .routing-result{flex-basis:100%;font-size:14px;line-height:1.5;padding:8px 10px;background:#eaf1e9;color:#193d39;border-left:3px solid #557864;}
