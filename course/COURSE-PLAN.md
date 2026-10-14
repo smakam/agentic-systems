@@ -549,20 +549,14 @@ Every lesson in this part is an experiment: a hypothesis, one change, the same e
 
 ### 16. Model routing
 
-**Draft learner practice — for review, not finalized:**
+**Prepared learner observation lab — October 14, 2026; owner review in progress.**
 
-- **Exercise:** Compare a fixed-model baseline with one routing policy on a small shared question set.
-- **Solution to prepare:** Routing configuration and quality/cost/latency comparison including classifier overhead, available teaching models and experimental limits.
-- **Learning objective:** Measure a classifier and routing scope against fixed-model baselines.
-- **Lab and result:** Change a routing configuration, run a bounded comparison and explain quality/cost trade-offs and uncertainty.
-- **Covers:**
-  - choosing a classifier: keyword rules, semantic matching, an LLM classifier, managed routers
-  - choosing the scope: route once per session vs per question
-- **Results to show:** the LLM classifier gets 88.9% fully correct at about 45% below always-GPT-5. A managed router picked the cheap model every time and got 50%. The live session results are included.
-- **Status:** measured and published.
-  - [Part 1: Choosing a Classifier](https://sreeni.blog/2026/09/30/model-routing-part-1-choosing-a-classifier/)
-  - [Part 2: Choosing the Scope](https://sreeni.blog/2026/09/30/model-routing-part-2-choosing-the-scope/)
-- **Before recording:** verify teaching model availability. The owner classified the current routing/cache refresh as low priority on October 8; revisit it during Model Routing chapter preparation, not as a blocker for overall experiment completion. Published numbers remain historical.
+- **Exercise:** Follow the [exact selections, questions and observation tables](exercises/chapter-16-model-routing/exercise.md). Compare keyword rules, native heuristic v2 and LLM classification at question scope, then compare conversation/question scope using the same LLM classifier. Learner questions differ from the instructor demo.
+- **Separate solution:** [Reference answers](exercises/chapter-16-model-routing/solutions/reference-answers.md) explain recorded fields, expected seeded facts, decision reuse and interpretation limits.
+- **Learning objective:** Understand model pools, classification and scope; verify decisions in Langfuse and check answer evidence separately.
+- **Instructor demo:** [Native gateway walkthrough](exercises/chapter-16-model-routing/instructor-demo.md); the application selects a prepared route, while LiteLLM classifies and selects the answer model.
+- **Historical results:** The eighteen-case saved-answer study compares correctness and estimated cost. The six-conversation live study compares scope policies. These small studies illustrate methodology, not a general ranking. Keep them separate from the current native demo.
+- **References:** [Classifier study](https://sreeni.blog/2026/09/30/model-routing-part-1-choosing-a-classifier/) and [scope study](https://sreeni.blog/2026/09/30/model-routing-part-2-choosing-the-scope/).
 
 #### Progress and evidence — October 1, 2026
 
