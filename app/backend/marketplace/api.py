@@ -187,6 +187,15 @@ class Question(BaseModel):
     marker_mode:str="off"
     loop_mode:Literal['normal','tool_error','turn_limit']='normal'
     routing_policy:str='off'
+    design_mode:Literal['off','single','review']='off'
+    generator_model:Literal['nano','gpt54']='nano'
+    reviewer_model:Literal['nano','gpt54']='gpt54'
+
+@app.get('/api/agent-design-demo')
+def agent_design_demo_options(user=Depends(identity)):
+    role(user, 'support', 'operator')
+    from .agent_design_demo import enabled, MODELS
+    return {'enabled': enabled(), 'models': MODELS if enabled() else {}}
 
 @app.get('/api/routing-demo')
 def routing_demo_options(user=Depends(identity)):
@@ -214,6 +223,11 @@ async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session
     from .routing_demo import validate as validate_routing, configuration as routing_configuration, capture_calls
     try: validate_routing(body.routing_policy, runtime)
     except ValueError as exc: raise HTTPException(403, str(exc))
+    from .agent_design_demo import validate as validate_design, configuration as design_configuration
+    try: validate_design(body.design_mode, body.generator_model, body.reviewer_model, runtime)
+    except ValueError as exc: raise HTTPException(403, str(exc))
+    if body.design_mode != 'off' and (body.routing_policy != 'off' or body.memory_enabled or body.memory_write or body.loop_mode != 'normal' or body.marker_mode != 'off' or body.suppress_catalog or body.suppress_documents or body.guardrail != 'off' or not body.source_authority):
+        raise HTTPException(400, 'Agent design demo requires routing off, memory off, clean context, source authority on, guardrail off and normal loop mode')
     from .loop_lab import validate as validate_loop, enabled as loop_enabled
     try: validate_loop(body.loop_mode,runtime)
     except ValueError as exc: raise HTTPException(403,str(exc))
@@ -237,6 +251,11 @@ async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session
             prior = db.scalars(select(Run).where(Run.conversation_id == cid).order_by(Run.created_at)).first()
             if prior and (prior.metrics or {}).get('routing', {}).get('policy', 'off') != body.routing_policy:
                 raise HTTPException(400, 'Start a fresh conversation before changing the routing policy')
+            if prior:
+                old=(prior.metrics or {}).get('workflow', {})
+                expected={'mode':body.design_mode,'generator':body.generator_model,'reviewer':body.reviewer_model}
+                if old.get('mode','off') != body.design_mode or (body.design_mode != 'off' and any(old.get(k) != v for k,v in expected.items())):
+                    raise HTTPException(400, 'Start a fresh conversation before changing agent design settings')
             if is_test() and runtime=='sdk':
                 corpus_locked=lock.execute(text('SELECT pg_try_advisory_lock_shared(hashtext(:key))'),{'key':LOCK}).scalar()
                 if not corpus_locked: raise HTTPException(409,'A document fixture is changing; wait and retry')
@@ -247,7 +266,7 @@ async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session
             if hosting_client.enabled():
                 try:
                     hosting_client.validate()
-                    if body.memory_enabled or body.memory_write or body.guardrail != 'off' or body.loop_mode != 'normal' or body.marker_mode != 'off' or body.suppress_catalog or body.suppress_documents:
+                    if body.design_mode != 'off' or body.memory_enabled or body.memory_write or body.guardrail != 'off' or body.loop_mode != 'normal' or body.marker_mode != 'off' or body.suppress_catalog or body.suppress_documents:
                         raise ValueError('Chapter 12 remote agent uses memory off, guardrail off and normal mode')
                     return await hosting_client.answer(cid,body.question)
                 except ValueError as exc:
@@ -261,7 +280,11 @@ async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session
             if route_config:
                 if lab_config: raise HTTPException(400, 'Routing and loop-lab comparisons require separate conversations')
                 lab_config = route_config
-            key_context = for_key(os.environ['EVAL_GATEWAY_KEY']) if route_config else for_role(user.role)
+            design_config = design_configuration(body.design_mode, body.generator_model, body.reviewer_model)
+            if design_config:
+                if lab_config: raise HTTPException(400, 'Agent design and other lab comparisons require separate conversations')
+                lab_config = design_config
+            key_context = for_key(os.environ['EVAL_GATEWAY_KEY']) if (route_config or design_config) else for_role(user.role)
             with key_context, capture_calls():
                 return await answer(cid,body.question,evaluation_config=lab_config,memory_enabled=body.memory_enabled,memory_write=body.memory_write,guardrail=body.guardrail,source_authority=body.source_authority,marker_mode=body.marker_mode,suppress_catalog=body.suppress_catalog,suppress_documents=body.suppress_documents)
         finally:

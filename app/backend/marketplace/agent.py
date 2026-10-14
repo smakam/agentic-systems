@@ -215,7 +215,7 @@ For counts and aggregates, lead with the count and state the actual date range u
             'metadata': {'session_id': route['session_id'], 'marketplace_routing_policy': route['policy'],
                          'marketplace_routing_classifier': route.get('classifier'), 'marketplace_routing_scope': route.get('scope')},
         }
-    status='completed'; final=''; metrics={}; order_ids=[]; history=[]
+    status='completed'; final=''; metrics={}; order_ids=[]; history=[]; workflow_state={}
     try:
         if memory_start_error is not None:
             raise RuntimeError('Local memory MCP initialization failed') from memory_start_error
@@ -241,10 +241,15 @@ For counts and aggregates, lead with the count and state the actual date range u
             if not memory_only and order_ids and re.search(r'\b(history|timeline|attempts?|retr(?:y|ies|ied))\b',question,re.I):
                 history=[await ctx.order_history(order_id) if server else ctx.order_history(order_id) for order_id in order_ids[:3]]
 
-            result=await asyncio.wait_for(Runner.run(agent,build_question_input(question,{**ctx.snapshot,'document_revision':ctx.doc_hash},history),session=DatabaseSession(conversation_id),max_turns=1 if config.get('loop_mode')=='turn_limit' else MAX_TURNS,hooks=hooks),timeout=MAX_SECONDS)
-            final=str(result.final_output)
-            usage=result.context_wrapper.usage
-            metrics={'requests':usage.requests,'input_tokens':usage.input_tokens,'output_tokens':usage.output_tokens,'total_tokens':usage.total_tokens,'model':config.get('model',os.getenv('OPENAI_MODEL','gpt-5-nano')),'price_status':'uncached list-rate estimate, excludes embeddings; not an invoice','estimated_model_cost_usd':round(hooks.cost,8)}
+            question_input=build_question_input(question,{**ctx.snapshot,'document_revision':ctx.doc_hash},history)
+            if config.get('workflow'):
+                from .agent_design_demo import execute
+                final=await execute(agent,question_input,DatabaseSession(conversation_id),ctx,server,api,hooks,lf,observation,
+                    config['workflow'],workflow_state,MAX_TURNS,MAX_SECONDS)
+            else:
+                result=await asyncio.wait_for(Runner.run(agent,question_input,session=DatabaseSession(conversation_id),max_turns=1 if config.get('loop_mode')=='turn_limit' else MAX_TURNS,hooks=hooks),timeout=MAX_SECONDS)
+                final=str(result.final_output)
+            metrics={'requests':hooks.requests,'input_tokens':hooks.input_tokens,'output_tokens':hooks.output_tokens,'total_tokens':hooks.input_tokens+hooks.output_tokens,'model':config.get('model',os.getenv('OPENAI_MODEL','gpt-5-nano')),'price_status':'uncached list-rate estimate, excludes embeddings; not an invoice','estimated_model_cost_usd':round(hooks.cost,8)}
             if observation:
                 observation.update(output=final)
                 metrics['trace_id']=observation.trace_id
@@ -270,6 +275,10 @@ For counts and aggregates, lead with the count and state the actual date range u
         logging.getLogger(__name__).warning('Agent run failed (%s): %s',type(e).__name__,str(e)[:400])
         metrics.update(error_type=type(e).__name__,usage_status='Incomplete app usage on failed run; inspect Langfuse model spans for billed attempts')
     finally:
+        if config.get('workflow'):
+            workflow_state['status']=status
+            metrics['workflow']=workflow_state
+            metrics['price_status']=workflow_state.get('cost_basis')
         if status!='completed':metrics.setdefault('usage_status','Reported completed-call usage only; failed or interrupted API calls may incur unreported charges')
         if config.get('routing'):
             from .routing_demo import observed_calls

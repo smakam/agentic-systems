@@ -571,18 +571,16 @@ Every lesson in this part is an experiment: a hypothesis, one change, the same e
 
 ### 17. Agent Design Patterns
 
-**Draft learner practice — for review, not finalized:**
+**Learner practice — owner review:**
 
-- **Exercise:** Run the same investigation through single-agent and coordinator/worker designs with equal total budgets.
-- **Solution to prepare:** Configurations, traces and a comparison of correctness, evidence, calls, cost and latency; explain where delegation helped or added overhead.
-- **Learning objective:** Compare workflow, single-agent and multi-agent designs on the same task.
-- **Lab and result:** Compare single-agent tool scheduling with coordinator/worker delegation, then inspect the nano → GPT-5.4 review → nano correction workflow. Compare correctness, evidence, calls, cost and latency with explicit experimental boundaries.
-- **Covers:**
-  - a fixed workflow as the comparator
-  - a single agent
-  - a coordinator with specialist agents on deep investigations
-  - equal total budgets and how discoveries are shared between agents
-- **Status:** Bounded single-agent serial/parallel, coordinator/worker and evaluator–optimizer comparisons completed; later patterns remain pending. Required for v1.
+- **Learning objective:** Choose workflow, single-agent or hybrid control; justify extra agent roles through independent work, distinct context/capability or system boundaries.
+- **Covers:** Workflow chaining, routing and parallel steps; coordinator/workers, handoffs and generator/evaluator roles; A2A communication between independent systems. Use examples before the marketplace experiments.
+- **Historical evidence:** The proposed records/policy-agent split was not tested because this task retained serial dependencies. The seller-agent study added overhead without a measured quality advantage. Stronger review improved Nano on the small saved-draft study; it did not match GPT-5.4-alone correctness. These are separate, bounded experiments.
+- **Instructor demo:** A live hybrid multi-agent workflow in the Test workspace: choose Nano or GPT-5.4 generator/reviewer; inspect draft, evidence handoff, structured review, application decision and optional one correction in one Langfuse trace. Generator-only supplies a fixed-generator baseline. The goal is interaction and debugging, not proving a model ranking.
+- **Exercise:** Follow explicit settings and questions; compare generator-only, Nano review and GPT-5.4 review, then inspect a conversation follow-up. Document stage inputs/outputs, evidence, branch, remaining uncertainty and trace links. Reviewers have no tools; generation and correction have read-only tools. Fresh runs may vary.
+- **Solutions:** Separate reference interpretations and current-evidence checks; no mandatory correction branch or fixed answer text.
+- **Materials:** [Instructor guide](exercises/chapter-17-agent-design-patterns/instructor-demo.md), [learner exercise](exercises/chapter-17-agent-design-patterns/exercise.md), [solutions](exercises/chapter-17-agent-design-patterns/solutions/reference-answers.md), [verification](exercises/chapter-17-agent-design-patterns/verification.md).
+- **Current status — October 14, 2026:** Live accepted and corrected paths verified; generator-only, alternate generator/reviewer combination and two-question follow-up completed. Controller tests, routing regression checks and frontend build passed. The recorded correction remained incomplete on delivery evidence; flow completion is not a business-correctness grade. Owner walkthrough remains.
 
 #### Progress and evidence — October 1, 2026
 
