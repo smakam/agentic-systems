@@ -72,7 +72,7 @@ After every meaningful milestone, in the same documentation update:
 | D — Observability, Evaluation and Security | 14 | Evaluation |
 | D — Observability, Evaluation and Security | 15 | Guardrails and Agent Security |
 | E — Advanced Agent Topics | 16 | Model Routing |
-| E — Advanced Agent Topics | 17 | Workflow vs Single Agent vs Multi-Agent |
+| E — Advanced Agent Topics | 17 | Agent Design Patterns |
 | E — Advanced Agent Topics | 18 | Short-Term and Long-Term Memory |
 | F — Agentic Platforms | 19 | Google Gemini Enterprise Agent Platform |
 | F — Agentic Platforms | 20 | Lyzr Agent Studio |
@@ -569,7 +569,7 @@ Every lesson in this part is an experiment: a hypothesis, one change, the same e
 
 **Learner exercise update — October 14, 2026:** The [numbered observation lab](exercises/chapter-16-model-routing/exercise.md) gives six exact classifier cases using keyword rules, native heuristic v2 and an LLM classifier at question scope, then two scope cases with the same LLM classifier. Learners record answers, evidence and routing metadata in the supplied tables. Questions differ from the instructor demo. [Separate solutions](exercises/chapter-16-model-routing/solutions/reference-answers.md). The native heuristic-v2 profile uses the bundled trained artifact, not the historical default heuristic. Obsolete alternative exercise proposals are replaced.
 
-### 17. Workflow vs single agent vs multi-agent
+### 17. Agent Design Patterns
 
 **Draft learner practice — for review, not finalized:**
 
