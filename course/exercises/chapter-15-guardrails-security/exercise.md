@@ -1,5 +1,9 @@
 # Chapter 15 — Learner exercise
 
+## Workspace for this activity
+
+Use the [Test workspace](http://127.0.0.1:5179), **Support workspace**, with the disposable **market_test** database. Inspect traces in [local Langfuse](http://localhost:3000), project **marketplace-support**. The normal marketplace on port 5178 is not the workspace for these security cases.
+
 Compare four existing UI security controls and explain their enforcement boundaries. Use synthetic data and the isolated test workspace. Keep the separate solutions closed until you finish.
 
 ## Before starting

@@ -1,5 +1,9 @@
 # Chapter 17: Agent Design Patterns — learner exercise
 
+## Workspace for this activity
+
+Use the [Test workspace](http://127.0.0.1:5179), **Support workspace**, with the disposable **market_test** database. Inspect agent-role handoffs in [local Langfuse](http://localhost:3000), project **marketplace-support**. Select **Agent design demo** in this workspace, rather than the normal marketplace on port 5178.
+
 ## What you will do and submit
 
 Run a small observation lab in the Test workspace. Select the supplied settings, enter the exact questions, inspect the agent-role handoffs in the UI and Langfuse, and fill in the tables below. Submit the tables and four short observations. No code, JSON upload or benchmark report is required.
@@ -57,4 +61,4 @@ Write one or two sentences for each:
 
 A correction is not mandatory for completing this exercise. If every draft was accepted, inspect the recorded correction example in the instructor guide and clearly label that row as recorded. A completed correction may still leave missing facts or incorrect reasoning.
 
-Finish by selecting **Off · normal support** and starting a fresh conversation. Compare your explanations with the separate [reference answers](solutions/reference-answers.md) after completing the lab.
+Finish by selecting **Off · normal support** and starting a fresh conversation. Compare your explanations with the separate [reference answers](solutions/answers.md) after completing the lab.

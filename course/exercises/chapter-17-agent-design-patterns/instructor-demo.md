@@ -1,5 +1,9 @@
 # Chapter 17: Agent Design Patterns — instructor demo
 
+## Workspace for this activity
+
+Use the [Test workspace](http://127.0.0.1:5179), **Support workspace**, with the disposable **market_test** database. Inspect agent-role handoffs in [local Langfuse](http://localhost:3000), project **marketplace-support**. Select **Agent design demo** in this workspace, rather than the normal marketplace on port 5178.
+
 ## Goal
 
 Show how a hybrid multi-agent workflow passes information between generator, reviewer and correction roles, and how to debug those stages in Langfuse. This is an interaction walkthrough, not a benchmark or proof that review improves every answer.

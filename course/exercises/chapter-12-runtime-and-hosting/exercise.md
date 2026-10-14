@@ -63,4 +63,4 @@ You do not need a fresh model call. If you choose to inspect a fresh local trace
 
 Complete six evidence-backed local answers and one local diagram. If you have a cloud deployment, optionally add six cloud answers and a cloud diagram. Clearly distinguish live observations from intended source configuration. The worksheet makes no business-data changes and needs no reset, cloud cleanup or code restoration. If you started services for inspection, follow the normal setup guide’s stop/resume instructions and preserve data.
 
-Compare your work with the [reference answers](solutions/README.md) after completing the walkthrough.
+Compare your work with the [reference answers](solutions/answers.md) after completing the walkthrough.

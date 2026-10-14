@@ -1,5 +1,9 @@
 # Chapter 14 — Instructor demo walkthrough
 
+## Workspace for this activity
+
+Use [local Langfuse](http://localhost:3000), project **marketplace-support**, and the supplied answer fixtures. No marketplace UI or business database is required for this activity. Run the documented import commands from the application repository root; keep the configured Langfuse worker and dispatcher running.
+
 This is a walkthrough of recorded results. Do not run scripts or make model calls during the demonstration. The scripts remain available separately for preparation and learner uploads.
 
 ## Langfuse navigation

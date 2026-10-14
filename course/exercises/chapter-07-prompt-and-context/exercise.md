@@ -64,6 +64,6 @@ The earlier saved full/reduced/restored catalog experiment removed selected fiel
 
 Record missing context, actual tool calls, SQL, answer differences and citations. Report observed results without requiring removal to cause a wrong answer. For a fresh run, amounts and eligibility depend on current records and demo time.
 
-See [the reference solution](solutions/README.md). The [historical comparison note](supplied-trace.md) describes a different earlier experiment and is not a prerequisite for the current UI exercise.
+See [the reference solution](solutions/answers.md). The [historical comparison note](supplied-trace.md) describes a different earlier experiment and is not a prerequisite for the current UI exercise.
 
 Observed rehearsal outcome: empty-success catalog data led to attempted SQL and a turn-limit stop. Empty-success policy passages led to a qualified answer declining to confirm the policy. Treat your own run as an observation, not a guaranteed repeat.

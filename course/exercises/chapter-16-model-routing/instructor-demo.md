@@ -1,5 +1,9 @@
 # Chapter 16 — Native model routing instructor demo
 
+## Workspace for this activity
+
+Use the [Test workspace](http://127.0.0.1:5179), **Support workspace**, with the disposable **market_test** database. Inspect routing evidence in [local Langfuse](http://localhost:3000), project **marketplace-support**. The normal marketplace on port 5178 does not provide these prepared lab controls.
+
 Use the **test workspace**, [127.0.0.1:5179](http://127.0.0.1:5179/), database `market_test`. The normal workspace at port 5178 is a separate application. These cases use freshly generated answers and incur provider charges. They are a routing demonstration, not a new benchmark.
 
 ## Preparation

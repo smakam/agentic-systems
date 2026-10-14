@@ -1,5 +1,9 @@
 # Chapter 14 — Learner exercise
 
+## Workspace for this activity
+
+Use [local Langfuse](http://localhost:3000), project **marketplace-support**, and the supplied answer fixtures. No marketplace UI or business database is required for this activity. Run the documented import commands from the application repository root; keep the configured Langfuse worker and dispatcher running.
+
 Two tasks: human-grade five supplied answers, then use Langfuse's native code evaluator on three structured answers. All questions, candidate answers and golden references are provided. No model calls are required.
 
 ## Before starting

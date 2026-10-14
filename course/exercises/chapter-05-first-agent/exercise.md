@@ -77,4 +77,4 @@ The business math reconciles; early release is rejected; later release is manual
 
 Stop/resume normally to preserve your work. Restore only the test practice seed when the next attempt needs it, following the cleanup guidance above. Langfuse traces are not erased by those marketplace resets. Do not commit credentials or include them in recorded results.
 
-Try the exercise before opening the [worked solution](solutions/README.md).
+Try the exercise before opening the [worked solution](solutions/answers.md).

@@ -1,5 +1,9 @@
 # Chapter 11 — The Agent Loop with OpenAI Agents SDK
 
+## Workspace for this activity
+
+Use the dedicated [Agent Loop lab](http://localhost:5181), **Support workspace**, with the disposable **ch11_loop_lab** database. This activity does not use the general Test workspace on port 5179. Inspect traces in [local Langfuse](http://localhost:3000), project **marketplace-support**.
+
 ## Goal and starting point
 
 Understand how the runtime alternates model calls and tool execution. Repeat the three UI demos, then implement the orchestration yourself without the Agents SDK runner. Use the supplied OpenAI client and native MCP adapters; the marketplace server continues to enforce read-only SQL.

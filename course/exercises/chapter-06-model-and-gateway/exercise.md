@@ -135,4 +135,4 @@ This stops only the named Chapter Six lab services and removes its temporary cre
 
 ## Reference solution
 
-See [`solutions/README.md`](solutions/README.md). The solution describes the expected checks; model-generated wording and measured cost/latency can vary, so use the supplied facts and captured telemetry rather than a memorized answer.
+See [`solutions/answers.md`](solutions/answers.md). The solution describes the expected checks; model-generated wording and measured cost/latency can vary, so use the supplied facts and captured telemetry rather than a memorized answer.

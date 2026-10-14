@@ -6,7 +6,7 @@ The package reuses four existing Security demo cases: built-in input privacy, ou
 - [Learner exercise](exercise.md): repeat the comparisons and inspect their boundaries.
 - [Worksheet](worksheet.md): record settings, outcomes, enforcement stage and evidence.
 - [Recorded evidence](recorded-evidence.md): supplied results and limits, with source hashes.
-- [Separate solutions](solutions/README.md): review after completing the exercise.
+- [Separate solutions](solutions/answers.md): review after completing the exercise.
 
 Use the existing isolated test Support workspace and local Langfuse. Presidio/Lakera prerequisites are in the [existing setup guide](../../../app/docs/GUARDRAILS-MANUAL.md). No new detector integration or script is required. Live rehearsal can incur model and hosted-screening usage charges; saved evidence is labelled separately. This package was authored from existing code/reports; no new security runs were performed during this revision. Owner rehearsal remains.
 

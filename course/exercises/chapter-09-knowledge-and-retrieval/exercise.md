@@ -71,4 +71,4 @@ docker compose -f app/compose.yaml exec -T postgres psql -U postgres -d postgres
 
 ## Solution and status
 
-See [worked solution](solutions/README.md) and [measured results](solutions/results-2026-10-10.json). Reference execution was validated October 10, 2026. Instructor's full application-demo rehearsal and learner walkthrough remain separate checks.
+See [worked solution](solutions/answers.md) and [measured results](solutions/results-2026-10-10.json). Reference execution was validated October 10, 2026. Instructor's full application-demo rehearsal and learner walkthrough remain separate checks.

@@ -11,7 +11,7 @@ The learner exercises make no model API calls. Candidate answers and golden refe
 
 The learner `fixtures/` folder contains only `human-worksheet.json` and `structured-three.json`. Script reference data is kept in `preparation/fixtures/`. Earlier unneeded import records and the unused review template are preserved separately in `course/evaluation/chapter-14-preparation-history/`.
 
-Read [the exercise](exercise.md) and keep [the solutions](solutions/README.md) separate until the learner finishes.
+Read [the exercise](exercise.md) and keep [the solutions](solutions/answers.md) separate until the learner finishes.
 
 ## Optional preparation scripts
 

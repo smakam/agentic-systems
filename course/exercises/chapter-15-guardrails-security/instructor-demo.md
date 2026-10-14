@@ -1,5 +1,9 @@
 # Chapter 15 — Instructor demo
 
+## Workspace for this activity
+
+Use the [Test workspace](http://127.0.0.1:5179), **Support workspace**, with the disposable **market_test** database. Inspect traces in [local Langfuse](http://localhost:3000), project **marketplace-support**. The normal marketplace on port 5178 is not the workspace for these security cases.
+
 Use four existing Security demo comparisons. For each case, show the selected setting, run the supplied question in fresh chats, and inspect the trace. No new detector integration is required. Model calls and hosted screening may incur usage charges when you rehearse; this document does not claim a fresh run was performed.
 
 ## Prepare once

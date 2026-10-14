@@ -78,4 +78,4 @@ Connect it alongside the marketplace server through a second stdio connection. A
 
 ## Cleanup and reference solution
 
-Stop the tracking process, remove disposable memory records, and restore the original lab configuration. Keep credentials out of recorded results. See [the worked solution](solutions/README.md) and its supplied fixture/server.
+Stop the tracking process, remove disposable memory records, and restore the original lab configuration. Keep credentials out of recorded results. See [the worked solution](solutions/answers.md) and its supplied fixture/server.

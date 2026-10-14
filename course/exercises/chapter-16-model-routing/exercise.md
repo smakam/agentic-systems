@@ -1,5 +1,9 @@
 # Chapter 16 — Model routing learner exercise
 
+## Workspace for this activity
+
+Use the [Test workspace](http://127.0.0.1:5179), **Support workspace**, with the disposable **market_test** database. Inspect routing evidence in [local Langfuse](http://localhost:3000), project **marketplace-support**. The normal marketplace on port 5178 does not provide these prepared lab controls.
+
 Use the test UI to understand how classifiers select a model and how scope controls when that choice is made. Ask the supplied questions, inspect Langfuse, and document what actually happened. A route selection and a correct answer are separate observations.
 
 ## Before you begin
@@ -119,5 +123,5 @@ Select **Mode → Normal support model** to start a fresh ordinary conversation.
 ## References
 
 - [Instructor demo and setup](instructor-demo.md)
-- [Separate reference answers](solutions/reference-answers.md) — read after completing the exercise
+- [Separate reference answers](solutions/answers.md) — read after completing the exercise
 - Optional historical context: [18 classifier cases](evidence/eighteen-classifier-cases.md) and [six scope conversations](evidence/six-scope-conversations.md). These are dated studies, not expected outputs for this live exercise.
