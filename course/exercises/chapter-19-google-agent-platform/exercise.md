@@ -12,7 +12,7 @@ The remainder is an adventurous extension. It connects a cloud chat application 
 
 ## Environment and starting point
 
-Use your **own Google Cloud project and separately identified lab resources** for provisioning. Follow [app/CLOUD-SETUP.md](../../../app/CLOUD-SETUP.md) for the Cloud Run marketplace, business MCP and Cloud SQL stack, then [GOOGLE-PLATFORM-WALKTHROUGH.md](../../GOOGLE-PLATFORM-WALKTHROUGH.md) for the managed ADK agent, identity and cloud MCP profile. These guides contain the commands; this exercise does not duplicate their deployment sequence.
+Use your **own Google Cloud project and separately identified lab resources** for provisioning. Follow [app/CLOUD-SETUP.md](../../../app/CLOUD-SETUP.md) for the Cloud Run marketplace, business MCP and Cloud SQL stack, then [GOOGLE-PLATFORM-PLAN.md](../../GOOGLE-PLATFORM-PLAN.md) for the managed ADK agent, identity and cloud MCP profile. These guides contain the commands; this exercise does not duplicate their deployment sequence.
 
 The current instructor deployment has verified cloud acceptance. The cloud setup sequence has not yet been rehearsed from scratch in a fresh learner project. Treat that as a stated preparation limit and record any adaptation you make. Costs depend on enabled resources, model calls and usage; consult current billing categories. Keep credentials in private environment/Secret Manager configuration and out of screenshots, prompts and submitted work.
 

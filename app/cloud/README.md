@@ -91,7 +91,7 @@ Small shared-core PostgreSQL kept running: planning allowance about US$30–40/m
 ## Remaining follow-up
 
 1. Rehearse the corrected setup scripts in a fresh project; publish the learner repository and validate a clean local installation.
-2. Hosted Google ADK reconnection passed October 8: the existing runtime uses the cloud MCP profile, deployed metadata matches the URL/secret pair, and a fresh cited payout investigation completed. See the [Google walkthrough](../../course/GOOGLE-PLATFORM-WALKTHROUGH.md#switch-between-local-and-cloud-mcp-backends) for local/cloud switching. Lyzr reconnection remains to verify separately. Shared UI adapters remain a separate feature.
+2. Hosted Google ADK reconnection passed October 8: the existing runtime uses the cloud MCP profile, deployed metadata matches the URL/secret pair, and a fresh cited payout investigation completed. See the [Google walkthrough](../../course/GOOGLE-PLATFORM-PLAN.md#switch-between-local-and-cloud-mcp-backends) for local/cloud switching. Lyzr reconnection remains to verify separately. Shared UI adapters remain a separate feature.
 3. Forced replica/restart persistence checks and a broader Presidio cloud test remain additional acceptance work. The verified HTTP MCP check used separate requests, without forcing an instance change.
 4. Keep database start/stop and cleanup instructions aligned with Terraform. Do not stop PostgreSQL while the owner is testing the app.
 

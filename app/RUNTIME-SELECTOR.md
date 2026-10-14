@@ -24,7 +24,7 @@ Hosted agents use their configured MCP endpoint. Choosing Google or Lyzr from a 
 
 ## Optional Google marketplace integration
 
-This guide describes the existing verified marketplace integration, not a required setup for every Google lesson. The [proposed standalone Chapter 19 lab](../course/GOOGLE-PLATFORM-WALKTHROUGH.md#proposed-standalone-native-lab-under-discussion) would use native Playground with packaged synthetic data/function tools; it is not implemented. In the existing integration, the managed agent stays hosted whether its marketplace caller is local or cloud. Local ADC authenticates that caller; the agent's MCP profile independently selects its business endpoint and matching secret. `python deploy.py --backend local|cloud` updates a managed deployment, not a UI runtime choice. Preserve dated acceptance below and read back the actual deployed endpoint before a current demo.
+This guide describes the existing verified marketplace integration, not a required setup for every Google lesson. The [proposed standalone Chapter 19 lab](../course/GOOGLE-PLATFORM-PLAN.md#proposed-standalone-native-lab-under-discussion) would use native Playground with packaged synthetic data/function tools; it is not implemented. In the existing integration, the managed agent stays hosted whether its marketplace caller is local or cloud. Local ADC authenticates that caller; the agent's MCP profile independently selects its business endpoint and matching secret. `python deploy.py --backend local|cloud` updates a managed deployment, not a UI runtime choice. Preserve dated acceptance below and read back the actual deployed endpoint before a current demo.
 
 ## Configuration
 

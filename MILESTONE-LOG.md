@@ -1093,11 +1093,11 @@ Cloud Trace correlation and native Traces → Session view passed for all final 
 
 ## Google guide consolidation — October 8, 2026
 
-Consolidated the Google experiment plan, walkthrough, deployment/memory commands, validation results and dated setup history into [one Google platform guide](course/GOOGLE-PLATFORM-WALKTHROUGH.md). The former files retain short pointers for existing links. The course outline links to the combined guide; it explicitly distinguishes Playground from Cloud Shell, user IDs and per-question memory-off controls. No new cloud changes or model tests were needed for this documentation update.
+Consolidated the Google experiment plan, walkthrough, deployment/memory commands, validation results and dated setup history into [one Google platform guide](course/GOOGLE-PLATFORM-PLAN.md). The former files retain short pointers for existing links. The course outline links to the combined guide; it explicitly distinguishes Playground from Cloud Shell, user IDs and per-question memory-off controls. No new cloud changes or model tests were needed for this documentation update.
 
 ## Google manual acceptance — October 8, 2026
 
-The user confirmed completing the manual walkthrough for short-term memory, long-term memory and general business questions on October 8, 2026. This records user acceptance alongside the previously verified hosted tests and trace inspection; it is not a new automated run. The agreed Google experiment scope is closed. Slides, speaker notes, homework and recording preparation remain later work. [Combined guide](course/GOOGLE-PLATFORM-WALKTHROUGH.md).
+The user confirmed completing the manual walkthrough for short-term memory, long-term memory and general business questions on October 8, 2026. This records user acceptance alongside the previously verified hosted tests and trace inspection; it is not a new automated run. The agreed Google experiment scope is closed. Slides, speaker notes, homework and recording preparation remain later work. [Combined guide](course/GOOGLE-PLATFORM-PLAN.md).
 
 ## Udemy recording acceptance — October 8, 2026
 

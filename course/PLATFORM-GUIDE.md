@@ -94,7 +94,7 @@ Use the same business cases and evidence contract where possible. Disclose diffe
   - engineering effort
   - whether traces can be exported to Langfuse
   - lock-in
-- **Status:** Bounded hosted lab complete and manually accepted October 8: the user validated general questions and short-/long-term memory; hosted SQL/RAG, memory controls and native trace visibility passed. [Results and replay steps](GOOGLE-PLATFORM-WALKTHROUGH.md#verified-results). Wider benchmarking and recording materials remain later work.
+- **Status:** Bounded hosted lab complete and manually accepted October 8: the user validated general questions and short-/long-term memory; hosted SQL/RAG, memory controls and native trace visibility passed. [Results and replay steps](GOOGLE-PLATFORM-PLAN.md#verified-results). Wider benchmarking and recording materials remain later work.
 
 #### Progress and evidence — October 1, 2026
 

@@ -328,7 +328,7 @@ The user selected ADK on Google managed Agent Runtime, with native Sessions for 
 
 ### Current Google lab guide — October 8, 2026
 
-The hosted Google lab passed SQL/RAG, short-/long-term memory and native tracing checks. Use the [single Google walkthrough](../course/GOOGLE-PLATFORM-WALKTHROUGH.md) for architecture, setup, commands, user identities, demos and results. Earlier checkpoints above remain historical.
+The hosted Google lab passed SQL/RAG, short-/long-term memory and native tracing checks. Use the [single Google walkthrough](../course/GOOGLE-PLATFORM-PLAN.md) for architecture, setup, commands, user identities, demos and results. Earlier checkpoints above remain historical.
 
 **Manual acceptance — October 8, 2026:** The user validated general questions and short-/long-term memory. The agreed Google experiment phase is complete; course-production materials remain later work.
 
