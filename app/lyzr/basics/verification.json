@@ -202,9 +202,292 @@
     }
   ],
   "limits": [
-    "Native UI trace inspection pending",
-    "Cross-session extraction/recall not tested",
+    "Native UI trace inspection remains separate from API receipt",
+    "One bounded synthetic identity-isolation check, not a full permission audit",
     "Provider quota-error cause not isolated",
-    "Six bounded synthetic inference requests; no platform ranking"
-  ]
+    "Four extra synthetic inference requests for optional memory verification"
+  ],
+  "cross_session_acceptance": {
+    "agent_id": "6acf95f3272a149412fd9e7c",
+    "owner_id": "basics-memory-verification-852d5cc2c603456e9c163f919275e1c1",
+    "seed_session_id": "6acf95f3272a149412fd9e7c-0b5a7970addf40c59470bf490328d3c5",
+    "started_at": 1791992808.9392068,
+    "cases": [
+      {
+        "label": "preference_seed",
+        "owner_id": "basics-memory-verification-852d5cc2c603456e9c163f919275e1c1",
+        "session_id": "6acf95f3272a149412fd9e7c-0b5a7970addf40c59470bf490328d3c5",
+        "question": "I have a durable support-answer preference: start each answer with the heading cobalt-sparrow, followed by the headings Finding, Evidence and Next action. Please acknowledge this preference briefly.",
+        "response": {
+          "response": "cobalt-sparrow\n\nFinding  \nAcknowledged \u2014 I\u2019ll use that heading structure going forward.\n\nEvidence  \nPreference noted in this chat context.\n\nNext action  \nPlease send the order ID or question you want checked.",
+          "module_outputs": {
+            "documents": [
+              {
+                "id": "e6a4b1f9-dab5-4718-832c-a7ab3617994c",
+                "score": 0.24153902,
+                "metadata": {
+                  "source": "storage/orders-knowledge.txt",
+                  "file_path": "storage/orders-knowledge.txt",
+                  "file_name": "orders-knowledge.txt",
+                  "file_type": "text/plain",
+                  "file_size": 1984,
+                  "creation_date": "2026-10-14",
+                  "last_modified_date": "2026-10-14",
+                  "last_accessed_date": "2026-10-14",
+                  "timestamp": "2026-10-14T14:41:09.166118+00:00"
+                },
+                "text": "FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-1 { \"order_id\": \"order-demo-1\", \"customer\": \"Demo Customer A\", \"items\": [ { \"product\": \"Ceramic Mug Set\", \"quantity\": 2, \"seller\": \"Demo Home Store\" } ], \"order_status\": \"paid\", \"payment_status\": \"received\", \"shipment_status\": \"not dispatched\", \"payout_status\": \"held\" } --- RECORD BOUNDARY --- FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-2 { \"order_id\": \"order-demo-2\", \"customer\": \"Demo Customer B\", \"items\": [ { \"product\": \"Canvas Weekender\", \"quantity\": 1, \"seller\": \"Demo Travel Store\" } ], \"order_status\": \"delivered\", \"payment_status\": \"received\", \"shipment_status\": \"delivered\", \"payout_status\": \"released\" } --- RECORD BOUNDARY --- FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-3 { \"order_id\": \"order-demo-3\", \"customer\": \"Demo Customer C\", \"items\": [ { \"product\": \"Desk Lamp\", \"quantity\": 1, \"seller\": \"Demo Light Store\" } ], \"order_status\": \"cancelled\", \"payment_status\": \"refunded\", \"shipment_status\": \"cancelled\", \"payout_status\": \"not applicable\" }"
+              }
+            ]
+          }
+        },
+        "seconds": 2.56
+      },
+      {
+        "label": "fresh_session_recall",
+        "owner_id": "basics-memory-verification-852d5cc2c603456e9c163f919275e1c1",
+        "session_id": "6acf95f3272a149412fd9e7c-649cdda405b94bac9f24f89aa06caa2d",
+        "question": "What support answer headings do I prefer?",
+        "response": {
+          "response": "cobalt-sparrow\n\nFinding  \nYou prefer answers to start with the heading \u201ccobalt-sparrow,\u201d followed by the headings \u201cFinding,\u201d \u201cEvidence,\u201d and \u201cNext action.\u201d\n\nEvidence  \nThis preference is available in the current session memory.\n\nNext action  \nI\u2019ll use that heading format in future support answers.",
+          "module_outputs": {
+            "documents": [
+              {
+                "id": "e6a4b1f9-dab5-4718-832c-a7ab3617994c",
+                "score": 0.24815404,
+                "metadata": {
+                  "source": "storage/orders-knowledge.txt",
+                  "file_path": "storage/orders-knowledge.txt",
+                  "file_name": "orders-knowledge.txt",
+                  "file_type": "text/plain",
+                  "file_size": 1984,
+                  "creation_date": "2026-10-14",
+                  "last_modified_date": "2026-10-14",
+                  "last_accessed_date": "2026-10-14",
+                  "timestamp": "2026-10-14T14:41:09.166118+00:00"
+                },
+                "text": "FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-1 { \"order_id\": \"order-demo-1\", \"customer\": \"Demo Customer A\", \"items\": [ { \"product\": \"Ceramic Mug Set\", \"quantity\": 2, \"seller\": \"Demo Home Store\" } ], \"order_status\": \"paid\", \"payment_status\": \"received\", \"shipment_status\": \"not dispatched\", \"payout_status\": \"held\" } --- RECORD BOUNDARY --- FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-2 { \"order_id\": \"order-demo-2\", \"customer\": \"Demo Customer B\", \"items\": [ { \"product\": \"Canvas Weekender\", \"quantity\": 1, \"seller\": \"Demo Travel Store\" } ], \"order_status\": \"delivered\", \"payment_status\": \"received\", \"shipment_status\": \"delivered\", \"payout_status\": \"released\" } --- RECORD BOUNDARY --- FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-3 { \"order_id\": \"order-demo-3\", \"customer\": \"Demo Customer C\", \"items\": [ { \"product\": \"Desk Lamp\", \"quantity\": 1, \"seller\": \"Demo Light Store\" } ], \"order_status\": \"cancelled\", \"payment_status\": \"refunded\", \"shipment_status\": \"cancelled\", \"payout_status\": \"not applicable\" }"
+              }
+            ]
+          }
+        },
+        "seconds": 2.64
+      },
+      {
+        "label": "fresh_session_business",
+        "owner_id": "basics-memory-verification-852d5cc2c603456e9c163f919275e1c1",
+        "session_id": "6acf95f3272a149412fd9e7c-d8b38179dc5541fc8ac18b6ccc0c13fd",
+        "question": "What is the payout status of order-demo-2?",
+        "response": {
+          "response": "cobalt-sparrow\n\nFinding  \nThe payout status of order-demo-2 is **released**.\n\nEvidence  \n- Retrieved record ID: **order-demo-2**\n- Dataset: **support-agent-basics-fictional-v1**\n- As of: **2026-10-14T09:00:00Z**\n- Stored payout status: **released**\n\nNext action  \nIf you want, I can also summarize the order\u2019s other stored fields.",
+          "module_outputs": {
+            "documents": [
+              {
+                "id": "e6a4b1f9-dab5-4718-832c-a7ab3617994c",
+                "score": 0.46170592,
+                "metadata": {
+                  "source": "storage/orders-knowledge.txt",
+                  "file_path": "storage/orders-knowledge.txt",
+                  "file_name": "orders-knowledge.txt",
+                  "file_type": "text/plain",
+                  "file_size": 1984,
+                  "creation_date": "2026-10-14",
+                  "last_modified_date": "2026-10-14",
+                  "last_accessed_date": "2026-10-14",
+                  "timestamp": "2026-10-14T14:41:09.166118+00:00"
+                },
+                "text": "FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-1 { \"order_id\": \"order-demo-1\", \"customer\": \"Demo Customer A\", \"items\": [ { \"product\": \"Ceramic Mug Set\", \"quantity\": 2, \"seller\": \"Demo Home Store\" } ], \"order_status\": \"paid\", \"payment_status\": \"received\", \"shipment_status\": \"not dispatched\", \"payout_status\": \"held\" } --- RECORD BOUNDARY --- FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-2 { \"order_id\": \"order-demo-2\", \"customer\": \"Demo Customer B\", \"items\": [ { \"product\": \"Canvas Weekender\", \"quantity\": 1, \"seller\": \"Demo Travel Store\" } ], \"order_status\": \"delivered\", \"payment_status\": \"received\", \"shipment_status\": \"delivered\", \"payout_status\": \"released\" } --- RECORD BOUNDARY --- FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-3 { \"order_id\": \"order-demo-3\", \"customer\": \"Demo Customer C\", \"items\": [ { \"product\": \"Desk Lamp\", \"quantity\": 1, \"seller\": \"Demo Light Store\" } ], \"order_status\": \"cancelled\", \"payment_status\": \"refunded\", \"shipment_status\": \"cancelled\", \"payout_status\": \"not applicable\" }"
+              }
+            ]
+          }
+        },
+        "seconds": 2.64
+      },
+      {
+        "label": "other_identity_recall",
+        "owner_id": "basics-memory-verification-852d5cc2c603456e9c163f919275e1c1-other",
+        "session_id": "6acf95f3272a149412fd9e7c-0222decd761b438e9731800943e98656",
+        "question": "What support answer headings do I prefer?",
+        "response": {
+          "response": "I don\u2019t have any verified preference stored for support answer headings. If you want, you can tell me your preferred heading style and I\u2019ll use it.",
+          "module_outputs": {
+            "documents": [
+              {
+                "id": "e6a4b1f9-dab5-4718-832c-a7ab3617994c",
+                "score": 0.24815404,
+                "metadata": {
+                  "source": "storage/orders-knowledge.txt",
+                  "file_path": "storage/orders-knowledge.txt",
+                  "file_name": "orders-knowledge.txt",
+                  "file_type": "text/plain",
+                  "file_size": 1984,
+                  "creation_date": "2026-10-14",
+                  "last_modified_date": "2026-10-14",
+                  "last_accessed_date": "2026-10-14",
+                  "timestamp": "2026-10-14T14:41:09.166118+00:00"
+                },
+                "text": "FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-1 { \"order_id\": \"order-demo-1\", \"customer\": \"Demo Customer A\", \"items\": [ { \"product\": \"Ceramic Mug Set\", \"quantity\": 2, \"seller\": \"Demo Home Store\" } ], \"order_status\": \"paid\", \"payment_status\": \"received\", \"shipment_status\": \"not dispatched\", \"payout_status\": \"held\" } --- RECORD BOUNDARY --- FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-2 { \"order_id\": \"order-demo-2\", \"customer\": \"Demo Customer B\", \"items\": [ { \"product\": \"Canvas Weekender\", \"quantity\": 1, \"seller\": \"Demo Travel Store\" } ], \"order_status\": \"delivered\", \"payment_status\": \"received\", \"shipment_status\": \"delivered\", \"payout_status\": \"released\" } --- RECORD BOUNDARY --- FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-3 { \"order_id\": \"order-demo-3\", \"customer\": \"Demo Customer C\", \"items\": [ { \"product\": \"Desk Lamp\", \"quantity\": 1, \"seller\": \"Demo Light Store\" } ], \"order_status\": \"cancelled\", \"payment_status\": \"refunded\", \"shipment_status\": \"cancelled\", \"payout_status\": \"not applicable\" }"
+              }
+            ]
+          }
+        },
+        "seconds": 2.16
+      }
+    ],
+    "marker": "cobalt-sparrow",
+    "trigger": "Native Studio MEMORY/Cognis automatic conversation integration; no direct add API call",
+    "polls": [
+      {
+        "seconds_after_seed": 1.01,
+        "response": {
+          "success": true,
+          "results": [
+            {
+              "id": "mem_a55b30dbe35f",
+              "type": "memory",
+              "content": "User prefers each answer to start with the heading cobalt-sparrow, followed by the headings Finding, Evidence, and Next action",
+              "owner_id": "basics-memory-verification-852d5cc2c603456e9c163f919275e1c1",
+              "agent_id": "6acf95f3272a149412fd9e7c",
+              "session_id": "6acf95f3272a149412fd9e7c-0b5a7970addf40c59470bf490328d3c5",
+              "status": "current",
+              "version": 1,
+              "created_at": "2026-10-14T15:46:53.922932+00:00",
+              "updated_at": "2026-10-14T15:46:53.922932+00:00",
+              "event_time": "2026-10-14T15:46:53.922932+00:00",
+              "metadata": {
+                "category": "preferences",
+                "categories": [],
+                "sector": "semantic",
+                "scope": "user",
+                "source_role": null,
+                "source_session_id": null,
+                "source_agent_id": null,
+                "relations": [],
+                "custom": {}
+              },
+              "score": 1.2456
+            }
+          ],
+          "count": 1,
+          "query": "What is the user durable answer heading marker preference?"
+        }
+      }
+    ],
+    "configuration_update": {
+      "message": "Agent updated successfully"
+    },
+    "configuration_readback": {
+      "name": "Support Agent Basics",
+      "features": [
+        {
+          "type": "KNOWLEDGE_BASE",
+          "config": {
+            "lyzr_rag": {
+              "base_url": "https://rag-prod.studio.lyzr.ai",
+              "rag_id": "6acf8ce85394534805b7f780",
+              "rag_name": "support_agent_basics_orders",
+              "params": {
+                "top_k": 6,
+                "retrieval_type": "basic",
+                "score_threshold": 0
+              }
+            }
+          },
+          "priority": 0
+        },
+        {
+          "type": "MEMORY",
+          "config": {
+            "provider": "cognis",
+            "lyzr_memory": {
+              "provider_type": "cognis",
+              "params": {
+                "cross_session": true,
+                "instructions": "Retain explicit durable user presentation preferences faithfully. Do not store fictional business order states, payment/shipment/payout facts, credentials, assistant acknowledgments or one-answer overrides as durable user preferences."
+              }
+            }
+          },
+          "priority": 0
+        }
+      ]
+    },
+    "before_seed": {
+      "success": true,
+      "memories": [],
+      "total": 0,
+      "limit": 20,
+      "offset": 0
+    },
+    "native_record_found": true,
+    "native_records": {
+      "success": true,
+      "memories": [
+        {
+          "id": "mem_a55b30dbe35f",
+          "type": "memory",
+          "content": "User prefers each answer to start with the heading cobalt-sparrow, followed by the headings Finding, Evidence, and Next action",
+          "owner_id": "basics-memory-verification-852d5cc2c603456e9c163f919275e1c1",
+          "agent_id": "6acf95f3272a149412fd9e7c",
+          "session_id": "6acf95f3272a149412fd9e7c-0b5a7970addf40c59470bf490328d3c5",
+          "status": "current",
+          "replaces_id": null,
+          "version": 1,
+          "salience_score": null,
+          "decay_score": null,
+          "created_at": "2026-10-14T15:46:53.922932+00:00",
+          "updated_at": "2026-10-14T15:46:56.042687+00:00",
+          "event_time": "2026-10-14T15:46:53.922932+00:00",
+          "last_accessed": "2026-10-14T15:46:56.042687+00:00",
+          "valid_from": null,
+          "valid_until": null,
+          "original_content": [
+            "I have a durable support-answer preference: start each answer with the heading cobalt-sparrow, followed by the headings Finding, Evidence and Next action. Please acknowledge this preference briefly."
+          ],
+          "metadata": {
+            "category": "preferences",
+            "categories": [
+              "preferences"
+            ],
+            "sector": "semantic",
+            "scope": "user",
+            "source_role": null,
+            "source_session_id": null,
+            "source_agent_id": null,
+            "relations": [],
+            "custom": {}
+          },
+          "score": null,
+          "rerank_score": null,
+          "history": null,
+          "session_snippet": null,
+          "conflicts": null
+        }
+      ],
+      "total": 1,
+      "limit": 20,
+      "offset": 0
+    },
+    "other_native_records": {
+      "success": true,
+      "memories": [],
+      "total": 0,
+      "limit": 20,
+      "offset": 0
+    },
+    "finished_at": 1791992825.994606,
+    "checks": {
+      "baseline_empty": true,
+      "native_record_source_matches": true,
+      "fresh_session_recall": true,
+      "fresh_business_applies_preference": true,
+      "other_owner_records_empty": true,
+      "other_owner_answer_no_preference": true
+    },
+    "after_test_cross_session_restored_off": true,
+    "configuration_restore_readback": {
+      "agent_name": "Support Agent Basics",
+      "agent_id": "6acf95f3272a149412fd9e7c",
+      "cross_session": false
+    }
+  }
 }
