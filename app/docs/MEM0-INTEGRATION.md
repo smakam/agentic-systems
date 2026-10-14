@@ -44,7 +44,7 @@ Memory remains personal historical context. Current business records, applicable
 
 Application-model usage remains visible in its existing traces. Mem0's internal extraction/embedding calls are provider operations; their token or monetary costs are not claimed as measured unless the provider supplies them. The locally observed elapsed time is not a breakdown of provider-internal computation. Free-plan limits are account-specific.
 
-The current integration uses hosted MCP with authenticated add, search, list, update, delete and event-status operations. It does not implement a custom graph memory, automatic model training or the survey's advanced latent/parametric memory systems.
+The current integration uses hosted MCP with authenticated add, search, list, update, delete and event-status operations. Mem0's current hosted documentation describes native graph linking and entity-based ranking combined with semantic and keyword signals. We have verified extraction and recall, but have not isolated each signal's contribution or established the physical database used by the service. The application does not implement its own graph store, automatic model training or advanced latent/parametric memory systems. See [current hosted graph memory](https://docs.mem0.ai/platform/features/graph-memory); older external-graph configurations should not be presented as the current hosted architecture.
 
 ## Verified rehearsal (14 October 2026)
 

@@ -36,6 +36,6 @@ An optional second-user test should show a different trusted scope and absence o
 
 ## Acceptable failures and limits
 
-A retrieval miss, no useful extracted fact, delay or provider error can be a valid observation if documented honestly. Do not substitute the internal provider silently. Do not claim provider-internal token costs or latency breakdowns from local elapsed time. Automatic consolidation, expiration, graph memory and learned procedures are conceptual extensions rather than results of this lab.
+A retrieval miss, no useful extracted fact, delay or provider error can be a valid observation if documented honestly. Do not substitute the internal provider silently. Do not claim provider-internal token costs or latency breakdowns from local elapsed time. Automatic consolidation, expiration and learned procedures remain conceptual extensions. Current [Mem0 Platform documentation](https://docs.mem0.ai/platform/features/graph-memory) describes its native entity graph alongside semantic/keyword retrieval; this lab does not separately measure the graph contribution. PostgreSQL can support other indexes and relational structures, while our internal baseline implements keyword search.
 
 The exercise is complete when the learner documents each mechanism, separates observed evidence from interpretation, and removes only their lab records after the final completed Mem0 conversation is queued and pending jobs finish. An empty new chat prevents a further completed conversation from recreating the deleted entries during cleanup.

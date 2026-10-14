@@ -101,7 +101,7 @@ Run this sequence separately for Internal memory and Mem0, using the named instr
 3. If a second existing course account is available, sign in as it and inspect its Saved memories for the same provider. Confirm that the first user's named preference is absent, then return to the original account. An empty result should accompany trusted user-scoping evidence; it alone is not a security test.
 4. If an operation naturally remains pending or fails, inspect and describe that actual state. Do not claim that a queued request is a confirmed save and do not repeatedly submit an uncertain write.
 
-The lab demonstrates user scope. Team-shared memories, expiry policies, graph memory and automatic consolidation are design topics, not extra implemented modes.
+The lab demonstrates user scope. Team-shared memory and automatic expiry/consolidation are design topics. Current [Mem0 Platform documentation](https://docs.mem0.ai/platform/features/graph-memory) describes a built-in entity graph used with semantic and keyword retrieval. This lab does not isolate its contribution to ranking or inspect the underlying physical database.
 
 ## Cleanup
 
