@@ -12,7 +12,7 @@ The remainder is an adventurous extension. It connects a cloud chat application 
 
 ## Environment and starting point
 
-Use your **own Google Cloud project and separately identified lab resources** for provisioning. Follow [app/CLOUD-SETUP.md](../../../app/CLOUD-SETUP.md) for the Cloud Run marketplace, business MCP and Cloud SQL stack, then [GOOGLE-PLATFORM-PLAN.md](../../GOOGLE-PLATFORM-PLAN.md) for the managed ADK agent, identity and cloud MCP profile. These guides contain the commands; this exercise does not duplicate their deployment sequence.
+Use your **own Google Cloud project and separately identified lab resources** for provisioning. Complete [app/CLOUD-SETUP.md](../../../app/CLOUD-SETUP.md) first: your cloud chat/backend, business MCP and database must already work. Then follow [Google Platform Plan](../../GOOGLE-PLATFORM-PLAN.md) steps 1–6: configure your marketplace ADK agent and MCP secret, create or update your own compatible runtime, verify it in Playground, connect the cloud chat backend, and verify end to end. The standalone Basics agent has no business MCP tools and is not the deployment to update. These guides contain the commands; this exercise does not duplicate their deployment sequence.
 
 The current instructor deployment has verified cloud acceptance. The cloud setup sequence has not yet been rehearsed from scratch in a fresh learner project. Treat that as a stated preparation limit and record any adaptation you make. Costs depend on enabled resources, model calls and usage; consult current billing categories. Keep credentials in private environment/Secret Manager configuration and out of screenshots, prompts and submitted work.
 
@@ -20,13 +20,13 @@ Do not update the instructor's Marketplace Support ADK Lab or Support Agent Basi
 
 ## What to do
 
-1. Deploy the optional cloud marketplace stack using the cloud setup guide. Record which service hosts the UI/backend, the authenticated business MCP endpoint, and the database/policy store.
-2. Deploy a separately named ADK agent using the Google walkthrough. Bind its runtime identity to your cloud MCP secret and endpoint. Keep model endpoint, runtime/session region and access permissions explicit.
+1. Verify your already completed Cloud Setup: the cloud marketplace UI/backend, authenticated business MCP endpoint and database/policy store must be working. Record their locations; do not redeploy the stack for this exercise.
+2. Follow [Google Platform Plan](../../GOOGLE-PLATFORM-PLAN.md) to create your own marketplace ADK deployment or update an existing compatible deployment you own. Bind its runtime identity to your cloud MCP secret and endpoint. Keep model endpoint, runtime/session region and access permissions explicit.
 3. Confirm the selected deployed agent's URL/secret profile in deployment metadata. Record the resource names without secret values.
 4. Open your marketplace's Support interface, select **Google hosted runtime**, and start a fresh conversation. Ask **“Show the items and quantities for order-2.”** Check the answer against the tool evidence from your own fixture.
 5. In the same conversation ask **“What is their total quantity?”** Inspect the preserved order context and any fresh tool calls. Then try the follow-up in a new conversation and record whether it asks which order you mean.
 6. Inspect the native Google session, tool events and trace for that run. If your cloud stack has Langfuse enabled, compare the application boundary observation with native platform-internal events. The presence of one does not prove the other is configured.
-7. Optionally perform the walkthrough's cross-session memory test using the **same client-supplied user ID** for saving and recall. Record the trigger, stored result and retrieval separately; do not infer long-term memory from an answer that could come from the current transcript.
+7. Optionally inspect the native memory steps in [instructor-demo.md](instructor-demo.md), which runs on the separate Basics deployment. Keep its `order-demo-*` fixtures separate from marketplace `order-*` records. Use the **same actual client user ID** for saving and recall within the deployment you test. Record the trigger, stored result and retrieval separately; do not infer long-term memory from an answer that could come from the current transcript.
 
 If you only observe the instructor's full-stack demonstration, label your submission **observation only** rather than claiming you deployed the system.
 

@@ -1,6 +1,6 @@
 # Lyzr marketplace support lab
 
-The application supplies read-only business tools; Lyzr owns the model and agent loop. Long-term memory is off. Seven MCP tools are exposed: begin/end investigation plus catalog, SQL, document retrieval, evidence fetch and order history.
+This historical marketplace integration is an optional reference, not the proposed standalone Chapter 20 lesson. The application supplies read-only business tools; Lyzr owns the model and agent loop. The initial October 2 configuration below had memory off; native Cognis was enabled on October 3, as documented later in this file. Seven MCP tools are exposed: begin/end investigation plus catalog, SQL, document retrieval, evidence fetch and order history.
 
 ## Run the temporary endpoint
 
@@ -103,3 +103,9 @@ Short-term continuity, fresh-chat semantic/procedural/checkpoint recall, overrid
 ### External curl smoke test — October 3, 2026
 
 [Result and reusable curl](api-smoke-2026-10-03/REPORT.md): HTTP 200 in 17.23 s; latest deployed agent returned correct order-2 paid/captured status and evidence references in a fresh API session. First masked-key attempt returned 403; existing unmasked key succeeded. Credential absent from saved request/report and temporary credential files removed. User reviewed tracing/monitoring UI and accepted it. Checklist-use gap, native memory identity/provenance/CRUD checks, cloud hosting/reboot verification and deeper observability are tracked as enhancements in course section 21.
+
+## Historical evidence and platform references
+
+These existing records preserve the integration's exact prompts and bounded results: [business validation](VALIDATION.md), [Cognis memory report](cognis-memory-2026-10-03/REPORT.md), [short-term memory comparison](memory-session-2026-10-03/REPORT.md), [stable tunnel runbook](ngrok-2026-10-03/REPORT.md), and [external API smoke test](api-smoke-2026-10-03/REPORT.md). They do not establish the future standalone lesson's implementation. Later cloud adapter evidence is in [runtime configuration](../RUNTIME-SELECTOR.md); do not treat the old laptop diagram as the current deployed target.
+
+Product capabilities were distinguished from our tested integration: native Knowledge Base/Data Query, evaluation, Responsible AI, routing and Manager Agents were documented options, not features exercised by this lab. Official references used: [Studio Builder](https://docs.lyzr.ai/enterprise/agent-studio/agents/studio), [models](https://docs.lyzr.ai/enterprise/agent-studio/connections/models), [memory](https://docs.lyzr.ai/enterprise/agent-studio/connections/memory), [tracing](https://docs.lyzr.ai/enterprise/agent-studio/agent%20eval/tracing). Recheck availability before teaching; framework/API clients, hosted execution and cross-runtime governance are separate capabilities.

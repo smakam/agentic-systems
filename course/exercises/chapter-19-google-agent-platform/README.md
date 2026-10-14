@@ -7,4 +7,4 @@ The instructor's main demonstration uses **Support Agent Basics** in **Google Pl
 - [Optional learner exercise](exercise.md)
 - [Separate reference answers](solutions/answers.md)
 
-The existing **Marketplace Support ADK Lab** is a different deployment. It remains the secondary full-stack demonstration and advanced extension. Follow its [Google walkthrough](../../GOOGLE-PLATFORM-PLAN.md) and the [optional cloud setup guide](../../../app/CLOUD-SETUP.md), rather than mixing its resources with Basics.
+The existing **Marketplace Support ADK Lab** is a different deployment. It remains the secondary full-stack demonstration and advanced extension. Follow its [Google Platform Plan](../../GOOGLE-PLATFORM-PLAN.md) and the [optional cloud setup guide](../../../app/CLOUD-SETUP.md), rather than mixing its resources with Basics.
