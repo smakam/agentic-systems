@@ -1,0 +1,52 @@
+{
+  "dataset_id": "support-agent-basics-fictional-v1",
+  "as_of": "2026-10-14T09:00:00Z",
+  "fictional": true,
+  "orders": [
+    {
+      "order_id": "order-demo-1",
+      "customer": "Demo Customer A",
+      "items": [
+        {
+          "product": "Ceramic Mug Set",
+          "quantity": 2,
+          "seller": "Demo Home Store"
+        }
+      ],
+      "order_status": "paid",
+      "payment_status": "received",
+      "shipment_status": "not dispatched",
+      "payout_status": "held"
+    },
+    {
+      "order_id": "order-demo-2",
+      "customer": "Demo Customer B",
+      "items": [
+        {
+          "product": "Canvas Weekender",
+          "quantity": 1,
+          "seller": "Demo Travel Store"
+        }
+      ],
+      "order_status": "delivered",
+      "payment_status": "received",
+      "shipment_status": "delivered",
+      "payout_status": "released"
+    },
+    {
+      "order_id": "order-demo-3",
+      "customer": "Demo Customer C",
+      "items": [
+        {
+          "product": "Desk Lamp",
+          "quantity": 1,
+          "seller": "Demo Light Store"
+        }
+      ],
+      "order_status": "cancelled",
+      "payment_status": "refunded",
+      "shipment_status": "cancelled",
+      "payout_status": "not applicable"
+    }
+  ]
+}
