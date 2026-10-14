@@ -1,81 +1,123 @@
-# Chapter 16: Learner exercise options
+# Chapter 16 — Model routing learner exercise
 
-Draft for review, October 13, 2026. The slides use Option A. Learners keep their observations locally and compare them with the separate reference answers. No submission is assumed.
+Use the test UI to understand how classifiers select a model and how scope controls when that choice is made. Ask the supplied questions, inspect Langfuse, and document what actually happened. A route selection and a correct answer are separate observations.
 
-## Option A: recorded-evidence worksheet (recommended)
+## Before you begin
 
-**Time:** 20–30 minutes. **API cost:** none. **Prerequisites:** Chapters 6, 10–11 and 13–15. **Environment:** browser or downloaded documents. No marketplace UI, database connection or reset is required.
+1. Open the [Test workspace](http://127.0.0.1:5179/) and sign in as the demo operator. Open **Support workspace**.
+2. Select **OpenAI Agents SDK**. Keep **Use long-term memory** and **Allow memory changes** off.
+3. Set **Test policy document → Clean policy** and wait for preparation to finish. Set **Gateway guardrail → Off**, **Source-authority prompt → On**, and the private-instruction example to **Off**.
+4. Record the test database revision and demo clock. Do not reset the shared database or run another fixture-changing exercise concurrently.
+5. Confirm the routing panel offers **Keyword rules**, **Built-in heuristic v2**, and **LLM · GPT-5 Nano**. These are the three live choices in this exercise. The historical six-classifier study is separate.
 
-Sources:
+These runs make paid provider calls. This is an understanding and documentation exercise, not a statistically meaningful benchmark. The prepared answer pool is Nano/GPT-5. The LLM classifier itself uses Nano. The heuristic v2 choice uses LiteLLM's bundled trained classifier, not the older default heuristic from the historical study.
 
-- [Part 1: Choosing a Classifier](https://sreeni.blog/2026/09/30/model-routing-part-1-choosing-a-classifier/)
-- [Part 2: Choosing the Scope](https://sreeni.blog/2026/09/30/model-routing-part-2-choosing-the-scope/)
+## Part A — Compare three classifiers
 
-### Part 1: Repeat the demo
+Use these exact questions:
 
-1. Identify the historical model pool, SIMPLE/COMPLEX mapping and tested routing scopes. Explain where the runner, LiteLLM and SDK each participate.
-2. Use Table A to compare fixed Nano, fixed GPT-5 and the LLM classifier. Calculate estimated savings versus fixed GPT-5 and the change in fully correct case count. Explain why the lowest token price is insufficient to select the policy.
-3. Read the provider-timeout example in Part 1. Record the route selected by the generic heuristic, the essential fact omitted from the answer, and the classifier behavior that improved this specific case.
-4. Read the order-2 conversation in Part 2. Record the model used for each question under conversation and question scope. Explain the omitted payout condition and how supplied history reaches the second model after a switch.
-5. Use Table B to compare the four policies. State the numerator/denominator of the quality measure. Explain why 72 generated answers are not 72 independent scenarios, and why the classifier replay cannot substitute for this live conversation experiment.
-6. Record one finding and one limitation about caching. Explain what the measurements support and what they leave unresolved.
+- **Q1:** `Show the purchased product and quantity for order-2.`
+- **Q2:** `Investigate whether order-2 is ready for seller payout. Explain the shipment evidence and settlement conditions.`
 
-### Table A: September classifier comparison
+Run the six cases below. **Start a fresh conversation before every case**, even if you did not change a setting. Keep all preparation settings unchanged.
 
-Costs below are full-price replay estimates for the same 18 cases and include classification. There are 20 answer turns per candidate model. A fully correct case requires every material requested fact in all its turns.
+| Case | Mode | Classifier | Scope | Question |
+|---|---|---|---|---|
+| A1 | Native LiteLLM routing | Keyword rules | Per question | Q1 |
+| A2 | Native LiteLLM routing | Keyword rules | Per question | Q2 |
+| A3 | Native LiteLLM routing | Built-in heuristic v2 | Per question | Q1 |
+| A4 | Native LiteLLM routing | Built-in heuristic v2 | Per question | Q2 |
+| A5 | Native LiteLLM routing | LLM · GPT-5 Nano | Per question | Q1 |
+| A6 | Native LiteLLM routing | LLM · GPT-5 Nano | Per question | Q2 |
 
-| Policy | Fully correct cases | Estimated total cost | Nano / GPT-5 selections |
-| --- | ---: | ---: | ---: |
-| Always Nano | 9/18 | $0.023121 | 18/0 |
-| Always GPT-5 | 17/18 | $0.456238 | 0/18 |
-| LLM classifier | 16/18 | $0.249470 | 9/9 |
-| JEV classifier | 16/18 | $0.266017 | 8/10 |
+For each case:
 
-The 18 classifications themselves cost $0.005436 for the LLM and $0.003759 for JEV. These are alternative classifiers; their costs are not added together.
+1. Select the row's mode, classifier and scope. Start the fresh conversation and submit its exact question.
+2. Copy the final answer into your report. Open its cited evidence and note whether it supports the answer.
+3. Click **Routing trace ↗**. Select the first **Gateway routing decision → Model input** observation for the answer call. Switch **Detail view: Preview → Attributes** and read **Metadata**.
+4. Fill one row in Table A using the exact fields listed below. If a field is absent, write **not present**; do not infer it from the answer.
+5. Open the corresponding **generation** observation and record its model. Keep the classifier model separate from the answer model.
+6. Inspect the later calls in that question. Note whether they retained the selected model and whether the cause indicates continuation.
 
-### Table B: September live scope pilot
+### Table A — Your classifier observations
 
-Each of six distinct scenarios contains three questions. Each policy ran once. A conversation counts as fully correct only when all three answers are correct. Costs are reconstructed from usage and frozen rates, including classification/candidate calls and retrieval embeddings; they are not invoices.
+| Case | Policy | Tier | Decision cause | Classifier model, if present | Routed alias | Actual answer model | Answer and evidence check | Trace link |
+|---|---|---|---|---|---|---|---|---|
+| A1 | | | | | | | | |
+| A2 | | | | | | | | |
+| A3 | | | | | | | | |
+| A4 | | | | | | | | |
+| A5 | | | | | | | | |
+| A6 | | | | | | | | |
 
-| Policy | Fully correct conversations | Cache-adjusted cost, all six | Full-price cost | Candidate cached input | Model switches |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| Always Nano | 4/6 | $0.013809 | $0.019529 | 50.6% | 0 |
-| Always GPT-5 | 6/6 | $0.271415 | $0.460487 | 64.0% | 0 |
-| Per conversation | 4/6 | $0.126447 | $0.206257 | 54.0% | 0 |
-| Per question | 4/6 | $0.126897 | $0.219051 | 57.9% | 4 |
+Use these metadata fields:
 
-### Part 2: Additional challenges
+| Field | What to record |
+|---|---|
+| `routing_policy` | Requested prepared policy |
+| `routing_classifier` and `routing_scope` | Classifier and decision scope |
+| `routing_decision.tier` | Assigned complexity tier |
+| `routing_decision.cause` | What produced or reused the decision |
+| `routing_decision.classifier_model` | Model used for LLM classification, when present |
+| `routing_decision.routed_model` | Selected answer-model alias |
+| `model` | Model version recorded by the gateway audit; cross-check the generation model |
 
-1. **Decision under a stated quality bar.** Suppose this development sample's provisional minimum is 16 fully correct cases out of 18. Among Table A policies that meet it, choose the lowest estimated-cost option. Then repeat with a minimum of 17/18. State why neither answer is a deployment recommendation.
-2. **Classifier cost versus total cost.** JEV has lower classification cost. Explain why it has higher total route cost than the LLM policy. Use both model-selection counts and the measured costs.
-3. **Fresh test design.** Write three new questions/scenarios: a direct lookup, an ambiguous follow-up and a time/money boundary. Give expected essential facts and identify independently controlled fixture data. Keep references outside the candidate and classifier inputs. Freeze the rubric before testing.
-4. **Scope choice.** Name one conversation pattern where pinning is attractive and one where reclassification could help. Identify a risk in each. Explain why a scope change alone did not fix the Cedar ambiguity scenario.
-5. **Reliability.** Describe separately what you would do after a provider request fails and after an answer fails a quality check. State what trustworthy signal you need for quality escalation.
+**Write three short observations:** Did the classifiers agree on Q1? Did they agree on Q2? Did selecting a stronger model guarantee a correct answer? Support each statement with your table and evidence.
 
-### What to check and record
+## Part B — Compare scope with one classifier
 
-- Identify pool, classification and scope separately.
-- Use correct denominators and label replay versus live evidence.
-- Include classifier cost and selected-model cost.
-- Support the decision with the stated quality bar.
-- Retain a limitation, such as known development cases, one pass, mixed review provenance or uncontrolled cache warmth.
-- Compare your reasoning with the separate reference answers.
+Keep **Mode → Native LiteLLM routing** and **Classifier → LLM · GPT-5 Nano** for both cases. Change only the scope.
 
-**Cleanup:** none. No services, aliases or business data change in this worksheet.
+Use this exact question sequence:
 
-## Option B: modify a classifier rubric
+1. `Hi.`
+2. `Investigate whether order-2 is ready for seller payout. Explain the shipment evidence and settlement conditions.`
+3. `For order-2, calculate the seller's net payout after fees.`
 
-Learners write a keyword or LLM routing rubric for a small fresh question list, compare it with the baseline and explain disagreements. An offline keyword version needs no model credit. A model-based version incurs classification calls and requires a declared budget.
+### Case B1 — Per conversation
 
-**Additional preparation needed:** portable runner, frozen starter questions and holdout, mapping/configuration file, expected selection checks, restoration instructions and worked solution. The historical scripts are not a finished learner path.
+1. Select **Scope → Per conversation** and start a fresh conversation.
+2. Ask all three questions in sequence in that same conversation. Do not click New conversation between questions.
+3. For each answer, open the trace and inspect the first gateway routing decision in **Attributes → Metadata**.
+4. Record the tier, cause, classifier model if present, and actual answer model in Table B. Also copy each answer and check its evidence.
+5. Identify whether later questions reused the first selection. Look for `session_affinity_pin`. Complete this sequence without a gateway restart or a long pause; a pin can expire.
 
-**Status:** proposed extension, not packaged or run here.
+### Case B2 — Per question
 
-## Option C: live routing experiment
+1. Change **Scope → Per question**. Confirm a fresh conversation starts.
+2. Ask the identical three-question sequence in that same new conversation.
+3. Fill the remaining Table B rows. Inspect the first gateway routing decision for each user question, then the later model calls within that question.
+4. Look for a fresh `llm_classifier` decision on each user question and `user_turn_continuation` on calls after tools. A fresh decision may still choose the same model.
 
-Learners compare one fixed-model baseline with a routing policy on controlled questions, then optionally compare conversation/question scope. Use the test marketplace/practice database `market_test` for a future UI-based lab, or a dedicated CLI lab with `market_eval` fixtures and locking. These are alternative paths and must be named explicitly in the eventual guide.
+### Table B — Your scope observations
 
-**Additional preparation needed:** select available teaching models, portable commands, isolated fixture/checkpoint, expected fact rubric, spend guard, versioned result capture and cleanup/restoration of aliases/configuration and services. Preserve `market` and shared evaluation baselines. Re-run candidate quality as well as costs/caching; do not assume historical results apply to current code.
+| Case | Question number | Tier | Decision cause | Classifier model, if present | Actual answer model | Fresh decision or reuse? | Answer and evidence check | Trace link |
+|---|---|---|---|---|---|---|---|---|
+| B1 | 1 | | | | | | | |
+| B1 | 2 | | | | | | | |
+| B1 | 3 | | | | | | | |
+| B2 | 1 | | | | | | | |
+| B2 | 2 | | | | | | | |
+| B2 | 3 | | | | | | | |
 
-**Status:** proposed paid extension. No current command sequence or fresh outcome is supplied as a completed lab.
+**Write two short observations:** Which policy reused its first selection? Which policy made new decisions, and did its model change? Explain why three model calls within one question do not mean three separate per-question decisions.
 
+## What to hand in
+
+One Markdown document containing:
+
+1. Workspace revision/clock and the selected preparation settings.
+2. Completed Tables A and B, final answers, evidence checks and trace links.
+3. The five short observations requested above.
+
+No code changes, JSON upload, or new evaluation dataset are required. Record allowed failures or unexpected choices honestly. A missing gateway decision is **inconclusive**, not proof that routing worked. Do not include API keys.
+
+## Cleanup
+
+Select **Mode → Normal support model** to start a fresh ordinary conversation. Leave the policy document clean, guardrail off, source authority on, and private-instruction example off. Keep your recorded runs; do not delete other learners' records or reset shared data.
+
+## References
+
+- [Instructor demo and setup](instructor-demo.md)
+- [Separate reference answers](solutions/reference-answers.md) — read after completing the exercise
+- Optional historical context: [18 classifier cases](evidence/eighteen-classifier-cases.md) and [six scope conversations](evidence/six-scope-conversations.md). These are dated studies, not expected outputs for this live exercise.

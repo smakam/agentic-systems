@@ -572,6 +572,9 @@ Every lesson in this part is an experiment: a hypothesis, one change, the same e
 - **Hands-on readiness:** Already measured: LLM/JEV, restricted OpenRouter, keyword/heuristic/semantic classifiers, plus six conversations under four live policies. Published examples use the earlier nano/GPT-5 baseline, not the latest nano/GPT-5.4 run. Learner lab still needs checkpoints and bounded commands.
 - **Pending:** Rerun a bounded fixed-model vs conversation/question comparison on the current prompt/catalog/history. Explicitly remeasure cache tokens, input volume, calls, cost and latency, and also regrade quality/tool usage; do not assume only caching changed. Use one declared model pool and identical fixtures. Preserve historical reports; label cold/warm/run-order effects and separate classifier cost. Larger held-out coverage remains future validation.
 
+
+**Learner exercise update — October 14, 2026:** The [numbered observation lab](exercises/chapter-16-model-routing/exercise.md) gives six exact classifier cases using keyword rules, native heuristic v2 and an LLM classifier at question scope, then two scope cases with the same LLM classifier. Learners record answers, evidence and routing metadata in the supplied tables. Questions differ from the instructor demo. [Separate solutions](exercises/chapter-16-model-routing/solutions/reference-answers.md). The native heuristic-v2 profile uses the bundled trained artifact, not the historical default heuristic. Obsolete alternative exercise proposals are replaced.
+
 ### 17. Workflow vs single agent vs multi-agent
 
 **Draft learner practice — for review, not finalized:**

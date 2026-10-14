@@ -9,11 +9,11 @@ Use the **test workspace**, [127.0.0.1:5179](http://127.0.0.1:5179/), database `
 3. Open the test UI, sign in as **operator**, and open **Support workspace**. Select **OpenAI Agents SDK**.
 4. Set **Test policy document → Clean policy**. Wait for indexing to finish. This changes only the test document corpus; it does not reset business records. Do not run other fixture-changing labs concurrently.
 5. Use **Gateway guardrail → Off**, keep **Source-authority prompt** enabled, and leave private-instruction mode off. Keep long-term memory off. Record the database revision and demo clock.
-6. Confirm that **Model routing demo** offers fixed Nano, fixed GPT-5 and native LiteLLM routing. A missing panel means the test backend or its evaluation key is not configured; it is not a classification outcome.
+6. Confirm that **Model routing demo** offers fixed Nano, fixed GPT-5 and native LiteLLM routing, with Keyword rules, Built-in heuristic v2 and LLM classifier choices. A missing panel means the test backend or its evaluation key is not configured; it is not a classification outcome.
 
 The prepared configuration is [routing-demo.models.yaml](../../../app/infra/routing-demo.models.yaml). Pool: `eval-nano` → GPT-5 Nano; `eval-5` → GPT-5. Native tiers map SIMPLE to Nano and MEDIUM / COMPLEX / REASONING to GPT-5. These labels describe request complexity, not model quality.
 
-The installed LiteLLM 1.102.1 license limits customized heuristic routers and custom classifier prompts. This lab therefore has **one keyword profile at question scope** and **two LLM profiles using the same shipped classifier prompt**. The historical business rubric in our results is different; it is linked below. No license state or vendor code is modified.
+The installed LiteLLM 1.102.1 license limits customized heuristic routers and custom classifier prompts. This lab has **one keyword profile at question scope**, **one native heuristic-v2 profile at question scope**, and **two LLM profiles using the same shipped classifier prompt**. The heuristic-v2 profile uses the bundled trained artifact and is included in the learner exercise; it differs from the older default heuristic in the historical study. The historical business rubric in our results is different; it is linked below. No license state or vendor code is modified.
 
 ## Part A — Compare classification policies
 
@@ -71,6 +71,8 @@ Use the same LLM classifier, answer pool, security settings and question sequenc
 6. Check failures before claiming a route worked. If the run failed, the UI shows no completed answer model or only completed calls before failure. A selected profile alone does not prove dispatch.
 
 The gateway audit uses OpenTelemetry. The installed Langfuse v4 deployment uses `/api/public/v2/observations` for readback; legacy trace/observation API 404s do not mean ingestion failed. See [Langfuse Public API](https://langfuse.com/docs/api-and-data-platform/features/public-api).
+
+For the learner exercise, use the separate [numbered instructions and observation tables](exercise.md). The learner questions differ from these demo questions.
 
 ## Cleanup
 

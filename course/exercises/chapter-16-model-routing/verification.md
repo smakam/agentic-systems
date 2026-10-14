@@ -25,3 +25,7 @@ Keyword question-scope checks selected Nano for the explicit lookup and GPT-5 fo
 The installed license limits customization, so only one keyword profile is registered. Both LLM scope profiles use the same shipped classifier rubric. No license state or vendor code was modified. Existing historical saved-answer studies remain separate.
 
 [Routing metadata readback](verification/native-routing-traces-2026-10-13.json)
+
+## Heuristic learner route — October 14, 2026
+
+Native `heuristic_v2` passed installed capability-limit validation and was added at question scope with the same Nano/GPT-5 answer pool. Test-workspace policy boundary tests passed (four tests); frontend build passed. Two learner questions completed through the application and selected Nano. These are route-rehearsal observations, not a quality benchmark. The existing keyword and LLM profiles, provider configuration and gateway security integrations were retained.

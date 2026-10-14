@@ -1,25 +1,53 @@
-# Chapter 16: Recorded worksheet reference answers
+# Chapter 16 — Model routing reference answers
 
-Draft reference for Option A, October 13, 2026. Historical evidence: September 30, 2026. Equivalent reasoning is acceptable; these are evidence checks, not required identical wording.
+Use this after completing [the learner exercise](../exercise.md). These are interpretation checks, not text learners must reproduce. Fresh classifications and answers may vary; use the learner's actual trace and current business records.
 
-## Part 1
+## Part A — Classifier observations
 
-1. **Three decisions and execution location.** Pool: GPT-5 nano and GPT-5. Mapping: SIMPLE to Nano, COMPLEX to GPT-5, with all higher native tiers also mapped to GPT-5. Scope pilot: conversation or question, against both fixed models. The application runner selected/pinned the alias; SDK ran the model–tool loop; LiteLLM forwarded explicit selections. The pilot did not test gateway-native scope routing. Model choice did not change trusted tool authorization.
-2. **Classifier comparison.** LLM savings versus GPT-5: `1 − 0.249470 / 0.456238 ≈ 45.3%`. Fully correct cases dropped from 17 to 16. Nano used much less estimated money but got only 9 fully correct cases. LLM selected nine GPT-5 trajectories, rather than eighteen. Total policy cost includes classification plus the chosen candidate's whole trajectory, not just token unit price.
-3. **Provider timeout.** Generic heuristic selected Nano. The answer omitted the recorded payout provider timeout and was partial. Domain-aware keyword, LLM and JEV classification selected GPT-5, whose recorded answer identified the timeout. This is a specific known case, not proof of a universally superior classifier.
-4. **Order-2 conversation.** Conversation scope: Nano/Nano/Nano. Question scope: Nano/GPT-5/GPT-5. The pinned second answer missed the 24-hour hold after delivery. Application-supplied prior history reaches the new model after a switch. The separate fixed-Nano run answered that question correctly, so one outcome cannot establish a scope advantage.
-5. **Conversation outcome.** Quality is all-three-answers-correct conversations divided by six distinct scenarios. Nano and both routers got 4/6; GPT-5 got 6/6. Four policy runs across each scenario produce 72 answers but only six distinct scenario clusters. Routing reduced incorrect individual answers from two to one without increasing the fully correct conversation count. Saved trajectories cannot recreate a changed live follow-up history when different models generate earlier answers.
-6. **Caching.** Question scope switched four times and had 57.9% candidate cached input, versus conversation scope's 54.0%. That contradicts an automatic assumption that switching must reduce caching in this workload. It does not establish a cause: shared prior cache warmth, differing generated histories, run order, a funding interruption and one pass remain confounders. A model switch retains explicitly supplied history, including prior errors. Cache-adjusted cost is a usage-based estimate, not an invoice.
+| Cases | Policy | How classification runs | What the trace should establish |
+|---|---|---|---|
+| A1–A2 | `keyword_question` | Literal keyword rules, then the configured fallback if none matches | Requested keyword policy, tier/cause, routed alias, and actual answer model |
+| A3–A4 | `heuristic_question` | Native LiteLLM heuristic v2 using its bundled trained artifact | Requested heuristic policy, a heuristic decision cause, tier, routed alias, and actual model |
+| A5–A6 | `llm_question` | Nano interprets the shipped classifier rubric | Fresh `llm_classifier` decision, classifier alias `eval-nano`, tier, and selected answer model |
 
-## Part 2
+The keyword configuration includes `show` and `quantity` in SIMPLE, and `investigate` in COMPLEX. Q1 should therefore show `literal_keyword_match` and SIMPLE → `eval-nano`; Q2 should show the same cause and COMPLEX → `eval-5`. Verify the recorded metadata rather than inferring classification from the answer. If both tiers match, the highest matched tier wins.
 
-1. **Quality-bar decision.** At 16/18, LLM and JEV and fixed GPT-5 qualify among Table A policies. LLM has the lowest estimated cost, $0.249470. At 17/18, only fixed GPT-5 qualifies, at $0.456238. These are choices within a small known development sample. A deployment decision needs representative fresh tests, repeats and acceptable risk slices.
-2. **JEV overhead versus total.** JEV classifications cost less ($0.003759 versus $0.005436), but JEV chose GPT-5 ten times versus the LLM's nine. That additional stronger-model trajectory made the total cost higher: $0.266017 versus $0.249470. Low routing overhead does not guarantee a low selected-model bill.
-3. **Fresh scenarios.** Examples may include a bounded order item lookup, an ambiguous seller/product clarification and a precisely 24-hour payout boundary. Independently fix order quantities, identities, payment/delivery/return state, applicable policy and clock. Do not place gold facts or future questions in classifier inputs. Holdout questions should differ from rule-development questions. No answer data for these new scenarios has been generated here.
-4. **Scope patterns.** Stable-difficulty conversations can suit pinning and fewer classification calls. Mixed lookup/investigation conversations can suit question reclassification with supplied history. Pinning risks keeping a hard follow-up on the first cheap choice. Reclassification adds overhead and can under-route deceptively simple follow-ups. Cedar remained SIMPLE under both policies, so changing scope did not fix the classifier's risk estimate.
-5. **Failure handling.** Availability fallback reacts to request failure/unavailability within the approved pool. Quality escalation needs a reliable answer check and must include added cost/latency in evaluation. The model's confidence or a fluent answer alone is insufficient. Existing backend authorization/read-only tool constraints still apply after fallback or escalation.
+Do not prescribe heuristic-v2 or LLM tiers as fixed golden labels for these questions. Both are decisions to inspect. Native SIMPLE maps to Nano; MEDIUM, COMPLEX and REASONING map to GPT-5. The native LLM rubric is not the historical business-context rubric. Heuristic v2 is not the historical default heuristic.
 
-## Decision limits to retain
+`routing_decision.routed_model` names the selected answer alias, not the classifier. `routing_decision.classifier_model` names the LLM classifier when present. Keyword matching and the local heuristic need no LLM classifier call. The `model` field in the gateway audit and corresponding generation identify the model used for the answer call. A tier, router name, or selected UI option alone does not establish answer correctness.
 
-Part 1 is saved-answer replay with full-price estimates and known cases. Part 2 is fresh live conversation execution over known fixtures, one pass, with uncontrolled cache warmth. Reviews have mixed assistant/human provenance. Published Nano/GPT-5 figures do not describe the current GPT-5.4 interactive baseline. Native per-call/stage/escalation experiments were deferred. No learner live lab or new model results were completed in this preparation.
+### Check the business answers
 
+On the unchanged seeded `market_test` revision, order-2 contains a Ceramic Mug Set, quantity two. Its seller payout is held, shipment is pending, and delivery has not been recorded. The post-delivery waiting condition has not been satisfied. An answer claiming the payout has already completed conflicts with the baseline. If records have changed, grade against the recorded current state rather than this seeded reference.
+
+For the three requested observations:
+
+1. Compare Q1's actual tiers, causes and models across A1/A3/A5. Agreement or disagreement is acceptable when accurately documented.
+2. Compare Q2 across A2/A4/A6 in the same way. Explain the observed classification, without claiming general classifier superiority from two questions.
+3. A stronger selected model does not guarantee a correct answer. Check tool inputs/results and policy evidence independently. An incorrect order identifier can produce an empty lookup even when the route worked.
+
+## Part B — Scope observations
+
+| Scope | First user question | Later user questions | Model calls after tools |
+|---|---|---|---|
+| Per conversation | Classify and select | Reuse the conversation's selected model while the pin remains valid | Retain that selection |
+| Per question | Classify and select | Classify each new question with supplied history; keep or change model | Reuse the current question's selection |
+
+In B1, record the first choice and verify the later `session_affinity_pin` causes. A simple greeting often selects Nano, but pinning would also retain GPT-5 if that were the first choice. A pin lasts up to one hour in this configuration; restart or expiry can end it.
+
+In B2, each new question should have a fresh `llm_classifier` decision. Calls after tools use `user_turn_continuation`. The harder question may select GPT-5, but a model switch is not required to prove reclassification. Inspect the cause, not just whether the model name changed.
+
+The seeded net payout for order-2 is ₹1,618.20. Learners should check the calculation against current records and distinguish hypothetical net amount from eligibility or execution. All three answers need evidence checks; a pinned model or a successful model switch does not prove quality.
+
+The scope comparison holds the LLM classifier, answer pool, security settings and question sequence fixed. It changes when selection is made. Per question is different from per model call: several model calls and tools can occur inside one user question.
+
+## Submission review
+
+- Both tables contain observed values and trace links, not invented expected metadata.
+- The final answer and evidence check are recorded for each question.
+- Classifier model, routed alias, and actual answer model are distinguished.
+- Fresh classification and reused selection are distinguished using cause.
+- Conclusions are limited to the observed runs. Cost and latency depend on classification overhead, selected models and cache eligibility; no cache superiority claim is required.
+- Failed calls, missing metadata and unexpected results are described as such.
+
+The exercise requires no new rubric, code, score import or dataset upload. Historical reports are optional context and do not substitute for these live observations.

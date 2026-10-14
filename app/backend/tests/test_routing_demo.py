@@ -13,6 +13,11 @@ class RoutingBoundaries(unittest.TestCase):
             validate('arbitrary_model', available=True)
         with self.assertRaises(ValueError):
             validate('keyword_conversation', available=True)
+        with self.assertRaises(ValueError):
+            validate('heuristic_conversation', available=True)
+        with self.assertRaises(ValueError):
+            validate('heuristic_question', available=False)
+        validate('heuristic_question', available=True)
 
     def test_scope_session_is_stable_and_policy_scoped(self):
         a = configuration('llm_conversation', 'owned-conversation')

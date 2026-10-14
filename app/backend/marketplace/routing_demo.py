@@ -10,10 +10,10 @@ POLICIES = {
     'fixed_nano': {'label': 'Fixed GPT-5 Nano', 'alias': 'eval-nano', 'model': 'gpt-5-nano'},
     'fixed_gpt5': {'label': 'Fixed GPT-5', 'alias': 'eval-5', 'model': 'gpt-5'},
 }
-for classifier in ('keyword', 'llm'):
-    for scope in (('question',) if classifier == 'keyword' else ('conversation', 'question')):
+for classifier in ('keyword', 'heuristic', 'llm'):
+    for scope in (('question',) if classifier != 'llm' else ('conversation', 'question')):
         POLICIES[classifier + '_' + scope] = {
-            'label': ('Keyword rules' if classifier == 'keyword' else 'LLM classifier') + ' / per ' + scope,
+            'label': {'keyword': 'Keyword rules', 'heuristic': 'Built-in heuristic v2', 'llm': 'LLM classifier'}[classifier] + ' / per ' + scope,
             'alias': 'ch16-' + classifier + '-' + scope,
             'model': 'native gateway router', 'classifier': classifier, 'scope': scope,
             'classifier_model': 'eval-nano' if classifier == 'llm' else None,
