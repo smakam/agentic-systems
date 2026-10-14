@@ -4,7 +4,7 @@
 
 **Reviewer-facing outline:** [Course outline for feedback](https://docs.google.com/document/d/1UFUyWdsYq-mIXusY0pakXXvWOXQOmBry/edit).
 
-**Owner:** Sreenivas Makam. Chapters 1–18 contain the current reviewed lesson decisions. Chapters 19–22 retain their planning detail until review. Implementation history belongs in [MILESTONE-LOG.md](../MILESTONE-LOG.md); application requirements belong in [SPECIFICATION.md](../SPECIFICATION.md).
+**Owner:** Sreenivas Makam. Chapters 1–18 contain the current reviewed lesson decisions. Chapters 19–21 retain their planning detail until review. Implementation history belongs in [MILESTONE-LOG.md](../MILESTONE-LOG.md); application requirements belong in [SPECIFICATION.md](../SPECIFICATION.md).
 
 ## Positioning
 
@@ -26,7 +26,7 @@ Speaker notes contain presentation cues, demo steps and exercise instructions. K
 
 ## Chapter map
 
-Six sections and twenty-two chapters. Chapters may contain several short lectures.
+Six sections and twenty-one chapters. Chapters may contain several short lectures.
 
 | Section | Chapters | Focus |
 |---|---|---|
@@ -35,7 +35,7 @@ Six sections and twenty-two chapters. Chapters may contain several short lecture
 | C | 6–12 | Core Components |
 | D | 13–15 | Observability, Evaluation and Security |
 | E | 16–18 | Advanced Agent Topics |
-| F | 19–22 | Agentic Platforms |
+| F | 19–21 | Agentic Platforms |
 
 ## A. Course Introduction
 
@@ -253,7 +253,7 @@ Reuse the marketplace support tasks, MCP tool contracts and evaluation criteria 
 
 **Orientation:** Compare four provider categories—cloud platforms, frontier model providers with agent tooling, framework-led independents and platform-led independents—then map them onto models, frameworks, managed infrastructure, builders and governance. Supporting several models or clouds is different from governing agents across runtimes.
 
-**Companion material:** [Platform landscape and customer fit](PLATFORM-GUIDE.md#platform-landscape-positioning-and-customer-fit) · [Component ownership worksheet](PLATFORM-GUIDE.md#common-comparison-agentic-system-components-and-ownership). The guide holds product references, technical boundaries, architecture, dashboard steps, detailed evidence and enhancements.
+**Teaching material:** The combined Chapter 21 deck and speaker notes hold platform landscape/customer fit, component ownership and decision criteria. Historical implementation evidence remains in [MILESTONE-LOG.md](../MILESTONE-LOG.md); platform-specific setup remains in the relevant chapter materials.
 
 ### 19. Google Gemini Enterprise Agent Platform
 
@@ -262,56 +262,38 @@ Reuse the marketplace support tasks, MCP tool contracts and evaluation criteria 
 - **Core lesson and demonstration:** Deploy the separate **Support Agent Basics** agent, with packaged fictional orders and native `lookup_order`. Use native Google Playground to inspect record evidence, a same-session follow-up, an unknown order, native session/trace events and separately triggered Memory Bank generation/recall. No marketplace UI, SQL, MCP middleware, tunnel or Cloud SQL is required for Basics.
 - **Standalone practice:** Follow the chapter's concise setup guide for prerequisites, editable environment settings, installation and test/deploy commands. The instructor guide starts after deployment and supplies the exact questions and observations. Reference answers separate fictional source facts from model behavior.
 - **Optional adventurous exercise:** Build the full cloud integration connecting the chat application/backend and business data/MCP to a Google-hosted agent, using the linked cloud instructions. This is separate from standalone Basics and preserves the existing Marketplace Support ADK Lab.
-- **Current verification:** Basics has been created. Native Playground product lookup, same-session held-payout follow-up, missing-record result and model/tool traces have been checked. Memory Bank generation and scoped stored-preference retrieval passed, including an empty result for another test user. Fresh-session business-answer use remains unverified after a service error and bounded retry timeout. The existing cloud integration has its own historical evidence; it is not a fresh learner-project installation rehearsal.
+- **Current verification:** Basics has been created. Native Playground product lookup, same-session held-payout follow-up, missing-record result and model/tool traces have been checked. Memory Bank generation and scoped stored-preference retrieval passed, including an empty result for another test user. Fresh-session preference preload and answer use were subsequently verified in a recovered native trace after the CLI retry timed out; this is not a passed CLI verification suite. The existing cloud integration has its own historical evidence; it is not a fresh learner-project installation rehearsal.
 
 **Materials:** [Setup guide](exercises/chapter-19-google-agent-platform/setup-guide.md) · [Instructor walkthrough](exercises/chapter-19-google-agent-platform/instructor-demo.md) · [Exercise](exercises/chapter-19-google-agent-platform/exercise.md) · [Separate answers](exercises/chapter-19-google-agent-platform/solutions/answers.md) · [Basics code and instructions](../app/google/basics/README.md) · [Optional integration walkthrough](GOOGLE-PLATFORM-PLAN.md).
 
 ### 20. Lyzr Agent Studio
 
-**Draft learner practice — for review, not finalized:**
+- **Lesson:** Purpose and customer fit, product stack (Framework, Studio, ADK/REST, Architect, Cognis and separate Opencontroller governance), deployment/model/data boundaries, benefits/tradeoffs and cost drivers. Documented enterprise choices are distinct from the hosted configuration rehearsed here.
+- **Core demo:** A separate **Support Agent Basics** in native Studio/Playground, using the same fictional JSON source as Google Basics converted deterministically to a native TXT Knowledge Base. Inspect retrieval, a same-session follow-up, missing records and native execution evidence; distinguish KB retrieval from Google's Python lookup tool. Native memory inspection is optional and evidence-bounded.
+- **Setup:** [Separate setup guide](exercises/chapter-20-lyzr-agent-studio/setup-guide.md), followed by [instructor demo](exercises/chapter-20-lyzr-agent-studio/instructor-demo.md). No marketplace, SQL, MCP or tunnel is needed for Basics. Local package checks and bounded hosted API known-order, missing-ID and same-session follow-up checks pass. Native Cognis is enabled with Cross Session OFF; native Playground known-order, same-chat and missing-ID checks passed with actual KB source chunks visible in Activity; cross-session recall is untested.
+- **Optional exercise:** One [full cloud integration](exercises/chapter-20-lyzr-agent-studio/exercise.md), requiring completed Cloud Setup: cloud chat/backend calls a separate Lyzr marketplace agent, which calls the GCP MCP/data backend. Preserve the standalone Basics and existing instructor agents. [Separate answers](exercises/chapter-20-lyzr-agent-studio/solutions/answers.md).
+- **Reference:** [Existing Lyzr integration](../app/lyzr/README.md) preserves historical configurations and bounded results. Earlier local-tunnel results do not prove a fresh learner cloud deployment.
 
-- **Core lesson:** A standalone Lyzr support-agent activity in native Studio/Playground, with native session, memory and observability inspection. Keep the required lesson independent of the marketplace chat application; determine its precise fictional-data/tool setup during Chapter 20 review.
-- **Exercise to prepare:** Ask a known question and follow-up, inspect native sources/trace and distinguish session context from persistent memory.
-- **Solution to prepare:** Native setup, exact fixture/prompts, expected tool/source checkpoints and annotated memory/trace observations. The standalone lesson is not yet implemented or verified.
+### 21. Choosing an Agent Platform
 
-- **Learning objective:** Understand the agent execution, tools, sessions, memory and tracing supplied by Lyzr's managed platform.
-- **Optional integration extension:** Connect the hosted Lyzr agent to the existing GCP marketplace chat and authenticated MCP/Cloud SQL business backend, with explicit credential/target instructions from the [Lyzr integration guide](../app/lyzr/README.md), [runtime selector/configuration](../app/RUNTIME-SELECTOR.md) and [cloud setup](../app/CLOUD-SETUP.md).
-- **Historical evidence:** Existing local/cloud marketplace adapters, hosted business calls, sessions and native Cognis were validated. Keep the earlier checklist-use limitation visible; those integration results do not establish a future standalone lesson's acceptance.
-- **Details:** [Platform component ownership and historical results](PLATFORM-GUIDE.md#21-lyzr-agent-studio).
+**Agreed combined lesson:** Recap our OpenAI Agents SDK baseline and completed Google/Lyzr integration evidence, introduce the broader platform landscape, compare component ownership, then explain how to choose a stack. This merges the former other-platform overview and decision chapter into one closing lesson.
 
-### 21. Other Agent Platforms
-
-**Draft learner practice — for review, not finalized:**
-
-- **Exercise:** Complete a component-ownership worksheet for two offerings: agent execution, tools, sessions, memory, tracing, deployment and access.
-- **Solution to prepare:** A worked comparison with dated official sources and clearly identified unknowns; this is a documentation exercise, not a deployment lab.
-
-- **Learning objective:** Compare managed agent offerings with the SDK baseline by component ownership and operational responsibility.
-- **Format:** Slides only, about one or two slides per offering; no new deployment labs.
-- **Covers:** AWS Bedrock AgentCore; Claude Managed Agents; Microsoft Foundry; OpenAI Agents API managed runtime.
-- **Comparison lens:** Who runs the agent, manages sessions/context, connects tools, supplies memory and tracing, and controls deployment and access. Distinguish frameworks, models and hosted runtimes.
-- **Evidence boundary:** These are documentation-based overviews, not marketplace integrations validated in this course. OpenAI Agents SDK remains the baseline throughout the application; its managed Agents API is a distinct offering. See [official Agents API documentation](https://developers.openai.com/api/docs/guides/agents-api/overview). Recheck product capabilities when preparing slides.
-- **Deferred:** A hands-on AWS hosting chapter may be added later if bandwidth permits; it is outside the current release scope.
-
-### 22. Choosing an AI platform
-
-**Draft learner practice — for review, not finalized:**
-
-- **Exercise:** Write a short decision report using results collected throughout the course: chosen design/platform, evidence, trade-offs, limitations and next steps.
-- **Solution to prepare:** An example decision report and rubric; explain the reasoning and distinguish measured integrations from documentation-only comparisons.
-
-- **Learning objective:** Choose a stack using customer needs, measured results and ownership requirements.
-- **Lab:** Generate a decision report from available tracks; compare quality, cost, latency, integration effort and control, with confounders disclosed.
-- **Closing lesson — prepare with this chapter:** Use the existing decision-report lab to conclude the course. Learners summarize their chosen design/platform, supporting evidence, quality/cost/latency trade-offs and limitations, then identify sensible next steps. Prepare this during chapter 22 delivery work; no additional chapter or implementation project is required. End with a thank-you slide; no separate conclusion chapter.
-- **Status:** Method available; prepare the decision lesson from the SDK baseline and completed Google/Lyzr tracks, with documentation-only offerings clearly identified.
-- **Details:** [Decision criteria, evidence and pending work](PLATFORM-GUIDE.md#22-choosing-an-ai-platform).
+- **Learning objective:** Choose a stack using customer needs, measured results, ownership requirements and operational responsibility. Distinguish models, frameworks, builders, managed runtimes and governance/control planes.
+- **Landscape:** Documentation-based overviews of AWS Bedrock AgentCore, Claude Managed Agents, Microsoft Foundry and the OpenAI managed Agents API; include broader categories/customer fit where they clarify the choice. These are not new marketplace deployment labs.
+- **Comparison:** Who runs the agent, supplies tools, manages sessions/context and long-term memory, provides tracing/evaluation, controls access/deployment, and owns costs/integration effort. SDK/framework versus managed execution is a separate choice from model selection.
+- **How to choose:** Start with the task and existing commitments; compare needed capabilities, engineering capacity, control, quality/cost/latency and operational burden. Disclose model, prompt, context, fixture and hosting confounders; do not rank platforms from small unrelated samples.
+- **Learner practice — prepare with this chapter:** Complete a component-ownership comparison for two offerings, then write a short decision report identifying a chosen design/platform, supporting evidence, trade-offs, unknowns and next steps. Provide a worked example and rubric, separating tested integrations from dated official documentation.
+- **Closing:** Summarize the chosen architecture and what to verify next, then end with a thank-you slide. No separate Chapter 22 or additional implementation project is required.
+- **Evidence boundary:** Our SDK/Google/Lyzr results are bounded integration evidence. Other offerings are documentation-based; recheck official capabilities and costs before recording. OpenAI Agents SDK remains the application baseline; its managed Agents API is a distinct offering.
+- **Deferred:** Hands-on AWS or additional managed-runtime deployment labs remain outside the release scope.
+- **Materials:** [Combined Chapter 21 deck](https://docs.google.com/presentation/d/17AXM8BjDRNuc53p1NGmcE9Mh8lK7cMfF/edit) · [Speaker notes](https://drive.google.com/file/d/1Jbn7KL5nADFuwEbXiMqPhlfZqcT1pTC_/view) · [HTML review](https://drive.google.com/file/d/1ebBuCxTN_8j5pXhOikqODQebKyM3jmxc/view) contain the landscape, comparison and decision method. Historical platform experiments remain in [MILESTONE-LOG.md](../MILESTONE-LOG.md).
 
 ---
 
 ## Delivery and release checks
 
-The required release retains all six sections and twenty-two chapters, including multi-agent design and memory. Google and Lyzr remain the hands-on platform tracks; the other-platform chapter is documentation-based. Additional AWS/Claude/Microsoft/OpenAI managed-runtime deployment labs are outside this release.
+The required release retains all six sections and twenty-one chapters, including multi-agent design and memory. Google and Lyzr remain the hands-on platform tracks; the other-platform chapter is documentation-based. Additional AWS/Claude/Microsoft/OpenAI managed-runtime deployment labs are outside this release.
 
 Before recording and release, rehearse the written setup on a clean machine, verify current model availability and lab costs, and provide saved evidence for learners limiting paid calls. Record and edit chapter lectures after their materials and learner paths are reviewed. Record the welcome last; agree the separate promotional video’s content before recording it. Managed-platform lessons need dated sources and current setup checks.
 
-Future model migration or broader experiments must preserve dated reports and state which configuration changed. Chapters 19–22 retain their detailed planning until review; refine those chapters without reopening completed earlier activities.
+Future model migration or broader experiments must preserve dated reports and state which configuration changed. Chapters 19–21 retain their detailed planning until review; refine those chapters without reopening completed earlier activities.

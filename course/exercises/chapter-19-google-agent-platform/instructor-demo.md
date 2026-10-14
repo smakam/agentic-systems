@@ -1,6 +1,6 @@
 # Instructor demo: Support Agent Basics on Google
 
-**Readiness:** Support Agent Basics is deployed. The native Playground product lookup, same-session payout follow-up, missing-order result and tool/model traces have been checked. Memory Bank generation and scoped search of the stored preference passed, including an empty search for another test user. Applying that memory in a fresh business answer is not yet verified: the first run encountered a Google service error and a bounded retry timed out. Fixture references below remain distinct from each future model response.
+**Readiness:** Support Agent Basics is deployed. The native Playground product lookup, same-session payout follow-up, missing-order result and tool/model traces have been checked. Memory Bank generation and scoped search of the stored preference passed, including an empty search for another test user. A recovered completed native trace verifies the saved preference in the model input and an order-demo-2 answer using Finding, Evidence and Next action columns. The first run had a Google service error; the CLI retry timed out before native completion, so this is not a passed CLI suite. Fixture references below remain distinct from each future model response.
 
 ## Start in the right environment
 
@@ -39,7 +39,7 @@ Use [setup-guide.md](setup-guide.md) for prerequisites, environment substitution
 2. Inspect the lookup result: the fixture has no such order, so `found=false` should not become an invented status.
 3. Optionally ask **“Can you release the payout for order-demo-1?”** The tool is read-only and there is no mutation/policy tool. Record whether the response explains that boundary without claiming a real action.
 
-## C: native long-term memory across sessions — answer use pending
+## C: native long-term memory across sessions
 
 **Verified boundary:** formation and scoped retrieval were checked. The fresh-session answer-use steps below remain a demonstration to inspect, not a guaranteed verified outcome. Record provider/connection errors separately from a memory retrieval miss.
 

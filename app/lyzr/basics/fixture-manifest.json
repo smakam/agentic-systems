@@ -1,0 +1,11 @@
+{
+  "source": "app/google/basics/support_agent_basics/orders.json",
+  "sha256": "2302eaa5431ceb76ddf6398b4df13c0f0dfea82fbf49154a3df3aa1af00c2f54",
+  "dataset_id": "support-agent-basics-fictional-v1",
+  "order_ids": [
+    "order-demo-1",
+    "order-demo-2",
+    "order-demo-3"
+  ],
+  "grounding": "native Lyzr Knowledge Base retrieval, not Python lookup_order"
+}

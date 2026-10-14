@@ -1,0 +1,210 @@
+{
+  "agent_id": "6acf95f3272a149412fd9e7c",
+  "kb_id": "6acf8ce85394534805b7f780",
+  "verified_at": "2026-10-14",
+  "source_fixture": {
+    "source": "app/google/basics/support_agent_basics/orders.json",
+    "sha256": "2302eaa5431ceb76ddf6398b4df13c0f0dfea82fbf49154a3df3aa1af00c2f54",
+    "dataset_id": "support-agent-basics-fictional-v1",
+    "order_ids": [
+      "order-demo-1",
+      "order-demo-2",
+      "order-demo-3"
+    ],
+    "grounding": "native Lyzr Knowledge Base retrieval, not Python lookup_order"
+  },
+  "native_memory": {
+    "provider": "cognis",
+    "cross_session": false
+  },
+  "cases_before_memory": [
+    {
+      "label": "known_order",
+      "session_id": "6acf95f3272a149412fd9e7c-66cb4927496247d69482d5f9458dea97",
+      "question": "What products and quantities are in order-demo-1?",
+      "response": {
+        "response": "order-demo-1 has:\n- Ceramic Mug Set \u2014 2\n\nScore: 0.4710843",
+        "module_outputs": {
+          "documents": [
+            {
+              "id": "e6a4b1f9-dab5-4718-832c-a7ab3617994c",
+              "score": 0.4710843,
+              "metadata": {
+                "source": "storage/orders-knowledge.txt",
+                "file_path": "storage/orders-knowledge.txt",
+                "file_name": "orders-knowledge.txt",
+                "file_type": "text/plain",
+                "file_size": 1984,
+                "creation_date": "2026-10-14",
+                "last_modified_date": "2026-10-14",
+                "last_accessed_date": "2026-10-14",
+                "timestamp": "2026-10-14T14:41:09.166118+00:00"
+              },
+              "text": "FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-1 { \"order_id\": \"order-demo-1\", \"customer\": \"Demo Customer A\", \"items\": [ { \"product\": \"Ceramic Mug Set\", \"quantity\": 2, \"seller\": \"Demo Home Store\" } ], \"order_status\": \"paid\", \"payment_status\": \"received\", \"shipment_status\": \"not dispatched\", \"payout_status\": \"held\" } --- RECORD BOUNDARY --- FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-2 { \"order_id\": \"order-demo-2\", \"customer\": \"Demo Customer B\", \"items\": [ { \"product\": \"Canvas Weekender\", \"quantity\": 1, \"seller\": \"Demo Travel Store\" } ], \"order_status\": \"delivered\", \"payment_status\": \"received\", \"shipment_status\": \"delivered\", \"payout_status\": \"released\" } --- RECORD BOUNDARY --- FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-3 { \"order_id\": \"order-demo-3\", \"customer\": \"Demo Customer C\", \"items\": [ { \"product\": \"Desk Lamp\", \"quantity\": 1, \"seller\": \"Demo Light Store\" } ], \"order_status\": \"cancelled\", \"payment_status\": \"refunded\", \"shipment_status\": \"cancelled\", \"payout_status\": \"not applicable\" }"
+            }
+          ]
+        }
+      },
+      "passed": true,
+      "seconds": 2.09
+    },
+    {
+      "label": "followup",
+      "session_id": "6acf95f3272a149412fd9e7c-66cb4927496247d69482d5f9458dea97",
+      "question": "What is its payout status?",
+      "response": {
+        "response": "Please specify the exact order ID (`order-demo-1`, `order-demo-2`, or `order-demo-3`) so I can give the payout status from the fictional fixture.",
+        "module_outputs": {
+          "documents": [
+            {
+              "id": "e6a4b1f9-dab5-4718-832c-a7ab3617994c",
+              "score": 0.20993662,
+              "metadata": {
+                "source": "storage/orders-knowledge.txt",
+                "file_path": "storage/orders-knowledge.txt",
+                "file_name": "orders-knowledge.txt",
+                "file_type": "text/plain",
+                "file_size": 1984,
+                "creation_date": "2026-10-14",
+                "last_modified_date": "2026-10-14",
+                "last_accessed_date": "2026-10-14",
+                "timestamp": "2026-10-14T14:41:09.166118+00:00"
+              },
+              "text": "FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-1 { \"order_id\": \"order-demo-1\", \"customer\": \"Demo Customer A\", \"items\": [ { \"product\": \"Ceramic Mug Set\", \"quantity\": 2, \"seller\": \"Demo Home Store\" } ], \"order_status\": \"paid\", \"payment_status\": \"received\", \"shipment_status\": \"not dispatched\", \"payout_status\": \"held\" } --- RECORD BOUNDARY --- FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-2 { \"order_id\": \"order-demo-2\", \"customer\": \"Demo Customer B\", \"items\": [ { \"product\": \"Canvas Weekender\", \"quantity\": 1, \"seller\": \"Demo Travel Store\" } ], \"order_status\": \"delivered\", \"payment_status\": \"received\", \"shipment_status\": \"delivered\", \"payout_status\": \"released\" } --- RECORD BOUNDARY --- FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-3 { \"order_id\": \"order-demo-3\", \"customer\": \"Demo Customer C\", \"items\": [ { \"product\": \"Desk Lamp\", \"quantity\": 1, \"seller\": \"Demo Light Store\" } ], \"order_status\": \"cancelled\", \"payment_status\": \"refunded\", \"shipment_status\": \"cancelled\", \"payout_status\": \"not applicable\" }"
+            }
+          ]
+        }
+      },
+      "passed": false,
+      "seconds": 2.25
+    },
+    {
+      "label": "order_two",
+      "session_id": "6acf95f3272a149412fd9e7c-19a1954b0906463f8df2faf94ed33be0",
+      "question": "What is the payout status of order-demo-2?",
+      "response": {
+        "response": "order-demo-2 payout status: released",
+        "module_outputs": {
+          "documents": [
+            {
+              "id": "e6a4b1f9-dab5-4718-832c-a7ab3617994c",
+              "score": 0.46170592,
+              "metadata": {
+                "source": "storage/orders-knowledge.txt",
+                "file_path": "storage/orders-knowledge.txt",
+                "file_name": "orders-knowledge.txt",
+                "file_type": "text/plain",
+                "file_size": 1984,
+                "creation_date": "2026-10-14",
+                "last_modified_date": "2026-10-14",
+                "last_accessed_date": "2026-10-14",
+                "timestamp": "2026-10-14T14:41:09.166118+00:00"
+              },
+              "text": "FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-1 { \"order_id\": \"order-demo-1\", \"customer\": \"Demo Customer A\", \"items\": [ { \"product\": \"Ceramic Mug Set\", \"quantity\": 2, \"seller\": \"Demo Home Store\" } ], \"order_status\": \"paid\", \"payment_status\": \"received\", \"shipment_status\": \"not dispatched\", \"payout_status\": \"held\" } --- RECORD BOUNDARY --- FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-2 { \"order_id\": \"order-demo-2\", \"customer\": \"Demo Customer B\", \"items\": [ { \"product\": \"Canvas Weekender\", \"quantity\": 1, \"seller\": \"Demo Travel Store\" } ], \"order_status\": \"delivered\", \"payment_status\": \"received\", \"shipment_status\": \"delivered\", \"payout_status\": \"released\" } --- RECORD BOUNDARY --- FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-3 { \"order_id\": \"order-demo-3\", \"customer\": \"Demo Customer C\", \"items\": [ { \"product\": \"Desk Lamp\", \"quantity\": 1, \"seller\": \"Demo Light Store\" } ], \"order_status\": \"cancelled\", \"payment_status\": \"refunded\", \"shipment_status\": \"cancelled\", \"payout_status\": \"not applicable\" }"
+            }
+          ]
+        }
+      },
+      "passed": true,
+      "seconds": 1.88
+    },
+    {
+      "label": "unknown",
+      "session_id": "6acf95f3272a149412fd9e7c-9e71adcbe7f04060b7dfe0ad05ede6d7",
+      "question": "What is the payment status of order-demo-999?",
+      "response": {
+        "response": "No such order exists in this fictional fixture.",
+        "module_outputs": {
+          "documents": [
+            {
+              "id": "e6a4b1f9-dab5-4718-832c-a7ab3617994c",
+              "score": 0.4486078,
+              "metadata": {
+                "source": "storage/orders-knowledge.txt",
+                "file_path": "storage/orders-knowledge.txt",
+                "file_name": "orders-knowledge.txt",
+                "file_type": "text/plain",
+                "file_size": 1984,
+                "creation_date": "2026-10-14",
+                "last_modified_date": "2026-10-14",
+                "last_accessed_date": "2026-10-14",
+                "timestamp": "2026-10-14T14:41:09.166118+00:00"
+              },
+              "text": "FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-1 { \"order_id\": \"order-demo-1\", \"customer\": \"Demo Customer A\", \"items\": [ { \"product\": \"Ceramic Mug Set\", \"quantity\": 2, \"seller\": \"Demo Home Store\" } ], \"order_status\": \"paid\", \"payment_status\": \"received\", \"shipment_status\": \"not dispatched\", \"payout_status\": \"held\" } --- RECORD BOUNDARY --- FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-2 { \"order_id\": \"order-demo-2\", \"customer\": \"Demo Customer B\", \"items\": [ { \"product\": \"Canvas Weekender\", \"quantity\": 1, \"seller\": \"Demo Travel Store\" } ], \"order_status\": \"delivered\", \"payment_status\": \"received\", \"shipment_status\": \"delivered\", \"payout_status\": \"released\" } --- RECORD BOUNDARY --- FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-3 { \"order_id\": \"order-demo-3\", \"customer\": \"Demo Customer C\", \"items\": [ { \"product\": \"Desk Lamp\", \"quantity\": 1, \"seller\": \"Demo Light Store\" } ], \"order_status\": \"cancelled\", \"payment_status\": \"refunded\", \"shipment_status\": \"cancelled\", \"payout_status\": \"not applicable\" }"
+            }
+          ]
+        }
+      },
+      "passed": true,
+      "seconds": 2.34
+    }
+  ],
+  "cases_after_memory": [
+    {
+      "label": "known_order",
+      "session_id": "6acf95f3272a149412fd9e7c-31a1ea6b01454d26ab3084a642cbf2ff",
+      "question": "What products and quantities are in order-demo-1?",
+      "response": {
+        "response": "order-demo-1:\n- Ceramic Mug Set \u2014 2\n\nScore: 0.4710843",
+        "module_outputs": {
+          "documents": [
+            {
+              "id": "e6a4b1f9-dab5-4718-832c-a7ab3617994c",
+              "score": 0.4710843,
+              "metadata": {
+                "source": "storage/orders-knowledge.txt",
+                "file_path": "storage/orders-knowledge.txt",
+                "file_name": "orders-knowledge.txt",
+                "file_type": "text/plain",
+                "file_size": 1984,
+                "creation_date": "2026-10-14",
+                "last_modified_date": "2026-10-14",
+                "last_accessed_date": "2026-10-14",
+                "timestamp": "2026-10-14T14:41:09.166118+00:00"
+              },
+              "text": "FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-1 { \"order_id\": \"order-demo-1\", \"customer\": \"Demo Customer A\", \"items\": [ { \"product\": \"Ceramic Mug Set\", \"quantity\": 2, \"seller\": \"Demo Home Store\" } ], \"order_status\": \"paid\", \"payment_status\": \"received\", \"shipment_status\": \"not dispatched\", \"payout_status\": \"held\" } --- RECORD BOUNDARY --- FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-2 { \"order_id\": \"order-demo-2\", \"customer\": \"Demo Customer B\", \"items\": [ { \"product\": \"Canvas Weekender\", \"quantity\": 1, \"seller\": \"Demo Travel Store\" } ], \"order_status\": \"delivered\", \"payment_status\": \"received\", \"shipment_status\": \"delivered\", \"payout_status\": \"released\" } --- RECORD BOUNDARY --- FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-3 { \"order_id\": \"order-demo-3\", \"customer\": \"Demo Customer C\", \"items\": [ { \"product\": \"Desk Lamp\", \"quantity\": 1, \"seller\": \"Demo Light Store\" } ], \"order_status\": \"cancelled\", \"payment_status\": \"refunded\", \"shipment_status\": \"cancelled\", \"payout_status\": \"not applicable\" }"
+            }
+          ]
+        }
+      },
+      "passed": true,
+      "seconds": 2.88
+    },
+    {
+      "label": "followup",
+      "session_id": "6acf95f3272a149412fd9e7c-31a1ea6b01454d26ab3084a642cbf2ff",
+      "question": "What is its payout status?",
+      "response": {
+        "response": "order-demo-1 payout status: held\n\nScore: 0.20993662",
+        "module_outputs": {
+          "documents": [
+            {
+              "id": "e6a4b1f9-dab5-4718-832c-a7ab3617994c",
+              "score": 0.20993662,
+              "metadata": {
+                "source": "storage/orders-knowledge.txt",
+                "file_path": "storage/orders-knowledge.txt",
+                "file_name": "orders-knowledge.txt",
+                "file_type": "text/plain",
+                "file_size": 1984,
+                "creation_date": "2026-10-14",
+                "last_modified_date": "2026-10-14",
+                "last_accessed_date": "2026-10-14",
+                "timestamp": "2026-10-14T14:41:09.166118+00:00"
+              },
+              "text": "FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-1 { \"order_id\": \"order-demo-1\", \"customer\": \"Demo Customer A\", \"items\": [ { \"product\": \"Ceramic Mug Set\", \"quantity\": 2, \"seller\": \"Demo Home Store\" } ], \"order_status\": \"paid\", \"payment_status\": \"received\", \"shipment_status\": \"not dispatched\", \"payout_status\": \"held\" } --- RECORD BOUNDARY --- FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-2 { \"order_id\": \"order-demo-2\", \"customer\": \"Demo Customer B\", \"items\": [ { \"product\": \"Canvas Weekender\", \"quantity\": 1, \"seller\": \"Demo Travel Store\" } ], \"order_status\": \"delivered\", \"payment_status\": \"received\", \"shipment_status\": \"delivered\", \"payout_status\": \"released\" } --- RECORD BOUNDARY --- FICTIONAL COURSE DATA. Dataset: support-agent-basics-fictional-v1. As of: 2026-10-14T09:00:00Z. Complete order ID catalogue: order-demo-1, order-demo-2, order-demo-3. Only these three orders exist in this fixture. Do not invent records, dates, policies or eligibility. No live marketplace connection. SOURCE RECORD order-demo-3 { \"order_id\": \"order-demo-3\", \"customer\": \"Demo Customer C\", \"items\": [ { \"product\": \"Desk Lamp\", \"quantity\": 1, \"seller\": \"Demo Light Store\" } ], \"order_status\": \"cancelled\", \"payment_status\": \"refunded\", \"shipment_status\": \"cancelled\", \"payout_status\": \"not applicable\" }"
+            }
+          ]
+        }
+      },
+      "passed": true,
+      "seconds": 2.36
+    }
+  ],
+  "limits": [
+    "Native UI trace inspection pending",
+    "Cross-session extraction/recall not tested",
+    "Provider quota-error cause not isolated",
+    "Six bounded synthetic inference requests; no platform ranking"
+  ]
+}
