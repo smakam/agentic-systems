@@ -27,27 +27,59 @@ def unwrap_order(value):
             if got is not None:return got
     return None
 
+def safe_event(value):
+    """Preserve synthetic native diagnostics, excluding credential-bearing fields."""
+    if hasattr(value,'model_dump'):value=value.model_dump(mode='json')
+    if isinstance(value,dict):
+        return {str(k):('[redacted]' if any(secret in str(k).lower() for secret in
+                ('authorization','credential','access_token','api_key','private_key')) else safe_event(v))
+                for k,v in value.items()}
+    if isinstance(value,(list,tuple)):return [safe_event(v) for v in value]
+    if value is None or isinstance(value,(str,int,float,bool)):return value
+    return {'unsupported_event_type':type(value).__name__}
+
+def event_nodes(value):
+    if not isinstance(value,dict):return
+    yield value
+    # Some SDK transports wrap an ADK event rather than returning it directly.
+    for key in ('event','result','output','response'):
+        child=value.get(key)
+        if isinstance(child,dict):yield from event_nodes(child)
+        elif isinstance(child,list):
+            for item in child:yield from event_nodes(item)
+
 def summarize(events):
-    calls=[];responses=[];answers=[];errors=[];safe_events=[]
-    for event in events:
-        if event.get('error_code') or event.get('error_message'):
-            errors.append({'code':str(event.get('error_code') or 'provider_error')})
-        content=event.get('content') or {}
-        parts=content.get('parts') or []
-        for part in parts:
-            if part.get('function_call'):
-                calls.append(part['function_call'])
-            if part.get('function_response'):
-                responses.append(part['function_response'])
-            if part.get('text'):answers.append(part['text'])
-        # Only this synthetic suite's native content, not provider error bodies.
-        safe_events.append({k:event[k] for k in ('id','author','invocation_id','content','timestamp') if k in event})
+    calls=[];responses=[];answers=[];errors=[];safe_events=[];diagnostics=[]
+    for raw in events:
+        event=safe_event(raw);safe_events.append(event)
+        recognized=False
+        for node in event_nodes(event):
+            if any(node.get(k) for k in ('error_code','error_message','error','err')):
+                errors.append({k:node[k] for k in ('error_code','error_message','error','err','detail','details','message') if k in node})
+            content=node.get('content') or {}
+            if not isinstance(content,dict):continue
+            for part in content.get('parts') or []:
+                if not isinstance(part,dict):continue
+                if part.get('function_call'):
+                    calls.append(part['function_call']);recognized=True
+                if part.get('function_response'):
+                    responses.append(part['function_response']);recognized=True
+                if part.get('text'):
+                    answers.append(part['text']);recognized=True
+        if not recognized:
+            diagnostics.append({'event_index':len(safe_events)-1,
+                                'top_level_keys':sorted(event) if isinstance(event,dict) else [],
+                                'note':'No recognized answer or tool content; inspect preserved event.'})
     order_results=[unwrap_order(x.get('response')) for x in responses if x.get('name')=='lookup_order']
     return {'tool_calls':calls,'order_results':[x for x in order_results if x is not None],
-            'answer':'\n'.join(answers),'errors':errors,'events':safe_events}
+            'answer':'\n'.join(answers),'errors':errors,'events':safe_events,'diagnostics':diagnostics}
 
 def check_case(label,result):
     answer=result['answer'].lower();rows=result['order_results']
+    if label=='same_session_followup':
+        prior=result.get('retained_lookup_evidence',{})
+        if prior.get('session')==result.get('session') and prior.get('source_case')=='known_order':
+            rows=rows+prior.get('order_results',[])
     if result['errors']:return False
     if label=='known_order':
         return any(x.get('found') and x.get('order',{}).get('order_id')=='order-demo-1' and x['order']['items'][0]['quantity']==2 for x in rows) and 'ceramic mug' in answer and ('2' in answer or 'two' in answer)
@@ -75,6 +107,10 @@ async def verify(runtime,receipt,output,memory_wait=120,memory_only=False):
         except Exception as exc:
             result=summarize(events);result['errors'].append({'type':type(exc).__name__})
         result.update(label=label,session=sid,question=question,seconds=round(time.monotonic()-started,2))
+        if label=='same_session_followup':
+            prior=next((case for case in reversed(receipt['cases']) if case['session']==sid and case['label']=='known_order' and case['passed']),None)
+            if prior:
+                result['retained_lookup_evidence']={'session':sid,'source_case':'known_order','order_results':prior['order_results']}
         result['passed']=check_case(label,result);receipt['cases'].append(result);persist()
         print(json.dumps({'case':label,'passed':result['passed'],'tools':[x.get('name') for x in result['tool_calls']],'seconds':result['seconds']}),flush=True)
         return result
@@ -116,7 +152,10 @@ async def main():
     settings=json.loads((HERE/'support-basics-deployment.json').read_text())
     if settings.get('app_name')!='support_agent_basics':raise SystemExit('Use the separate Basics manifest; existing marketplace runtime is not a target.')
     import agentplatform
-    runtime=agentplatform.Client(project=settings['project'],location=settings['location']).runtimes.get(name=settings['resource_name'])
+    # Keep the SDK client alive for the full async verification lifetime.
+    # A temporary constructor can finalize its HTTP transport during streaming.
+    client=agentplatform.Client(project=settings['project'],location=settings['location'])
+    runtime=client.runtimes.get(name=settings['resource_name'])
     receipt={'runtime':settings['resource_name'],'project':settings['project'],'app_name':settings['app_name'],'fixture':'support-agent-basics-fictional-v1'}
     result=await verify(runtime,receipt,HERE/'basics-verification-results.json',memory_wait=args.memory_wait,memory_only=args.memory_only)
     if not result['bounded_checks_passed']:raise SystemExit('One or more bounded checks failed; inspect the receipt before rerunning paid requests.')

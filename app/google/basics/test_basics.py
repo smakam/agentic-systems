@@ -95,3 +95,24 @@ class VerificationPredicatesTests(unittest.TestCase):
         text='<PAST_CONVERSATIONS> prefers Finding, Evidence and Next action'
         self.assertFalse(preload_evidence([{'output':text}]))
         self.assertTrue(preload_evidence([{'model_input':text}]))
+
+    def test_unexpected_and_error_events_are_not_erased(self):
+        from verify_basics import summarize
+        result=summarize([{'error':{'code':500,'message':'synthetic failure'},'details':'transport detail','authorization':'secret'},{}])
+        self.assertEqual(result['events'][0]['details'],'transport detail')
+        self.assertEqual(result['events'][0]['authorization'],'[redacted]')
+        self.assertEqual(result['errors'][0]['error']['code'],500)
+        self.assertEqual(len(result['diagnostics']),2)
+        self.assertEqual(result['answer'],'')
+    def test_wrapped_native_content_is_recognized(self):
+        from verify_basics import summarize
+        result=summarize([{'result':{'content':{'parts':[{'text':'held'}]}}}])
+        self.assertEqual(result['answer'],'held')
+        self.assertEqual(result['diagnostics'],[])
+    def test_followup_can_use_verified_same_session_lookup_only(self):
+        from verify_basics import check_case
+        result={'session':'first','answer':'The payout is held','order_results':[],'errors':[],
+                'retained_lookup_evidence':{'session':'first','source_case':'known_order','order_results':[lookup_order('order-demo-1')]}}
+        self.assertTrue(check_case('same_session_followup',result))
+        result['retained_lookup_evidence']['session']='other'
+        self.assertFalse(check_case('same_session_followup',result))

@@ -2,7 +2,7 @@
 
 A separate standalone Chapter 19 lab: Google-managed ADK agent, packaged fictional order records and a native Python `lookup_order(order_id)` tool. No marketplace UI, SQL, MCP server, tunnel or business database is required. Native Sessions supply conversation context; optional `PreloadMemoryTool` uses managed Memory Bank after deployment. Local execution is not proof of managed memory or tracing.
 
-**Readiness:** the implementation, packaged fixture and nine no-paid-call tests are complete. Creation of the separate managed deployment and native Playground/Memory Bank/trace acceptance are in progress. The existing Marketplace Support ADK Lab remains a separate, previously verified integration.
+**Readiness:** the separate Support Agent Basics deployment is created. Native Playground product lookup, same-session payout follow-up, missing-order response and model/tool traces passed. Memory Bank generation and scoped stored-preference retrieval passed, with an empty search for another test user. A fresh-session business answer applying that memory is not verified: the first attempt logged Google 500 INTERNAL; one bounded CLI retry timed out amid Cloud Shell credential/connection instability. This does not establish a retrieval miss or its internal cause. The existing Marketplace Support ADK Lab remains separate.
 
 ## Fixture and native tools
 

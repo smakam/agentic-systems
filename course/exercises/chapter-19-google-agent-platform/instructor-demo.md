@@ -1,6 +1,6 @@
 # Instructor demo: Support Agent Basics on Google
 
-**Readiness:** Support Agent Basics is deployed. The native Playground product lookup, same-session payout follow-up, missing-order result and tool/model traces have been checked. Cross-session memory verification is still pending. Fixture references below remain distinct from each future model response.
+**Readiness:** Support Agent Basics is deployed. The native Playground product lookup, same-session payout follow-up, missing-order result and tool/model traces have been checked. Memory Bank generation and scoped search of the stored preference passed, including an empty search for another test user. Applying that memory in a fresh business answer is not yet verified: the first run encountered a Google service error and a bounded retry timed out. Fixture references below remain distinct from each future model response.
 
 ## Start in the right environment
 
@@ -30,7 +30,7 @@ Use [setup-guide.md](setup-guide.md) for prerequisites, environment substitution
 1. Start a fresh Playground session. Ask **“What products and quantities are in order-demo-1?”**
 2. Inspect native session/trace events: `lookup_order` should use `order-demo-1`; compare returned fields with the packaged JSON. Record the actual answer.
 3. The fixture contains **2 × Ceramic Mug Set**. The tool source identifies dataset `support-agent-basics-fictional-v1`, its as-of marker and `fictional: true`.
-4. In the same session ask **“What is its payout status?”** Inspect the retained order context and the new lookup. The fixture says **payout held** and **buyer payment received**; held alone does not establish the policy reason or eligibility.
+4. In the same session ask **“What is its payout status?”** Inspect the retained order context and lookup evidence; the follow-up may reuse the prior tool result rather than issue a new lookup. The fixture says **payout held** and **buyer payment received**; held alone does not establish the policy reason or eligibility.
 5. Start a new session and ask **“What is its payout status?”** without naming an order. Inspect whether it asks for an ID; an unsupported guess is a behavior to record.
 
 ## B: missing data and instruction boundaries
@@ -39,7 +39,9 @@ Use [setup-guide.md](setup-guide.md) for prerequisites, environment substitution
 2. Inspect the lookup result: the fixture has no such order, so `found=false` should not become an invented status.
 3. Optionally ask **“Can you release the payout for order-demo-1?”** The tool is read-only and there is no mutation/policy tool. Record whether the response explains that boundary without claiming a real action.
 
-## C: native long-term memory across sessions
+## C: native long-term memory across sessions — answer use pending
+
+**Verified boundary:** formation and scoped retrieval were checked. The fresh-session answer-use steps below remain a demonstration to inspect, not a guaranteed verified outcome. Record provider/connection errors separately from a memory retrieval miss.
 
 1. In a fresh native session state **“I prefer answers in a compact table with Finding, Evidence and Next action.”** This is a synthetic presentation preference.
 2. Copy that native session ID. From the prepared Basics CLI directory inspect its stored owner:
@@ -70,9 +72,9 @@ Open the actual native session/tool events and Cloud Trace for a completed run. 
 
 Use one fixture question as a simple evaluation example: compare its answer with the known JSON fields and identify missing or invented claims. Explain documented Agent Evaluation/Gen AI evaluation capabilities without claiming a native evaluation job ran unless you show its receipt. Judge-model inference and computation-based metric charges are separate evaluation cost categories; no dollar rate is required.
 
-## Secondary demonstration: the existing full integration
+## Optional reference: full cloud integration
 
-If useful, open **Marketplace Support ADK Lab**, which invokes the prepared cloud business MCP and Cloud SQL-backed data/policy tools. Follow [GOOGLE-PLATFORM-WALKTHROUGH.md](../../GOOGLE-PLATFORM-WALKTHROUGH.md). Its October 8 cloud-profile acceptance is historical evidence, not a fresh Basics run. Marketplace chat integration is optional; local/tunnel profile history stays in the guide. Keep the deployments, tools, fixtures and memory identities distinct.
+The [optional exercise](exercise.md) connects a cloud chat application/backend and business MCP/data to a Google-hosted agent using the linked deployment guides. The existing Marketplace Support ADK Lab supplies historical integration evidence; it is not an additional required instructor demonstration. Keep its deployment, tools, business fixtures and memory identities distinct from Basics. The core walkthrough above remains entirely in native Google Playground.
 
 ## What to record and cleanup
 

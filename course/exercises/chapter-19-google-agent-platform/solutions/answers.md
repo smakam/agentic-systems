@@ -37,8 +37,12 @@ The packaged JSON is a fictional snapshot, not live commerce. `lookup_order(orde
 | order-demo-3 | 1 Desk Lamp; cancelled; payment refunded; shipment cancelled; payout not applicable |
 | order-demo-999 | No packaged record; do not invent a status |
 
-A held status does not establish its reason or policy eligibility: Basics has no policy tool. The fixture unit-level facts above are source references; hosted product lookup, same-session payout follow-up, missing-record response and native traces have been checked. Cross-session memory verification remains pending. Full instructions: [instructions.txt](../../../app/google/basics/support_agent_basics/instructions.txt). Native memory generation is an explicit platform operation using the saved session and verified owner; it is not automatic Mem0 conversation-end extraction.
+A held status does not establish its reason or policy eligibility: Basics has no policy tool. The fixture unit-level facts above are source references; hosted product lookup, same-session payout follow-up, missing-record response and native traces have been checked. Memory generation and scoped stored-preference search passed; another test user returned no matching record. Applying that preference in a fresh business answer remains unverified. Full instructions: [instructions.txt](../../../../app/google/basics/support_agent_basics/instructions.txt). Native memory generation is an explicit platform operation using the saved session and verified owner; it is not automatic Mem0 conversation-end extraction.
 
 ## Standalone setup and walkthrough
 
 The chapter setup guide owns prerequisites, editable environment values, installation and the test/deploy commands. The instructor guide owns the questions and observations after deployment. A new Basics runtime must be distinct from the existing marketplace agent. It uses no MCP secret, SQL database or marketplace UI. A fresh-project installation is not yet an independently completed learner rehearsal.
+
+## Bounded hosted memory result
+
+The verified checks establish memory formation and scoped retrieval, not that the model used the memory in a fresh business answer. The first answer-use run had a Google 500 INTERNAL error in native logs; a single bounded CLI retry timed out after 90 seconds amid Cloud Shell credential/connection instability. These observations do not establish a retrieval miss or a provider-internal root cause. Report the missing answer-use evidence rather than declaring the entire memory demonstration passed.

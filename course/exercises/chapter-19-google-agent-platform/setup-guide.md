@@ -2,7 +2,7 @@
 
 This guide creates a **separate Google-managed agent** using the course's fictional JSON orders and native `lookup_order` tool. No marketplace UI, MCP server, SQL database or tunnel is needed. Use your own authorized Google Cloud project, or the instructor's already-created deployment for observation only.
 
-The instructor deployment has been created and its Playground lookup, follow-up, missing-record behavior and native traces checked. Cross-session memory verification is still pending. The sequence below is not a claim that a fresh learner project has already been rehearsed end to end.
+The instructor deployment has been created and its Playground lookup, follow-up, missing-record behavior and native traces checked. Memory generation and scoped stored-preference search have also passed. Fresh-session business-answer use remains unverified after a service error and timed-out retry. The sequence below is not a claim that a fresh learner project has already been rehearsed end to end.
 
 ## Prerequisites — prepare once
 
