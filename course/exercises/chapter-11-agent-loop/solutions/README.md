@@ -1,4 +1,4 @@
-# The Agent Loop — worked solution
+# The Agent Loop with OpenAI Agents SDK — worked solution
 
 Run all shell commands from your repository root unless a different directory is shown. Course Setup supplies the already-running local interfaces, PostgreSQL, gateway and Langfuse. This README primarily explains the optional developer loop implementation and its checks. The UI always uses the SDK loop. Developer commands run a separate selected implementation in a one-off process; they do not replace the UI loop or start two loops for the same question.
 

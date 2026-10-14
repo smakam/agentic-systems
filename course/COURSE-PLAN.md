@@ -66,7 +66,7 @@ After every meaningful milestone, in the same documentation update:
 | C — Core Components | 8 | Tools and MCP |
 | C — Core Components | 9 | Knowledge and Retrieval (RAG) |
 | C — Core Components | 10 | Session State |
-| C — Core Components | 11 | The Agent Loop |
+| C — Core Components | 11 | The Agent Loop with OpenAI Agents SDK |
 | C — Core Components | 12 | Runtime and Hosting |
 | D — Observability, Evaluation and Security | 13 | Observability: Tracing and Monitoring |
 | D — Observability, Evaluation and Security | 14 | Evaluation |
@@ -400,11 +400,12 @@ fixtures. See [Future Optimizations: selective catalog loading](../SPECIFICATION
 
 GPT-5.4 quantity follow-ups reused the same-conversation structured evidence with zero additional tool calls, including with long-term memory disabled. Sidebar navigation retained completed turns and a draft. [Current short-term conclusions and pending UI checks](../app/docs/MEMORY-STATUS.md#short-term-memory); [repeatable suite](../app/eval/memory-v2/README.md). Pending-request navigation and full-reload restoration are distinct from the verified sidebar case; no automatic compaction is implemented.
 
-### 11. The agent loop (basic orchestration)
+### 11. The Agent Loop with OpenAI Agents SDK
 
 **Agreed plan — October 10, 2026; preparation and reference validation complete, owner review/dry run remains.**
 
-- **Slides:** intro; editable model/tool loop diagram; our OpenAI Agents SDK implementation; model turns versus tool invocations and enforcement; recovery/stopping; final evidence-based response; demo summary; learner exercise; recap.
+- **Slides:** intro; editable model/tool loop diagram; OpenAI Agents SDK capability overview; our Agent, Runner and Hooks implementation; model turns versus tool invocations and enforcement; recovery/stopping; final evidence-based response; demo summary; learner exercise; recap.
+- **SDK capability overview:** agent setup, execution and streaming, tools/MCP, conversation state and results, hooks/tracing, guardrails/human review and agent orchestration. SDK guardrails are an application-level capability; our privacy and prompt-injection demos use gateway integrations. The overview does not imply that every SDK feature is enabled in this application.
 - **Implementation:** Agent defines instructions/model/MCP tools; Runner.run supplies the question, DatabaseSession, hooks and max_turns. One SDK turn is one model invocation, including any requested tool execution; the final-answer call counts. Model chooses requests; runtime executes them; MCP middleware validates SQL.
 - **Chapter demo:** code-to-trace normal execution, one controlled temporary SQL read failure followed by recovery, and one-model-turn stopping. A lab-only selector exposes Normal execution / Tool-error recovery / Turn-limit stop in the disposable ch11_loop_lab UI. Changing mode starts a fresh conversation. Use the same order-2 business-and-policy question for each case. Show counts, returned evidence, citations and stopping reason. The recovery case is a retry, not proof of malformed-query repair.
 - **Core learner exercise:** repeat the three demos and annotate a trace with model/tool counts, continuation reasons, evidence and stop condition.

@@ -1,4 +1,4 @@
-# Chapter 11 — The Agent Loop
+# Chapter 11 — The Agent Loop with OpenAI Agents SDK
 
 ## Goal and starting point
 
