@@ -26,18 +26,18 @@ Select **Internal memory**. Turn **Use long-term memory** and **Allow memory cha
 ### B1: Internal memory
 
 1. Select **Internal memory**, turn **Use long-term memory** on, start a fresh conversation, and enable **Allow memory changes for this question**.
-2. Ask **“Remember my Chapter 18 learner preference: explain refund questions as three numbered steps with the policy source at the end.”**
+2. Ask **“Remember my learner preference: explain refund questions as three numbered steps with the policy source at the end.”**
 3. Open **Saved memories · Internal**. Record the saved content, kind, version and source. The write permission resets after the question.
-4. Start **New conversation**, retain memory reads on and writes off. Ask **“What is my Chapter 18 learner preference for refund explanations?”** Record the search query, actual returned record and answer.
-5. In another fresh chat ask **“How should you lay out a reimbursement explanation for me?”** Record the same fields, including any miss.
+4. Start **New conversation**, retain memory reads on and writes off. Ask **“Is order-1 eligible for a refund under the current returns policy?”** Do not mention memory, preference or formatting. Record the actual search query/preference match, per-item eligibility and current policy/business evidence. Observe whether the answer uses three numbered steps with the policy source at the end; do not assume that format.
+5. Optional diagnosis: ask **“What is my learner preference for refund explanations?”** or **“How should you lay out a reimbursement explanation for me?”** in another fresh chat. These are diagnostic questions, not the primary business test.
 
 ### B2: Mem0
 
 1. Select **Mem0** and turn **Retrieve saved memories** on. Changing provider starts a fresh conversation.
-2. State **“My Chapter 18 learner preference is to explain refund questions as three numbered steps with the policy source at the end.”** Do not request a save.
+2. State **“My learner preference is to explain refund questions as three numbered steps with the policy source at the end.”** Do not request a save.
 3. Click **New conversation** to queue extraction. Continue without waiting, but inspect the previous conversation's background status. Record the trigger and whether processing is still pending.
 4. Once extraction completes, open **Saved memories · Mem0**. Record every related entry and provider category, even if the result differs from the intended preference or is empty.
-5. In a fresh chat ask **“How should you lay out a reimbursement explanation for me?”** Inspect **Mem0 memory search** in Langfuse and record query, matches, scores when supplied and answer.
+5. In a fresh chat ask **“Is order-1 eligible for a refund under the current returns policy?”** without requesting a format or memory recall. Inspect **Mem0 memory search**, the actual preference match and scores, current per-item evidence/policy and the answer. Record whether the saved three-step format appears, including any miss or different format.
 
 Do not assume Mem0 will win. The two paths change both formation and retrieval, and the internal agent may choose search words that happen to match. Record what the actual traces show.
 
@@ -45,10 +45,10 @@ Do not assume Mem0 will win. The two paths change both formation and retrieval, 
 
 Repeat C1–C4 separately for each provider.
 
-1. Identify the named learner preference in **Saved memories**, click **Edit**, and change its content to **“My Chapter 18 learner preference is one short paragraph for refund explanations.”** Confirm the stored result.
-2. Start a new conversation with retrieval on. Ask **“What is my Chapter 18 learner preference for refund explanations?”** Inspect the returned record and answer.
+1. Identify the named learner preference in **Saved memories**, click **Edit**, and change its content to **“My learner preference is one short paragraph for refund explanations.”** Confirm the stored result.
+2. Start a new conversation with retrieval on. Ask **“Is order-1 eligible for a refund under the current returns policy?”** Inspect the returned preference record, current evidence and actual answer format after the edit.
 3. Ask **“For this answer, use a numbered list instead of my usual format. What is the current returns policy?”** Record the current instruction, any retrieved preference and the answer's format. Verify business policy claims against the policy evidence.
-4. After any pending extraction completes, **Forget** the named learner entry and related extracted records about that same preference. Confirm the listing. Start a new conversation and repeat the recall question. Record whether retrieval still finds a matching entry.
+4. After any pending extraction completes, **Forget** the named learner entry and related extracted records about that same preference. Confirm the listing. Start a new conversation and repeat the same refund-eligibility business question. Record whether retrieval still finds the deleted preference; the business answer can remain correct without it.
 
 Deleting a record does not erase old chat history. Restating a preference in a later Mem0 conversation can extract it again; inspect remaining entries and extraction jobs before deciding that forgetting failed.
 
@@ -56,10 +56,10 @@ Deleting a record does not erase old chat history. Restating a preference in a l
 
 Select **Internal memory**, memory reads on. Enable writes only for each save.
 
-1. Save **“Remember a Chapter 18 learner checkpoint: we previously investigated order-2. Next time, recheck its current payout records rather than assuming the earlier status.”** Inspect the episodic kind and source.
-2. Save **“Remember this Chapter 18 learner refund checklist: find the applicable policy, check item delivery dates, and distinguish refund eligibility from any actual refund payment.”** Inspect the procedural kind and source.
-3. Start a new conversation, writes off. Ask **“Resume my Chapter 18 learner checkpoint for order-2 and explain its current payout status.”** Inspect remembered content and current business tools separately.
-4. In another fresh conversation ask **“Investigate refund eligibility for order-1 using my Chapter 18 learner checklist.”** Inspect which memory was retrieved, which checks occurred, and any unresolved evidence.
+1. Save **“Remember a learner checkpoint: we previously investigated order-2. Next time, recheck its current payout records rather than assuming the earlier status.”** Inspect the episodic kind and source.
+2. Save **“Remember this learner refund checklist: find the applicable policy, check item delivery dates, and distinguish refund eligibility from any actual refund payment.”** Inspect the procedural kind and source.
+3. Start a new conversation, writes off. Ask **“Resume my learner checkpoint for order-2 and explain its current payout status.”** Inspect remembered content and current business tools separately.
+4. In another fresh conversation ask **“Investigate refund eligibility for order-1 using my learner checklist.”** Inspect which memory was retrieved, which checks occurred, and any unresolved evidence.
 
 These cases show memory types and authority. A historical checkpoint cannot establish current status, and a saved checklist cannot replace the policy or change tool permissions.
 

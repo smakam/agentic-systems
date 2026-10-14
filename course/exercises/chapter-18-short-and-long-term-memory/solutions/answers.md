@@ -8,11 +8,11 @@ The same-chat follow-up can resolve “those items” using the earlier order qu
 
 ## B: formation and retrieval
 
-Internal saving requires the explicit current request and the per-question write permission. The agent chooses semantic for the preference and supplies the content; the backend stores a user-owned record with kind, source and version. The trace should show the successful save operation and the listing should contain the record. Recall requires an actual search result, not just a matching answer.
+Internal saving requires the explicit current request and the per-question write permission. The agent chooses semantic for the preference and supplies the content; the backend stores a user-owned record with kind, source and version. The trace should show the successful save operation and the listing should contain the record. The primary test is the normal payout/refund business question, with no request to recall memory or use a specific format. Inspect an actual preference search result alongside current business/policy evidence, then observe its use in the answer. A compact payout table or numbered refund steps is an observation, not a guaranteed response. Explicit preference recall is an optional diagnostic.
 
 Mem0 saving differs in two decisions. The application starts extraction when the conversation ends or reaches the configured idle timeout. Mem0 selects what to retain from submitted user/assistant messages. The learner did not request a save. A provider-pending operation is not yet a completed save. The UI groups it with queued work as “Memory save queued.” “Memory save complete” confirms completion; the extraction trace distinguishes the underlying phases. Completion may yield zero or several entries, including an assistant statement; record the actual text and provider categories. Do not assign our internal three labels to every Mem0 record.
 
-The paraphrase compares observed retrieval. Internal search uses literal keyword substrings; the agent may nevertheless choose overlapping words. Mem0 uses the provider retrieval service. A successful semantic match in this case is evidence for this query and namespace, not a general accuracy ranking. Formation and retrieval both changed, so the complete experiment does not isolate the search algorithm.
+The optional paraphrase compares observed retrieval. Internal search uses literal keyword substrings; the agent may nevertheless choose overlapping words. Mem0 uses the provider retrieval service. A successful semantic match in this case is evidence for this query and namespace, not a general accuracy ranking. Formation and retrieval both changed, so the complete experiment does not isolate the search algorithm.
 
 ## C: edit, instruction precedence and forgetting
 
@@ -20,7 +20,7 @@ Edit changes the identified record. Internal versions advance and stale-version 
 
 A current instruction to use a numbered list should override the usual remembered paragraph format. The policy answer still needs applicable policy evidence. The preference governs presentation, not the truth of refund eligibility.
 
-Forget removes the selected stored entry. Related duplicates may remain. The old conversation can still contain the preference, and a later completed conversation that restates it may extract it again. Wait for pending extraction, inspect related records and test in a new conversation. If no matching saved memory exists, the agent should say so rather than invent a remembered preference. The trace should support the conclusion.
+Forget removes the selected stored entry. Related duplicates may remain. The old conversation can still contain the preference, and a later completed conversation that restates it may extract it again. Wait for pending extraction, inspect related records and test in a new conversation. The business answer can remain correct after deletion because current records and policy still support it. Inspect whether the deleted preference is retrieved rather than judging forgetting from answer format alone. An optional explicit preference-recall diagnostic should not invent a memory when no matching saved entry exists.
 
 ## D: types and authority
 
@@ -39,3 +39,7 @@ An optional second-user test should show a different trusted scope and absence o
 A retrieval miss, no useful extracted fact, delay or provider error can be a valid observation if documented honestly. Do not substitute the internal provider silently. Do not claim provider-internal token costs or latency breakdowns from local elapsed time. Automatic consolidation, expiration and learned procedures remain conceptual extensions. Current [Mem0 Platform documentation](https://docs.mem0.ai/platform/features/graph-memory) describes its native entity graph alongside semantic/keyword retrieval; this lab does not separately measure the graph contribution. PostgreSQL can support other indexes and relational structures, while our internal baseline implements keyword search.
 
 The exercise is complete when the learner documents each mechanism, separates observed evidence from interpretation, and removes only their lab records after the final completed Mem0 conversation is queued and pending jobs finish. An empty new chat prevents a further completed conversation from recreating the deleted entries during cleanup.
+
+## Primary business questions
+
+The instructor compares the same fresh-chat question under both providers: “What is the current seller payout status for order-2?” The learner compares: “Is order-1 eligible for a refund under the current returns policy?” Neither question mentions a memory or preferred format. A successful observation separates actual memory retrieval, formatting use and current factual evidence. Refund eligibility should be considered per item under the applicable policy; this guide does not prescribe a fixed model answer.

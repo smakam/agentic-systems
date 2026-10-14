@@ -46,11 +46,11 @@ Each case records the question, answer, selected provider, stored entry, actual 
 
 **Settings:** Internal memory; **Use long-term memory** on. Enable **Allow memory changes for this question** only for the save.
 
-1. Start a fresh conversation. Ask: **“Remember my Chapter 18 instructor preference: I prefer payout explanations in a compact table with Finding, Evidence and Next action.”**
+1. Start a fresh conversation. Ask: **“Remember my instructor preference: I prefer payout explanations in a compact table with Finding, Evidence and Next action.”**
 2. Expand **Saved memories · Internal**. Confirm an entry exists and inspect its content, semantic kind, source and version. An acknowledgement alone does not prove storage.
-3. Start **New conversation**, keep long-term memory on and write permission off. Ask: **“What is my Chapter 18 instructor preference for payout explanations?”**
-4. Open the run trace. Inspect `search_memories`, its actual query and returned record, then the final answer.
-5. In another new conversation ask: **“How should you arrange a settlement explanation for me?”** Record the keyword query, returned matches and answer, including an empty result if that is what occurred.
+3. Start **New conversation**, keep long-term memory on and write permission off. Ask the business question: **“What is the current seller payout status for order-2?”** Do not mention memory, preferences or formatting.
+4. Open the run trace. Inspect `search_memories`, its actual query and returned preference record, alongside current payout evidence and the final answer. Check whether it used a compact table with **Finding, Evidence and Next action**. Record the actual result; that format is not guaranteed.
+5. Optional diagnosis: in another fresh chat ask **“What is my instructor preference for payout explanations?”** or the paraphrase **“How should you arrange a settlement explanation for me?”** Inspect actual matches. These memory-oriented questions are diagnostics, not the primary demonstration.
 
 **Teaching point:** the user selects what should be retained. The agent formats it and chooses the memory type. Reads can happen without an explicit recall request, but writes need current user intent and the per-question permission.
 
@@ -58,13 +58,13 @@ Each case records the question, answer, selected provider, stored entry, actual 
 
 **Settings:** Mem0; **Retrieve saved memories** on. The explicit internal write control does not apply.
 
-1. Start a fresh Mem0 conversation. State: **“My Chapter 18 instructor preference is a compact table with Finding, Evidence and Next action for payout explanations.”** Do not add “remember” or “save.”
+1. Start a fresh Mem0 conversation. State: **“My instructor preference is a compact table with Finding, Evidence and Next action for payout explanations.”** Do not add “remember” or “save.”
 2. Inspect the answer. The agent can use this statement as session context now, but that does not prove persistent storage.
 3. Click **New conversation**. The application queues the completed conversation for extraction and starts the next chat without waiting.
 4. Observe the previous conversation's extraction status and its trace link. The UI shows **Memory save queued**, **Saving memories in the background**, then **Memory save complete** when confirmed. Queued and provider-pending share a UI label; use the extraction trace to distinguish them. A completed operation may create zero, one or several memories.
 5. After completion, inspect **Saved memories · Mem0**. Record every lab-related extracted entry and its provider categories. Mem0 may also retain something the assistant said. Do not assume one ideal fact or our semantic/episodic/procedural labels.
-6. In a fresh Mem0 conversation ask: **“How should you arrange a settlement explanation for me?”** Open the question trace and inspect **Mem0 memory search**, the query, actual returned entries and scores when supplied, then the final answer.
-7. Compare this result with Case B. Report the actual observations; extraction policy and retrieval implementation both changed, so this is not an isolated search benchmark.
+6. In a fresh Mem0 conversation ask the same business question: **“What is the current seller payout status for order-2?”** Do not mention memory, preferences or formatting. Inspect **Mem0 memory search**, the actual query/returned preference, current payout evidence and the answer. Check whether it used **Finding, Evidence and Next action** in a compact table, while recording any different result.
+7. Compare this business answer and its retrieval evidence with Case B. Optional diagnosis uses the explicit preference question or settlement paraphrase from Case B. Extraction policy and retrieval implementation both changed, so this is not an isolated search benchmark.
 
 **Alternative trigger:** the configured idle timeout also queues eligible completed turns. The default is 900 seconds of wall-clock inactivity. It does not use the simulated business clock. Demonstrate New conversation during class rather than waiting fifteen minutes.
 
@@ -75,10 +75,10 @@ Each case records the question, answer, selected provider, stored entry, actual 
 Run this sequence separately for Internal memory and Mem0, using the named instructor preference from Cases B/C.
 
 1. Open the selected provider's **Saved memories**. Identify the exact lab record. For Mem0, inspect related entries too.
-2. Click **Edit** on that record and replace its content with: **“My Chapter 18 instructor preference is two short paragraphs for payout explanations.”** Confirm the edit result in the listing. Internal records should advance their version; external records do not inherit our version contract.
-3. Start a new conversation with retrieval on. Ask: **“What is my Chapter 18 instructor preference for payout explanations?”** Record the actual retrieved entries and answer.
+2. Click **Edit** on that record and replace its content with: **“My instructor preference is two short paragraphs for payout explanations.”** Confirm the edit result in the listing. Internal records should advance their version; external records do not inherit our version contract.
+3. Start a new conversation with retrieval on. Ask: **“What is the current seller payout status for order-2?”** Record the retrieved entries, current evidence and answer format. Optional explicit preference recall can diagnose a miss.
 4. Click **Forget** on the identified lab entry. Remove other entries about this same instructor preference only if they remain. Confirm the listing result.
-5. Start a fresh conversation and repeat the recall question. Record whether a matching entry remains. If it does, inspect related records rather than assuming one deletion erased them all.
+5. Start a fresh conversation and repeat the business question. Inspect whether a matching preference remains in retrieval; answer format alone cannot prove forgetting. If it does, inspect related records rather than assuming one deletion erased them all.
 
 **Teaching point:** deleting stored memory does not erase historical chat messages. A fresh conversation is necessary to test forgetting. A new extraction job from a conversation restating the preference can form another memory, so inspect pending jobs before drawing a conclusion.
 
@@ -86,11 +86,11 @@ Run this sequence separately for Internal memory and Mem0, using the named instr
 
 **Settings:** Internal memory; long-term memory on. Use explicit saves with the per-question write permission.
 
-1. Save: **“Remember a Chapter 18 instructor investigation checkpoint: a previous investigation treated order-1 seller payouts as held. This is a historical note, not current status.”** Inspect the saved episodic entry.
-2. Start a fresh conversation. Ask: **“Resume the Chapter 18 instructor checkpoint for order-1. Check the current seller payout statuses and distinguish the old note from current evidence.”**
+1. Save: **“Remember an instructor investigation checkpoint: a previous investigation treated order-1 seller payouts as held. This is a historical note, not current status.”** Inspect the saved episodic entry.
+2. Start a fresh conversation. Ask: **“Resume the instructor checkpoint for order-1. Check the current seller payout statuses and distinguish the old note from current evidence.”**
 3. Inspect both memory retrieval and current business tool results. Does the answer distinguish remembered history from the live records?
 4. Re-save the named instructor table-format preference from Case B with write permission enabled, and confirm the stored entry. In a fresh conversation with writes off ask: **“For this answer, ignore my usual payout format and use one short paragraph. Explain the current payout status for order-2.”** Inspect retrieval and record whether the current instruction overrides the remembered preference.
-5. Save a procedural example, if time permits: **“Remember this Chapter 18 instructor payout checklist: check buyer payment, delivery timestamps, the applicable policy, and payout events before explaining release eligibility.”** In a new conversation ask: **“Investigate why Cedar & Co. has not been paid for order-1.”** Inspect whether the checklist was retrieved and current evidence still collected.
+5. Save a procedural example, if time permits: **“Remember this instructor payout checklist: check buyer payment, delivery timestamps, the applicable policy, and payout events before explaining release eligibility.”** In a new conversation ask: **“Investigate why Cedar & Co. has not been paid for order-1.”** Inspect whether the checklist was retrieved and current evidence still collected.
 
 **Teaching point:** historical memory can guide which checks to perform. Current records and applicable policy establish current business facts. A procedural memory does not grant new tool permissions.
 
@@ -105,7 +105,7 @@ The lab demonstrates user scope. Team-shared memory and automatic expiry/consoli
 
 ## Cleanup
 
-While Mem0 is selected, click New conversation once to queue the final completed lab conversation. Leave the new empty conversation unanswered. Wait for all observed lab extraction jobs to finish, then Forget only the named Chapter 18 instructor entries and their related extracted lab records. Verify the listing without asking another Mem0 question. Switch to Internal memory, remove only its named instructor records, turn long-term retrieval off and start a fresh conversation. This order prevents an unsubmitted final Mem0 conversation from extracting the preference again after cleanup. Business records remain unchanged.
+While Mem0 is selected, click New conversation once to queue the final completed lab conversation. Leave the new empty conversation unanswered. Wait for all observed lab extraction jobs to finish, then Forget only the named instructor entries and their related extracted lab records. Verify the listing without asking another Mem0 question. Switch to Internal memory, remove only its named instructor records, turn long-term retrieval off and start a fresh conversation. This order prevents an unsubmitted final Mem0 conversation from extracting the preference again after cleanup. Business records remain unchanged.
 
 ## Code and architecture
 
