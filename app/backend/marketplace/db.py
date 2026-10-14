@@ -183,6 +183,30 @@ class Memory(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     __table_args__ = (CheckConstraint("kind IN ('semantic','episodic','procedural') AND version > 0"),)
 
+class MemoryConversation(Base):
+    __tablename__ = 'memory_conversation_settings'
+    conversation_id: Mapped[str] = mapped_column(ForeignKey('conversations.id'), primary_key=True)
+    provider: Mapped[str] = mapped_column(default='internal')
+    __table_args__ = (CheckConstraint("provider IN ('internal','mem0')"),)
+
+class MemoryExtractionJob(Base):
+    __tablename__ = 'memory_extraction_jobs'
+    id: Mapped[str] = mapped_column(primary_key=True)
+    conversation_id: Mapped[str] = mapped_column(ForeignKey('conversations.id'), index=True)
+    owner_id: Mapped[str] = mapped_column(ForeignKey('users.id'), index=True)
+    status: Mapped[str]
+    reason: Mapped[str]
+    run_ids: Mapped[list] = mapped_column(JSON, default=list)
+    event_id: Mapped[str | None]
+    trace_id: Mapped[str | None]
+    result_ids: Mapped[list] = mapped_column(JSON, default=list)
+    message: Mapped[str] = mapped_column(Text, default='')
+    attempts: Mapped[int] = mapped_column(default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    __table_args__ = (CheckConstraint("status IN ('queued','processing','pending','complete','failed','noop')"),)
+
+
 URL = os.getenv('DATABASE_URL', 'postgresql+psycopg://market:market-local@localhost:55432/market')
 engine = create_engine(URL, pool_pre_ping=True,
                        pool_size=int(os.getenv('DB_POOL_SIZE','5')),

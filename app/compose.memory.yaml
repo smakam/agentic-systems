@@ -7,6 +7,9 @@ services:
     environment:
       MARKETPLACE_IDENTITY_NAMESPACE: marketplace-local-test
       EVAL_GATEWAY_KEY: ${EVAL_GATEWAY_KEY:-}
+      MEM0_API_KEY: ${MEM0_API_KEY:-}
+      MEM0_IDLE_TIMEOUT_SECONDS: ${MEM0_IDLE_TIMEOUT_SECONDS:-900}
+      MEM0_USER_NAMESPACE: marketplace-test
       DATABASE_URL: postgresql+psycopg://market:market-local@postgres:5432/market_test
       READ_DATABASE_URL: postgresql://agent_reader:reader-local@postgres:5432/market_test
       ALLOWED_ORIGINS: http://127.0.0.1:5179

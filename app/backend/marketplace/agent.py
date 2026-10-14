@@ -103,7 +103,7 @@ def build_question_input(question, snapshot, history=None):
         content += '\nExplain recorded failed and successful attempts chronologically. Cite full evidence handles. If refunded_paise equals gross_paise and payout_amount_paise is zero, say no payout due; do not suggest releasing it. Do not repeat supplied queries unless additional information is needed.'
     return content + '\n\nApplication investigation metadata (applies to this question only): ' + json.dumps(snapshot, default=str, sort_keys=True)
 
-async def answer(conversation_id,question, *, evaluation_config=None, memory_enabled=False, memory_write=False, guardrail="off", source_authority=True, marker_mode="off", suppress_catalog=False, suppress_documents=False):
+async def answer(conversation_id,question, *, evaluation_config=None, memory_provider='internal', memory_enabled=False, memory_write=False, guardrail="off", source_authority=True, marker_mode="off", suppress_catalog=False, suppress_documents=False):
     if suppress_catalog or suppress_documents:
         memory_enabled=False
         memory_write=False
@@ -119,7 +119,7 @@ async def answer(conversation_id,question, *, evaluation_config=None, memory_ena
             try:
                 await server.begin()
                 ctx=HTTPReadContext(server)
-                return await _answer(conversation_id,question,ctx,server,evaluation_config=evaluation_config,memory_enabled=memory_enabled,memory_write=memory_write,guardrail=guardrail,source_authority=source_authority,marker_mode=marker_mode)
+                return await _answer(conversation_id,question,ctx,server,evaluation_config=evaluation_config,memory_provider=memory_provider,memory_enabled=memory_enabled,memory_write=memory_write,guardrail=guardrail,source_authority=source_authority,marker_mode=marker_mode)
             finally:
                 try:
                     await asyncio.wait_for(server.end(),timeout=10)
@@ -132,21 +132,21 @@ async def answer(conversation_id,question, *, evaluation_config=None, memory_ena
                 server.loop_lab_state=inject_once(server)
             ctx=await RemoteReadContext.create(server)
             ctx.context_suppression={"catalog":suppress_catalog,"documents":suppress_documents}
-            return await _answer(conversation_id,question,ctx,server,evaluation_config=evaluation_config,memory_enabled=memory_enabled,memory_write=memory_write,guardrail=guardrail,source_authority=source_authority,marker_mode=marker_mode)
+            return await _answer(conversation_id,question,ctx,server,evaluation_config=evaluation_config,memory_provider=memory_provider,memory_enabled=memory_enabled,memory_write=memory_write,guardrail=guardrail,source_authority=source_authority,marker_mode=marker_mode)
     if transport != 'direct': raise ValueError('Unknown tool transport')
     ctx=ReadContext(suppress_catalog=suppress_catalog,suppress_documents=suppress_documents)
     ctx.context_suppression={"catalog":suppress_catalog,"documents":suppress_documents}
     try:
-        return await _answer(conversation_id,question,ctx,None,evaluation_config=evaluation_config,memory_enabled=memory_enabled,memory_write=memory_write,guardrail=guardrail,source_authority=source_authority,marker_mode=marker_mode)
+        return await _answer(conversation_id,question,ctx,None,evaluation_config=evaluation_config,memory_provider=memory_provider,memory_enabled=memory_enabled,memory_write=memory_write,guardrail=guardrail,source_authority=source_authority,marker_mode=marker_mode)
     finally:
         ctx.close()
 
-async def _answer(conversation_id,question,ctx,server, *, evaluation_config=None, memory_enabled=False, memory_write=False, guardrail="off", source_authority=True, marker_mode="off"):
+async def _answer(conversation_id,question,ctx,server, *, evaluation_config=None, memory_provider='internal', memory_enabled=False, memory_write=False, guardrail="off", source_authority=True, marker_mode="off"):
     async with AsyncExitStack() as stack:
         return await _run_answer(conversation_id,question,ctx,server,stack,
-            evaluation_config=evaluation_config,memory_enabled=memory_enabled,memory_write=memory_write,guardrail=guardrail,source_authority=source_authority,marker_mode=marker_mode)
+            evaluation_config=evaluation_config,memory_provider=memory_provider,memory_enabled=memory_enabled,memory_write=memory_write,guardrail=guardrail,source_authority=source_authority,marker_mode=marker_mode)
 
-async def _run_answer(conversation_id,question,ctx,server,stack, *, evaluation_config=None, memory_enabled=False, memory_write=False, guardrail="off", source_authority=True, marker_mode="off"):
+async def _run_answer(conversation_id,question,ctx,server,stack, *, evaluation_config=None, memory_provider='internal', memory_enabled=False, memory_write=False, guardrail="off", source_authority=True, marker_mode="off"):
     run_id=uid('run'); started=time.monotonic()
     api=client()
     config=evaluation_config or {}
@@ -164,10 +164,16 @@ async def _run_answer(conversation_id,question,ctx,server,stack, *, evaluation_c
         from .memory import MEMORY_INSTRUCTIONS, requested_operations
         with Session() as db: owner=db.get(Conversation,conversation_id).owner_id
         try:
-            memory_server=await stack.enter_async_context(open_memory_mcp(owner,conversation_id,
-                {**ctx.snapshot,'document_revision':ctx.doc_hash},run_id=run_id,
-                allow_write=memory_write,allowed_operations=requested_operations(question)))
-            memory_store=LocalMemoryContext(memory_server)
+            if memory_provider=='mem0':
+                from .mem0_provider import Mem0ReadContext, require_provider
+                require_provider('mem0')
+                memory_store=Mem0ReadContext(owner)
+                direct_tools.append(function_tool(memory_store.tool()))
+            else:
+                memory_server=await stack.enter_async_context(open_memory_mcp(owner,conversation_id,
+                    {**ctx.snapshot,'document_revision':ctx.doc_hash},run_id=run_id,
+                    allow_write=memory_write,allowed_operations=requested_operations(question)))
+                memory_store=LocalMemoryContext(memory_server)
         except Exception as exc:
             memory_start_error=exc
     model=OpenAIChatCompletionsModel(model=config.get('alias','support-model'),openai_client=api)
@@ -200,11 +206,18 @@ For counts and aggregates, lead with the count and state the actual date range u
     if memory_enabled:
         if memory_only:
             instructions='You are the marketplace support agent handling an explicit personal-memory request. Do not invent saved memories or claim an operation succeeded without a successful tool result. If writes are disabled, explain that the user must enable Allow memory changes for this question to save across conversations. Answer concisely without raw internal IDs or irrelevant dates. No SQL or catalog lookup is needed for this memory operation.'
-        instructions = MEMORY_INSTRUCTIONS + '\n' + instructions
+        if memory_provider=='mem0':
+            from .mem0_provider import MEM0_INSTRUCTIONS
+            instructions=MEM0_INSTRUCTIONS+'\n'+instructions
+            if memory_only:
+                instructions=MEM0_INSTRUCTIONS+'\nAnswer personal-memory requests concisely. No business lookup is needed.'
+        else:
+            instructions = MEMORY_INSTRUCTIONS + '\n' + instructions
         instructions += '\nMemory changes permitted for this question: ' + str(memory_write)
     else:
         if memory_only: instructions='You are the marketplace support agent. Long-term memory is disabled for this question. Explain that saved memories cannot be retrieved while it is off. Do not infer a personal preference from business data or invent a saved memory.'
         instructions += '\nLong-term memory is OFF for this question. Do not use saved long-term memories from earlier tool results; ordinary session history and business evidence remain available.'
+        if memory_provider=='mem0': instructions += '\nMem0 retrieval is OFF. Conversation-end extraction is still enabled for this provider, but do not claim extraction or saving has completed.'
     from .security_marker import marker_instructions
     instructions += '\n' + marker_instructions(marker_mode)
     agent=Agent(name='Marketplace support',instructions=instructions,model=model,model_settings=ModelSettings(max_tokens=MAX_COMPLETION_TOKENS,reasoning=Reasoning(effort="low"),parallel_tool_calls=False,extra_body={"guardrails":PROFILES[guardrail]} if guardrail!="off" else None),tools=direct_tools,mcp_servers=([server] if server and not memory_only else [])+([memory_server] if memory_server else []))
@@ -221,7 +234,7 @@ For counts and aggregates, lead with the count and state the actual date range u
             raise RuntimeError('Local memory MCP initialization failed') from memory_start_error
         connection={'mcp_transport':getattr(server,'transport_kind','stdio') if server else 'direct'}
         if getattr(server,'endpoint',None): connection['mcp_endpoint_host']=server.endpoint
-        span=lf.start_as_current_observation(name='support-investigation',as_type='span',input=question,metadata={'run_id':run_id,'revision':ctx.snapshot['revision'],'conversation_id':conversation_id,'guardrail':guardrail,'source_authority':source_authority,**connection,**({'routing_policy':route['policy'],'routing_classifier':route.get('classifier'),'routing_scope':route.get('scope'),'requested_router':route['alias'],'routing_session_id':route['session_id'],'routing_classifier_model':route.get('classifier_model')} if route else {})}) if lf else nullcontext()
+        span=lf.start_as_current_observation(name='support-investigation',as_type='span',input=question,metadata={'run_id':run_id,'revision':ctx.snapshot['revision'],'conversation_id':conversation_id,'guardrail':guardrail,'source_authority':source_authority,'memory_provider':memory_provider,'memory_enabled':memory_enabled,**connection,**({'routing_policy':route['policy'],'routing_classifier':route.get('classifier'),'routing_scope':route.get('scope'),'requested_router':route['alias'],'routing_session_id':route['session_id'],'routing_classifier_model':route.get('classifier_model')} if route else {})}) if lf else nullcontext()
         with span as observation:
             if observation:
                 metrics['trace_id']=observation.trace_id
@@ -305,12 +318,14 @@ For counts and aggregates, lead with the count and state the actual date range u
                 status='failed'
                 final='The memory tool connection was interrupted. Memory operations could not be verified; inspect saved records before retrying a change.'
                 metrics['memory_operations_status']='MCP synchronization failed'
+        metrics['memory_provider']=memory_provider
         metrics['memory_enabled']=memory_enabled
+        metrics['memory_retrieval_hits']=sum(x.get('hit_count',len(x.get('ids',[]))) for x in (memory_store.operations if memory_store else []) if x.get('operation')=='search')
         metrics['memory_management_scope']=memory_only
         metrics['memory_operations']=memory_store.operations if memory_store else []
         metrics['memory_tool_attempts']=[x for x in hooks.tool_attempts if x['name'] in ('search_memories','save_memory','update_memory','delete_memory')]
         metrics['memory_tool_calls']=len(metrics['memory_tool_attempts'])
-        metrics['memory_tool_transport']='mcp' if memory_enabled else 'disabled'
+        metrics['memory_tool_transport']=('mcp_https' if memory_provider=='mem0' else 'mcp') if memory_enabled else 'disabled'
         metrics['memory_write_allowed']=bool(memory_enabled and memory_write)
         metrics['tool_transport']='mcp' if server else 'direct'
         metrics['mcp_transport']=getattr(server,'transport_kind','stdio') if server else 'direct'

@@ -25,7 +25,15 @@ async def lifespan(app):
                 interrupted.status='failed'
                 interrupted.answer='The backend restarted during this investigation. Please retry; no business state was changed by the agent.'
 
-    yield
+    from .mem0_provider import enabled as mem0_enabled, worker as memory_worker
+    task=asyncio.create_task(memory_worker()) if mem0_enabled() else None
+    try:
+        yield
+    finally:
+        if task:
+            task.cancel()
+            try: await task
+            except asyncio.CancelledError: pass
 app=FastAPI(title='Marketplace Lab',lifespan=lifespan)
 
 def db_session():
@@ -104,11 +112,13 @@ def command(body:Action,user=Depends(identity),db=Depends(db_session)):
 @app.get('/api/conversations')
 def conversations(user=Depends(identity),db=Depends(db_session)):
     role(user,'support','operator')
-    return [{'id':c.id,'title':c.title,'runtime':runtime_binding(c)['runtime']} for c in db.scalars(select(Conversation).where(Conversation.owner_id==user.id)).all()]
+    return [{'id':c.id,'title':c.title,'runtime':runtime_binding(c)['runtime'],'memory_provider':memory_provider_for(db,c.id)} for c in db.scalars(select(Conversation).where(Conversation.owner_id==user.id)).all()]
+from .mem0_provider import provider_for as memory_provider_for
 from .platform_runtime import binding as runtime_binding, configured as runtime_configured, initial_items, options as runtime_options, validate_controls, hosted_answer
 
 class NewConversation(BaseModel):
     runtime:Literal['sdk','lyzr','google']='sdk'
+    memory_provider:Literal['internal','mem0']='internal'
     model_config={'extra':'forbid'}
 
 @app.get('/api/runtimes')
@@ -120,10 +130,15 @@ def available_runtimes(user=Depends(identity)):
 def create_conversation(body:NewConversation=Body(default=NewConversation()),user=Depends(identity),db=Depends(db_session)):
     role(user,'support','operator')
     if not runtime_configured(body.runtime): raise HTTPException(503,'Selected runtime is not configured')
+    from .mem0_provider import require_provider, ProviderError
+    try: require_provider(body.memory_provider)
+    except ProviderError as exc: raise HTTPException(403,str(exc))
+    if body.memory_provider=='mem0' and body.runtime!='sdk': raise HTTPException(400,'Mem0 requires the local SDK runtime')
     cid=uid('chat')
     c=Conversation(id=cid,owner_id=user.id,title='New investigation',items=initial_items(body.runtime,user.id,cid))
-    db.add(c); db.commit()
-    return {'id':c.id,'title':c.title,'runtime':body.runtime}
+    db.add(c); db.flush()
+    db.add(MemoryConversation(conversation_id=cid,provider=body.memory_provider)); db.commit()
+    return {'id':c.id,'title':c.title,'runtime':body.runtime,'memory_provider':body.memory_provider}
 def owned(db,user,cid):
     role(user,'support','operator'); conv=db.get(Conversation,cid)
     if not conv or conv.owner_id!=user.id: raise HTTPException(404,'Conversation not found')
@@ -178,6 +193,7 @@ async def security_fixture(body:FixtureChange,user=Depends(identity)):
 class Question(BaseModel):
     model_config={'extra':'forbid'}
     question:str=Field(min_length=1,max_length=4000)
+    memory_provider:Literal['internal','mem0']='internal'
     memory_enabled:bool=False
     memory_write:bool=False
     guardrail:Guardrail="off"
@@ -220,6 +236,17 @@ def loop_lab_options(user=Depends(identity)):
 async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session)):
     conv=owned(db,user,cid)
     runtime=runtime_binding(conv)['runtime']
+    from .mem0_provider import require_provider, ProviderError
+    try: require_provider(body.memory_provider)
+    except ProviderError as exc: raise HTTPException(403,str(exc))
+    if memory_provider_for(db,cid)!=body.memory_provider:
+        raise HTTPException(400,'Start a fresh conversation before changing memory provider')
+    if body.memory_provider=='mem0':
+        if runtime!='sdk' or body.memory_write or body.routing_policy!='off' or body.design_mode!='off' or body.loop_mode!='normal' or body.marker_mode!='off' or body.suppress_catalog or body.suppress_documents or body.guardrail!='off' or not body.source_authority:
+            raise HTTPException(400,'Mem0 requires SDK, normal support mode, clean context and no explicit memory-write flag')
+        from .hosting_client import enabled as hosting_enabled
+        if hosting_enabled(): raise HTTPException(400,'Mem0 is unavailable in the remote hosting lab')
+
     from .routing_demo import validate as validate_routing, configuration as routing_configuration, capture_calls
     try: validate_routing(body.routing_policy, runtime)
     except ValueError as exc: raise HTTPException(403, str(exc))
@@ -286,24 +313,39 @@ async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session
                 lab_config = design_config
             key_context = for_key(os.environ['EVAL_GATEWAY_KEY']) if (route_config or design_config) else for_role(user.role)
             with key_context, capture_calls():
-                return await answer(cid,body.question,evaluation_config=lab_config,memory_enabled=body.memory_enabled,memory_write=body.memory_write,guardrail=body.guardrail,source_authority=body.source_authority,marker_mode=body.marker_mode,suppress_catalog=body.suppress_catalog,suppress_documents=body.suppress_documents)
+                return await answer(cid,body.question,evaluation_config=lab_config,memory_provider=body.memory_provider,memory_enabled=body.memory_enabled,memory_write=body.memory_write,guardrail=body.guardrail,source_authority=body.source_authority,marker_mode=body.marker_mode,suppress_catalog=body.suppress_catalog,suppress_documents=body.suppress_documents)
         finally:
             if corpus_locked: lock.execute(text('SELECT pg_advisory_unlock_shared(hashtext(:key))'),{'key':LOCK})
             lock.execute(text('SELECT pg_advisory_unlock(hashtext(:cid))'),{'cid':cid})
 class MemoryChange(BaseModel):
-    expected_version:int=Field(ge=1)
+    expected_version:int|None=Field(default=None,ge=1)
     title:str=Field(min_length=1,max_length=120)
     content:str=Field(min_length=1,max_length=2000)
 
 @app.get('/api/memories')
-def memories(user=Depends(identity),db=Depends(db_session)):
+async def memories(provider:Literal['internal','mem0']='internal',user=Depends(identity),db=Depends(db_session)):
     role(user,'support','operator')
+    if provider=='mem0':
+        from .mem0_provider import connect, Mem0Store
+        try:
+            async with connect() as session: return await Mem0Store(user.id,session).listing()
+        except Exception: raise HTTPException(503,'Mem0 memories are unavailable; no internal fallback was used.') from None
     from .memory import record
-    return [record(x) for x in db.scalars(select(Memory).where(Memory.owner_id==user.id).order_by(Memory.updated_at.desc())).all()]
+    return [{**record(x),'provider':'internal'} for x in db.scalars(select(Memory).where(Memory.owner_id==user.id).order_by(Memory.updated_at.desc())).all()]
 
 @app.patch('/api/memories/{mid}')
-def edit_memory(mid:str,body:MemoryChange,user=Depends(identity),db=Depends(db_session)):
+async def edit_memory(mid:str,body:MemoryChange,provider:Literal['internal','mem0']='internal',user=Depends(identity),db=Depends(db_session)):
     role(user,'support','operator')
+    if provider=='mem0':
+        from .mem0_provider import connect, Mem0Store, ProviderError
+        try:
+            async with connect() as session: return await Mem0Store(user.id,session).mutation(mid,'update',body.content,body.title)
+        except ProviderError as exc: raise HTTPException(404 if str(exc)=='Memory not found' else 503,str(exc)) from None
+        except Exception as exc:
+            from .mem0_provider import missing_memory
+            if missing_memory(exc): raise HTTPException(404,'Memory not found') from None
+            raise HTTPException(503,'Mem0 update could not be confirmed; inspect the provider before retrying.') from None
+    if body.expected_version is None: raise HTTPException(400,'Internal memory requires its current version')
     row=db.scalar(select(Memory).where(Memory.id==mid,Memory.owner_id==user.id))
     if not row: raise HTTPException(404,'Memory not found')
     from .memory import MemoryStore,MemoryError
@@ -312,14 +354,53 @@ def edit_memory(mid:str,body:MemoryChange,user=Depends(identity),db=Depends(db_s
     except MemoryError as exc: raise HTTPException(409,str(exc))
 
 @app.delete('/api/memories/{mid}')
-def forget_memory(mid:str,expected_version:int,user=Depends(identity),db=Depends(db_session)):
+async def forget_memory(mid:str,expected_version:int|None=None,provider:Literal['internal','mem0']='internal',user=Depends(identity),db=Depends(db_session)):
     role(user,'support','operator')
+    if provider=='mem0':
+        from .mem0_provider import connect, Mem0Store, ProviderError
+        try:
+            async with connect() as session: return await Mem0Store(user.id,session).mutation(mid,'delete')
+        except ProviderError as exc: raise HTTPException(404 if str(exc)=='Memory not found' else 503,str(exc)) from None
+        except Exception as exc:
+            from .mem0_provider import missing_memory
+            if missing_memory(exc): raise HTTPException(404,'Memory not found') from None
+            raise HTTPException(503,'Mem0 deletion could not be confirmed; inspect the provider before retrying.') from None
+    if expected_version is None: raise HTTPException(400,'Internal memory requires its current version')
     row=db.scalar(select(Memory).where(Memory.id==mid,Memory.owner_id==user.id))
     if not row: raise HTTPException(404,'Memory not found')
     from .memory import MemoryStore,MemoryError
     store=MemoryStore(user.id,row.source_conversation_id,{},allow_write=True)
     try: return store.remove(mid,expected_version)
     except MemoryError as exc: raise HTTPException(409,str(exc))
+
+@app.get('/api/memory-providers')
+def memory_providers(user=Depends(identity)):
+    role(user,'support','operator')
+    from .mem0_provider import options
+    return options()
+
+@app.post('/api/conversations/{cid}/memory/finalize')
+def finalize_memory(cid:str,user=Depends(identity),db=Depends(db_session)):
+    owned(db,user,cid)
+    from .mem0_provider import enqueue, ProviderError
+    with engine.connect() as lock:
+        key='memory-finalize:'+cid
+        if not lock.execute(text('SELECT pg_try_advisory_lock(hashtext(:key))'),{'key':key}).scalar():
+            raise HTTPException(409,'Conversation finalization is already queued; check its status')
+        try:
+            try: result=enqueue(db,user.id,cid)
+            except ProviderError as exc: raise HTTPException(409,str(exc))
+            db.commit()
+            return result
+        finally: lock.execute(text('SELECT pg_advisory_unlock(hashtext(:key))'),{'key':key})
+
+@app.get('/api/conversations/{cid}/memory/status')
+def memory_status(cid:str,user=Depends(identity),db=Depends(db_session)):
+    owned(db,user,cid)
+    from .mem0_provider import job_record, latest_job
+    if memory_provider_for(db,cid)=='internal':
+        return {'conversation_id':cid,'provider':'internal','status':'noop','message':'Internal memory uses explicit writes.'}
+    return job_record(latest_job(db,cid),cid)
 
 @app.post('/api/index')
 async def index(user=Depends(identity)):
