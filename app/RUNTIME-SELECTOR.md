@@ -22,6 +22,10 @@ Each platform retains its own memory. Memory is not copied between runtimes or b
 
 Hosted agents use their configured MCP endpoint. Choosing Google or Lyzr from a local interface does not repoint that agent to local data. Business revision and tool/token metrics from our SDK are not shown as if they describe a hosted run. New hosted responses retain structured business evidence from Google tool-response events and the matching Lyzr inference trace. Citations open the same saved database records, event timeline or policy passages as SDK answers. Unavailable sources are labelled instead of inventing records; older answers may lack a stored evidence bundle. Native traces remain useful for platform-level debugging. The app records the returned answer and supports normal answer feedback. A Langfuse wrapper records the hosted request/answer when configured; native internal tool/model spans remain in each platform's telemetry.
 
+## Optional Google marketplace integration
+
+This guide describes the existing verified marketplace integration, not a required setup for every Google lesson. The [proposed standalone Chapter 19 lab](../course/GOOGLE-PLATFORM-WALKTHROUGH.md#proposed-standalone-native-lab-under-discussion) would use native Playground with packaged synthetic data/function tools; it is not implemented. In the existing integration, the managed agent stays hosted whether its marketplace caller is local or cloud. Local ADC authenticates that caller; the agent's MCP profile independently selects its business endpoint and matching secret. `python deploy.py --backend local|cloud` updates a managed deployment, not a UI runtime choice. Preserve dated acceptance below and read back the actual deployed endpoint before a current demo.
+
 ## Configuration
 
 All configuration and credentials belong to the **backend**, never the frontend bundle.

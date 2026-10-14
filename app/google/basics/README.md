@@ -2,6 +2,8 @@
 
 A separate standalone Chapter 19 lab: Google-managed ADK agent, packaged fictional order records and a native Python `lookup_order(order_id)` tool. No marketplace UI, SQL, MCP server, tunnel or business database is required. Native Sessions supply conversation context; optional `PreloadMemoryTool` uses managed Memory Bank after deployment. Local execution is not proof of managed memory or tracing.
 
+**Readiness:** the implementation, packaged fixture and nine no-paid-call tests are complete. Creation of the separate managed deployment and native Playground/Memory Bank/trace acceptance are in progress. The existing Marketplace Support ADK Lab remains a separate, previously verified integration.
+
 ## Fixture and native tools
 
 Use `order-demo-1` (two Ceramic Mug Sets, payment received, not dispatched, payout held), `order-demo-2` (one Canvas Weekender, delivered, payout released), or `order-demo-3` (one Desk Lamp, cancelled/refunded). The fictional snapshot has its own dataset ID/as-of marker. Unknown IDs return `found=false`; there is no policy or mutation tool. Records are shared fictional lesson data; private memory identity is provided by native session context, not tool arguments.

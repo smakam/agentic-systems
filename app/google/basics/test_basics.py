@@ -76,3 +76,22 @@ class CreateOnlyTests(unittest.TestCase):
         self.assertEqual(saved['app_name'],'support_agent_basics')
         self.assertTrue(saved['resource_name'].endswith('new-basics'))
         self.assertNotIn('original-lab-must-remain-untouched',json.dumps(calls))
+
+class VerificationPredicatesTests(unittest.TestCase):
+    def test_known_answer_requires_native_lookup_evidence(self):
+        from verify_basics import check_case
+        answer={'answer':'2 Ceramic Mug Sets','order_results':[],'errors':[]}
+        self.assertFalse(check_case('known_order',answer))
+        answer['order_results']=[lookup_order('order-demo-1')]
+        self.assertTrue(check_case('known_order',answer))
+    def test_memory_format_without_fixture_evidence_is_insufficient(self):
+        from verify_basics import check_case
+        answer={'answer':'Finding Evidence Next action released','order_results':[],'errors':[]}
+        self.assertFalse(check_case('fresh_session_business_memory',answer))
+        answer['order_results']=[lookup_order('order-demo-2')]
+        self.assertTrue(check_case('fresh_session_business_memory',answer))
+    def test_preload_requires_model_input_not_formatted_output(self):
+        from verify_traces import preload_evidence
+        text='<PAST_CONVERSATIONS> prefers Finding, Evidence and Next action'
+        self.assertFalse(preload_evidence([{'output':text}]))
+        self.assertTrue(preload_evidence([{'model_input':text}]))

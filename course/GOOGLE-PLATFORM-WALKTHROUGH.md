@@ -6,11 +6,12 @@ Single setup, demo and results guide. Updated October 8, 2026. The bounded hoste
 
 ## What this lesson demonstrates
 
-Deploy the marketplace support agent with ADK on Google’s managed Agent Runtime and select either the hosted Cloud Run business MCP backend or the original laptop backend through saved profiles. The current deployment uses the cloud profile; the laptop tunnel remains an optional switch-back configuration. Ask questions through Google Playground or our CLI client; demonstrate native Sessions, Memory Bank, monitoring and tracing. This is a learning deployment, not a production hosting design or platform-quality benchmark.
+Deploy the marketplace support agent with ADK on Google’s managed Agent Runtime and select either the hosted Cloud Run business MCP backend or the original laptop backend through saved profiles. The current deployment uses the cloud profile; the laptop tunnel remains an optional switch-back configuration. This existing verified integration uses Google Playground and a supporting CLI to demonstrate native Sessions, Memory Bank, monitoring and tracing. Marketplace UI integration is optional. The proposed simplified lesson is described separately below and is not implemented. This is a learning deployment, not a production hosting design or platform-quality benchmark.
 
 Use this document for the whole Google lesson. The former plan, setup and validation files now point here.
 
 - [Architecture](#architecture)
+- [Proposed standalone native lab](#proposed-standalone-native-lab-under-discussion)
 - [Cloud Shell and deployment](#cloud-shell-and-deployment)
 - [Playground and user IDs](#playground-and-user-ids)
 - [Memory demo commands](#memory-demo-commands)
@@ -57,6 +58,16 @@ flowchart TB
 
 The table above describes the original laptop profile. User questions enter through the available platform test/chat surface or deployed API. With the current cloud profile, business MCP and PostgreSQL are hosted in GCP, so the laptop and tunnel are not required. With the local profile, the laptop must stay on with its services and tunnel running. The remote business server does not expose personal-memory tools: use Google-native memory for this first experiment; remote PostgreSQL personal memory is a separate optional adapter.
 
+## Proposed standalone native lab under discussion
+
+The latest Chapter 19 proposal is a standalone managed ADK agent with a small packaged, synthetic JSON order dataset and native function tools. Learners would use Google Playground and inspect native Sessions, Memory Bank and tracing. That proposed core would not require the marketplace chat application, separate business MCP middleware, a tunnel or Cloud SQL. Scope is still under discussion: the static dataset/tools have not been implemented, deployed or verified, and the existing commands below do not create that proposed lab.
+
+The existing verified ADK integration remains a secondary reference and possible optional extension for learners who want the full marketplace stack. In that implementation, business tools use an authenticated MCP service backed by PostgreSQL/policy retrieval. Its saved `local` profile targets laptop MCP through an HTTPS tunnel; its `cloud` profile targets Cloud Run MCP/Cloud SQL. The managed agent executes on Google in both. Native Playground can call it without the marketplace chat frontend/backend, but its configured business-tool service must still be available.
+
+Marketplace UI integration is optional. A local marketplace caller uses backend ADC; a cloud caller uses its service identity with runtime query permission. Caller placement and the hosted agent's MCP target are independent. Selecting Google ADK in the UI does not change the tool target. `python deploy.py --backend local|cloud` updates the existing managed deployment's endpoint/secret profile and affects its callers; it is not a UI selection or a static-JSON lab deployment command. See [runtime credentials](../app/RUNTIME-SELECTOR.md#configuration) and the [coordinated backend switch](../app/DEPLOYMENT-AND-RUNTIME-PATHS.md#how-to-know-which-backend-will-be-used) for that optional integration.
+
+The current walkthrough describes the cloud profile; read back actual deployment metadata before using it. October 8 local ADC and repaired local/cloud checks are historical evidence, not a new switch-back rehearsal. No runtime, tool implementation, tunnel, credentials or deployment was changed for this documentation clarification.
+
 ## Cloud Shell and deployment
 
 ### Existing lab
@@ -92,7 +103,7 @@ The prepared directory contains `deployment.json`, which identifies the existing
 3. Create the dedicated runtime identity, private staging bucket and MCP secret. Store the existing read-only MCP key in the secret; keep its value out of source, prompts and this guide.
 4. Give the runtime identity Vertex AI User, Logs Writer, Trace Agent and Monitoring Metric Writer. Restrict Storage Object Viewer to the staging bucket and Secret Accessor to the one MCP secret.
 5. Upload the code package to Cloud Shell and install the pinned [requirements](../app/google/requirements.txt) in the isolated Python 3.12 environment. The working package includes Agent Platform/AI Platform 2.3.0, ADK 2.11.0 and MCP 1.30.0.
-6. Configure the read-only HTTPS MCP tunnel, model, secrets and telemetry; deploy with [deploy.py](../app/google/deploy.py). The lab requests minimum instances 0 and maximum 1.
+6. Configure the selected read-only HTTPS MCP profile (laptop tunnel or Cloud Run), model, secrets and telemetry; deploy with [deploy.py](../app/google/deploy.py). The lab requests minimum instances 0 and maximum 1.
 7. Verify the deployment in the console, run business/memory checks and inspect native traces.
 
 For an intentional update of the **existing** lab, use these non-secret settings. The saved backend profiles select the URL and matching secret reference together. This update uploads code and modifies the runtime; it is not needed for the memory demos.

@@ -264,8 +264,18 @@ For a separately deployed marketplace, OpenAI Agents SDK, HTTP MCP service and c
 
 The cloud path currently uses OpenAI and Langfuse Cloud in your chosen region. Existing deployed behavior is verified; a fresh-project installation rehearsal remains deferred. Local setup is sufficient for the required course path.
 
-## 11. Later lessons: optional services and hosted platforms
+## 11. Course paths and later services
+
+| Path | Where to start | Required dependencies |
+|---|---|---|
+| Baseline local OpenAI Agents SDK | This local setup guide | Local marketplace/SDK, tools/data, gateway and Langfuse |
+| Optional full-cloud OpenAI Agents SDK | [Cloud setup](CLOUD-SETUP.md) | Cloud marketplace/SDK, HTTP MCP, Cloud SQL, gateway and cloud tracing |
+| Chapter 19 standalone Google agent | [Support Agent Basics](google/basics/README.md) | Managed ADK runtime, packaged fictional JSON/native function tool, native Playground/Sessions/Memory Bank/telemetry; no marketplace chat or MCP backend |
+| Chapter 20 standalone Lyzr agent | Chapter 20 lesson instructions, to be prepared during review | Native Studio/Playground support-agent lab; exact standalone fixture/tool setup is not yet implemented or verified |
+| Optional hosted-platform integration extension | [Runtime selector/configuration](RUNTIME-SELECTOR.md) and [deployment paths](DEPLOYMENT-AND-RUNTIME-PATHS.md) | Existing GCP marketplace chat and authenticated MCP/business backend, plus hosted Google/Lyzr configuration |
+
+The Google Basics package is implemented with local no-paid-call tests; new managed deployment/native acceptance is still in progress. The existing full marketplace Google/Lyzr integrations have their own historical verification; that evidence does not establish that a new standalone platform lesson has been tested. Do not require their chat, ADC or tunnel setup for the standalone lessons.
 
 - **Guardrails:** the first smoke test needs none. Built-in privacy is configured in the gateway; Presidio requires the optional `compose.guardrails.yaml` services, and Lakera requires its provider key/config overlay. Follow the [combined Guardrails and Agent Security guide](docs/SECURITY-CHAPTER-DEMO.md) rather than enabling every profile during initial setup.
-- **Lyzr / Google ADK:** native hosted sessions, memory and telemetry belong to those platform lessons. A tunnel is only needed when a hosted agent must reach your laptop's authenticated remote business MCP endpoint. It is not needed for local SQL, RAG or personal memory. Use [Lyzr setup](lyzr/README.md) or the [single Google walkthrough](../course/GOOGLE-PLATFORM-WALKTHROUGH.md); remote access/secrets must be configured deliberately. The current shared remote business key does not establish per-user private memory access.
-- **Cloud:** the optional setup path is in Section 10. The local Compose file uses local Langfuse; creating a Langfuse Cloud account does not redirect laptop traces automatically.
+- **Hosted platforms:** native sessions, memory and telemetry belong to their platform lessons. The [Google walkthrough](../course/GOOGLE-PLATFORM-WALKTHROUGH.md) and [existing Lyzr integration](lyzr/README.md) preserve the more adventurous full-stack extension. In that extension, runtime selection in chat and the hosted agent's MCP target are separate; an authenticated laptop tunnel is needed only when that target is laptop middleware. It is not needed for local SDK tools or the Google Basics fixture.
+- **Cloud:** the optional full-cloud SDK path is in Section 10. The local Compose file uses local Langfuse; creating a Langfuse Cloud account does not redirect laptop traces automatically. Local/cloud records, sessions and memories are not continuously synchronized.

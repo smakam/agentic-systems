@@ -257,29 +257,27 @@ Reuse the marketplace support tasks, MCP tool contracts and evaluation criteria 
 
 ### 19. Google Gemini Enterprise Agent Platform
 
-**Draft learner practice — for review, not finalized:**
+**Reviewed lesson scope:** Introduce the managed platform's purpose, benefits and tradeoffs; map familiar agent components in one architecture diagram; distinguish self-managed open-source ADK from Managed Agent Platform; explain component cost drivers, including evaluation separately from observability. Selected services can be combined; avoid blanket model, external-memory or data-location restrictions.
 
-- **Exercise:** Connect a hosted Google agent to the shared business MCP backend, ask a question and follow-up, then inspect its native trace.
-- **Solution to prepare:** Setup instructions, configuration template without credentials, successful tool/source checkpoints and an annotated native trace.
+- **Core lesson and demonstration:** Deploy the separate **Support Agent Basics** agent, with packaged fictional orders and native `lookup_order`. Use native Google Playground to inspect record evidence, a same-session follow-up, an unknown order, native session/trace events and separately triggered Memory Bank generation/recall. No marketplace UI, SQL, MCP middleware, tunnel or Cloud SQL is required for Basics.
+- **Standalone practice:** Follow the chapter's concise setup guide for prerequisites, editable environment settings, installation and test/deploy commands. The instructor guide starts after deployment and supplies the exact questions and observations. Reference answers separate fictional source facts from model behavior.
+- **Optional adventurous exercise:** Build the full cloud integration connecting the chat application/backend and business data/MCP to a Google-hosted agent, using the linked cloud instructions. This is separate from standalone Basics and preserves the existing Marketplace Support ADK Lab.
+- **Current verification:** Basics has been created. Native Playground product lookup, same-session held-payout follow-up, missing-record result and model/tool traces have been checked. Cross-session memory verification remains pending. The existing cloud integration has its own historical evidence; it is not a fresh learner-project installation rehearsal.
 
-Main lesson document: [Google platform walkthrough — architecture, setup steps and checks](GOOGLE-PLATFORM-WALKTHROUGH.md). ADK is deployed. Hosted SQL/RAG and seven memory checks passed, including native Memory Bank recall under the actual Playground user. Deployment Traces → Session view and retrieved memory in model input are verified. Setup, CLI commands, results and trace-viewing steps are all in that same guide.
-
-- **Learning objective:** Identify which responsibilities a native agent platform takes over.
-- **Lab:** Build natively with ADK on the managed runtime; reuse business tools and evaluate shared cases, sessions, retrieval and memory.
-- **Status:** Bounded experiment phase complete; user manually validated short-term memory, long-term memory and general questions October 8. Hosted checks and native trace inspection passed. Slides, speaker notes, homework and recording preparation remain later work.
-- **Details:** [Approach, comparison criteria, evidence and pending work](PLATFORM-GUIDE.md#19-google-gemini-enterprise-agent-platform).
+**Materials:** [Setup guide](exercises/chapter-19-google-agent-platform/setup-guide.md) · [Instructor walkthrough](exercises/chapter-19-google-agent-platform/instructor-demo.md) · [Exercise](exercises/chapter-19-google-agent-platform/exercise.md) · [Separate answers](exercises/chapter-19-google-agent-platform/solutions/answers.md) · [Basics code and instructions](../app/google/basics/README.md) · [Optional integration walkthrough](GOOGLE-PLATFORM-WALKTHROUGH.md).
 
 ### 20. Lyzr Agent Studio
 
 **Draft learner practice — for review, not finalized:**
 
-- **Exercise:** Connect Lyzr to the same business MCP tools, ask the shared question and inspect its saved sources and native memory behavior.
-- **Solution to prepare:** Setup instructions, configuration template without credentials and annotated tool, source and native-memory checkpoints.
+- **Core lesson:** A standalone Lyzr support-agent activity in native Studio/Playground, with native session, memory and observability inspection. Keep the required lesson independent of the marketplace chat application; determine its precise fictional-data/tool setup during Chapter 20 review.
+- **Exercise to prepare:** Ask a known question and follow-up, inspect native sources/trace and distinguish session context from persistent memory.
+- **Solution to prepare:** Native setup, exact fixture/prompts, expected tool/source checkpoints and annotated memory/trace observations. The standalone lesson is not yet implemented or verified.
 
-- **Learning objective:** Reuse business middleware while moving agent execution and native memory to a managed platform.
-- **Lab:** Configure the model/prompt, connect seven remote business MCP actions, test native Cognis memory and call the deployed agent API.
-- **Status:** Included hands-on platform chapter. Local/cloud marketplace adapters, hosted business calls, sessions and memory were validated. Learner packaging remains; preserve the historical checklist-use limitation.
-- **Details:** [Architecture, component ownership, dashboard steps, tracing, user experience, test evidence and enhancements](PLATFORM-GUIDE.md#21-lyzr-agent-studio).
+- **Learning objective:** Understand the agent execution, tools, sessions, memory and tracing supplied by Lyzr's managed platform.
+- **Optional integration extension:** Connect the hosted Lyzr agent to the existing GCP marketplace chat and authenticated MCP/Cloud SQL business backend, with explicit credential/target instructions from the [Lyzr integration guide](../app/lyzr/README.md), [runtime selector/configuration](../app/RUNTIME-SELECTOR.md) and [cloud setup](../app/CLOUD-SETUP.md).
+- **Historical evidence:** Existing local/cloud marketplace adapters, hosted business calls, sessions and native Cognis were validated. Keep the earlier checklist-use limitation visible; those integration results do not establish a future standalone lesson's acceptance.
+- **Details:** [Platform component ownership and historical results](PLATFORM-GUIDE.md#21-lyzr-agent-studio).
 
 ### 21. Other Agent Platforms
 
