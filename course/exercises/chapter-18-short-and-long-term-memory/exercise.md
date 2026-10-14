@@ -12,6 +12,8 @@ Use **Refresh memory status** for the latest result and **Memory extraction trac
 
 Mem0 must be configured by the course operator. If it is marked unavailable, complete the Internal cases and document the external setup limitation. Do not use a provider error as evidence that no memory exists.
 
+**Preference retrieval and precedence:** both provider paths instruct the agent to look for relevant saved preferences before answering a business question. The model controls whether and how it calls search, so inspect the actual trace rather than assuming a call. A retrieved relevant format preference takes precedence over the default answer layout; an explicit instruction in the current question takes precedence over the saved preference. Current business evidence still governs factual claims.
+
 ## Part A: conversation history
 
 Select **Internal memory**. Turn **Use long-term memory** and **Allow memory changes for this question** off.
@@ -30,6 +32,12 @@ Select **Internal memory**. Turn **Use long-term memory** and **Allow memory cha
 3. Open **Saved memories · Internal**. Record the saved content, kind, version and source. The write permission resets after the question.
 4. Start **New conversation**, retain memory reads on and writes off. Ask **“Is order-1 eligible for a refund under the current returns policy?”** Do not mention memory, preference or formatting. Record the actual search query/preference match, per-item eligibility and current policy/business evidence. Observe whether the answer uses three numbered steps with the policy source at the end; do not assume that format.
 5. Optional diagnosis: ask **“What is my learner preference for refund explanations?”** or **“How should you lay out a reimbursement explanation for me?”** in another fresh chat. These are diagnostic questions, not the primary business test.
+
+**Automatic-save eligibility:** before calling Mem0, the application checks user messages for durable intent. Natural preferences such as “I like payout explanations in a compact table”, accepted reusable checklists and explicit historical resume requests can qualify. Chats containing only business questions, recall requests or temporary formatting instructions produce a completed no-op without a provider add call. For an eligible chat, the full conversation goes to the extraction API with per-request guidelines; Mem0 still chooses what to retain.
+
+**Clean observation:** finish pending jobs, remove only your lab memories, verify no relevant lab entries and no pending jobs, then start a fresh chat. Run a business-only conversation first and confirm no new memory/provider add; next state a natural durable preference, end that chat and inspect extraction. In a fresh business question inspect actual retrieval, then test Edit and Forget in new chats.
+
+**Extraction policy:** the application submits the completed conversation with per-request guidelines to retain stable preferences, accepted checklists and explicitly requested historical resume checkpoints. Routine business-answer snapshots and assistant acknowledgements/promises are excluded by those guidelines. Mem0 still selects the entries; inspect the saved results. Submission uses the extraction API; retrieval and saved-memory operations use hosted MCP.
 
 ### B2: Mem0
 
@@ -79,14 +87,43 @@ Use one row for every completed question, plus a row for each background extract
 
 Add more rows as needed. When a field does not apply, write “not applicable” and explain why.
 
-Answer these observation questions:
+Answer these observation questions. The sample answers below are **illustrative**, not fixed expected results. Replace them with your own observed settings, matches and trace links; a documented miss is valid.
 
-1. Which result came from same-conversation history, and which had a confirmed long-term memory retrieval?
-2. Who chose when to save and what to retain in each provider path?
-3. For the paraphrase, what did the search actually return? What can this small observation establish?
-4. What changed after Edit and Forget, and how did you avoid testing against old chat history?
-5. Did current instructions and current records retain authority over remembered context?
-6. Did the extraction trace show confirmed completion, and what did the later retrieval trace show?
+1. **Which result came from same-conversation history, and which had a confirmed long-term memory retrieval?**
+
+   Inspect/record: compare Part A's same-chat and fresh-chat traces with Part B's actual memory-search results. Identify the prior messages or returned record that supplied context.
+
+   Illustrative answer: “My Part A follow-up resolved ‘those items’ from the earlier order question, with memory off. In B2's fresh refund question, the search returned my saved three-step preference. I recorded both trace links.” If no record was returned, say so.
+
+2. **Who chose when to save and what to retain in each provider path?**
+
+   Inspect/record: note Internal's explicit save request and write permission; for Mem0, record the conversation-end trigger, eligibility decision and saved entries.
+
+   Illustrative answer: “I chose the Internal preference content and enabled writes. For Mem0 I stated a lasting refund preference; New conversation triggered processing, the app admitted it under the durable-intent policy, and Mem0 selected the stored fact.” A business-only no-op has no provider add.
+
+3. **For the optional paraphrase, what did the search actually return? What can this small observation establish?**
+
+   Inspect/record: if you ran the optional diagnostic, record its question, actual search query, matches and available scores for each provider. Otherwise write **not applicable — optional paraphrase not run**.
+
+   Illustrative answer: “For my reimbursement paraphrase, Internal returned no preference and Mem0 returned the refund-format preference. This describes one query, not proof that one provider is always better.” Record the opposite result if that is what happened.
+
+4. **What changed after Edit and Forget, and how did you avoid testing against old chat history?**
+
+   Inspect/record: compare the stored text before/after Edit, the listing after Forget and retrieval in fresh conversations. Check pending jobs and related entries.
+
+   Illustrative answer: “Edit changed my preference from three steps to one paragraph. A new chat retrieved the edited text. After pending jobs finished and I forgot related lab entries, another fresh chat did not retrieve that preference. The refund answer still used policy evidence.” Answer format alone does not prove deletion.
+
+5. **Did current instructions and current records retain authority over remembered context?**
+
+   Inspect/record: compare the explicit numbered-list instruction with the stored paragraph preference; identify policy/item evidence supporting eligibility and fresh records used for the checkpoint.
+
+   Illustrative answer: “The current numbered-list request overrode my usual paragraph format. The answer assessed refund eligibility per item using the applicable policy and delivery records; the preference changed presentation, not the business facts.” Document conflicts or missing evidence instead of assuming compliance.
+
+6. **Did the extraction trace show confirmed completion, and what did the later retrieval trace show?**
+
+   Inspect/record: capture processing status, no-op versus provider extraction, saved IDs/content and the later business question's actual search result. Keep both trace links.
+
+   Illustrative answer: “The natural-preference chat completed provider extraction and stored one refund preference. The later fresh refund question returned that record. My business-only control completed as a no-op without a provider add.” Queued is not saved, and completed can mean no-op or zero extracted entries.
 
 **Optional scope check:** if the instructor supplies a second course account, sign in as it and confirm the first account's named memories are absent in the listing and retrieval. Return to the original user. Do not create accounts or modify another user's records for this exercise.
 

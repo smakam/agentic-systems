@@ -30,6 +30,8 @@ Use **Refresh memory status** to refresh the save result. **Memory extraction tr
 
 Each case records the question, answer, selected provider, stored entry, actual retrieval result and trace link. Model responses and extracted wording may vary. These examples demonstrate behavior rather than a general provider ranking.
 
+**Preference retrieval and precedence:** both provider paths instruct the agent to look for relevant saved preferences before answering a business question. The model controls whether and how it calls search, so inspect the actual trace rather than assuming a call. A retrieved relevant format preference takes precedence over the default answer layout; an explicit instruction in the current question takes precedence over the saved preference. Current business evidence still governs factual claims.
+
 ## Case A: short-term conversation context
 
 **Settings:** Internal memory; **Use long-term memory** off; **Allow memory changes for this question** off.
@@ -53,6 +55,12 @@ Each case records the question, answer, selected provider, stored entry, actual 
 5. Optional diagnosis: in another fresh chat ask **“What is my instructor preference for payout explanations?”** or the paraphrase **“How should you arrange a settlement explanation for me?”** Inspect actual matches. These memory-oriented questions are diagnostics, not the primary demonstration.
 
 **Teaching point:** the user selects what should be retained. The agent formats it and chooses the memory type. Reads can happen without an explicit recall request, but writes need current user intent and the per-question permission.
+
+**Automatic-save eligibility:** before calling Mem0, the application checks user messages for durable intent. Natural preferences such as “I like payout explanations in a compact table”, accepted reusable checklists and explicit historical resume requests can qualify. Chats containing only business questions, recall requests or temporary formatting instructions produce a completed no-op without a provider add call. For an eligible chat, the full conversation goes to the extraction API with per-request guidelines; Mem0 still chooses what to retain.
+
+**Clean observation:** finish pending jobs, remove only your lab memories, verify no relevant lab entries and no pending jobs, then start a fresh chat. Run a business-only conversation first and confirm no new memory/provider add; next state a natural durable preference, end that chat and inspect extraction. In a fresh business question inspect actual retrieval, then test Edit and Forget in new chats. Do not infer a provider’s internal cause from a surprising result: an earlier isolated run recreated a deleted preference, while subsequent repeated and virgin-user controls did not. The exact earlier business payload contained no table preference or prior context; its internal cause remains unknown.
+
+**Extraction policy:** the application submits the completed conversation with per-request guidelines to retain stable preferences, accepted checklists and explicitly requested historical resume checkpoints. Routine business-answer snapshots and assistant acknowledgements/promises are excluded by those guidelines. Mem0 still selects the entries; inspect the saved results. Submission uses the extraction API; retrieval and saved-memory operations use hosted MCP.
 
 ## Case C: Mem0 extraction without a save request
 

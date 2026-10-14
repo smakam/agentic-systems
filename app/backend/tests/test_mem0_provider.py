@@ -119,6 +119,10 @@ def test_background_pending_survives_restart_without_second_add(isolated_db,monk
     @asynccontextmanager
     async def connected():yield fake
     monkeypatch.setattr(m,'connect',connected)
+    async def extraction(owner,messages,cid):
+        fake.calls.append(('add_memory',m.extraction_payload(owner,messages,cid)))
+        return fake.addition
+    monkeypatch.setattr(m,'extract_conversation',extraction)
     with Session.begin() as db:m.enqueue(db,'support','mem0-chat')
     with Session() as db:jid=m.latest_job(db,'mem0-chat').id
     asyncio.run(m.process_job(jid))
@@ -193,3 +197,116 @@ def test_api_provider_binding_ownership_and_validation(isolated_db,monkeypatch):
             user.id='operator'
             assert client.get('/api/conversations/'+cid+'/memory/status').status_code==404
     finally:api.app.dependency_overrides.clear()
+
+
+def test_extraction_retains_full_context_and_binds_policy_and_scope():
+    messages=[{'role':'user','content':'I prefer brief tables'},
+              {'role':'assistant','content':'I will keep using tables'}]
+    payload=m.extraction_payload('support',messages,'chat-fixture')
+    assert payload['messages']==messages
+    assert payload['user_id']==m.namespace('support')
+    assert payload['metadata']['owner_scope']==payload['user_id']
+    assert payload['metadata']['conversation_id']=='chat-fixture'
+    assert payload['metadata']['retention_policy']==m.RETENTION_POLICY_VERSION
+    assert payload['infer'] is True
+    assert payload['custom_instructions']==m.RETENTION_POLICY
+    assert 'assistant acknowledgements' in payload['custom_instructions']
+    assert 'current\norder, payment, shipment, payout and refund states' in payload['custom_instructions']
+
+
+def test_extraction_uses_request_specific_rest_policy_without_project_write(monkeypatch):
+    import httpx2
+    calls=[]
+    class FakeHTTP:
+        def __init__(self,**kwargs):self.options=kwargs
+        async def __aenter__(self):return self
+        async def __aexit__(self,*args):pass
+        async def post(self,url,**kwargs):
+            calls.append((url,kwargs,self.options))
+            return SimpleNamespace(status_code=200,json=lambda:{'event_id':'policy-event','status':'PENDING'})
+    monkeypatch.setattr(httpx2,'AsyncClient',FakeHTTP)
+    monkeypatch.setattr(m,'enabled',lambda:True)
+    monkeypatch.setenv('MEM0_API_KEY','synthetic-test-key')
+    messages=[{'role':'user','content':'I prefer compact tables'},{'role':'assistant','content':'context'}]
+    result=asyncio.run(m.extract_conversation('support',messages,'chat-fixture'))
+    assert result['event_id']=='policy-event' and len(calls)==1
+    url,args,options=calls[0]
+    assert url=='https://api.mem0.ai/v3/memories/add/'
+    assert options['headers']['Authorization']=='Token synthetic-test-key'
+    assert options['follow_redirects'] is False
+    assert args['json']==m.extraction_payload('support',messages,'chat-fixture')
+
+
+def test_extraction_failure_is_sanitized(monkeypatch):
+    import httpx2
+    class FakeHTTP:
+        def __init__(self,**kwargs):pass
+        async def __aenter__(self):return self
+        async def __aexit__(self,*args):pass
+        async def post(self,*args,**kwargs):return SimpleNamespace(status_code=403)
+    monkeypatch.setattr(httpx2,'AsyncClient',FakeHTTP)
+    monkeypatch.setattr(m,'enabled',lambda:True)
+    monkeypatch.setenv('MEM0_API_KEY','synthetic-test-key')
+    with pytest.raises(m.ProviderError,match='^Mem0 rejected extraction$'):
+        asyncio.run(m.extract_conversation('support',[{'role':'user','content':'I prefer tables'}],'chat-fixture'))
+
+
+@pytest.mark.parametrize('question',[
+    'What is the payout status of order-2?',
+    'What is my preference for payout explanations?',
+    'I would like to know the current payout status of order-2.',
+    'I like to know the current payout status before explanations.',
+    'For this answer use a table with Finding, Evidence and Next action.',
+    'What do you remember about my preferences?',
+])
+def test_business_recall_and_temporary_requests_cannot_submit(question,monkeypatch):
+    import httpx2
+    def forbidden_http(**kwargs):raise AssertionError('Ineligible messages must never reach the provider')
+    monkeypatch.setattr(httpx2,'AsyncClient',forbidden_http)
+    monkeypatch.setattr(m,'enabled',lambda:True)
+    messages=[{'role':'user','content':question},
+              {'role':'assistant','content':'I will remember a table preference with Finding, Evidence and Next action.'}]
+    assert not m.extraction_eligibility(messages)['eligible']
+    response=asyncio.run(m.extract_conversation('support',messages,'business-only'))
+    assert response['application_skipped'] and response['results']==[]
+
+@pytest.mark.parametrize('question',[
+    'I prefer payout explanations in a compact table with Finding, Evidence and Next action.',
+    'I like payout explanations in a compact table with Finding, Evidence and Next action.',
+    'My payout explanation preference is a compact table.',
+    'Use this checklist for all my investigations: check records and policy.',
+    'For all my investigations follow this checklist: verify shipment and policy.',
+    'Remember this historical investigation checkpoint so I can resume later: eligibility was unresolved; next check fresh delivery evidence.',
+])
+def test_durable_user_intent_authorizes_full_context(question):
+    messages=[{'role':'user','content':question},{'role':'assistant','content':'Context remains available.'}]
+    gate=m.extraction_eligibility(messages)
+    assert gate['eligible'] and gate['source_quotes']==[question]
+    assert m.extraction_payload('support',messages,'eligible')['messages']==messages
+    assert m.extraction_payload('support',messages,'eligible')['metadata']['eligibility_gate']==m.ELIGIBILITY_GATE_VERSION
+
+def test_skipped_job_is_durable_and_not_retried(isolated_db,monkeypatch):
+    with Session.begin() as db:
+        db.get(Run,'r-one').question='What is the payout status of order-2?'
+        db.get(Run,'r-one').answer='The current status is held.'
+        m.enqueue(db,'support','mem0-chat')
+        jid=m.latest_job(db,'mem0-chat').id
+    import httpx2
+    monkeypatch.setattr(httpx2,'AsyncClient',lambda **kwargs: (_ for _ in ()).throw(AssertionError('No provider submission')))
+    asyncio.run(m.process_job(jid));asyncio.run(m.process_job(jid))
+    with Session() as db:
+        job=db.get(MemoryExtractionJob,jid)
+        assert job.status=='noop' and job.event_id is None and job.result_ids==[]
+        assert m.job_record(job,'mem0-chat')['memory_count']==0
+        assert m.enqueue(db,'support','mem0-chat')['status']=='noop'
+
+
+def test_both_enabled_providers_share_preference_first_rule_and_authority():
+    from marketplace.memory import MEMORY_INSTRUCTIONS,MEMORY_RETRIEVAL_INSTRUCTIONS
+    assert MEMORY_INSTRUCTIONS.startswith(MEMORY_RETRIEVAL_INSTRUCTIONS)
+    assert m.MEM0_INSTRUCTIONS.startswith(MEMORY_RETRIEVAL_INSTRUCTIONS)
+    assert 'EVERY business question' in MEMORY_RETRIEVAL_INSTRUCTIONS
+    assert 'instead of the default Field/Details layout' in MEMORY_RETRIEVAL_INSTRUCTIONS
+    assert 'CURRENT user asks for a different' in MEMORY_RETRIEVAL_INSTRUCTIONS
+    assert 'collect current business and' in MEMORY_RETRIEVAL_INSTRUCTIONS
+    assert 'citation requirements' in MEMORY_RETRIEVAL_INSTRUCTIONS

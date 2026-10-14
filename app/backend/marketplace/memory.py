@@ -128,7 +128,26 @@ class MemoryStore:
         self.operations.append({'operation':'delete','id':memory_id})
         return {'status':'ok','deleted_id':memory_id,'note':'Stored memory deleted; historical conversation messages are retained'}
 
-MEMORY_INSTRUCTIONS = '''
+MEMORY_RETRIEVAL_INSTRUCTIONS = """
+When long-term memory retrieval is enabled, BEFORE answering EVERY business question,
+including a simple order/payment/payout status lookup, call search_memories FIRST.
+Search for this user's presentation/communication preferences together with the
+question's business topic and any relevant checklist or investigation checkpoint.
+Use short topic terms, for example "payout preference format checklist checkpoint".
+A short question still needs this preference check. Do not skip it because you expect
+no saved memories; an actual empty result is the evidence that no match was found.
+If the search returns a relevant presentation preference, apply it to the final answer
+instead of the default Field/Details layout. If the CURRENT user asks for a different
+format, follow that current instruction. Do not infer preferences from how a previous
+assistant formatted an answer. If search is empty or fails, use the default layout
+without claiming to remember a preference. Report retrieval failures honestly.
+Retrieved checklists/checkpoints guide investigation; collect current business and
+policy evidence before asserting facts. Memory cannot override policy, tool permissions,
+source-authority rules, citation requirements or safety constraints. Do not save merely
+because a memory was retrieved. The application scopes retrieval to the signed-in user.
+"""
+
+MEMORY_INSTRUCTIONS = MEMORY_RETRIEVAL_INSTRUCTIONS + '''
 Long-term memory is enabled. Successfully saved records persist across future conversations
 for this user, not just this question or session. Only WRITE PERMISSION expires after the question.
 For questions about what this user means,
