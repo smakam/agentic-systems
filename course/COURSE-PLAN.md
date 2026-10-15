@@ -8,17 +8,23 @@
 
 ## Positioning
 
-Build and understand an AI agent system through one stateful marketplace support application. Change AI components, inspect evidence, and evaluate quality, cost and latency to choose a design or platform for your needs. Model-specific numbers are dated case studies, not general rankings.
+This course is for developers, technical leaders, product managers and business stakeholders who need to understand, build, evaluate or choose AI agent systems for enterprise workflows. A stateful marketplace support application provides a practical business example throughout the course.
 
-The code-based path assumes Python, basic SQL, Docker and familiarity with LLM APIs. Guided demonstrations and saved results also support learners focused on concepts and platform choices. The course covers AI-system engineering, including constrained tools, evaluation, tracing, guardrails and context isolation; general infrastructure administration and identity implementation are outside its focus.
+Learners study the components, design patterns and production considerations behind an agent system, including observability, evaluation, security, memory and deployment. They compare models and platform choices, understand what frameworks and managed services provide, and decide what their own team must build, integrate and operate. The emphasis is on building from components and making evidence-based engineering and product decisions.
 
-The interactive support default is GPT-5.4. Historical Nano/GPT-5 comparisons keep their original models and evidence. Changing current aliases does not retroactively change those results.
+## Practical learning and prerequisites
+
+Activities include configuring models and tools, trying changes in a working system, inspecting traces, examining monitoring signals, evaluating answers, checking guardrails and memory behavior, and comparing designs and platforms. Some exercises involve code or configuration; others involve investigation, observation and a documented recommendation. Demonstrations and experiments teach production concerns without claiming that every lab is a complete production deployment.
+
+Code-based labs assume Python basics, basic SQL, Docker and familiarity with LLM APIs. Product and business learners can use guided demonstrations, saved results and comparison activities to understand behavior and tradeoffs. Detailed environment preparation and exact workspace addresses belong in Course Setup and the relevant activity guide, rather than the reviewer-facing overview.
+
+The interactive support default is GPT-5.4. Historical Nano/GPT-5 comparisons keep their original models and evidence. Model-specific numbers are dated case studies, not general rankings; changing current aliases does not retroactively change those results.
 
 ## Lesson format and material conventions
 
-From Chapter 5 onward, provide explanation, an instructor demonstration where appropriate, learner practice, separate reference answers and a closing recap. Introduce the next chapter except in the final lesson. Chapter 4 uses the Mac-first written setup guide with Linux/Windows notes. The final platform overview uses a comparison worksheet, not new deployments.
+The reviewer-facing overview uses four consistent headings where content exists: Learning objective, Core topics, Instructor demo and User exercises. Omit a demo or exercise subsection when no such activity exists; do not add an absence note or invent an activity. Describe orientation and decision activities accurately. Chapter cross-references include the chapter title, such as Chapter 4: Course Setup. From Chapter 5: Your First Agent, End to End onward, provide explanation, an instructor demonstration where appropriate, learner practice, separate reference answers and a closing recap. Introduce the next chapter except in the final lesson. Chapter 4: Course Setup uses the Mac-first written setup guide with Linux/Windows notes. The final platform overview uses a comparison worksheet, not new deployments.
 
-Each activity states its workspace URL, database or supplied-data source, exact settings, task, observations and cleanup. The Test workspace is not universal: gateway CLI, Agent Loop, retrieval/session developer labs and Langfuse-only activities use the environments named below. Do not reset a shared practice database while another learner is using it.
+Each detailed activity guide states its workspace URL, database or supplied-data source, exact settings, task, observations and cleanup. The Test workspace is not universal: gateway CLI, Agent Loop, retrieval/session developer labs and Langfuse-only activities use the environments named below. Do not reset a shared practice database while another learner is using it.
 
 Use `exercise.md` for learner instructions, `instructor-demo.md` where a separate walkthrough exists, and `solutions/answers.md` for worked answers. A `README.md` is navigation only. Keep scripts, fixtures and evidence only when required by the activity or a current reference; identify optional developer material explicitly. [Exercise starting index](exercises/README.md).
 
@@ -61,7 +67,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Learning objective:** Connect buyers, sellers, orders, payments, payouts, refunds and versioned policies to the questions support must investigate.
 
-**Demo and learner practice:** Demonstrate login, product listings and a purchase. Explain business journeys and local/cloud architecture. The support-agent walkthrough belongs in Chapter 5.
+**Demo and learner practice:** Demonstrate the marketplace journey from purchase through delivery, an early payout-hold rejection and a manually eligible payout. Explain business journeys and local/cloud architecture. The support-agent walkthrough belongs in Chapter 5: Your First Agent, End to End.
 
 **Workspace:** Main marketplace UI: http://localhost:5178/; database market. Use the interactive business data for the application demonstration.
 
@@ -79,7 +85,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Learning objective:** Follow one OpenAI Agents SDK investigation through code, model/tool calls, evidence, final answer and Langfuse.
 
-**Demo and learner practice:** Instructor: ask a current-state question, make a purchase, ask again and inspect fresh evidence and the business revision. Learner: practice marketplace journeys and a known-answer investigation in disposable data. Saved 18-case results introduce correctness checking; full evaluation is Chapter 14.
+**Demo and learner practice:** Instructor: ask a current-state question, make a purchase, ask again and inspect fresh evidence and the business revision. Learner: practice marketplace journeys and a known-answer investigation in disposable data. Saved 18-case results introduce correctness checking; full evaluation is Chapter 14: Evaluation.
 
 **Workspace:** Instructor: main UI http://localhost:5178/, database market. Learner: Test workspace http://127.0.0.1:5179/, database market_test. Trace inspection: http://localhost:3000, project marketplace-support.
 
@@ -115,7 +121,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Learning objective:** Distinguish tool contract, implementation and transport, including SQL validation, read-only permissions, evidence references and limits.
 
-**Demo and learner practice:** Inspect business, retrieval and memory tools; compare stdio and remote HTTP MCP, and examine a rejected request. Core learners repeat the tool investigation. Developer extensions add a seller-balance tool and a separate tracking MCP server using supplied JSON fixtures.
+**Demo and learner practice:** Inspect business, retrieval and memory tools; compare stdio and remote HTTP MCP. Core learners repeat the tool investigation. Developer extensions add a seller-balance tool and a separate tracking MCP server using supplied JSON fixtures.
 
 **Workspace:** Test workspace http://127.0.0.1:5179/, database market_test. Code extensions use an isolated application copy/disposable database; tracking uses its own JSON fixtures. Optional cloud work requires the learner’s own deployment and database.
 
@@ -253,7 +259,7 @@ Use familiar support tasks to compare component ownership, capabilities, costs, 
 
 **Orientation:** Recap the SDK, Google and Lyzr approaches, then compare cloud providers, model-provider platforms, framework-associated platforms and integrated builders. Map their capabilities onto models, execution frameworks, managed runtime/services, builders and governance. These categories overlap; model choice, deployment choice and governance over existing agents are separate decisions.
 
-**Teaching material:** The combined Chapter 21 deck and speaker notes hold platform landscape/customer fit, component ownership and decision criteria. Historical implementation evidence remains in [MILESTONE-LOG.md](../MILESTONE-LOG.md); platform-specific setup remains in the relevant chapter materials.
+**Teaching material:** The combined Chapter 21: Choosing an Agent Platform deck and speaker notes hold platform landscape/customer fit, component ownership and decision criteria. Historical implementation evidence remains in [MILESTONE-LOG.md](../MILESTONE-LOG.md); platform-specific setup remains in the relevant chapter materials.
 
 ### 19. Google Gemini Enterprise Agent Platform
 
