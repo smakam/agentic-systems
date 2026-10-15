@@ -16,7 +16,7 @@ Learners study the components, design patterns and production considerations beh
 
 Activities include configuring models and tools, trying changes in a working system, inspecting traces, examining monitoring signals, evaluating answers, checking guardrails and memory behavior, and comparing designs and platforms. Some exercises involve code or configuration; others involve investigation, observation and a documented recommendation. Demonstrations and experiments teach production concerns without claiming that every lab is a complete production deployment.
 
-Code-based labs assume Python basics, basic SQL, Docker and familiarity with LLM APIs. Product and business learners can use guided demonstrations, saved results and comparison activities to understand behavior and tradeoffs. Detailed environment preparation and exact workspace addresses belong in Course Setup and the relevant activity guide, rather than the reviewer-facing overview.
+Code-based labs assume Python basics, basic SQL, Docker and familiarity with LLM APIs. Beginners and learners without programming experience can understand most explanations, guided demonstrations and platform comparisons through an observation-focused path. Experienced developers can go deeper through configuration work, code-based labs and optional extensions. Product and business learners can use guided demonstrations, saved results and comparison activities to understand behavior and tradeoffs. Detailed environment preparation and exact workspace addresses belong in Course Setup and the relevant activity guide, rather than the reviewer-facing overview.
 
 The interactive support default is GPT-5.4. Historical Nano/GPT-5 comparisons keep their original models and evidence. Model-specific numbers are dated case studies, not general rankings; changing current aliases does not retroactively change those results.
 
@@ -32,19 +32,19 @@ Speaker notes contain presentation cues, demo steps and exercise instructions. K
 
 ## Chapter quizzes
 
-**Planned addition (15 October 2026):** Add a short Udemy Quiz after each of Chapters 1–21, alongside the existing demonstrations and hands-on exercises. The Chapter 1 pilot is drafted in Udemy Resources for review; remaining chapter quizzes are planned after the pilot format is approved.
+**Draft bank prepared (15 October 2026):** Five single-answer multiple-choice questions for each of Chapters 1–21, 105 questions overall, alongside the existing demonstrations and hands-on exercises. The bank has 97 course-based questions and eight brief official-documentation research checks. The research questions are a small minority and require no paid service access.
 
-- Target 3–5 multiple-choice questions per chapter, taking roughly 3–5 minutes; five per chapter would produce 105 questions overall.
-- Tie every question to the chapter's actual learning objectives and taught material. Check concepts, practical decisions and common mistakes; keep orientation and setup questions appropriate to those chapters.
-- Use four plausible answer options and a single correct answer by default. Include explanations for the correct answer and each distractor. Label multiple-selection questions clearly if used.
-- Draft and review one chapter's quiz first to establish difficulty, wording and explanation quality, then apply the format across the remaining chapters.
-- Add chapter assessments as Udemy curriculum **Quizzes**. Keep learner questions and instructor answer keys separate during authoring.
+- Mix foundational checks, applied decisions and more challenging scenarios. Difficulty labels are author estimates in the instructor key, not calibrated pass rates.
+- Tie course-based questions to actual lesson topics; mark research extensions and provide the official source and relevant section.
+- Use four answer options with one correct answer. Explain each correct answer and distractor.
+- Keep learner questions separate from instructor keys. Each chapter pack also has structured authoring data and a related lecture topic for later mapping.
+- Review the complete bank against final recordings before entry as Udemy curriculum **Quizzes**. The ZIP/JSON are authoring formats, not claimed native quiz-import templates. Follow the supported editor workflow and preview before publishing.
 
-**Quiz preparation status:** See the launch checklist in Udemy Resources. Review the Chapter 1 pilot before expanding the remaining chapter quizzes.
+**Preparation status:** The [Chapter Quizzes folder](https://drive.google.com/drive/folders/1NE5Q2WM2RGIHutk70-HlOX-Ouj66thbu) holds the combined questions, separate instructor key, entry guide and a ZIP with 21 chapter packs. Nothing has been entered or published in Udemy. Remaining review and release tasks stay in the launch checklist in Udemy Resources.
 
 ## Udemy publishing resources
 
-The production and launch checklist now lives in the internal [Udemy Resources folder](https://drive.google.com/drive/folders/1kNw1Vh0mxAy7aphHHxtbbTxuM9sKNBVa), alongside the landing-page draft, pricing research, learner messages, course-image draft and Chapter 1 quiz pilot with a separate instructor key. Use the [launch checklist](https://drive.google.com/file/d/1kersEhUOZULX-TtSYBnR3tHZm1EjN5s2/view) to track readiness rather than duplicate it in this course plan.
+The production and launch checklist now lives in the internal [Udemy Resources folder](https://drive.google.com/drive/folders/1kNw1Vh0mxAy7aphHHxtbbTxuM9sKNBVa), alongside the landing-page draft, pricing research, learner messages, course-image draft, expanded instructor profile and complete chapter quiz draft bank with a separate instructor key. Use the [launch checklist](https://drive.google.com/file/d/1kersEhUOZULX-TtSYBnR3tHZm1EjN5s2/view) to track readiness rather than duplicate it in this course plan.
 
 Sreenivas owns all video work. Non-video preparation is in draft review; account/private-information steps and final publication remain owner decisions. Review outreach and promotion-code planning are deferred. [Udemy landing-page guidance](https://teach.udemy.com/publishing/create-your-course-landing-page/).
 
