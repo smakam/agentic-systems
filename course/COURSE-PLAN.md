@@ -30,6 +30,24 @@ Use `exercise.md` for learner instructions, `instructor-demo.md` where a separat
 
 Speaker notes contain presentation cues, demo steps and exercise instructions. Keep distributed exercises and answers separate so learners can attempt the task before opening the solution. Restore code/configuration separately from database resets. Never distribute credentials.
 
+## Chapter quizzes
+
+**Planned addition (15 October 2026):** Add a short Udemy Quiz after each of Chapters 1–21, alongside the existing demonstrations and hands-on exercises. The Chapter 1 pilot is drafted in Udemy Resources for review; remaining chapter quizzes are planned after the pilot format is approved.
+
+- Target 3–5 multiple-choice questions per chapter, taking roughly 3–5 minutes; five per chapter would produce 105 questions overall.
+- Tie every question to the chapter's actual learning objectives and taught material. Check concepts, practical decisions and common mistakes; keep orientation and setup questions appropriate to those chapters.
+- Use four plausible answer options and a single correct answer by default. Include explanations for the correct answer and each distractor. Label multiple-selection questions clearly if used.
+- Draft and review one chapter's quiz first to establish difficulty, wording and explanation quality, then apply the format across the remaining chapters.
+- Add chapter assessments as Udemy curriculum **Quizzes**. Keep learner questions and instructor answer keys separate during authoring.
+
+**Quiz preparation status:** See the launch checklist in Udemy Resources. Review the Chapter 1 pilot before expanding the remaining chapter quizzes.
+
+## Udemy publishing resources
+
+The production and launch checklist now lives in the internal [Udemy Resources folder](https://drive.google.com/drive/folders/1kNw1Vh0mxAy7aphHHxtbbTxuM9sKNBVa), alongside the landing-page draft, pricing research, learner messages, course-image draft and Chapter 1 quiz pilot with a separate instructor key. Use the [launch checklist](https://drive.google.com/file/d/1kersEhUOZULX-TtSYBnR3tHZm1EjN5s2/view) to track readiness rather than duplicate it in this course plan.
+
+Sreenivas owns all video work. Non-video preparation is in draft review; account/private-information steps and final publication remain owner decisions. Review outreach and promotion-code planning are deferred. [Udemy landing-page guidance](https://teach.udemy.com/publishing/create-your-course-landing-page/).
+
 ## Chapter map
 
 Six sections and twenty-one chapters. Chapters may contain several short lectures.
