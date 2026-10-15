@@ -63,7 +63,7 @@ Accept gateway cache status/logs or equivalent request evidence that demonstrate
 
 ## Dated rehearsal evidence
 
-[Recorded validation](../../../../app/results/chapter-06-rehearsal-2026-10-12/REPORT.md) contains five completed MCP questions with correct expected facts, five local Langfuse traces, distinct Support/Operator gateway usage, the new-alias response and the passing cache sequence. Three request-identity tests cover concurrency, cleanup and MCP key propagation. The instructor's Drive chapter notes link the same report under the chapter's `_authoring/rehearsal-2026-10-12` evidence folder.
+Recorded validation (instructor-local evidence; not distributed) contains five completed MCP questions with correct expected facts, five local Langfuse traces, distinct Support/Operator gateway usage, the new-alias response and the passing cache sequence. Three request-identity tests cover concurrency, cleanup and MCP key propagation. The instructor's Drive chapter notes link the same report under the chapter's `_authoring/rehearsal-2026-10-12` evidence folder.
 
 The sample 18-case model-selection counts shown in the slides are historical and separate from these focused rehearsal questions. Both models answered the two rehearsal questions correctly; do not turn those checks into a new full-suite score.
 

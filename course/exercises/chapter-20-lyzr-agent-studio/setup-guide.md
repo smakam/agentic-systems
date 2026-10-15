@@ -24,7 +24,7 @@ This TXT comes from the same three-order fictional JSON used by Google Basics. E
 1. Select Agents → New Agent. Use **Support Agent Basics** as its name.
 2. Role: **Read-only fictional order investigator**. Goal: **Answer order questions using only the attached fictional source records**.
 3. Choose the configured **OpenAI GPT-5.4 Mini**, or record your authorized alternative.
-4. Paste `app/lyzr/basics/agent-instructions.txt` into Instructions.
+4. Open the supplied [agent-instructions.txt](../../../app/lyzr/basics/agent-instructions.txt), copy its contents and paste them into Instructions.
 5. Attach only **Support_Agent_Basics_Orders**. Do not attach old marketplace MCP tools, browser tools, manager agents or unrelated knowledge.
 6. Save/Create. Read back the name, model, instructions and KB attachment.
 7. Enable native Cognis for session continuity and keep **Cross Session OFF** for the core demo. The first API follow-up failed without session memory; a fresh two-turn run passed after enabling it. Cross-session preferences are a separate optional experiment: use the exact ON settings, synthetic owner/session checks and restoration steps in [instructor-demo.md, Part D](instructor-demo.md#d-optional-native-cross-session-memory-experiment). The bounded API experiment passed; the core default remains OFF.

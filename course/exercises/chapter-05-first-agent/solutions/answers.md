@@ -51,7 +51,7 @@ Validation receipts are recorded separately. Business-state checks can be determ
 
 ### Verified rehearsal evidence — 12 October 2026
 
-[Validation report](../../../../app/results/chapter-05-validation-2026-10-12/REPORT.md): six deterministic business cases and three live MCP agent questions passed. Before/after balances, fresh query revisions, policy evidence and local Langfuse observations were checked. Only synthetic records were used. UI recording rehearsal remains separate.
+Validation report (instructor-local evidence; not distributed): six deterministic business cases and three live MCP agent questions passed. Before/after balances, fresh query revisions, policy evidence and local Langfuse observations were checked. Only synthetic records were used. UI recording rehearsal remains separate.
 
 ## Optional cloud walkthrough: expected observations
 

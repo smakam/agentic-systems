@@ -47,7 +47,7 @@ Create the dedicated service account and private staging bucket if they do not e
 
 ## Get the code and install
 
-Use your existing course checkout, or clone the public repository into a fresh directory:
+Use your existing course checkout, or clone the course repository into a fresh directory. It is currently private; you need explicit repository access until a learner release is available:
 
 ```bash
 git clone https://github.com/smakam/agentic-systems.git
