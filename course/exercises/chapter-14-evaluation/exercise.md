@@ -8,13 +8,19 @@ Two tasks: human-grade five supplied answers, then use Langfuse's native code ev
 
 ## Before starting
 
-Use the existing local marketplace lab and Langfuse project **marketplace-support**. Run upload commands from the application repository root. The native TypeScript evaluator and local dispatcher must already be configured; reuse **Chapter14 structured order comparison**. Setup instructions are in the package README. Keep solutions closed until you finish.
+Use the existing local marketplace lab and Langfuse project **marketplace-support**. Run upload commands from the application repository root. The native TypeScript evaluator and local dispatcher must already be configured; reuse **Chapter14 structured order comparison**. Complete the [learner setup in the package README](README.md#learner-setup--complete-once-before-the-exercise) to enable the local dispatcher and create your own evaluator/rule. Keep solutions closed until you finish.
 
 ## Part A — Human evaluation of five answers
 
 ### 1. Copy and open the worksheet
 
-Copy `course/exercises/chapter-14-evaluation/fixtures/human-worksheet.json` to `app/results/chapter-14/human-worksheet.json`.
+From the repository root, create the output directory and copy the supplied worksheet (keep your existing copy if you already started):
+
+```sh
+mkdir -p app/results/chapter-14
+cp -n course/exercises/chapter-14-evaluation/fixtures/human-worksheet.json \
+  app/results/chapter-14/human-worksheet.json
+```
 
 Each case contains the question, golden facts and Nano's saved answer. Edit only **score** and **reason**.
 

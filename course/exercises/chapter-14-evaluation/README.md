@@ -13,6 +13,75 @@ The learner `fixtures/` folder contains only `human-worksheet.json` and `structu
 
 Read [the exercise](exercise.md) and keep [the solutions](solutions/answers.md) separate until the learner finishes.
 
+## Learner setup — complete once before the exercise
+
+Start with **Chapter 4: Course Setup**, using [Local laptop setup](../../../app/LOCAL-SETUP.md). The standard local Langfuse services and the application backend image must already be available. This chapter imports supplied answers; it does not require a new model answer, a funded judge model, a cloud account or a marketplace database reset.
+
+Run the shell commands below from the **repository root** (the directory containing `app/` and `course/`). Keep your own Langfuse project credentials configured for the import container. The standard local Compose configuration already supplies its demo project credentials; do not copy the instructor's hosted-project keys.
+
+### 1. Enable the local TypeScript dispatcher
+
+The supplied [Compose overlay](compose.code-eval.yaml) enables code evaluators on the web service and worker, including the worker execution queue:
+
+```sh
+docker compose -p marketplace-lab \
+  -f app/compose.yaml \
+  -f course/exercises/chapter-14-evaluation/compose.code-eval.yaml \
+  up -d --no-deps langfuse-web langfuse-worker
+
+docker compose -p marketplace-lab \
+  -f app/compose.yaml \
+  -f course/exercises/chapter-14-evaluation/compose.code-eval.yaml \
+  ps langfuse-web langfuse-worker
+```
+
+Both services must be running before proceeding. This recreates only these two services if configuration changed, preserving their volumes and existing records. It does not restart marketplace services or reset business data. Dependencies must already be running from Course Setup. If you use custom Langfuse overlays, include those too rather than discarding your configuration.
+
+This overlay selects `insecure-local`: it executes trusted TypeScript in the worker process, **not an isolation boundary for untrusted code**. Use only the supplied reviewed evaluator on your local lab. Python evaluation and production isolation are separate deployment choices. The overlay must be included whenever you later recreate these services for this lab; the general startup command does not automatically include it.
+
+### 2. Create the evaluator in your own project
+
+1. Open local Langfuse and select your course project (`marketplace-support` in standard setup).
+2. Open **Evaluators → New evaluator → Code evaluator → TypeScript**.
+3. Name it **Chapter14 structured order comparison**. If your project already has this evaluator, inspect/reuse it instead of creating a duplicate.
+4. Paste the complete supplied [structured-evaluator.ts](structured-evaluator.ts) into the code editor and save. Do not paste the JSON fixture as evaluator code. UI labels may vary with version.
+5. Create or attach an observation rule with **Name equals `chapter14-structured-answer`**, sampling **100%**, and this evaluator. Enable it before the structured import in the exercise. Use your own local project; in a shared project add filters supported by that installation to limit the rule to your lab data, or ask the project owner to provide an isolated project.
+
+The code reads the answer from `ctx.observation.output`. Its reference comes from the experiment expected output, falling back to the observation metadata's `expected_output`. The supplied importer records both source facts and provenance. There is no separate LLM judge or prompt-variable mapping to configure.
+
+### 3. Prepare the human worksheet and check the import path
+
+```sh
+mkdir -p app/results/chapter-14
+cp -n course/exercises/chapter-14-evaluation/fixtures/human-worksheet.json \
+  app/results/chapter-14/human-worksheet.json
+
+docker compose -p marketplace-lab -f app/compose.yaml --profile evaluation \
+  run --rm --no-deps \
+  -v "$PWD/course/exercises/chapter-14-evaluation:/exercise:ro" \
+  eval-runner python /exercise/upload_structured_answers.py
+```
+
+Keep your existing worksheet if it is already present. The dry run lists three case IDs with `model_calls: 0` and `published: false`; it does not create an experiment. If the backend image is absent, build it once using `docker compose -p marketplace-lab -f app/compose.yaml build backend`, then retry. Do not add a live-judge flag.
+
+### 4. Complete and verify the exercise
+
+Follow [exercise.md](exercise.md): grade/import the five human answers, then import the three supplied structured answers. Open the printed experiment URL. In the evaluator editor, select a newly imported `chapter14-structured-answer` observation and run its test; inspect the actual answer/reference and returned field checks.
+
+Verify that each of the three items subsequently has native scores with source **EVAL**. An imported experiment or a successful editor test alone is not proof that the asynchronous rule scored every item. If you created the rule after importing, use batch evaluation on only your matching imported observations, or import a new uniquely named run after enabling the rule. Avoid duplicate rules and repeated imports while merely waiting for a queued job.
+
+### Troubleshooting and cleanup
+
+- **Code evaluator absent:** confirm the overlay was applied to both web and worker; refresh Langfuse. Keep the pinned course images unless deliberately testing an upgrade.
+- **No native scores:** check the rule is enabled, name filter and sampling, then worker status. Inspect evaluator execution errors (the `langfuse-code-eval` environment) before rerunning imports.
+- **Not assessable:** inspect expected-output context/metadata and confirm you imported the supplied fixture with the chapter script.
+- **Authentication failure:** the import container's project keys must belong to the selected local project. Do not put keys into the worksheet, evaluator source or submissions.
+- To disable local execution after finishing, disable only your own rule and recreate the two Langfuse services with your normal Compose files, omitting this chapter overlay. Retain your datasets/results for review. Never use `down -v` or reset the marketplace to clean up this exercise.
+
+**Verification boundary:** the instructor's native workflow passed previously. These written setup steps have been checked against the tracked overlay, importer, evaluator and current official documentation; they are not yet a fresh-project UI/installation rehearsal.
+
+References: [Langfuse self-hosted dispatcher setup](https://langfuse.com/self-hosting/configuration/code-evaluators), [creating and testing code evaluators](https://langfuse.com/docs/evaluation/evaluation-methods/code-evaluators) (checked 15 October 2026).
+
 ## Optional preparation scripts
 
 From the repository root, inspect the five-case selection without model calls:
