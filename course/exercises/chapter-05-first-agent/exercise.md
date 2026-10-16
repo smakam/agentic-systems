@@ -8,7 +8,21 @@ Open the **[regular marketplace](http://localhost:5178/)**. This exercise uses i
 
 Use a fresh order and record its reference. Current balances may differ from examples because you have already used the application.
 
-## 1. Ask questions and inspect traces
+## 1. Get familiar with the marketplace
+
+Walk through one complete purchase-to-payout journey before using the support agent. Use a fresh order and follow the same order/item across account changes.
+
+1. As **buyer**, review the catalog and buy one **Canvas Weekender from Cedar & Co.** Record the order reference and checkout amount.
+2. As **seller**, find that item, dispatch it and mark it delivered. Record its item reference and delivery time.
+3. As **operator**, try to release that item’s payout before the 24-hour hold ends. Expect rejection and a held payout.
+4. Advance the demo clock to at least 24 hours after delivery. Release that exact payout manually, provided no active return blocks it and its payable amount is positive.
+5. Confirm completion and inspect the event history. The completed payout moves the seller share from unpaid to paid. Advancing time alone does not pay the seller.
+
+The [marketplace journey guide](../../../app/USER-JOURNEYS.md) explains the role actions. Returns, failure/retry branches and a code tour are not required here.
+
+## 2. Get familiar with the support agent
+
+### Ask questions and inspect traces
 
 As operator or support:
 
@@ -17,23 +31,14 @@ As operator or support:
 3. Start a third conversation. Ask **“What are Cedar & Co.’s paid and unpaid balances?”** Record both values and inspect the supporting business records. Keep this conversation for the comparison below.
 4. Open the corresponding traces in **[local Langfuse](http://localhost:3000/)** through the application. Identify model calls, requested tools, returned evidence and final answers. Compare the policy and business-data questions. For the follow-up, inspect how the earlier conversation enters the model input. Total token usage includes input and output. Missing usage or cost does not mean zero.
 
-## 2. Make a purchase and compare the balances
+### Make a new purchase and compare the balances
+
+Use a **second fresh order**, separate from the completed journey above. Record the balance baseline after finishing section one. Keep this second purchase unpaid while comparing balances.
 
 1. Sign in as **buyer** in the same regular marketplace. Buy one **Canvas Weekender from Cedar & Co.** Record the new order reference and checkout amount.
 2. Return to operator/support and reopen the third conversation. Ask **“What are Cedar & Co.’s paid and unpaid balances?”** again.
 3. Compare the new answer and fresh SQL evidence with your baseline. The purchase increases unpaid by the seller share after the marketplace fee. Paid remains unchanged at this stage.
 4. At the unchanged sample price of ₹2,499 for one item, the fee is ₹249.90 and the unpaid increase is ₹2,249.10. Use your actual price and quantity if different.
-
-## 3. Complete that marketplace journey
-
-Use the same fresh order:
-
-1. As **seller**, find the purchased item, dispatch it and mark it delivered. Save its item reference and delivery time.
-2. As **operator**, attempt to release that item’s payout before the 24-hour hold ends. Expect rejection and a held payout.
-3. Advance the demo clock to at least 24 hours after delivery. Release that exact payout manually, provided no active return blocks it and its payable amount is positive.
-4. Confirm completion and inspect the event history. The completed payout moves the seller share from unpaid to paid. Advancing time alone does not pay the seller.
-
-The [marketplace journey guide](../../../app/USER-JOURNEYS.md) explains the role actions if needed. Returns, failure/retry branches and a code tour are not required for this exercise.
 
 ## Optional: try your cloud application
 
@@ -48,7 +53,7 @@ Cloud data is independent of your local application. This optional step requires
 
 ## What to keep
 
-Keep the policy answer, the seller-name follow-up, one trace with a model/tool/evidence explanation, your before-and-after balances, and the new order’s payout result. Report discrepancies using the actual evidence.
+Keep the first journey’s order reference and payout result, the policy answer, the seller-name follow-up, one explained trace, and the balances before and after the second purchase. Report discrepancies using the actual evidence.
 
 No reset is needed to finish. Preserve your local data and record any demo clock change. Do not run fixture-reset scripts for this exercise.
 

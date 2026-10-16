@@ -103,7 +103,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Learning objective:** Follow one OpenAI Agents SDK investigation through code, model/tool calls, evidence, final answer and Langfuse.
 
-**Demo and learner practice:** Instructor: ask a current-state question, make a purchase, ask again and inspect fresh evidence and the business revision. Learner: ask policy and seller follow-up questions, compare balances around one fresh purchase, then complete that order’s delivery and payout journey in the regular marketplace. Saved 18-case results introduce correctness checking; full evaluation is Chapter 14: Evaluation.
+**Demo and learner practice:** Instructor: ask a current-state question, make a purchase, ask again and inspect fresh evidence and the business revision. Learner: first complete one purchase, delivery and payout journey in the regular marketplace. Then ask support questions, inspect traces and compare balances around a second fresh purchase. Saved 18-case results introduce correctness checking; full evaluation is Chapter 14: Evaluation.
 
 **Workspace:** Instructor: main UI http://localhost:5178/, database market. Learner: regular marketplace http://localhost:5178/, database market. Trace inspection: http://localhost:3000, project marketplace-support.
 
