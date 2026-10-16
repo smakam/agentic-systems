@@ -1,60 +1,41 @@
-# “Your First Agent, End to End” — worked solution
+# Your First Agent, End to End — worked answers
 
-## UI, database and cleanup
+Use the **[regular marketplace](http://localhost:5178/)** from **Chapter Four — Course Setup**. The local database retains earlier activity, so compare changes against your recorded baseline.
 
-**UI:** [test marketplace](http://127.0.0.1:5179/) from Course Setup; use the role/workspace named in each task. **Database:** disposable practice database `market_test`, separate from main `market` and the fixed evaluation baseline `market_eval`. Test UI changes do not update the main marketplace. Save your questions, results and traces locally.
+## Questions and evidence
 
-For purchases, dispatch, delivery, clock changes and payouts, use fresh orders in this test workspace. The optional cloud walkthrough uses your own cloud UI and independent cloud database.
+- The payout policy should describe delivery plus a 24-hour hold, no blocking active return, positive payable amount and manual operator release. Inspect retrieved policy evidence.
+- The seeded marketplace has three sellers: Cedar & Co., Everyday Studio and Northstar Goods. Confirm the current records. The second question stays in the seller-count conversation.
+- Cedar & Co.’s paid and unpaid balances must match the current settlement records. Do not expect a fixed starting balance.
 
-**Cleanup:** no reset is needed after read-only questions. After state-changing practice, preserve results and reset the test practice database only if you need its clean seed again: run `./scripts/memory-repeatable.sh --reset` from `app`, with no other test UI user or runner active. This discards test conversations, memories and business changes; sign in again and check document indexing. Do not reset main or `market_eval`.
+In Langfuse, follow the question through model calls, tool arguments, returned evidence and the final answer. The policy question uses document evidence; balance questions use current business records. Exact wording and tool-call counts can vary. Total tokens includes input and output. An empty cost field cannot establish that a call was free.
 
+## Purchase and balance comparison
 
-This is an expected-results guide, not an exact model-answer script. Use current rows/events for your own references. All values below use the clean seed’s **one Canvas Weekender at ₹2,499** and the simulation’s 10% marketplace fee. Your edited listing/quantity may differ.
+Buying one Canvas Weekender at the unchanged seeded price gives:
 
-## Purchase and payout
+| Amount | Value |
+|---|---:|
+| Captured buyer payment | ₹2,499 |
+| Marketplace fee | ₹249.90 |
+| Seller share | ₹2,249.10 |
 
-A new purchase creates a paid order and captured payment. Its shipment starts pending and payout starts held immediately at purchase. Dispatch changes the shipment to dispatched; manual delivery changes it to delivered. Early payout release is rejected and stays held. After delivery +24 hours, the operator can release it if no active return blocks it and payable is positive. Successful release marks the payout completed. The order remains paid; that is this simulation’s simplified order model.
+Immediately after purchase, Cedar & Co.’s unpaid balance increases by ₹2,249.10 while paid remains unchanged. Use actual receipt amounts if price or quantity differs. A fresh tool query must support the second answer.
 
-For the example: gross ₹2,499; fee ₹249.90; seller share ₹2,249.10. A purchase increases that seller’s captured balance by ₹2,499 and unpaid by ₹2,249.10, assuming no simultaneous refund/payout. It does not increase paid-out. The successful later payout moves ₹2,249.10 from unpaid to paid-out, without creating another buyer payment. Compare deltas against the recorded starting balances, not an assumed zero.
+## Completed marketplace journey
 
-## Return and failure cases
+Purchase creates a paid order, captured payment, pending shipment and held payout. Seller dispatches and marks delivered. Early payout release is rejected and remains held.
 
-| Scenario | Expected result |
-|---|---|
-| Full return before payout | Request → approved → received → refunded. Receipt means the physical goods arrived back. Full successful refund increases refunded by ₹2,499, recalculates remaining fee/payable to zero, and restores that quantity to stock. The order still says paid. |
-| Partial return | Refund the returned quantity only. Recalculate fee and remaining seller share; do not assume every item in a multi-item order returned. |
-| Return after payout | Manual review. Automatic seller-fund recovery and a normal post-payout refund are not implemented. |
-| Failed refund | Current refund says failed; returned goods remain received; allocation’s refunded amount, fee, payable and stock do not change. Successful retry applies the amount once and marks return refunded. Both attempts remain in event history. |
-| Failed payout | Eligible payout says failed; seller funds remain unpaid. Successful retry marks completed and moves the amount once. Early hold rejection is different and leaves held. |
-| Active return | Requested/approved/received return blocks payout even after the clock hold. |
-| Permissions | Buyer acts on own orders; seller manages own items; operator handles all marketplace operations; support can read/investigate but cannot mutate business records. |
+After delivery plus 24 hours, the operator manually releases the eligible payout. A successful payout moves the seller share from unpaid to paid, without creating another buyer payment. The order remains paid in this simulation. Advancing the clock alone does not release funds.
 
-## Agent comparison
+Follow the same new order/item across account changes. Do not require returns, refunds, simulated failures or retry branches for this exercise.
 
-Before purchase, the answer must agree with recorded seller balances. After purchase, the new answer should show the gross and unpaid deltas above and cite current evidence. Its investigation revision must reflect the completed purchase. Check the actual tool output and citations; an answer that merely claims to have refreshed is insufficient. If the model gives an unsupported/stale answer, record that as a failure, not a new business rule.
+## Optional cloud observations
 
-Policy retrieval should support delivered +24h, active-return blockers and manual operator release. A trace usually contains one or more model observations plus tool observations; do not expect an identical call sequence. Distinguish model requests from tool invocations. Empty cost telemetry cannot establish that the run was free.
+Complete [cloud setup](../../../../app/CLOUD-SETUP.md) first. The cloud order question should return current cloud records and retained business evidence. Inspect the corresponding trace in the hosted Langfuse project chosen during setup. The instructor uses Japan; other learners may choose another region.
 
-## Code responsibilities
+This path uses OpenAI Agents SDK with authenticated HTTP MCP tools. Cloud and local databases are independent, so their answers need not match. No cloud purchase is required.
 
-- `api.py`: authenticates the caller, checks conversation ownership and dispatches the question.
-- `agent.py`: configures instructions/model/tools and calls the OpenAI Agents SDK runner, which manages the loop.
-- `mcp_client.py`: connects the local MCP tool server and maintains investigation context.
-- `tool_contracts.py`: defines model-visible tool signatures for catalog, SQL, policy search, evidence fetch and order history; MCP exposes these contracts.
+## Completion
 
-MCP connection and tool contracts are related but separate responsibilities. The runtime invokes permitted tools and feeds results back to the model. An OpenAI model can be reached directly or through OpenRouter, selected behind the LiteLLM alias.
-
-## Validation scope
-
-Validation receipts are recorded separately. Business-state checks can be deterministic; model output wording/tool choices remain variable. A saved passing run does not guarantee every future run. Check current trace/evidence before recording. No fresh UI rehearsal is claimed solely from a code or API check.
-
-
-### Verified rehearsal evidence — 12 October 2026
-
-Validation report (instructor-local evidence; not distributed): six deterministic business cases and three live MCP agent questions passed. Before/after balances, fresh query revisions, policy evidence and local Langfuse observations were checked. Only synthetic records were used. UI recording rehearsal remains separate.
-
-## Optional cloud walkthrough: expected observations
-
-After the optional [cloud setup](../../../../app/CLOUD-SETUP.md), the order question should complete with current cloud business records and retained evidence. The Support agent is the **OpenAI Agents SDK**, with its business tools reached through the authenticated HTTP MCP service. Open the trace for that exact question in your Langfuse Cloud in your chosen region project; inspect model and tool observations alongside run/configuration metadata. Use your own trace ID rather than treating an instructor trace as your new run.
-
-Do not require identical generated wording or local/cloud record parity: the databases are independent. This optional step does not require a purchase or reset. Existing deployed HTTP MCP behavior has been verified; fresh-project installation rehearsal remains deferred.
+A useful result shows the policy evidence, seller follow-up context, fresh before/after balances, one explained trace and the new order’s completed payout. Retain any unsupported/stale answer as a finding. Preserve the existing marketplace data; no reset is required.

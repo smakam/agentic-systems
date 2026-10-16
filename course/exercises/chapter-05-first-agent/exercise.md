@@ -1,80 +1,55 @@
-# Your First Agent, End to End — marketplace practice
+# Your First Agent, End to End
 
-## UI, database and cleanup
+## Prerequisites
 
-**UI:** [test marketplace](http://127.0.0.1:5179/) from Course Setup; use the role/workspace named in each task. **Database:** disposable practice database `market_test`, separate from main `market` and the fixed evaluation baseline `market_eval`. Test UI changes do not update the main marketplace. Save your questions, results and traces locally.
+Complete **Chapter Four — Course Setup** using the [local setup guide](../../../app/LOCAL-SETUP.md). Keep Docker and the application running.
 
-For purchases, dispatch, delivery, clock changes and payouts, use fresh orders in this test workspace. The optional cloud walkthrough uses your own cloud UI and independent cloud database.
+Open the **[regular marketplace](http://localhost:5178/)**. This exercise uses its existing local data. Use the demo accounts from the setup guide, choose **OpenAI Agents SDK** in Support, and keep long-term memory, routing demos and guardrails off for this introductory exercise. All purchases, shipping and payouts are simulated. Agent questions use paid model API calls.
 
-**Cleanup:** no reset is needed after read-only questions. After state-changing practice, preserve results and reset the test practice database only if you need its clean seed again: run `./scripts/memory-repeatable.sh --reset` from `app`, with no other test UI user or runner active. This discards test conversations, memories and business changes; sign in again and check document indexing. Do not reset main or `market_eval`.
+Use a fresh order and record its reference. Current balances may differ from examples because you have already used the application.
 
+## 1. Ask questions and inspect traces
 
-Complete “Course Setup” first. Keep Docker running. Use the configured OpenAI/OpenRouter route; arbitrary model substitutions are not validated against these checks. Start with gateway guardrails off, long-term memory off and memory changes off. All marketplace payments and shipping are simulated. Budget 45–60 minutes for the core, plus 30–45 minutes for the branch practice; those are planning estimates. Model questions are paid. The worked solution is separate so you can try first.
+As operator or support:
 
-## Starting point and workspace choice
+1. Start a new conversation. Ask **“What is the payout policy?”** Open its policy evidence.
+2. Start another conversation. Ask **“How many sellers are there?”** Follow with **“What are the names of the sellers?”** in that same conversation.
+3. Start a third conversation. Ask **“What are Cedar & Co.’s paid and unpaid balances?”** Record both values and inspect the supporting business records. Keep this conversation for the comparison below.
+4. Open the corresponding traces in **[local Langfuse](http://localhost:3000/)** through the application. Identify model calls, requested tools, returned evidence and final answers. Compare the policy and business-data questions. For the follow-up, inspect how the earlier conversation enters the model input. Total token usage includes input and output. Missing usage or cost does not mean zero.
 
-Use the test marketplace and fresh orders for each independent branch. Record the new order/item/shipment/payout references and starting demo clock. Keep the practice state fixed within a comparison. Never run reset/test scripts while another person uses the test UI; keep `market_eval` unchanged.
+## 2. Make a purchase and compare the balances
 
-The [journey guide](../../../app/USER-JOURNEYS.md) supplies exact role actions and boundary behavior. On the clean seed, listing-1 is Canvas Weekender from Cedar & Co.; if your listings/prices changed, use the current checkout receipt rather than the example amounts below.
+1. Sign in as **buyer** in the same regular marketplace. Buy one **Canvas Weekender from Cedar & Co.** Record the new order reference and checkout amount.
+2. Return to operator/support and reopen the third conversation. Ask **“What are Cedar & Co.’s paid and unpaid balances?”** again.
+3. Compare the new answer and fresh SQL evidence with your baseline. The purchase increases unpaid by the seller share after the marketplace fee. Paid remains unchanged at this stage.
+4. At the unchanged sample price of ₹2,499 for one item, the fee is ₹249.90 and the unpaid increase is ₹2,249.10. Use your actual price and quantity if different.
 
-## Core: one marketplace journey
+## 3. Complete that marketplace journey
 
-1. As **buyer**, buy one item from the seller used for the agent comparison below. Record the new order reference, price and quantity.
-2. As **seller** (or operator for another seller), find that same item, dispatch it, then manually mark it delivered.
-3. As **operator**, try payout release before the 24-hour hold completes. Confirm rejection; the payout remains held.
-4. Advance the demo clock by 24 hours. Release the eligible payout manually. Confirm completion and inspect the event trail. Delivery and clock advance do not automatically pay a seller.
-5. Explain which role made each change. Confirm a support account can investigate but cannot perform business actions.
+Use the same fresh order:
 
-## Core: first agent and freshness comparison
+1. As **seller**, find the purchased item, dispatch it and mark it delivered. Save its item reference and delivery time.
+2. As **operator**, attempt to release that item’s payout before the 24-hour hold ends. Expect rejection and a held payout.
+3. Advance the demo clock to at least 24 hours after delivery. Release that exact payout manually, provided no active return blocks it and its payable amount is positive.
+4. Confirm completion and inspect the event history. The completed payout moves the seller share from unpaid to paid. Advancing time alone does not pay the seller.
 
-Do the **before** step before the purchase in the journey, so you can compare the same seller.
+The [marketplace journey guide](../../../app/USER-JOURNEYS.md) explains the role actions if needed. Returns, failure/retry branches and a code tour are not required for this exercise.
 
-1. As operator/support, record the seller settlement’s captured, fee, refunded, unpaid and paid-out values, plus the business revision and demo clock.
-2. Start a new SDK-agent conversation. Ask: **“What are Cedar & Co.’s captured amount and unpaid balance?”** Replace the seller if needed. Inspect the cited rows, not just the prose.
-3. Make the fresh purchase through the buyer UI. Before dispatch/payout, ask the same question again in the same conversation. Record the new revision, answer, evidence and trace. Confirm the comparison reflects fresh business records, not a remembered old status.
-4. Ask a policy question, such as **“What must happen before a seller payout can be released?”** Check retrieved policy evidence for delivery, the 24-hour hold and blocking returns.
-5. In local Langfuse, find the corresponding question trace. Identify the user/model input, a requested tool, its returned evidence, any subsequent model call and the final answer. The number/order of calls can vary; a tool is not guaranteed to run merely because an example trace used it.
-6. Briefly inspect monitoring across these runs: latency, token usage and run status. Cost is usable only if the model/pricing mapping supplies it; an empty cost field is not zero cost. Detailed observability is a later chapter.
-7. Open the relevant code: API authentication/dispatch, agent instructions/model/runner, MCP connection, then tool contracts. Explain what each does without changing code.
+## Optional: try your cloud application
 
-The [first-agent verification reference](../../../app/docs/FIRST-AGENT-VERIFICATION.md) also provides fixed-seed order/follow-up examples. Their expected quantities apply only to that seed, not every modified marketplace.
+**Prerequisite:** complete the separate [cloud setup guide](../../../app/CLOUD-SETUP.md) and keep its Cloud SQL database running.
 
-## Optional: first agent in your cloud marketplace
+1. Open **your cloud marketplace URL** from that setup. Sign in to Support and choose **OpenAI Agents SDK**.
+2. Start a new conversation and ask **“What products, quantities and sellers are in order-1?”** Check the current cloud records and evidence.
+3. Open that question’s trace in **your Langfuse Cloud project**. The instructor uses [Langfuse Japan](https://jp.cloud.langfuse.com/); use the region chosen during your own setup. Sign in with your hosted account, rather than the local demo credentials.
+4. Inspect model calls, HTTP MCP tool calls, returned business evidence and the final answer.
 
-Complete [CLOUD-SETUP.md](../../../app/CLOUD-SETUP.md) first. Skip this section if you are using only the local environment.
+Cloud data is independent of your local application. This optional step requires no cloud purchase or reset. Stop your cloud database after the demo when nobody is using it, following the cloud guide.
 
-1. Open your own cloud marketplace URL and sign in to Support with the password chosen during cloud setup. Select **OpenAI Agents SDK** and start a new conversation.
-2. Ask: **“What products, quantities and sellers are in order-1? Retrieve current records.”**
-3. Check the completed answer and open its business-evidence links. Compare with your current cloud records; the cloud database is independent of the laptop.
-4. Open the corresponding trace in your **Langfuse Cloud in your chosen region** project using the application link. Inspect model requests, tool calls, returned records and the final answer. Record the trace ID from your own run.
-5. Check run/configuration metadata for **HTTP MCP**. Local Compose uses stdio; identical tool names do not prove the transport.
+## What to keep
 
-This is a read-only optional agent walkthrough. You do not need to repeat purchases, advance the cloud clock or reset either database. Keep observations locally for comparison with the solution. Stop the cloud database between labs only when no one is using it, following the cloud guide.
+Keep the policy answer, the seller-name follow-up, one trace with a model/tool/evidence explanation, your before-and-after balances, and the new order’s payout result. Report discrepancies using the actual evidence.
 
-## Marketplace branch practice
+No reset is needed to finish. Preserve your local data and record any demo clock change. Do not run fixture-reset scripts for this exercise.
 
-Use a separate fresh order for each case; follow the [journey guide](../../../app/USER-JOURNEYS.md).
-
-| Case | What to demonstrate |
-|---|---|
-| Return/refund before payout | Delivered item → buyer return request → seller approval → seller receives physical goods → operator refund; verify one applied refund |
-| Return after completed payout | Request becomes manual review; automatic recovery of the seller’s paid funds is outside this simulation |
-| Failed refund then retry | Failure leaves financial amounts unchanged and return received; successful retry applies the refund once |
-| Failed payout then retry | Eligible failure leaves seller funds unpaid; retry completes payment once |
-| Active return and access boundaries | Active return blocks payout; seller scope and support read-only permissions are respected |
-
-## What to check and record
-
-- A short journey record: roles, references, starting state/clock, expected and observed transitions, and screenshots/event evidence.
-- Before/after seller amounts and the purchase’s gross, fee and seller share; separate purchase from payout.
-- Supporting database/policy evidence and trace references for the agent comparison.
-- One annotated trace, high-level monitoring observations and a four-file code responsibility explanation.
-- Findings for the branch scenarios, including failures/retries and one permission boundary.
-
-## Acceptance and cleanup
-
-The business math reconciles; early release is rejected; later release is manual; no duplicate completed refund/payout occurs; changed facts are backed by fresh evidence. Agent output wording may differ. If an answer is wrong, retain its evidence/trace and report the discrepancy rather than altering the fixture to make it pass. Marketplace mutation is performed by the human role, not the support agent.
-
-Stop/resume normally to preserve your work. Restore only the test practice seed when the next attempt needs it, following the cleanup guidance above. Langfuse traces are not erased by those marketplace resets. Do not commit credentials or include them in recorded results.
-
-Try the exercise before opening the [worked solution](solutions/answers.md).
+Try the exercise before opening the [worked answers](solutions/answers.md).
