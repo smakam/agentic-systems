@@ -71,8 +71,8 @@ The administrator's UI session can call the new alias. If you instead choose a r
 
 1. Return to the [Test workspace](http://127.0.0.1:5179/) as Support, using the normal SDK runtime with memory and guardrails Off. Keep the same model, data, policy documents and other settings throughout this comparison.
 2. Under **Response caching**, select **Enable response cache**. Changing this setting starts a fresh conversation.
-3. Ask **What is the current returns policy?** Open the new Langfuse trace and inspect the generation metadata field `gateway_response_cache_hit`. The first matching request normally has no stored response yet.
-4. Start another **New conversation**, leave caching enabled, and ask the identical question within two minutes. In its new trace, inspect that field for each generation. A value of `true` means LiteLLM returned a stored response for that model call. The answer also shows how many model responses came from cache.
+3. Ask **What is the current returns policy?** Wait for the answer, then proceed immediately to the next step; leave trace inspection until after both requests. The first matching request normally has no stored response yet.
+4. Start another **New conversation**, leave caching enabled, and immediately ask the identical question within two minutes. Now inspect both Langfuse traces: select each generation → Attributes → Metadata → `gateway_response_cache_hit`. A value of `true` means LiteLLM returned a stored response for that model call. The answer also shows how many model responses came from cache. If you spend more than two minutes examining the first trace before repeating, the entry can expire and the repeat will correctly miss.
 5. Clear **Enable response cache**. Ask the same question in the fresh conversation created by the change. Confirm `gateway_response_cache_hit` is `false` for every model call and that the recorded response IDs differ from the cached response.
 
 **Before you finish: leave Enable response cache unchecked. Do not leave caching enabled after this exercise.**
