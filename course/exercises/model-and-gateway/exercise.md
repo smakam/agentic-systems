@@ -1,105 +1,65 @@
 # Chapter 6 exercise: Model and gateway
 
-## UI, database and cleanup
+## Learning goal
 
-**UI/API:** the supplied comparison is a CLI/API lab, not a task in the normal test UI. Run `scripts/chapter-06-lab.py` from `app`; the isolated backend is `http://127.0.0.1:58006`, its gateway is `http://localhost:4006`, and traces appear in [local Langfuse](http://localhost:3000/).
-
-**Database:** the lab creates its own `market_test` in the separate `course-ch6-db` container. This is not the `market_test` used by the normal test UI. Keep its seed fixed during each model comparison; normal main/test records and `market_eval` remain unchanged.
-
-**Cleanup:** save outputs, restore the original lab model mapping, then run `python3 scripts/chapter-06-lab.py cleanup` from `app`. That stops only the isolated lab services. If you choose your own implementation instead, restore any edited model mappings/configuration or source files and restart the affected service.
-
-
-**Status:** API/code rehearsal complete for the OpenAI path; recording rehearsal remains separate.  
-**Estimated time:** 25–35 minutes for the core tasks after the environment is ready. Optional extensions take additional time.
+Keep an application's model alias stable while changing the model behind it, then compare answers, traces and usage attributed to separate gateway identities.
 
 ## Your tasks
 
-Keep your results locally and compare them with the reference solution. Nothing needs to be submitted.
+**Part 1:** Repeat the instructor's model-swap demo in the normal Test workspace and compare Support-versus-Operator usage.
 
-**Part 1:** Repeat the model-alias comparison and Support-versus-Operator usage checks covered in the demo. Follow the steps below and save your answers, evidence and Langfuse traces.
+**Part 2:** Use the isolated command-line lab to add a new alias and, optionally, test response caching.
 
-**Part 2:** Add and call a new model alias. If you want a further challenge, test response caching in an isolated setup.
+Keep your results locally and compare them with the reference solution. Nothing needs to be submitted. Allow about 25–35 minutes for Part 1 once your environment is ready; the advanced tasks take additional time.
 
-## Learning goal
+## Before you begin
 
-Observe how a gateway lets an application keep a stable model alias while the mapped model changes, and how gateway identities support workload-level usage and estimated-cost attribution.
+- Complete the environment setup and run the current course application with the Test model-mapping control available.
+- Open the [Test workspace](http://127.0.0.1:5179/), [LiteLLM](http://localhost:4000/ui/) and [Langfuse](http://localhost:3000/).
+- Use Support with the OpenAI Agents SDK runtime. Keep memory Off, gateway guardrails Off, clean policy documents and the same other controls throughout. Do not enable a routing or agent-design experiment.
+- Do not make purchases, advance the clock, reset data or edit policies during the comparison. Use the policy evidence returned by your own environment to judge the answers.
+- Model requests incur provider charges. Gateway spend is an estimate, not a provider invoice.
 
-## Prerequisites and lab setup
+## Part 1 — Repeat the demo in the Test UI
 
-- Complete Chapter Four and keep the normal main/test workspaces running.
-- Run the commands below from the application's `app` folder. Python 3, Git, Docker and the current course checkout are required.
-- This rehearsed isolated lab uses an OpenAI API key from your existing `.env`. The main application also supports OpenRouter, but this specific lab's business-path rehearsal used OpenAI only.
-- The lab runs its own gateway, backend, synthetic database and response cache. It preserves your normal gateway and both marketplace workspaces. API calls incur provider charges; exact amounts vary.
+### 1. Change the model behind a stable alias
+
+1. In **Support model mapping**, click **Restore default** and confirm GPT-5.4.
+2. In LiteLLM **Models + Endpoints**, find `support-model-test`. Record its mapped model. Also confirm the main `support-model` remains mapped to GPT-5.4.
+3. Start a fresh Support conversation and ask: **What is the current returns policy?** Save the answer, cited policy evidence and trace reference.
+4. In that new Langfuse trace, inspect **Gateway output → Model input → Attributes → metadata → model**. Record the actual provider model for each model call. The generation's alias alone does not prove the resolved model.
+5. Choose **GPT-5 Nano** in the Test mapping control. The control starts a fresh conversation. Refresh LiteLLM and confirm the same Test alias now maps to Nano.
+6. Ask the identical question with unchanged data and controls. Compare the new answer and evidence, and verify Nano in this new trace. Model-chosen tools and the number of calls may differ.
+7. Optionally repeat with GPT-5. Use a new conversation for every mapping and check the newest trace rather than an earlier test.
+8. Finish with **Restore default** and verify `support-model-test` is back on GPT-5.4. Confirm the main alias is unchanged.
+
+The selector changes the Test alias's actual model definition. It does not change key permissions or redirect a key to an evaluation alias. Both Test keys continue to allow only `support-model-test` and `embedding`. This mapping applies to normal SDK Support and Operator requests throughout Test; specialized routing, evaluation, judge and hosted-runtime paths are separate.
+
+### What to record
+
+| Model | Alias / resolved model | Correctness and policy evidence | Tool behavior | Tokens / estimated spend | Latency | Trace |
+|---|---|---|---|---|---|---|
+| GPT-5.4 | | | | | | |
+| GPT-5 Nano | | | | | | |
+| GPT-5 (optional) | | | | | | |
+
+Explain which mapping you would choose for this workload and why. One policy question does not establish a general model-quality ranking. Include evidence that the Test default was restored and the main mapping stayed unchanged.
+
+### 2. Compare Support and Operator usage
+
+With GPT-5.4 restored, ask the same policy question in a fresh Operator conversation in Test. In LiteLLM Usage, compare `marketplace-test-support` and `marketplace-test-operator` for the relevant time range. Both allow the same two aliases but have separate usage attribution. Save request counts, tokens and estimated spend, noting any prior activity included in the totals. Do not expect the cumulative totals to match.
+
+The gateway identities identify application workloads; they do not grant marketplace business permissions. No database cleanup or service shutdown is needed for Part 1—just restore the mapping and keep your evidence.
+
+## Part 2 — Additional challenges (isolated CLI lab)
+
+These tasks use a separate disposable gateway and database, not the normal Test workspace. From the application's `app` folder, run:
 
 ```sh
 python3 scripts/chapter-06-lab.py setup
 ```
 
-The script builds the current backend and creates the lab services and scoped Support/Operator identities without printing credentials. Results are saved under `app/test-output/chapter-06-lab`. If setup is interrupted, run the cleanup command below before retrying. The lab gateway is at `http://localhost:4006`; its backend is at `http://127.0.0.1:58006`. Use the regular local Langfuse instance to inspect the generated traces.
-
-The fixed questions are:
-
-1. “What are Cedar & Co.'s captured amount and unpaid balance?”
-2. “What must happen before a seller payout can be released?”
-
-With the supplied clean seed, captured is ₹4,998.00 and unpaid is ₹4,498.20 at revision 1. Policy requires delivery, the 24-hour hold, and no blocking requested/approved/received return. Keep this data fixed during the comparison.
-
-## Part 1 — Repeat what was covered in the demo
-
-### 1. Change the model behind an existing alias
-
-The application always requests `support-model`. Start with GPT-5.4:
-
-```sh
-python3 scripts/chapter-06-lab.py questions gpt54
-```
-
-Open `gpt54-1.json` and `gpt54-2.json` in the results folder. Inspect each answer, evidence, tool calls and latency; open its `metrics.trace_id` in local Langfuse. Record correctness against the expected facts above.
-
-Change only the isolated gateway's model behind that alias, then repeat the same questions in fresh conversations:
-
-```sh
-python3 scripts/chapter-06-lab.py model nano
-python3 scripts/chapter-06-lab.py questions nano
-```
-
-Compare the `nano-1.json` and `nano-2.json` receipts with the GPT-5.4 receipts. The prompt, fixed questions and business revision remain the same; model-chosen tools may differ. Use gateway usage records for the mapped-model cost estimate. The application's static model label/rate estimate can lag an alias remapping, so do not use that field as proof of the provider model or invoice.
-
-The original GPT-5 nano snapshot retires December 11, 2026; this is the recorded comparison route, not a perpetual model-availability guarantee. Future route replacements need their own validation.
-
-Restore the original mapping before continuing:
-
-```sh
-python3 scripts/chapter-06-lab.py model gpt54
-```
-
-### What to check and record
-
-Complete one row per question and model in a comparison table:
-
-| Question | Alias and mapped model | Correctness/evidence | Tool behavior | Usage/tokens | Estimated cost | Latency | Langfuse trace |
-|---|---|---|---|---|---|---|---|
-| Lookup |  |  |  |  |  |  |  |
-| Policy |  |  |  |  |  |  |  |
-
-Add a short recommendation explaining which mapping you would use for this workload and why. Include the before/after mapping and evidence that you restored the original mapping.
-
-### 2. Attribute usage to Support and Operator
-
-Keep the restored GPT-5.4 mapping. The previous questions used the authenticated Support account. Send the same lookup through the Operator account and inspect the two scoped identities:
-
-```sh
-python3 scripts/chapter-06-lab.py operator
-python3 scripts/chapter-06-lab.py usage
-```
-
-Open `operator.json` and its Langfuse trace. Gateway usage is grouped under `chapter6-support` and `chapter6-operator`, though both permit `support-model` and `embedding`. Support totals include both model comparisons and setup indexing, so the totals need not be equal. In the regular gateway UI, the equivalent course identities are `marketplace-support` and `marketplace-operator`; rerun normal startup after updating the course checkout to load that implementation.
-
-### What to check and record
-
-Provide the gateway view/export reference and a small Support-versus-Operator table with request count, usage/tokens and estimated spend. State that the gateway estimate is for attribution and is not the provider invoice.
-
-## Part 2 — Additional challenges
+The lab backend is `http://127.0.0.1:58006`; its gateway is `http://localhost:4006`. It creates its own `market_test` in `course-ch6-db`, separate from the normal Test database. Results are under `app/test-output/chapter-06-lab`. This lab's rehearsed provider path uses the OpenAI API key in your existing `.env`; provider calls incur charges. Keep normal main/test services running. If setup is interrupted, run the cleanup command at the end before retrying.
 
 ### 1. Add a new alias
 
