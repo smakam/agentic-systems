@@ -1,6 +1,6 @@
 # Chapter 6 reference solution: Model and gateway
 
-The core exercise repeats the instructor demo in the normal Test UI. Only the advanced new-alias and response-cache tasks use the isolated command-line lab. Exact answer wording, cost and latency vary.
+The core exercise repeats the instructor demo in the normal Test UI. The additional tasks use LiteLLM Playground and the existing Test workspace; no separate environment is required. Exact answer wording, cost and latency vary.
 
 A successful core run keeps `support-model-test` fixed while its actual model definition changes from GPT-5.4 to Nano (optionally GPT-5), then returns to GPT-5.4. The main `support-model` remains unchanged. Both Test keys retain exactly `support-model-test` and `embedding`, without per-key alias redirects. Normal Test SDK Support and Operator requests use these Test identities; specialized evaluation, routing, judge and hosted-runtime paths are separate.
 
@@ -31,45 +31,38 @@ The gateway's attributed cost is an estimate; the provider invoices its account.
 
 ## Part 2 — Additional challenges
 
-Use the separate CLI lab setup and cleanup in the exercise for these advanced tasks. They do not use or reset the normal Test database.
+### 1. New alias in LiteLLM Playground
 
-### 1. New alias
+A correct run creates a unique public model name in **Models + Endpoints → Add Model**, preserves all existing course mappings, and calls that new name through **Playground → Chat**. In the verified OpenAI example, the underlying model is `gpt-5.4-2026-03-05`, credentials reference the gateway's existing environment and API Base is blank. The administrator's **Current UI Session** can call the alias; restricted keys require their own explicit permission. Normal Test keys remain unchanged.
 
-The solution adds a distinct alias with a compatible model mapping, calls it through the same gateway request format, and captures a successful response/trace. It leaves the shared starting configuration restored after the test.
+Expected evidence is the model definition plus a successful Playground response to **Reply with the single word READY.** A successful local UI rehearsal returned READY. This exercises gateway alias creation without changing the application or creating another database.
 
-### 2. Gateway response cache
+### 2. Response cache On/Off in Test
 
-**Before you finish: disable response caching and confirm that the next request makes a fresh model call. Do not leave caching enabled after this exercise.**
+The learner enables **Response caching → Enable response cache** for normal Test SDK support with memory and guardrails Off. They ask the policy question in one fresh conversation and repeat it in another fresh conversation before the two-minute expiry, with unchanged controls and data. The first request fills the cache; the repeat should demonstrate at least one cached model response. Later model calls can miss if tool results or other full inputs differ.
 
-With all messages and request parameters fixed:
+In each generation's Langfuse metadata, inspect `gateway_response_cache_hit`, backed by LiteLLM's cache-key response header, and `gateway_response_id`. The repeated hit reuses the response ID. The SDK can still emit a generation observation for that call: absence of a generation is not the cache test.
 
-1. The first model A request is a miss and calls the provider; its repeat is a hit.
-2. Switching to model B is a miss because the model is part of the cache identity; the repeat on model B is a hit.
-3. Clearing or expiring the B entry makes the next identical request a miss and triggers a fresh provider call.
+After the learner switches caching Off, a new conversation starts. The identical question produces fresh model responses: all per-call cache-hit fields are false and cached response IDs are not reused. The app's answer receipt reports the number of model responses served from cache. Faster responses alone, matching text alone, or provider cached-input-token counts do not establish gateway response-cache hits.
 
-Accept gateway cache status/logs or equivalent request evidence that demonstrates whether inference occurred; speed alone is not proof of a hit. Provider prompt caching is distinct: the model still generates a new answer, though cached input processing may have different pricing. A response-cache hit reuses a prior answer, so learners must discuss whether the data can become stale and how invalidation is handled. Remove test entries and restore the isolated configuration.
+**Required final step: leave Enable response cache unchecked. Confirm a fresh model call with caching Off before finishing.**
+
+This is request-level opt-in on the existing gateway. Ordinary Main requests remain uncached; no global Redis configuration, database reset or new application is needed. Cache namespaces separate users, selected models, business revisions and policy versions. Cache entries expire after two minutes. Gateway response caching and provider prompt caching are different; app list-rate cost estimates do not measure the actual cache savings.
 
 ## Review checklist
 
-- [ ] Same question, policy evidence, data and controls used for both model mappings
-- [ ] Only the alias mapping changed, then was restored
-- [ ] Correctness checked against policy sources and trace evidence
-- [ ] Support and Operator are distinct identities with separate usage attribution
-- [ ] Gateway estimates are labeled as estimates, not provider invoices
-- [ ] Optional cache claims are backed by hit/miss/provider-call evidence
-- [ ] No credentials are present in the saved notes
+- [ ] Same policy question, data and other controls used for each comparison
+- [ ] Test model alias stays stable; main mapping and Test key permissions stay unchanged
+- [ ] Test model mapping restored to GPT-5.4 after Part 1
+- [ ] Answers checked against retrieved policy evidence
+- [ ] Support and Operator usage attributed to distinct Test keys
+- [ ] New practice alias called successfully from Playground
+- [ ] Cache evidence checked per model call in the newest matching trace
+- [ ] Response cache disabled and a fresh call confirmed at the end
+- [ ] No credentials included in saved evidence
 
+## Verification boundary
 
-## Dated rehearsal evidence
+The simplified new-alias flow was rehearsed through the installed LiteLLM UI and Playground. The Test SDK cache comparison was also exercised live: the first question had no response-cache hits, the repeated question had a hit on its first model call, and the cache-Off question had fresh responses on both calls. The cache-hit field was read back from Langfuse. These checks demonstrate the workflow, not a general model-quality benchmark or production cache design.
 
-Recorded validation (instructor-local evidence; not distributed) contains five completed MCP questions with correct expected facts, five local Langfuse traces, distinct Support/Operator gateway usage, the new-alias response and the passing cache sequence. Three request-identity tests cover concurrency, cleanup and MCP key propagation. The instructor's Drive chapter notes link the same report under the chapter's `_authoring/rehearsal-2026-10-12` evidence folder.
-
-The sample 18-case model-selection counts shown in the slides are historical and separate from these focused rehearsal questions. Both models answered the two rehearsal questions correctly; do not turn those checks into a new full-suite score.
-
-### Cache clearing in the installed version
-
-Delete the recorded entry, clear only the lab Redis, and restart only the lab gateway. Clearing Redis or using `/cache/delete` alone did not clear its in-process copy in this installation. The successful sequence proved a new provider response after both layers were cleared. A header, response ID and call record are stronger evidence than speed alone.
-
-### UI capability tour
-
-In the installed LiteLLM UI, inspect Router Settings → Loadbalancing → Reliability & Retries; Response Cache → Cache Settings; and Settings → Logging & Alerts → Alerting Types. These pages were inspected without saving settings or sending alerts. Availability is distinct from enabling a feature.
+The historical 18-case model-selection report linked from the slides is a separate study. Do not turn this one-question caching demonstration into another full-suite quality score.
