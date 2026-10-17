@@ -39,6 +39,8 @@ The solution adds a distinct alias with a compatible model mapping, calls it thr
 
 ### 2. Gateway response cache
 
+**Before you finish: disable response caching and confirm that the next request makes a fresh model call. Do not leave caching enabled after this exercise.**
+
 With all messages and request parameters fixed:
 
 1. The first model A request is a miss and calls the provider; its repeat is a hit.
