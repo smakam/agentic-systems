@@ -8,7 +8,7 @@ Keep an application's model alias stable while changing the model behind it, the
 
 **Part 1:** Repeat the instructor's model-swap demo in the normal Test workspace and compare Support-versus-Operator usage.
 
-**Part 2:** Use the isolated command-line lab to add a new alias and, optionally, test response caching.
+**Part 2:** Add a new alias in LiteLLM and call it from Playground, then optionally try response caching in the Test workspace.
 
 Keep your results locally and compare them with the reference solution. Nothing needs to be submitted. Allow about 25–35 minutes for Part 1 once your environment is ready; the advanced tasks take additional time.
 
@@ -51,50 +51,42 @@ With GPT-5.4 restored, ask the same policy question in a fresh Operator conversa
 
 The gateway identities identify application workloads; they do not grant marketplace business permissions. No database cleanup or service shutdown is needed for Part 1—just restore the mapping and keep your evidence.
 
-## Part 2 — Additional challenges (isolated CLI lab)
+## Part 2 — Additional challenges
 
-These tasks use a separate disposable gateway and database, not the normal Test workspace. From the application's `app` folder, run:
+These tasks use the existing LiteLLM gateway and Test workspace. No new application, database or lab environment is needed.
 
-```sh
-python3 scripts/chapter-06-lab.py setup
-```
+### 1. Add and call a new model alias in Playground
 
-The lab backend is `http://127.0.0.1:58006`; its gateway is `http://localhost:4006`. It creates its own `market_test` in `course-ch6-db`, separate from the normal Test database. Results are under `app/test-output/chapter-06-lab`. This lab's rehearsed provider path uses the OpenAI API key in your existing `.env`; provider calls incur charges. Keep normal main/test services running. If setup is interrupted, run the cleanup command at the end before retrying.
+1. Open LiteLLM as the local administrator. Go to **Models + Endpoints → Add Model**.
+2. Choose **OpenAI** as Provider and select **gpt-5.4-2026-03-05** under **LiteLLM Model Name(s)**. This is the verified OpenAI example; use a model and provider available in your configured account.
+3. In the **Model Mappings** table, change **Public Model Name** to a unique name such as `learner-model`. Keep the underlying model unchanged. Do not reuse an existing course alias.
+4. Use existing provider credentials if available. For the course's OpenAI environment, the **OpenAI API Key** field can contain `os.environ/OPENAI_API_KEY`; this references the key already configured inside the gateway. Leave **API Base** blank for this OpenAI example, including clearing any browser-autofilled text. Do not put a provider secret into your exercise notes.
+5. Click **Add Model**. Confirm the success message and the new alias's mapping in **All Models**.
+6. Open **Playground → Chat**. Use **Current UI Session** as **Virtual Key Source**, keep the endpoint `/v1/chat/completions`, and select the new alias. Ask: **Reply with the single word READY.**
+7. Save the alias, configured provider/model and successful response. The response name alone is not proof of the provider mapping; use the model definition too.
 
-### 1. Add a new alias
+The administrator's UI session can call the new alias. If you instead choose a restricted virtual key, use a separate practice key that permits this alias; do not expand the normal Test Support/Operator keys or alter their existing mappings. No application-code change is required. You may remove only your newly created practice alias and practice key after saving your evidence.
 
-```sh
-python3 scripts/chapter-06-lab.py new
-```
+### 2. Test gateway response caching in the Test workspace
 
-The lab adds `learner-model` mapped to GPT-5.4 and sends a small “READY” request through the same gateway API. Inspect `new-alias.json` and the generated lab config. Identify the alias, configured provider model and successful returned content; a returned alias alone is not independent proof of the provider mapping.
+1. Return to the [Test workspace](http://127.0.0.1:5179/) as Support, using the normal SDK runtime with memory and guardrails Off. Keep the same model, data, policy documents and other settings throughout this comparison.
+2. Under **Response caching**, select **Enable response cache**. Changing this setting starts a fresh conversation.
+3. Ask **What is the current returns policy?** Open the new Langfuse trace and inspect the generation metadata field `gateway_response_cache_hit`. The first matching request normally has no stored response yet.
+4. Start another **New conversation**, leave caching enabled, and ask the identical question within two minutes. In its new trace, inspect that field for each generation. A value of `true` means LiteLLM returned a stored response for that model call. The answer also shows how many model responses came from cache.
+5. Clear **Enable response cache**. Ask the same question in the fresh conversation created by the change. Confirm `gateway_response_cache_hit` is `false` for every model call and that the recorded response IDs differ from the cached response.
 
-### 2. Test gateway response caching (optional advanced challenge)
+**Before you finish: leave Enable response cache unchecked. Do not leave caching enabled after this exercise.**
 
-**Before you finish: disable response caching and confirm that the next request makes a fresh model call. Do not leave caching enabled after this exercise.**
+An agent answer can contain several model calls; some may hit while others miss because their full model inputs differ. A generation still appears in the SDK trace on a gateway cache hit. Use the explicit cache-hit metadata and response IDs, not missing spans or speed alone, as evidence. Repeating a question later in the same conversation adds history and may miss; use fresh conversations for the controlled comparison.
 
-Use only the isolated lab; do not enable caching on the normal course gateway.
+The course uses a short-lived, local, exact-match response cache with ordinary requests uncached by default. The Test checkbox opts only eligible requests in. Cache identities distinguish users, selected models, business revisions and policy versions. Entries expire after two minutes. A different prompt, changed context or expired entry can require a new model call. Do not enable caching globally in LiteLLM's Redis settings for this exercise, and do not flush the shared Redis used by Langfuse.
 
-```sh
-python3 scripts/chapter-06-lab.py cache
-```
+Gateway response caching reuses a completed response without a new model generation on a hit. Provider prompt caching still calls the model to generate a new response. App list-rate cost estimates are not a measurement of charges saved by response caching or a provider invoice.
 
-The script keeps the synthetic request fixed and records A miss/repeat hit, B miss/repeat hit, then a fresh B call after clearing. Check `cache-checks.json`: repeated cached responses retain the same response ID and carry the cache-key header. Cross-model requests have distinct identities. The final cleared response has a new ID and no cache-key header.
+### What to record
 
-In the installed gateway, Redis clearing and `/cache/delete` alone left an in-process copy. The verified lab therefore deletes the entry, clears only its disposable Redis, and restarts only its disposable gateway to clear both layers. It then proves a new model response. Never clear the shared Langfuse Redis. Explain why reusing stored answers for mutable business data requires a freshness policy; this challenge uses a static prompt, not a changing order.
-
-### What to check and record
-
-Include the request sequence and gateway evidence for hit, cross-model miss, second-model hit and fresh call after clearing/expiry. Explain the difference between provider prompt caching (the model is still called) and gateway response caching (a matching stored answer can be returned without a new inference).
-
-## Cleanup
-
-```sh
-python3 scripts/chapter-06-lab.py cleanup
-```
-
-This stops only the named Chapter Six lab services and removes its temporary credential files. It leaves your normal gateway, main/test workspaces and local Langfuse traces untouched. Keep the answer/usage/cache receipts for self-checking; do not publish credentials. No main or test reset is needed.
+Save the three trace references (first request, repeated request with caching On, request with caching Off), the per-call hit/miss fields and response IDs. Explain why cached answers can become stale, and show that the checkbox is Off at the end. No database cleanup or additional service shutdown is needed.
 
 ## Reference solution
 
-See [`solutions/answers.md`](solutions/answers.md). The solution describes the expected checks; model-generated wording and measured cost/latency can vary, so use the supplied facts and captured telemetry rather than a memorized answer.
+See [`solutions/answers.md`](solutions/answers.md). Model wording and measured latency vary; assess policy correctness using retrieved sources and assess cache behavior using gateway evidence.
