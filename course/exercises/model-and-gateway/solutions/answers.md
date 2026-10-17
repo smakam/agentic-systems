@@ -1,28 +1,23 @@
 # Chapter 6 reference solution: Model and gateway
 
-## UI, database and cleanup
+The core exercise repeats the instructor demo in the normal Test UI. Only the advanced new-alias and response-cache tasks use the isolated command-line lab. Exact answer wording, cost and latency vary.
 
-**UI/API:** the supplied comparison is a CLI/API lab, not a task in the normal test UI. Run `scripts/chapter-06-lab.py` from `app`; the isolated backend is `http://127.0.0.1:58006`, its gateway is `http://localhost:4006`, and traces appear in [local Langfuse](http://localhost:3000/).
+A successful core run keeps `support-model-test` fixed while its actual model definition changes from GPT-5.4 to Nano (optionally GPT-5), then returns to GPT-5.4. The main `support-model` remains unchanged. Both Test keys retain exactly `support-model-test` and `embedding`, without per-key alias redirects. Normal Test SDK Support and Operator requests use these Test identities; specialized evaluation, routing, judge and hosted-runtime paths are separate.
 
-**Database:** the lab creates its own `market_test` in the separate `course-ch6-db` container. This is not the `market_test` used by the normal test UI. Keep its seed fixed during each model comparison; normal main/test records and `market_eval` remain unchanged.
+For each fresh question, inspect the newest matching Langfuse trace. **Gateway output → Model input → Attributes → metadata → model** identifies the provider model for that call. Check each call, since a single answer can need several model calls. Do not mistake an older Nano trace for the new GPT-5.4 request.
 
-**Cleanup:** save outputs, restore the original lab model mapping, then run `python3 scripts/chapter-06-lab.py cleanup` from `app`. That stops only the isolated lab services. If you choose your own implementation instead, restore any edited model mappings/configuration or source files and restart the affected service.
-
-
-**Status:** API/code checks passed for the recorded OpenAI lab. Recording rehearsal remains separate. Do not distribute credentials.
-
-The exercise guide is shared by the instructor demo and learner practice. Keep dated rehearsal results linked here, separate from the learner instructions. Speaker notes provide recording cues and reference that same guide.
+For usage attribution, compare `marketplace-test-support` and `marketplace-test-operator` over the chosen time range. Earlier requests and indexing can affect cumulative totals. Restoring the Test mapping completes core cleanup; no database reset or service shutdown is required.
 
 ## Part 1 — Repeat the demo
 
 ### 1. Model alias comparison
 
-A correct run changes only the model mapping behind the supplied existing alias. The application request, prompt, fixed lookup/policy questions and data revision stay the same. The learner records the original mapping, captures both answers/traces for each model, compares each answer with the supplied expected facts and evidence, and restores the original mapping.
+A correct run changes only the model mapping behind the supplied existing alias. The requested Test alias, prompt, returns-policy question, data and other controls stay the same. The learner records the original mapping, captures both answers/traces for each model, compares each answer with the retrieved policy evidence in their environment, and restores the original mapping.
 
 Expected observations:
 
 - The application continues to call the same alias; the gateway routes it to the newly mapped model without an application-code change.
-- Model outputs and tool behavior may differ. Judge correctness and evidence against the supplied answer key; do not score by stylistic preference.
+- Model outputs and tool behavior may differ. Judge correctness and evidence against the retrieved policy evidence in the learner's environment; do not score by stylistic preference.
 - Usage, estimated cost and latency are recorded from the available telemetry. Exact values depend on the model, provider pricing and runtime, so use the values from the learner's run or the instructor's dated saved results.
 - The final mapping matches the recorded original mapping.
 
@@ -35,6 +30,8 @@ A correct run uses two separately provisioned gateway identities while keeping t
 The gateway's attributed cost is an estimate; the provider invoices its account. It is not an individual provider bill or a marketplace authorization boundary.
 
 ## Part 2 — Additional challenges
+
+Use the separate CLI lab setup and cleanup in the exercise for these advanced tasks. They do not use or reset the normal Test database.
 
 ### 1. New alias
 
@@ -52,9 +49,9 @@ Accept gateway cache status/logs or equivalent request evidence that demonstrate
 
 ## Review checklist
 
-- [ ] Fixed questions and data revision used for both model mappings
+- [ ] Same question, policy evidence, data and controls used for both model mappings
 - [ ] Only the alias mapping changed, then was restored
-- [ ] Correctness checked against supplied expected facts and trace evidence
+- [ ] Correctness checked against policy sources and trace evidence
 - [ ] Support and Operator are distinct identities with separate usage attribution
 - [ ] Gateway estimates are labeled as estimates, not provider invoices
 - [ ] Optional cache claims are backed by hit/miss/provider-call evidence
