@@ -42,6 +42,8 @@ flowchart TB
 
 ## Estimated cloud cost
 
+> **Stop Cloud SQL when you are not actively using the cloud lab.** In this small course setup, a continuously running Cloud SQL instance is usually the largest ongoing infrastructure cost. Use **Stop** in the Cloud SQL console, or the [stop/start commands below](#7-stop-and-resume-between-labs), and start it only before your next cloud session. Stopping preserves your data and suspends instance compute charges. Storage and retained backups remain billable, typically at a much smaller cost for this lab; stopping does not make the setup free.
+
 For a small course lab, **plan roughly USD 30–40 per month (about USD 7–10 per week) for Cloud SQL and its retained storage/backups if left running continuously**. Stopping it between short labs can reduce that substantially. These are planning allowances, not a measured bill or a quote for every region; model calls and variable cloud-service charges are separate.
 
 The repository selects one zonal `db-g1-small` instance with 10 GiB SSD, backups enabled, private IP and no HA replica. To make the arithmetic inspectable, this illustration uses the public **Iowa** list prices: instance USD 0.035/hour, SSD about USD 0.17/GiB-month and used backups about USD 0.08/GiB-month. It assumes 10 GiB of billed backup storage, which may differ from actual usage. A month is 730 hours; a week is 168 hours.
@@ -203,7 +205,7 @@ app/cloud/scripts/database.sh stop
 app/cloud/scripts/database.sh start
 ```
 
-Wait until the database is ready before asking questions. Stop it only when no one is using the deployment. Set Terraform's `database_active` variable to the same intended state before your next apply so Terraform does not reverse your choice. Cloud Run minimum instances are zero in this course configuration; database storage and retained resources remain billable while stopped.
+After stopping, verify that the Cloud SQL console shows **Stopped**, rather than only a pending stop operation. Before the next session, start the instance and wait until it is ready before signing in or asking questions. The cloud application needs the database for login and data-backed operations; Cloud Run does not automatically start a stopped Cloud SQL instance. Stop it only when no one is using the deployment. Set Terraform's `database_active` variable to the same intended state before your next apply so Terraform does not reverse your choice. Cloud Run minimum instances are zero in this course configuration; database storage and retained resources remain billable while stopped.
 
 ## Troubleshooting and reference
 
