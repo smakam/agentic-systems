@@ -211,3 +211,54 @@ def test_name_collision_requires_targeted_query():
         matches=[n for n in names if 'cedar' in n['name'].lower()]
         assert {n['entity_type'] for n in matches}=={'seller','product'}
     finally:ctx.close()
+
+
+@pytest.mark.parametrize('role',['buyer','seller','operator'])
+def test_market_orders_newest_first_with_fixed_clock_and_role_scope(monkeypatch,role):
+    from marketplace import business
+    original_uid=business.uid
+    ids=iter(['ord-a-older','ord-z-newer','ord-m-other-buyer'])
+    monkeypatch.setattr(business,'uid',lambda prefix:next(ids) if prefix=='ord' else original_uid(prefix))
+    first=cmd('buyer','purchase',{'items':[{'listing_id':'listing-1','quantity':1}]},'purchase-older')
+    second=cmd('buyer','purchase',{'items':[{'listing_id':'listing-1','quantity':1}]},'purchase-newer')
+    other=cmd('buyer2','purchase',{'items':[{'listing_id':'listing-3','quantity':1}]},'purchase-other')
+    with TestClient(app) as client:
+        assert client.post('/api/login',json={'username':role,'password':'demo-marketplace'}).status_code==200
+        orders=client.get('/api/market').json()['orders']
+    ids=[order['id'] for order in orders]
+    assert ids.index(second['id'])<ids.index(first['id'])
+    if role=='operator':assert ids[:3]==[other['id'],second['id'],first['id']]
+    else:
+        assert ids[:2]==[second['id'],first['id']]
+        assert other['id'] not in ids
+
+
+def test_secondary_seller_login_is_scoped_to_northstar_goods():
+    with TestClient(app) as client:
+        login=client.post('/api/login',json={'username':'seller2','password':'demo-marketplace'})
+        assert login.status_code==200
+        client.headers['x-csrf-token']=login.json()['csrf']
+        data=client.get('/api/market').json()
+        assert data['sellers']==[{'id':'seller-2','name':'Northstar Goods'}]
+        assert data['listings'] and all(row['seller_id']=='seller-2' for row in data['listings'])
+        assert data['items'] and all(row['seller_id']=='seller-2' for row in data['items'])
+        denied=client.post('/api/commands',json={'action':'stock','data':{'id':'listing-1','stock':1},'idempotency_key':'northstar-not-cedar'})
+        assert denied.status_code==409
+        allowed=client.post('/api/commands',json={'action':'stock','data':{'id':'listing-2','stock':11},'idempotency_key':'northstar-own-stock'})
+        assert allowed.status_code==200
+
+
+def test_secondary_seller_backfill_preserves_existing_market():
+    purchase=cmd('buyer','purchase',{'items':[{'listing_id':'listing-1','quantity':1}]},'before-seller-backfill')
+    with Session.begin() as db:
+        state=db.get(State,1);before=(state.revision,state.clock)
+        db.delete(db.get(User,'seller2'));db.flush()
+        seed(db);db.flush()
+        account=db.get(User,'seller2')
+        assert account.role=='seller' and account.seller_id=='seller-2'
+        original_hash=account.password_hash
+        seed(db);db.flush()
+        assert db.get(User,'seller2').password_hash==original_hash
+        assert (state.revision,state.clock)==before
+        assert db.get(Order,purchase['id']) is not None
+        assert db.get(Listing,'listing-1').stock==17

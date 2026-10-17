@@ -85,7 +85,10 @@ def market(user=Depends(identity),db=Depends(db_session)):
         listings=listings.where(Listing.seller_id==user.seller_id)
         sellers=sellers.where(Seller.id==user.seller_id)
         products=products.where(Product.id.in_(select(Listing.product_id).where(Listing.seller_id==user.seller_id)))
-    orders=select(Order)
+    # Several purchases can share the fixed demo-clock timestamp. Their committed
+    # purchase revision supplies the actual creation sequence without changing data.
+    purchase_revisions=select(Event.entity_id.label('order_id'),func.max(Event.revision).label('revision')).where(Event.kind=='purchase').group_by(Event.entity_id).subquery()
+    orders=select(Order).outerjoin(purchase_revisions,purchase_revisions.c.order_id==Order.id).order_by(Order.created_at.desc(),purchase_revisions.c.revision.desc().nulls_last())
     if user.role=='buyer': orders=orders.where(Order.customer_id==user.id)
     if user.role=='seller': orders=orders.where(Order.id.in_(select(Item.order_id).where(Item.seller_id==user.seller_id)))
     order_data=rows(Order,orders); ids=[x['id'] for x in order_data]
@@ -202,6 +205,7 @@ class Question(BaseModel):
     source_authority:bool=True
     marker_mode:str="off"
     loop_mode:Literal['normal','tool_error','turn_limit']='normal'
+    cache_enabled:bool=False
     routing_policy:str='off'
     design_mode:Literal['off','single','review']='off'
     generator_model:Literal['nano','gpt54']='nano'
@@ -212,6 +216,34 @@ def agent_design_demo_options(user=Depends(identity)):
     role(user, 'support', 'operator')
     from .agent_design_demo import enabled, MODELS
     return {'enabled': enabled(), 'models': MODELS if enabled() else {}}
+
+class GatewayModelChange(BaseModel):
+    model_config={'extra':'forbid'}
+    choice:Literal['gpt54','nano','gpt5']
+
+@app.get('/api/gateway-model-demo')
+async def gateway_model_options(user=Depends(identity)):
+    role(user,'support','operator')
+    from . import gateway_demo
+    if not gateway_demo.enabled(): return {'enabled':False}
+    try: return await gateway_demo.current()
+    except gateway_demo.Unavailable as exc: raise HTTPException(503,str(exc)) from None
+
+@app.post('/api/gateway-model-demo')
+async def gateway_model_change(body:GatewayModelChange,user=Depends(identity)):
+    role(user,'support','operator')
+    from . import gateway_demo
+    if not gateway_demo.enabled(): raise HTTPException(403,'Model mapping changes require the configured Test workspace')
+    # Existing SDK questions hold this lock in shared mode for their whole run.
+    # Exclusive mode also excludes corpus edits and other model changes.
+    with engine.connect() as lock:
+        locked=lock.execute(text('SELECT pg_try_advisory_lock(hashtext(:key))'),{'key':LOCK}).scalar()
+        if not locked: raise HTTPException(409,'An answer or Test workspace change is in progress; wait and retry')
+        try:
+            return await gateway_demo.set_model(body.choice)
+        except ValueError as exc: raise HTTPException(400,str(exc)) from None
+        except gateway_demo.Unavailable as exc: raise HTTPException(503,str(exc)) from None
+        finally: lock.execute(text('SELECT pg_advisory_unlock(hashtext(:key))'),{'key':LOCK})
 
 @app.get('/api/routing-demo')
 def routing_demo_options(user=Depends(identity)):
@@ -234,8 +266,12 @@ def loop_lab_options(user=Depends(identity)):
     return {'enabled':enabled(),'modes':list(MODES) if enabled() else []}
 @app.post('/api/conversations/{cid}/ask')
 async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session)):
+    if body.cache_enabled:
+        from .gateway_demo import enabled as cache_available
+        if not cache_available():raise HTTPException(403,'Response caching is available only in the configured Test workspace')
     conv=owned(db,user,cid)
     runtime=runtime_binding(conv)['runtime']
+    if body.cache_enabled and runtime!='sdk':raise HTTPException(400,'Response caching requires the Test SDK runtime')
     from .mem0_provider import require_provider, ProviderError
     try: require_provider(body.memory_provider)
     except ProviderError as exc: raise HTTPException(403,str(exc))
@@ -285,7 +321,7 @@ async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session
                     raise HTTPException(400, 'Start a fresh conversation before changing agent design settings')
             if is_test() and runtime=='sdk':
                 corpus_locked=lock.execute(text('SELECT pg_try_advisory_lock_shared(hashtext(:key))'),{'key':LOCK}).scalar()
-                if not corpus_locked: raise HTTPException(409,'A document fixture is changing; wait and retry')
+                if not corpus_locked: raise HTTPException(409,'The Test workspace configuration is changing; wait and retry')
             if conv.title=='New investigation': conv.title=body.question[:70]; db.commit()
             if runtime!='sdk':
                 return await hosted_answer(db,conv,body.question,body)
@@ -301,6 +337,10 @@ async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session
                 except RuntimeError as exc:
                     raise HTTPException(502,str(exc)) from None
             from .agent import answer
+            from . import response_cache_demo, gateway_demo
+            try:
+                response_cache_demo.validate(body.cache_enabled,available=gateway_demo.enabled(),runtime=runtime,routing=body.routing_policy,design=body.design_mode,memory=body.memory_enabled or body.memory_write,guardrail=body.guardrail,loop=body.loop_mode)
+            except ValueError as exc: raise HTTPException(400,str(exc)) from None
             lab_config={'loop_mode':body.loop_mode,'tool_transport':'mcp','model':os.getenv('OPENAI_MODEL','gpt-5.4')} if loop_enabled() else None
             from .gateway_identity import for_role, for_key
             route_config = routing_configuration(body.routing_policy, cid)
@@ -311,6 +351,13 @@ async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session
             if design_config:
                 if lab_config: raise HTTPException(400, 'Agent design and other lab comparisons require separate conversations')
                 lab_config = design_config
+            from . import gateway_demo
+            if gateway_demo.enabled() and not route_config and not design_config:
+                try: mapping=await gateway_demo.current()
+                except gateway_demo.Unavailable as exc: raise HTTPException(503,str(exc)) from None
+                if prior and (prior.metrics or {}).get('gateway_model_mapping',{}).get('choice') != mapping['choice']:
+                    raise HTTPException(400,'The support model mapping changed; start a fresh conversation')
+                lab_config={**(lab_config or {}), **gateway_demo.configuration(mapping),'response_cache':{'enabled':body.cache_enabled,'scope':str(user.id)+':'+mapping['model']}}
             key_context = for_key(os.environ['EVAL_GATEWAY_KEY']) if (route_config or design_config) else for_role(user.role)
             with key_context, capture_calls():
                 return await answer(cid,body.question,evaluation_config=lab_config,memory_provider=body.memory_provider,memory_enabled=body.memory_enabled,memory_write=body.memory_write,guardrail=body.guardrail,source_authority=body.source_authority,marker_mode=body.marker_mode,suppress_catalog=body.suppress_catalog,suppress_documents=body.suppress_documents)

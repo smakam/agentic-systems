@@ -9,10 +9,15 @@ DATA = Path(os.getenv('DATA_DIR', str(Path(__file__).resolve().parents[2] / 'dat
 CLOCK = datetime(2026,9,27,12,tzinfo=timezone.utc)
 
 def seed(db):
-    if db.get(State,1): return
+    if db.get(State,1):
+        # Add the second demo seller to existing installations without reseeding
+        # purchases, balances, business history or the stored simulation clock.
+        if not db.get(User,'seller2'):
+            db.add(User(id='seller2',username='seller2',role='seller',seller_id='seller-2',password_hash=PasswordHasher().hash(os.getenv('DEMO_PASSWORD','demo-marketplace'))))
+        return
     db.add(State(id=1,revision=1,clock=CLOCK))
     ph=PasswordHasher()
-    for name,role,seller in [('buyer','buyer',None),('buyer2','buyer',None),('seller','seller','seller-1'),('operator','operator',None),('support','support',None)]:
+    for name,role,seller in [('buyer','buyer',None),('buyer2','buyer',None),('seller','seller','seller-1'),('seller2','seller','seller-2'),('operator','operator',None),('support','support',None)]:
         db.add(User(id=name,username=name,role=role,seller_id=seller,password_hash=ph.hash(os.getenv('DEMO_PASSWORD','demo-marketplace'))))
     for i,name in enumerate(['Cedar & Co.','Northstar Goods','Everyday Studio'],1): db.add(Seller(id=f'seller-{i}',name=name))
     db.flush()

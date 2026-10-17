@@ -150,6 +150,8 @@ async def _run_answer(conversation_id,question,ctx,server,stack, *, evaluation_c
     run_id=uid('run'); started=time.monotonic()
     api=client()
     config=evaluation_config or {}
+    from . import response_cache_demo
+    stack.enter_context(response_cache_demo.capture())
     hooks=BudgetHooks(config.get('input_rate',float(os.getenv('AGENT_INPUT_RATE','.05'))),config.get('output_rate',float(os.getenv('AGENT_OUTPUT_RATE','.40'))),config.get('budget'))
     with Session.begin() as db:
         db.add(Run(id=run_id,conversation_id=conversation_id,revision=ctx.snapshot['revision'],question=question,status='running',created_at=datetime.now(timezone.utc),evidence={},metrics={}))
@@ -221,6 +223,9 @@ For counts and aggregates, lead with the count and state the actual date range u
     from .security_marker import marker_instructions
     instructions += '\n' + marker_instructions(marker_mode)
     agent=Agent(name='Marketplace support',instructions=instructions,model=model,model_settings=ModelSettings(max_tokens=MAX_COMPLETION_TOKENS,reasoning=Reasoning(effort="low"),parallel_tool_calls=False,extra_body={"guardrails":PROFILES[guardrail]} if guardrail!="off" else None),tools=direct_tools,mcp_servers=([server] if server and not memory_only else [])+([memory_server] if memory_server else []))
+    cache=config.get('response_cache')
+    if cache is not None:
+        agent.model_settings.extra_body={**(agent.model_settings.extra_body or {}),'cache':response_cache_demo.controls(cache['enabled'],cache['scope'],ctx.snapshot['revision'],ctx.doc_hash)}
     route = config.get('routing')
     if route:
         agent.model_settings.extra_body = {
@@ -340,6 +345,10 @@ For counts and aggregates, lead with the count and state the actual date range u
             metrics.update(loop_mode=config['loop_mode'],max_turns=1 if config['loop_mode']=='turn_limit' else MAX_TURNS,
                            actual_tool_invocations=len(hooks.tool_attempts),tool_attempts=hooks.tool_attempts,
                            loop_lab=getattr(server,'loop_lab_state',None))
+        if config.get('gateway_model_mapping'): metrics['gateway_model_mapping']=config['gateway_model_mapping']
+        if config.get('response_cache') is not None:
+            metrics['response_cache']={'enabled':config['response_cache']['enabled'],'calls':response_cache_demo.observed()}
+            if observation:observation.update(metadata={'gateway_response_cache_enabled':config['response_cache']['enabled'],'gateway_response_cache_calls':response_cache_demo.observed()})
         metrics['guardrails']=PROFILES[guardrail]
         metrics['catalog_version']='2.0'
         metrics.update(elapsed_seconds=round(time.monotonic()-started,2),tool_calls=ctx.calls+metrics['memory_tool_calls'],business_tool_calls=ctx.calls,document_revision=ctx.doc_hash)

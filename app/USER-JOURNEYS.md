@@ -9,11 +9,11 @@ These journeys check application behavior. Agent evaluations separately check wh
 | Account | What it sees | What it does |
 |---|---|---|
 | Buyer (`buyer`, `buyer2`) | Marketplace catalog and its own orders/returns | Purchases items and requests returns for its delivered items |
-| Seller (`seller`, Cedar & Co.) | Its own listings, order items, fulfillment and settlement | Adjusts its stock; dispatches and marks its items delivered; approves or receives returns |
+| Seller (`seller`: Cedar & Co.; `seller2`: Northstar Goods) | Its own listings, order items, fulfillment and settlement | Adjusts its stock; dispatches and marks its items delivered; approves or receives returns |
 | Operator (`operator`) | All sellers' catalog, orders, fulfillment and settlements; support workspace | Performs seller operations across sellers; simulates refunds/payouts; advances demo clock; investigates through support chat |
 | Support (`support`) | Business records across sellers and support workspace | Investigates with read-only tools; cannot dispatch, refund, release payouts or change stock |
 
-Operator is the demo's business administrator, not a separate infrastructure super-admin. Product/listing creation and seller onboarding are deferred. Adjust stock changes the quantity of an existing listing, not its product definition. Only Cedar has a seeded seller login; use operator for Northstar or Everyday Studio items.
+Operator is the demo's business administrator, not a separate infrastructure super-admin. Product/listing creation and seller onboarding are deferred. Adjust stock changes the quantity of an existing listing, not its product definition. Cedar & Co. and Northstar Goods have separate seeded seller logins; use operator for Everyday Studio items.
 
 One order can contain items from several sellers. Fulfillment and payout allocations attach to individual order items, which can have quantity greater than one. Seller balances aggregate those allocations; they are not themselves individual payout instructions.
 

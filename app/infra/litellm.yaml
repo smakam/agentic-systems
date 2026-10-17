@@ -25,6 +25,12 @@ model_list:
       timeout: 180
       api_key: os.environ/ANTHROPIC_API_KEY
 litellm_settings:
+  cache: true
+  cache_params:
+    type: local
+    mode: default_off
+    ttl: 120
+    namespace: marketplace-test-cache
   callbacks: [gateway_audit.provider_input_audit]
   drop_params: false
   request_timeout: 60

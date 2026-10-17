@@ -24,6 +24,7 @@ services:
       OPENAI_MODEL: openai/gpt-5.4-2026-03-05
       LITELLM_MASTER_KEY: sk-marketplace-local
       DATABASE_URL: postgresql://litellm:litellm-local@postgres:5432/litellm
+      STORE_MODEL_IN_DB: "True"
       PRESIDIO_ANALYZER_API_BASE: http://presidio-analyzer:3000
       PRESIDIO_ANONYMIZER_API_BASE: http://presidio-anonymizer:3000
     depends_on:

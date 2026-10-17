@@ -117,9 +117,9 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Learning objective:** Explain model capability, cost and latency, and how a gateway centralizes access through aliases, scoped keys and workload attribution.
 
-**Demo and learner practice:** Swap a model behind an alias while holding questions and fixtures fixed. Inspect correctness, tool calls, usage, estimated cost and latency. Explain retries, fallbacks, budgets and caching as capabilities; distinguish gateway response caching from provider prompt caching.
+**Demo and learner practice:** Swap a model behind an alias while holding questions and fixtures fixed. The instructor can now use the Test workspace Support model mapping selector: it changes the actual database-managed `support-model-test` definition while fixed Test Support/Operator keys retain only that alias plus embedding. Main support remains separate. Tour virtual keys, models, guardrails and observability before the before/after question; restore GPT-5.4 afterward. Learner practice uses the same Test UI; the additional alias task uses LiteLLM Playground and the optional response-cache task uses the Test checkbox. Cache controls are only toured during the instructor demo, not exercised hands-on. Inspect correctness, tool calls, usage, estimated cost and latency. Explain retries, fallbacks, budgets and caching as capabilities; distinguish gateway response caching from provider prompt caching.
 
-**Workspace:** Dedicated CLI/API lab: backend http://127.0.0.1:58006/, gateway http://localhost:4006/, market_test in the separate course-ch6-db container. Use app/scripts/chapter-06-lab.py; this is not the normal Test workspace. Langfuse: http://localhost:3000.
+**Workspace:** Normal Test UI http://127.0.0.1:5179/, database market_test; LiteLLM http://localhost:4000/ui/ for alias creation and Playground; Langfuse http://localhost:3000. No additional application or database is required. Record the slide walkthrough and instructor demo separately; leave response caching Off outside the optional learner comparison.
 
 **Materials:** [Exercise](exercises/model-and-gateway/exercise.md) · [Answers](exercises/model-and-gateway/solutions/answers.md)
 
