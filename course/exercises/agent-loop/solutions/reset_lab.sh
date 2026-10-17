@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Run from repository root, after stopping both Chapter 11 lab services.
 set -euo pipefail
-compose=(docker compose -f app/compose.yaml -f app/compose.ch11.yaml --profile chapter11)
+compose=(docker compose -f app/compose.yaml -f app/compose.course-agent-loop.yaml --profile chapter11)
 for service in ch11-backend ch11-frontend; do
   if [[ -n "$("${compose[@]}" ps -q --status running "$service")" ]]; then
     echo "Stop Chapter 11 lab services before reset." >&2

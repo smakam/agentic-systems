@@ -1,6 +1,7 @@
-"""Chapter 11 controls, restricted to an explicitly enabled disposable database."""
+"""Agent Loop controls, restricted to an explicitly enabled disposable database."""
 import json
 import os
+from .course_config import setting
 from urllib.parse import urlparse
 
 MODES = ('normal', 'tool_error', 'turn_limit')
@@ -8,14 +9,14 @@ MODES = ('normal', 'tool_error', 'turn_limit')
 def enabled():
     from .db import engine
     reader = urlparse(os.getenv('READ_DATABASE_URL', '')).path.lstrip('/')
-    return (os.getenv('CH11_LOOP_LAB') == 'true'
+    return (setting('AGENT_LOOP_LAB') == 'true'
             and engine.url.database == 'ch11_loop_lab' and reader == 'ch11_loop_lab')
 
 def validate(mode, runtime='sdk'):
     if mode not in MODES:
         raise ValueError('Unknown agent-loop mode')
     if mode != 'normal' and (not enabled() or runtime != 'sdk'):
-        raise ValueError('Agent-loop experiments require the Chapter 11 SDK lab')
+        raise ValueError('Agent-loop experiments require the Agent Loop SDK lab')
 
 def inject_once(server):
     """Fail the first SQL attempt before execution; retain subsequent real MCP calls."""

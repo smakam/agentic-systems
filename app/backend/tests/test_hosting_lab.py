@@ -8,10 +8,10 @@ TOKEN = 'test-hosting-key-0123456789abcdef0123456789'
 
 @pytest.fixture(autouse=True)
 def config(monkeypatch):
-    for key, value in {'CH12_AGENT_API_KEY': TOKEN, 'SDK_MCP_API_KEY': TOKEN,
+    for key, value in {'HOSTED_AGENT_API_KEY': TOKEN, 'SDK_MCP_API_KEY': TOKEN,
                        'SDK_MCP_URL': 'https://tools.example.test/mcp',
-                       'OPENAI_API_KEY': 'test-only', 'CH12_HOSTING_LAB': 'true',
-                       'CH12_AGENT_URL': 'https://agent.example.test',
+                       'OPENAI_API_KEY': 'test-only', 'HOSTING_LAB': 'true',
+                       'HOSTED_AGENT_URL': 'https://agent.example.test',
                        'DATABASE_URL': 'postgresql://writer@local/ch12_hosting_lab',
                        'READ_DATABASE_URL': 'postgresql://reader@local/ch12_hosting_lab'}.items():
         monkeypatch.setenv(key, value)

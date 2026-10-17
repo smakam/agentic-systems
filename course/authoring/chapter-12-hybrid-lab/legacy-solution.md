@@ -1,6 +1,6 @@
 # Worked solution
 
-Use the commands in ../exercise.md with your own Cloud project and credentials. The reference implementation is `app/backend/marketplace/hosting_worker.py`, `hosting_client.py`, `app/cloud/Dockerfile.hosting-lab`, `app/compose.ch12.yaml` and the scripts here.
+Use the commands in ../exercise.md with your own Cloud project and credentials. The reference implementation is `app/backend/marketplace/hosting_worker.py`, `hosting_client.py`, `app/cloud/Dockerfile.hosting-lab`, `app/compose.course-runtime-and-hosting.yaml` and the scripts here.
 
 The worker owns the Agents SDK loop and calls OpenAI directly; HTTP MCP owns tool execution, snapshot and evidence contracts. The local authenticated backend owns history and saved runs. Its opt-in adapter refuses any database other than `ch12_hosting_lab`. The worker exposes no database credentials or connections. The cloud host provides one CPU, 1 GiB memory, 180-second request deadline, concurrency one and zero-to-one instances; the inner loop has eight turns and a 150-second deadline. A completed answer must cite retained current evidence and confirm investigation cleanup. Hosting does not imply durable execution.
 

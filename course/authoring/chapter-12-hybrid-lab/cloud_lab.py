@@ -18,23 +18,23 @@ def google(args,stdin=None):
       'gcr.io/google.com/cloudsdktool/google-cloud-cli:stable','gcloud',*args,'--quiet'],stdin)
 def finish_deploy(a,record,e,state,envfile):
     service=record['service']
-    bindings=','.join([f'CH12_AGENT_API_KEY={service}-agent:latest',f'SDK_MCP_API_KEY={service}-mcp:latest',f'OPENAI_API_KEY={a.openai_secret}:latest'])
+    bindings=','.join([f'HOSTED_AGENT_API_KEY={service}-agent:latest',f'SDK_MCP_API_KEY={service}-mcp:latest',f'OPENAI_API_KEY={a.openai_secret}:latest'])
     result=json.loads(google(['run','deploy',service,'--project',a.project,'--region',a.region,'--image',record['image'],
        '--service-account',a.service_account,'--allow-unauthenticated','--cpu','1','--memory','1Gi','--timeout','180',
-       '--concurrency','1','--min-instances','0','--max-instances','1','--set-env-vars','SDK_MCP_URL='+a.mcp_url+',CH12_MODEL=gpt-5.4-2026-03-05',
+       '--concurrency','1','--min-instances','0','--max-instances','1','--set-env-vars','SDK_MCP_URL='+a.mcp_url+',HOSTED_AGENT_MODEL=gpt-5.4-2026-03-05',
        '--set-secrets',bindings,'--format','json']))
     record['url']=result['status']['url'];state.write_text(json.dumps(record,indent=2))
-    e['CH12_AGENT_URL']=record['url'];write_env(envfile,e);print(json.dumps(record,indent=2))
+    e['HOSTED_AGENT_URL']=record['url'];write_env(envfile,e);print(json.dumps(record,indent=2))
 def main():
     p=argparse.ArgumentParser();p.add_argument('action',choices=['prepare','deploy','cleanup'])
     p.add_argument('--project');p.add_argument('--region',default='asia-south1');p.add_argument('--repository',default='marketplace')
     p.add_argument('--service-account');p.add_argument('--mcp-url');p.add_argument('--openai-secret');p.add_argument('--resume',action='store_true');a=p.parse_args()
-    state=APP/'.ch12-cloud-state.json';envfile=APP/'.ch12.env'
+    state=APP/'.course-runtime-and-hosting-cloud-state.json';envfile=APP/'.course-runtime-and-hosting.env'
     if a.action=='prepare':
-        if envfile.exists():raise SystemExit('Existing .ch12.env preserved; reuse its keys.')
-        write_env(envfile,{'CH12_AGENT_API_KEY':secrets.token_urlsafe(32),'REMOTE_MCP_API_KEY':secrets.token_urlsafe(32),
-          'REMOTE_MCP_ALLOWED_HOSTS':'localhost:*,127.0.0.1:*','CH12_AGENT_URL':'https://not-deployed.invalid'})
-        print('Created private lab credentials in app/.ch12.env');return
+        if envfile.exists():raise SystemExit('Existing .course-runtime-and-hosting.env preserved; reuse its keys.')
+        write_env(envfile,{'HOSTED_AGENT_API_KEY':secrets.token_urlsafe(32),'REMOTE_MCP_API_KEY':secrets.token_urlsafe(32),
+          'REMOTE_MCP_ALLOWED_HOSTS':'localhost:*,127.0.0.1:*','HOSTED_AGENT_URL':'https://not-deployed.invalid'})
+        print('Created private lab credentials in app/.course-runtime-and-hosting.env');return
     if a.action=='cleanup':
         s=json.loads(state.read_text())
         existing=google(['run','services','list','--region',s['region'],'--project',s['project'],
@@ -67,7 +67,7 @@ def main():
     e=env_read(envfile);e['REMOTE_MCP_ALLOWED_HOSTS']='localhost:*,127.0.0.1:*,'+url.hostname;write_env(envfile,e)
     service='ch12-hosting-'+secrets.token_hex(4);image=f'{a.region}-docker.pkg.dev/{a.project}/{a.repository}/{service}:v1'
     # Reuse an already provisioned cloud provider secret; never upload laptop provider keys.
-    secret_values={service+'-agent':e['CH12_AGENT_API_KEY'],service+'-mcp':e['REMOTE_MCP_API_KEY']}
+    secret_values={service+'-agent':e['HOSTED_AGENT_API_KEY'],service+'-mcp':e['REMOTE_MCP_API_KEY']}
     record={'service':service,'project':a.project,'region':a.region,'image':image,'secrets':[],'cleaned_up':False}
     state.write_text(json.dumps(record,indent=2))
     token=google(['auth','application-default','print-access-token']).strip()

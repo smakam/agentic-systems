@@ -9,10 +9,10 @@ dist/
 .DS_Store
 
 .remote-mcp.env
-.ch12.env
-.ch12-cloud-state.json
-.ch12-tunnel.log
-.ch12-tunnel.pid
+.course-runtime-and-hosting.env
+.course-runtime-and-hosting-cloud-state.json
+.course-runtime-and-hosting-tunnel.log
+.course-runtime-and-hosting-tunnel.pid
 .remote-mcp/
 
 infra/litellm.lakera.generated.yaml
@@ -29,3 +29,9 @@ test-output/
 
 # Local provider routing generated from the selected setup option
 infra/litellm.provider.generated.yaml
+
+# Keep former private filenames ignored during migration.
+.ch12.env
+.ch12-cloud-state.json
+.ch12-tunnel.log
+.ch12-tunnel.pid

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-compose=(docker compose -f app/compose.yaml -f app/compose.ch12.yaml --profile chapter12)
+compose=(docker compose -f app/compose.yaml -f app/compose.course-runtime-and-hosting.yaml --profile chapter12)
 for service in ch12-backend ch12-frontend ch12-mcp; do
   if [[ -n "$("${compose[@]}" ps -q --status running "$service")" ]]; then
     echo 'Stop Chapter 12 services before resetting the disposable copy.' >&2

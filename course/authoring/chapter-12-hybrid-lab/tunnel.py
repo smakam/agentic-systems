@@ -4,7 +4,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4];APP=ROOT/'app'
 def main():
     p=argparse.ArgumentParser();p.add_argument('action',choices=['start','stop']);a=p.parse_args()
-    pidfile=APP/'.ch12-tunnel.pid';log=APP/'.ch12-tunnel.log'
+    pidfile=APP/'.course-runtime-and-hosting-tunnel.pid';log=APP/'.course-runtime-and-hosting-tunnel.log'
     if a.action=='stop':
         if pidfile.exists():
             pid=int(pidfile.read_text())
@@ -22,7 +22,7 @@ def main():
     for _ in range(60):
         found=re.search(r'https://[a-z0-9-]+\.trycloudflare\.com',log.read_text())
         if found:print(found.group()+'/mcp');return
-        if proc.poll() is not None:raise SystemExit('Tunnel exited; inspect app/.ch12-tunnel.log.')
+        if proc.poll() is not None:raise SystemExit('Tunnel exited; inspect app/.course-runtime-and-hosting-tunnel.log.')
         time.sleep(.5)
     raise SystemExit('No tunnel URL yet; inspect the log. A running PID is recorded for cleanup.')
 if __name__=='__main__':main()

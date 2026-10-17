@@ -1,27 +1,28 @@
-"""Opt-in Chapter 12 local chat adapter. History and answers stay in local PG."""
+"""Opt-in Runtime and Hosting local chat adapter. History and answers stay in local PG."""
 import os
+from .course_config import setting
 import time
 from datetime import datetime, timezone
 from urllib.parse import urlsplit
 import httpx
 
 def enabled():
-    return bool(os.getenv('CH12_AGENT_URL'))
+    return bool(setting('HOSTED_AGENT_URL'))
 
 def validate():
     if not enabled(): return
-    if os.getenv('CH12_HOSTING_LAB') != 'true':
-        raise ValueError('Remote agent execution requires the explicit Chapter 12 lab')
+    if setting('HOSTING_LAB') != 'true':
+        raise ValueError('Remote agent execution requires the explicit Runtime and Hosting lab')
     for name in ('DATABASE_URL', 'READ_DATABASE_URL'):
         if urlsplit(os.getenv(name, '')).path != '/ch12_hosting_lab':
-            raise ValueError('Chapter 12 requires matching disposable lab databases')
-    url = urlsplit(os.environ['CH12_AGENT_URL'])
+            raise ValueError('Runtime and Hosting requires matching disposable lab databases')
+    url = urlsplit(setting('HOSTED_AGENT_URL'))
     if (url.scheme not in ('https', 'http') or not url.hostname or url.username
             or url.password or url.query or url.fragment
             or (url.scheme == 'http' and url.hostname not in ('localhost', '127.0.0.1'))):
         raise ValueError('Remote agent requires HTTPS or loopback for isolated tests')
-    if len(os.getenv('CH12_AGENT_API_KEY', '')) < 32:
-        raise ValueError('Chapter 12 agent credential is missing')
+    if len(setting('HOSTED_AGENT_API_KEY', '')) < 32:
+        raise ValueError('Runtime and Hosting agent credential is missing')
 
 async def answer(conversation_id, question):
     validate()
@@ -33,8 +34,8 @@ async def answer(conversation_id, question):
     history = await session.get_items()
     try:
         async with httpx.AsyncClient(timeout=175, follow_redirects=False) as client:
-            response = await client.post(os.environ['CH12_AGENT_URL'].rstrip('/') + '/investigate',
-                headers={'x-api-key': os.environ['CH12_AGENT_API_KEY']},
+            response = await client.post(setting('HOSTED_AGENT_URL').rstrip('/') + '/investigate',
+                headers={'x-api-key': setting('HOSTED_AGENT_API_KEY')},
                 json={'question': question, 'history': history})
     except httpx.HTTPError as exc:
         raise RuntimeError('Hosted agent connection failed; check the lab endpoint') from exc

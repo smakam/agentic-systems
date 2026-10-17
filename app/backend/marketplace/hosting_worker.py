@@ -1,4 +1,4 @@
-"""Chapter 12 stateless agent host. No database, gateway or personal memory.
+"""Runtime and Hosting stateless agent host. No database, gateway or personal memory.
 
 The authenticated local chat backend owns history; this service receives a bounded
 SDK transcript and returns the new items plus retained HTTP MCP evidence.
@@ -7,6 +7,7 @@ import asyncio
 import hmac
 import json
 import os
+from .course_config import setting
 import re
 import logging
 import traceback
@@ -52,9 +53,9 @@ class Question(BaseModel):
         return self
 
 def configuration():
-    token = os.getenv('CH12_AGENT_API_KEY', '')
+    token = setting('HOSTED_AGENT_API_KEY', '')
     if len(token) < 32:
-        raise RuntimeError('CH12_AGENT_API_KEY must contain at least 32 characters')
+        raise RuntimeError('HOSTED_AGENT_API_KEY must contain at least 32 characters')
     url = os.getenv('SDK_MCP_URL', '')
     key = os.getenv('SDK_MCP_API_KEY', '')
     # Validate with the shared HTTPS-only adapter before accepting traffic.
@@ -64,7 +65,7 @@ def configuration():
     return token
 
 async def authenticate(x_api_key: str = Header(default='')):
-    expected = os.getenv('CH12_AGENT_API_KEY', '')
+    expected = setting('HOSTED_AGENT_API_KEY', '')
     if len(expected) < 32 or not hmac.compare_digest(x_api_key, expected):
         raise HTTPException(401, 'Unauthorized')
 
@@ -84,10 +85,10 @@ async def investigate(body, *, server_factory=InvestigationHTTPServer, runner=Ru
             try:
                 await server.begin()
                 snapshot = json.loads(json.dumps(server.snapshot, default=str))
-                agent = Agent(name='Chapter 12 hosted investigator',
+                agent = Agent(name='Runtime and Hosting hosted investigator',
                     instructions=INSTRUCTIONS + '\nCurrent snapshot: ' + json.dumps(snapshot)
                         + '\nDocument revision: ' + server.doc_hash,
-                    model=OpenAIResponsesModel(model=os.getenv('CH12_MODEL', 'gpt-5.4'), openai_client=client),
+                    model=OpenAIResponsesModel(model=setting('HOSTED_AGENT_MODEL', 'gpt-5.4'), openai_client=client),
                     mcp_servers=[server], model_settings=ModelSettings(
                         parallel_tool_calls=False, max_tokens=4096, reasoning={'effort': 'low'}))
                 inputs = [*body.history, {'role': 'user', 'content': body.question}]
@@ -102,7 +103,7 @@ async def investigate(body, *, server_factory=InvestigationHTTPServer, runner=Ru
                 response = {'status': 'completed', 'answer': output, 'items': new_items,
                     'evidence': evidence, 'revision': snapshot['revision'],
                     'metrics': {'model_requests': hooks.models, 'actual_tool_invocations': hooks.tools,
-                        'model': os.getenv('CH12_MODEL', 'gpt-5.4'), 'model_route': 'direct_openai',
+                        'model': setting('HOSTED_AGENT_MODEL', 'gpt-5.4'), 'model_route': 'direct_openai',
                         'execution_host': 'remote_agent', 'tool_transport': 'mcp_http',
                         'mcp_hostname': urlsplit(os.environ['SDK_MCP_URL']).hostname,
                         'document_revision': server.doc_hash, 'snapshot': snapshot}}
@@ -121,7 +122,7 @@ async def lifespan(app):
 app = FastAPI(lifespan=lifespan)
 
 @app.get('/health')
-def health(): return {'status': 'ok', 'component': 'chapter12-agent', 'model_route': 'direct_openai'}
+def health(): return {'status': 'ok', 'component': 'hosted-agent', 'model_route': 'direct_openai'}
 
 @app.post('/investigate', dependencies=[Depends(authenticate)])
 async def ask(body: Question):

@@ -15,10 +15,10 @@ Use the existing app setup, Docker, a running local gateway and PostgreSQL, and 
 ## Run from the repository root
 
 ```sh
-docker compose -f app/compose.yaml -f app/compose.ch12.yaml --profile chapter12 stop ch12-backend ch12-frontend ch12-mcp
+docker compose -f app/compose.yaml -f app/compose.course-runtime-and-hosting.yaml --profile chapter12 stop ch12-backend ch12-frontend ch12-mcp
 python3 course/exercises/runtime-and-hosting/solutions/cloud_lab.py prepare
 bash course/exercises/runtime-and-hosting/solutions/reset_lab.sh
-docker compose -f app/compose.yaml -f app/compose.ch12.yaml --profile chapter12 up -d --no-deps ch12-mcp
+docker compose -f app/compose.yaml -f app/compose.course-runtime-and-hosting.yaml --profile chapter12 up -d --no-deps ch12-mcp
 python3 course/exercises/runtime-and-hosting/solutions/tunnel.py start
 ```
 
@@ -26,11 +26,11 @@ Keep the returned tunnel URL. Deploy with your actual project, region, repositor
 
 ```sh
 python3 course/exercises/runtime-and-hosting/solutions/cloud_lab.py deploy --project YOUR_PROJECT --region YOUR_REGION --repository YOUR_REPOSITORY --service-account YOUR_SERVICE_ACCOUNT --openai-secret YOUR_PROVIDER_SECRET --mcp-url YOUR_TUNNEL_MCP_URL
-docker compose -f app/compose.yaml -f app/compose.ch12.yaml --profile chapter12 up -d --no-deps --force-recreate ch12-mcp
-docker compose -f app/compose.yaml -f app/compose.ch12.yaml --profile chapter12 up -d --no-deps ch12-backend ch12-frontend
+docker compose -f app/compose.yaml -f app/compose.course-runtime-and-hosting.yaml --profile chapter12 up -d --no-deps --force-recreate ch12-mcp
+docker compose -f app/compose.yaml -f app/compose.course-runtime-and-hosting.yaml --profile chapter12 up -d --no-deps ch12-backend ch12-frontend
 ```
 
-Deployment supplies an application API key through Secret Manager. The public HTTPS endpoint rejects unauthenticated investigation calls; its health endpoint contains no secrets. `.ch12.env` is private and ignored by Git. Recreating MCP is necessary because deployment records the allowed tunnel hostname. Keep laptop and tunnel running throughout. If a deployment fails after creating resources, inspect the recorded state and use `deploy --resume` with the same arguments rather than generating another deployment.
+Deployment supplies an application API key through Secret Manager. The public HTTPS endpoint rejects unauthenticated investigation calls; its health endpoint contains no secrets. `.course-runtime-and-hosting.env` is private and ignored by Git. Recreating MCP is necessary because deployment records the allowed tunnel hostname. Keep laptop and tunnel running throughout. If a deployment fails after creating resources, inspect the recorded state and use `deploy --resume` with the same arguments rather than generating another deployment.
 
 Open http://localhost:5192, sign in as the supplied support demo user, select Support, SDK runtime, memory off, and create a new conversation. Ask “Why is the payout for order-2 held?” then “What delivery condition must change before that payout can be released?” Inspect the evidence and metrics: `direct_openai`, `remote_agent`, `mcp_http`, model/tool counts and confirmed investigation cleanup. The lab uses a compact dedicated prompt; it is a hosting exercise, not a quality benchmark against the full baseline.
 
@@ -47,7 +47,7 @@ Submit the three-component placement diagram, resource/timeout/concurrency setti
 ```sh
 python3 course/exercises/runtime-and-hosting/solutions/cloud_lab.py cleanup
 python3 course/exercises/runtime-and-hosting/solutions/tunnel.py stop
-docker compose -f app/compose.yaml -f app/compose.ch12.yaml --profile chapter12 stop ch12-backend ch12-frontend ch12-mcp
+docker compose -f app/compose.yaml -f app/compose.course-runtime-and-hosting.yaml --profile chapter12 stop ch12-backend ch12-frontend ch12-mcp
 bash course/exercises/runtime-and-hosting/solutions/reset_lab.sh
 ```
 

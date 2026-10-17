@@ -37,7 +37,7 @@ After your offline checks pass, run your `starter.py` implementation on the supp
 ### Execute your implementation
 
 ```bash
-docker compose -f app/compose.yaml -f app/compose.ch11.yaml --profile chapter11 exec -T ch11-backend python /exercise/solutions/live_adapters.py --implementation starter --output /tmp/ch11-starter-loop.json
+docker compose -f app/compose.yaml -f app/compose.course-agent-loop.yaml --profile chapter11 exec -T ch11-backend python /exercise/solutions/live_adapters.py --implementation starter --output /tmp/ch11-starter-loop.json
 ```
 
 The adapter supplies the question, model client and MCP connection. Your loop decides when to request the model, execute tools, return tool results and stop. The output contains the final answer, model/tool events, usage and retained evidence. The `--output` location is inside the `ch11-backend` container, not yet on your laptop.
@@ -45,7 +45,7 @@ The adapter supplies the question, model client and MCP connection. Your loop de
 ### Copy the transcript to your laptop
 
 ```bash
-docker compose -f app/compose.yaml -f app/compose.ch11.yaml --profile chapter11 cp ch11-backend:/tmp/ch11-starter-loop.json /tmp/ch11-starter-loop.json
+docker compose -f app/compose.yaml -f app/compose.course-agent-loop.yaml --profile chapter11 cp ch11-backend:/tmp/ch11-starter-loop.json /tmp/ch11-starter-loop.json
 ```
 
 After the copy succeeds, open `/tmp/ch11-starter-loop.json` on your laptop in VS Code or another JSON viewer. It is a different file from the container path, even though both paths have the same spelling. Save a lasting copy in your chosen results folder before deleting temporary files.

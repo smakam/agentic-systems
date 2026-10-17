@@ -4,11 +4,11 @@ services:
     image: marketplace-lab-backend
     profiles: [chapter12]
     env_file:
-      - path: .ch12.env
+      - path: .course-runtime-and-hosting.env
         required: false
     ports: !override ["127.0.0.1:58012:8000"]
     environment:
-      CH12_HOSTING_LAB: 'true'
+      HOSTING_LAB: 'true'
       INITIALIZE_ON_STARTUP: 'false'
       DATABASE_URL: postgresql+psycopg://market:market-local@postgres:5432/ch12_hosting_lab
       READ_DATABASE_URL: postgresql://agent_reader:reader-local@postgres:5432/ch12_hosting_lab
@@ -21,13 +21,13 @@ services:
     depends_on: {ch12-backend: {condition: service_healthy}}
     ports: ["127.0.0.1:5192:80"]
     volumes:
-      - ./infra/nginx.ch12.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./infra/nginx.course-runtime-and-hosting.conf:/etc/nginx/conf.d/default.conf:ro
   ch12-mcp:
     image: marketplace-lab-backend
     profiles: [chapter12]
     command: [python, -m, marketplace.remote_mcp]
     env_file:
-      - path: .ch12.env
+      - path: .course-runtime-and-hosting.env
         required: false
     environment:
       READ_DATABASE_URL: postgresql://agent_reader:reader-local@postgres:5432/ch12_hosting_lab

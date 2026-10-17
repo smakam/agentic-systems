@@ -4,7 +4,7 @@ set -eu
 export COMPOSE_IGNORE_ORPHANS=true
 cd "$(dirname "$0")/.."
 compose() {
-  docker compose -f compose.yaml -f compose.ch11.yaml -f compose.ch12.yaml --profile chapter11 --profile chapter12 "$@"
+  docker compose -f compose.yaml -f compose.course-agent-loop.yaml -f compose.course-runtime-and-hosting.yaml --profile chapter11 --profile chapter12 "$@"
 }
 new_backends=""
 for pair in ch11_loop_lab:ch11-backend ch12_hosting_lab:ch12-backend; do
@@ -30,7 +30,7 @@ compose restart ch11-frontend ch12-frontend
 # Start HTTP MCP only when its existing authentication configuration is ready.
 if python3 - <<'CHECK_CONFIG'
 from pathlib import Path
-p=Path('.ch12.env')
+p=Path('.course-runtime-and-hosting.env')
 values={}
 if p.exists():
     for line in p.read_text().splitlines():

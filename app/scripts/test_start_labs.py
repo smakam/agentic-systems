@@ -37,7 +37,7 @@ class StartLabsTests(unittest.TestCase):
             shutil.copy(SCRIPT,app/'scripts/start-labs.sh')
             docker=app/'bin/docker';docker.write_text(FAKE_DOCKER);docker.chmod(0o755)
             state=app/'databases.json';state.write_text(json.dumps(databases));log=app/'calls.jsonl'
-            if key:(app/'.ch12.env').write_text('REMOTE_MCP_API_KEY='+'a'*32+'\n')
+            if key:(app/'.course-runtime-and-hosting.env').write_text('REMOTE_MCP_API_KEY='+'a'*32+'\n')
             env={**os.environ,'PATH':str(app/'bin')+os.pathsep+os.environ['PATH'],'DOCKER_LOG':str(log),'FAKE_DATABASES':str(state),'FAIL_CREATE':'yes' if fail else 'no'}
             result=subprocess.run(['sh',str(app/'scripts/start-labs.sh')],env=env,capture_output=True,text=True)
             calls=[json.loads(line) for line in log.read_text().splitlines()]
