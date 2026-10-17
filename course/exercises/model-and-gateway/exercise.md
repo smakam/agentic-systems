@@ -71,6 +71,8 @@ The lab adds `learner-model` mapped to GPT-5.4 and sends a small “READY” req
 
 ### 2. Test gateway response caching (optional advanced challenge)
 
+**Before you finish: disable response caching and confirm that the next request makes a fresh model call. Do not leave caching enabled after this exercise.**
+
 Use only the isolated lab; do not enable caching on the normal course gateway.
 
 ```sh
