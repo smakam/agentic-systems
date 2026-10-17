@@ -1,25 +1,25 @@
 # Learner exercises
 
-Open the exercise for your chapter first. Its workspace/setup section identifies the correct UI, database or command-line lab. Complete only the tasks in that document.
+Open the exercise for your topic first. Its workspace/setup section identifies the correct UI, database or command-line lab. Complete only the tasks in that document.
 
 Solutions use **solutions/answers.md** consistently. Instructor guides are for demonstration; fixture, implementation, evidence and verification files are supporting material, not extra assignments.
 
-| Chapter | Start here |
+| Topic | Start here |
 |---|---|
-| chapter-05-first-agent | [Exercise](chapter-05-first-agent/exercise.md) · [Answers](chapter-05-first-agent/solutions/answers.md) |
-| chapter-06-model-and-gateway | [Exercise](chapter-06-model-and-gateway/exercise.md) · [Answers](chapter-06-model-and-gateway/solutions/answers.md) |
-| chapter-07-prompt-and-context | [Exercise](chapter-07-prompt-and-context/exercise.md) · [Answers](chapter-07-prompt-and-context/solutions/answers.md) |
-| chapter-08-tools-and-mcp | [Exercise](chapter-08-tools-and-mcp/exercise.md) · [Answers](chapter-08-tools-and-mcp/solutions/answers.md) |
-| chapter-09-knowledge-and-retrieval | [Exercise](chapter-09-knowledge-and-retrieval/exercise.md) · [Answers](chapter-09-knowledge-and-retrieval/solutions/answers.md) |
-| chapter-10-session-state | [Exercise](chapter-10-session-state/exercise.md) · [Answers](chapter-10-session-state/solutions/answers.md) |
-| chapter-11-agent-loop | [Exercise](chapter-11-agent-loop/exercise.md) · [Answers](chapter-11-agent-loop/solutions/answers.md) |
-| chapter-12-runtime-and-hosting | [Exercise](chapter-12-runtime-and-hosting/exercise.md) · [Answers](chapter-12-runtime-and-hosting/solutions/answers.md) |
-| chapter-13-observability | [Exercise](chapter-13-observability/exercise.md) · [Answers](chapter-13-observability/solutions/answers.md) |
-| chapter-14-evaluation | [Exercise](chapter-14-evaluation/exercise.md) · [Answers](chapter-14-evaluation/solutions/answers.md) · [Instructor guide](chapter-14-evaluation/instructor-demo.md) |
-| chapter-15-guardrails-security | [Exercise](chapter-15-guardrails-security/exercise.md) · [Answers](chapter-15-guardrails-security/solutions/answers.md) · [Instructor guide](chapter-15-guardrails-security/instructor-demo.md) |
-| chapter-16-model-routing | [Exercise](chapter-16-model-routing/exercise.md) · [Answers](chapter-16-model-routing/solutions/answers.md) · [Instructor guide](chapter-16-model-routing/instructor-demo.md) |
-| chapter-17-agent-design-patterns | [Exercise](chapter-17-agent-design-patterns/exercise.md) · [Answers](chapter-17-agent-design-patterns/solutions/answers.md) · [Instructor guide](chapter-17-agent-design-patterns/instructor-demo.md) |
-| chapter-18-short-and-long-term-memory | [Exercise](chapter-18-short-and-long-term-memory/exercise.md) · [Answers](chapter-18-short-and-long-term-memory/solutions/answers.md) · [Instructor guide](chapter-18-short-and-long-term-memory/instructor-demo.md) · Test workspace: http://127.0.0.1:5179/ (`market_test`, Support, OpenAI Agents SDK) |
-| chapter-19-google-agent-platform | [Setup](chapter-19-google-agent-platform/setup-guide.md) · [Instructor guide](chapter-19-google-agent-platform/instructor-demo.md) · [Exercise](chapter-19-google-agent-platform/exercise.md) · [Answers](chapter-19-google-agent-platform/solutions/answers.md) · Google Playground: Support Agent Basics; optional full-cloud integration |
-| Chapter 20: Lyzr Agent Studio | [Setup](chapter-20-lyzr-agent-studio/setup-guide.md) · [Instructor guide](chapter-20-lyzr-agent-studio/instructor-demo.md) · [Exercise](chapter-20-lyzr-agent-studio/exercise.md) · [Answers](chapter-20-lyzr-agent-studio/solutions/answers.md) · Native Playground; optional full-cloud integration |
-| Chapter 21: Choosing an Agent Platform | [Exercise and worksheet](chapter-21-choosing-an-agent-platform/exercise.md) · [Separate reference answers](chapter-21-choosing-an-agent-platform/solutions/answers.md) · No new deployment required |
+| First agent | [Exercise](first-agent/exercise.md) · [Answers](first-agent/solutions/answers.md) |
+| Model and gateway | [Exercise](model-and-gateway/exercise.md) · [Answers](model-and-gateway/solutions/answers.md) |
+| Prompt and context | [Exercise](prompt-and-context/exercise.md) · [Answers](prompt-and-context/solutions/answers.md) |
+| Tools and mcp | [Exercise](tools-and-mcp/exercise.md) · [Answers](tools-and-mcp/solutions/answers.md) |
+| Knowledge and retrieval | [Exercise](knowledge-and-retrieval/exercise.md) · [Answers](knowledge-and-retrieval/solutions/answers.md) |
+| Session state | [Exercise](session-state/exercise.md) · [Answers](session-state/solutions/answers.md) |
+| Agent loop | [Exercise](agent-loop/exercise.md) · [Answers](agent-loop/solutions/answers.md) |
+| Runtime and hosting | [Exercise](runtime-and-hosting/exercise.md) · [Answers](runtime-and-hosting/solutions/answers.md) |
+| Observability | [Exercise](observability/exercise.md) · [Answers](observability/solutions/answers.md) |
+| Evaluation | [Exercise](evaluation/exercise.md) · [Answers](evaluation/solutions/answers.md) · [Instructor guide](evaluation/instructor-demo.md) |
+| Guardrails security | [Exercise](guardrails-security/exercise.md) · [Answers](guardrails-security/solutions/answers.md) · [Instructor guide](guardrails-security/instructor-demo.md) |
+| Model routing | [Exercise](model-routing/exercise.md) · [Answers](model-routing/solutions/answers.md) · [Instructor guide](model-routing/instructor-demo.md) |
+| Agent design patterns | [Exercise](agent-design-patterns/exercise.md) · [Answers](agent-design-patterns/solutions/answers.md) · [Instructor guide](agent-design-patterns/instructor-demo.md) |
+| Short and long term memory | [Exercise](short-and-long-term-memory/exercise.md) · [Answers](short-and-long-term-memory/solutions/answers.md) · [Instructor guide](short-and-long-term-memory/instructor-demo.md) · Test workspace: http://127.0.0.1:5179/ (`market_test`, Support, OpenAI Agents SDK) |
+| Google agent platform | [Setup](google-agent-platform/setup-guide.md) · [Instructor guide](google-agent-platform/instructor-demo.md) · [Exercise](google-agent-platform/exercise.md) · [Answers](google-agent-platform/solutions/answers.md) · Google Playground: Support Agent Basics; optional full-cloud integration |
+| Lyzr Agent Studio | [Setup](lyzr-agent-studio/setup-guide.md) · [Instructor guide](lyzr-agent-studio/instructor-demo.md) · [Exercise](lyzr-agent-studio/exercise.md) · [Answers](lyzr-agent-studio/solutions/answers.md) · Native Playground; optional full-cloud integration |
+| Choosing an Agent Platform | [Exercise and worksheet](choosing-an-agent-platform/exercise.md) · [Separate reference answers](choosing-an-agent-platform/solutions/answers.md) · No new deployment required |

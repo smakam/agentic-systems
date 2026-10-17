@@ -61,7 +61,7 @@ Run [tracking_server.py](tracking_server.py) with the same Python/dependencies a
 For a quick check using the existing Docker backend, run these from the repository root:
 
 ```sh
-docker cp course/exercises/chapter-08-tools-and-mcp/solutions marketplace-lab-backend-1:/tmp/ch8-solutions
+docker cp course/exercises/tools-and-mcp/solutions marketplace-lab-backend-1:/tmp/ch8-solutions
 docker compose -f app/compose.yaml exec -T backend python -c 'import asyncio,json,sys
 from agents.mcp import MCPServerStdio
 async def run():

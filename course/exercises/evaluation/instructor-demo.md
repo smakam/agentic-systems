@@ -88,8 +88,8 @@ These are saved answers imported for code scoring; no model calls are needed. If
 
 ## Learner activity to introduce
 
-Learners complete two tasks: score five supplied answers in a JSON worksheet and upload their human grades; then import three supplied structured answers and use the native evaluator to score them. Show [exercise.md](https://github.com/smakam/agentic-systems/blob/main/course/exercises/chapter-14-evaluation/exercise.md). No learner model calls are required.
+Learners complete two tasks: score five supplied answers in a JSON worksheet and upload their human grades; then import three supplied structured answers and use the native evaluator to score them. Show [exercise.md](https://github.com/smakam/agentic-systems/blob/main/course/exercises/evaluation/exercise.md). No learner model calls are required.
 
 ## Preparation scripts — outside the live demo
 
-[Package instructions](https://github.com/smakam/agentic-systems/tree/main/course/exercises/chapter-14-evaluation) retain the optional preparation commands. The verified-result import copies the saved five Claude grades with model metadata; it does not rerun Claude. The structured importer reuses supplied outputs and lets the native evaluator score them. Keep this preparation separate from the recorded-results walkthrough above.
+[Package instructions](https://github.com/smakam/agentic-systems/tree/main/course/exercises/evaluation) retain the optional preparation commands. The verified-result import copies the saved five Claude grades with model metadata; it does not rerun Claude. The structured importer reuses supplied outputs and lets the native evaluator score them. Keep this preparation separate from the recorded-results walkthrough above.

@@ -23,8 +23,8 @@ A block or denied call can create a review signal. A confirmed false positive ma
 
 ## Sources
 
-- [Support UI results](https://github.com/smakam/agentic-systems/blob/main/course/exercises/chapter-15-guardrails-security/recorded-evidence.md#support-ui-results)
-- [Gateway input audit](https://github.com/smakam/agentic-systems/blob/main/course/exercises/chapter-15-guardrails-security/recorded-evidence.md#gateway-input-audit)
-- [Built-in filters](https://github.com/smakam/agentic-systems/blob/main/course/exercises/chapter-15-guardrails-security/recorded-evidence.md#built-in-filters)
-- [Presidio](https://github.com/smakam/agentic-systems/blob/main/course/exercises/chapter-15-guardrails-security/recorded-evidence.md#presidio)
-- [Lakera](https://github.com/smakam/agentic-systems/blob/main/course/exercises/chapter-15-guardrails-security/recorded-evidence.md#lakera)
+- [Support UI results](https://github.com/smakam/agentic-systems/blob/main/course/exercises/guardrails-security/recorded-evidence.md#support-ui-results)
+- [Gateway input audit](https://github.com/smakam/agentic-systems/blob/main/course/exercises/guardrails-security/recorded-evidence.md#gateway-input-audit)
+- [Built-in filters](https://github.com/smakam/agentic-systems/blob/main/course/exercises/guardrails-security/recorded-evidence.md#built-in-filters)
+- [Presidio](https://github.com/smakam/agentic-systems/blob/main/course/exercises/guardrails-security/recorded-evidence.md#presidio)
+- [Lakera](https://github.com/smakam/agentic-systems/blob/main/course/exercises/guardrails-security/recorded-evidence.md#lakera)

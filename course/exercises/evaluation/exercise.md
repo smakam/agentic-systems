@@ -18,7 +18,7 @@ From the repository root, create the output directory and copy the supplied work
 
 ```sh
 mkdir -p app/results/chapter-14
-cp -n course/exercises/chapter-14-evaluation/fixtures/human-worksheet.json \
+cp -n course/exercises/evaluation/fixtures/human-worksheet.json \
   app/results/chapter-14/human-worksheet.json
 ```
 
@@ -40,7 +40,7 @@ For example, a completed case contains these two fields (choose your own grade a
 ```sh
 docker compose -p marketplace-lab -f app/compose.yaml --profile evaluation \
   run --rm --no-deps \
-  -v "$PWD/course/exercises/chapter-14-evaluation:/exercise:ro" \
+  -v "$PWD/course/exercises/evaluation:/exercise:ro" \
   eval-runner python /exercise/publish_human_reviews.py \
   /results/chapter-14/human-worksheet.json
 ```
@@ -52,7 +52,7 @@ docker compose -p marketplace-lab -f app/compose.yaml --profile evaluation \
 ```sh
 docker compose -p marketplace-lab -f app/compose.yaml --profile evaluation \
   run --rm --no-deps \
-  -v "$PWD/course/exercises/chapter-14-evaluation:/exercise:ro" \
+  -v "$PWD/course/exercises/evaluation:/exercise:ro" \
   eval-runner python /exercise/publish_human_reviews.py \
   /results/chapter-14/human-worksheet.json \
   --publish --run-name chapter14-my-human-review
@@ -71,7 +71,7 @@ Open `fixtures/structured-three.json` in this package. Each item has a question,
 ```sh
 docker compose -p marketplace-lab -f app/compose.yaml --profile evaluation \
   run --rm --no-deps \
-  -v "$PWD/course/exercises/chapter-14-evaluation:/exercise:ro" \
+  -v "$PWD/course/exercises/evaluation:/exercise:ro" \
   eval-runner python /exercise/upload_structured_answers.py \
   --fixture structured-three.json --publish \
   --run-name chapter14-my-structured-review

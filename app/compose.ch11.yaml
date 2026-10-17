@@ -16,7 +16,7 @@ services:
       ALLOWED_ORIGINS: http://localhost:5181,http://127.0.0.1:5181
     volumes:
       - ./backend/marketplace:/app/marketplace:ro
-      - ../course/exercises/chapter-11-agent-loop:/exercise:ro
+      - ../course/exercises/agent-loop:/exercise:ro
   ch11-frontend:
     image: marketplace-lab-frontend
     profiles: [chapter11]

@@ -17,7 +17,7 @@ The instructor project is `marketplace-support` at `http://localhost:3000`. Inst
 
 The last three recordings belong to `chat-ch10-follow-ec25467cea`; inspect conversation metadata, not an assumed native Langfuse Session. The separate history-window example is excluded because its earlier eight-question conversation is not part of this walkthrough.
 
-Saved source records: [Agent Loop results](../../chapter-11-agent-loop/solutions/demo-results.json) and [Session State results](../../chapter-10-session-state/solutions/demo-results-2026-10-10.json). The current reference inventory is [recorded-investigations.json](recorded-investigations.json). The timings above are whole root durations; the app's elapsed values can differ slightly. A single normal/recovery pair is a teaching comparison, not a production benchmark.
+Saved source records: [Agent Loop results](../../agent-loop/solutions/demo-results.json) and [Session State results](../../session-state/solutions/demo-results-2026-10-10.json). The current reference inventory is [recorded-investigations.json](recorded-investigations.json). The timings above are whole root durations; the app's elapsed values can differ slightly. A single normal/recovery pair is a teaching comparison, not a production benchmark.
 
 ## Part 2 — Monitoring interpretation
 

@@ -45,7 +45,7 @@ Use four existing Security demo comparisons. For each case, show the selected se
 4. Select **Built-in privacy (output only)**, start a fresh conversation, and repeat the question.
 5. Inspect the model input and returned answer. Locate any output replacement.
 
-**Expected observation:** if the model emits the email, the post-call filter replaces it with `[EMAIL_REDACTED]`. The input was not masked by this output-only profile. If the model never emits an email, that run does not demonstrate output redaction; explain the limitation and use the [saved output-masking evidence](https://github.com/smakam/agentic-systems/blob/main/course/exercises/chapter-15-guardrails-security/recorded-evidence.md#built-in-filters).
+**Expected observation:** if the model emits the email, the post-call filter replaces it with `[EMAIL_REDACTED]`. The input was not masked by this output-only profile. If the model never emits an email, that run does not demonstrate output redaction; explain the limitation and use the [saved output-masking evidence](https://github.com/smakam/agentic-systems/blob/main/course/exercises/guardrails-security/recorded-evidence.md#built-in-filters).
 
 **Record:** selected profile, whether the input was unchanged, whether output masking was observed, and both trace links.
 
@@ -91,6 +91,6 @@ Use four existing Security demo comparisons. For each case, show the selected se
 
 ## Close with limits
 
-Show saved results instead of adding calls: the [Lakera report](https://github.com/smakam/agentic-systems/blob/main/course/exercises/chapter-15-guardrails-security/recorded-evidence.md#lakera) records a harmless quotation falsely blocked and a forged factual exception allowed; the [built-in report](https://github.com/smakam/agentic-systems/blob/main/course/exercises/chapter-15-guardrails-security/recorded-evidence.md#built-in-filters) records a paraphrase miss; the [Presidio report](https://github.com/smakam/agentic-systems/blob/main/course/exercises/chapter-15-guardrails-security/recorded-evidence.md#presidio) records an email-format miss.
+Show saved results instead of adding calls: the [Lakera report](https://github.com/smakam/agentic-systems/blob/main/course/exercises/guardrails-security/recorded-evidence.md#lakera) records a harmless quotation falsely blocked and a forged factual exception allowed; the [built-in report](https://github.com/smakam/agentic-systems/blob/main/course/exercises/guardrails-security/recorded-evidence.md#built-in-filters) records a paraphrase miss; the [Presidio report](https://github.com/smakam/agentic-systems/blob/main/course/exercises/guardrails-security/recorded-evidence.md#presidio) records an email-format miss.
 
 A gateway block, model refusal, tool rejection and service error are different outcomes. Current run metrics and trace errors support investigation; automated security alerts/response are a proposed design, not configured by this walkthrough. Gateway masking does not sanitize every original history or log.

@@ -48,7 +48,7 @@ Compare four existing UI security controls and explain their enforcement boundar
 
 ## Review two saved control cases
 
-Use the instructor’s supplied [Lakera results](https://github.com/smakam/agentic-systems/blob/main/course/exercises/chapter-15-guardrails-security/recorded-evidence.md#lakera). Explain why the harmless quotation block is a false positive and why allowing the forged factual exception does not validate the claimed payout. No extra model calls are required for this review.
+Use the instructor’s supplied [Lakera results](https://github.com/smakam/agentic-systems/blob/main/course/exercises/guardrails-security/recorded-evidence.md#lakera). Explain why the harmless quotation block is a false positive and why allowing the forged factual exception does not validate the claimed payout. No extra model calls are required for this review.
 
 ## Submit
 

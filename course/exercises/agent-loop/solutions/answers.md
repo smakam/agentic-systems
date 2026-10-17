@@ -15,7 +15,7 @@ Implement [starter.py](../starter.py) using the exercise requirements, or inspec
 ### Check the supplied reference solution
 
 ```bash
-python3 -m unittest discover -s course/exercises/chapter-11-agent-loop/solutions -p test_loop.py
+python3 -m unittest discover -s course/exercises/agent-loop/solutions -p test_loop.py
 ```
 
 This checks `solutions/minimal_loop.py` and should pass.
@@ -23,7 +23,7 @@ This checks `solutions/minimal_loop.py` and should pass.
 ### Check your implementation after completing starter.py
 
 ```bash
-LOOP_IMPLEMENTATION=starter python3 -m unittest discover -s course/exercises/chapter-11-agent-loop/solutions -p test_loop.py
+LOOP_IMPLEMENTATION=starter python3 -m unittest discover -s course/exercises/agent-loop/solutions -p test_loop.py
 ```
 
 This runs the same checks against your implementation. The distributed starter is an unfinished template, so complete it before using this command to verify your work; demonstrating an expected failure is not a separate exercise.

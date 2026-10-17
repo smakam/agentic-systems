@@ -30,8 +30,8 @@ Earlier gateway startup and overlapping-reset attempts were invalidated and excl
 
 ## Evidence
 
-- ../../../course/exercises/chapter-10-session-state/solutions/demo-results-2026-10-10.json — final three demos and captured model inputs.
-- ../../../course/exercises/chapter-10-session-state/solutions/strategy-results-2026-10-10.json — four strategies, summary usage and captured input.
+- ../../../course/exercises/session-state/solutions/demo-results-2026-10-10.json — final three demos and captured model inputs.
+- ../../../course/exercises/session-state/solutions/strategy-results-2026-10-10.json — four strategies, summary usage and captured input.
 - offline-validation-2026-10-10.json — matching fingerprints and actual SDK selector.
 - demo-results-interactive-2026-10-10.json — earlier completed interactive-database run.
 - demo-results-lab-partial-2026-10-10.json — earlier direct-provider credit failure.

@@ -54,7 +54,7 @@ From the repository root, create the disposable local lab database once:
 
 ```sh
 docker compose -f app/compose.yaml exec -T postgres psql -U postgres -d postgres -c 'CREATE DATABASE ch09_rag_lab'
-docker cp course/exercises/chapter-09-knowledge-and-retrieval marketplace-lab-backend-1:/tmp/ch9-lab
+docker cp course/exercises/knowledge-and-retrieval marketplace-lab-backend-1:/tmp/ch9-lab
 docker compose -f app/compose.yaml exec -T backend env CH9_DATABASE_URL=postgresql://postgres:local-bootstrap-only@postgres:5432/ch09_rag_lab python /tmp/ch9-lab/solutions/rag_lab.py --answers --output /tmp/ch9-lab/results.json
 docker cp marketplace-lab-backend-1:/tmp/ch9-lab/results.json /tmp/ch9-results.json
 ```

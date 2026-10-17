@@ -2,7 +2,7 @@
 
 **Complete [app/CLOUD-SETUP.md](../app/CLOUD-SETUP.md) first.** Use your own working cloud marketplace chat/backend, authenticated business MCP service and database/policy store. This guide connects that existing stack to a Lyzr-hosted marketplace agent; it does not repeat infrastructure provisioning.
 
-The required Chapter20 lesson is the separate [Support Agent Basics setup](exercises/chapter-20-lyzr-agent-studio/setup-guide.md), using the supplied fictional TXT and native KB in Playground. Its agent has no business MCP tools and must remain unchanged. Create your own separate marketplace-integration agent and connection; preserve the instructor’s deployed agents and all shared resources.
+The required Chapter20 lesson is the separate [Support Agent Basics setup](exercises/lyzr-agent-studio/setup-guide.md), using the supplied fictional TXT and native KB in Playground. Its agent has no business MCP tools and must remain unchanged. Create your own separate marketplace-integration agent and connection; preserve the instructor’s deployed agents and all shared resources.
 
 ## Before you start
 
@@ -79,7 +79,7 @@ Existing Terraform injects the inference credential and agent ID into the **web 
 
 Open **your cloud marketplace URL**, select the Lyzr runtime, start a fresh conversation and repeat the order-2 lookup and same-chat total-quantity follow-up. Compare business tool evidence and native Activity with the application boundary trace if cloud Langfuse is configured. If the runtime is unavailable, inspect backend configuration, secret access and deployment rather than placing keys in the frontend.
 
-Record your service placement, tool results, context, native trace, optional application trace and observed cost drivers using the [exercise](exercises/chapter-20-lyzr-agent-studio/exercise.md). Instructor historical integration is bounded evidence; this sequence has not been rehearsed from scratch in a fresh learner project. Record adaptations and failures explicitly.
+Record your service placement, tool results, context, native trace, optional application trace and observed cost drivers using the [exercise](exercises/lyzr-agent-studio/exercise.md). Instructor historical integration is bounded evidence; this sequence has not been rehearsed from scratch in a fresh learner project. Record adaptations and failures explicitly.
 
 ## Cleanup
 

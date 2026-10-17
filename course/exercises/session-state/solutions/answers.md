@@ -85,10 +85,10 @@ Changing selection in an isolated code copy needs a destination database. This s
 Run from the repository root with the normal local Docker stack and configured gateway:
 
 ```sh
-bash course/exercises/chapter-10-session-state/solutions/reset_lab.sh
+bash course/exercises/session-state/solutions/reset_lab.sh
 docker compose -f app/compose.yaml exec -T backend mkdir -p /tmp/ch10-code/marketplace /tmp/ch10-exercises
 docker cp app/backend/marketplace/. marketplace-lab-backend-1:/tmp/ch10-code/marketplace
-docker cp course/exercises/chapter-10-session-state/solutions/. marketplace-lab-backend-1:/tmp/ch10-exercises
+docker cp course/exercises/session-state/solutions/. marketplace-lab-backend-1:/tmp/ch10-exercises
 ```
 
 Do not reset while another lab runner is active. Both runners refuse a database other than `ch10_session_lab`. The connection strings below are local lab credentials, not cloud or provider credentials.
@@ -150,7 +150,7 @@ Summary-generation usage is separate from the four answer traces; no separate su
 Offline contract checks need no database or paid API:
 
 ```sh
-python3 -m unittest discover -s course/exercises/chapter-10-session-state/solutions -p 'test_*.py' -v
+python3 -m unittest discover -s course/exercises/session-state/solutions -p 'test_*.py' -v
 ```
 
 After saving results, remove only the disposable database if no lab runner is active:

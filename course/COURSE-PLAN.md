@@ -107,7 +107,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Workspace:** Instructor: main UI http://localhost:5178/, database market. Learner: regular marketplace http://localhost:5178/, database market. Trace inspection: http://localhost:3000, project marketplace-support.
 
-**Materials:** [Exercise](exercises/chapter-05-first-agent/exercise.md) · [Answers](exercises/chapter-05-first-agent/solutions/answers.md)
+**Materials:** [Exercise](exercises/first-agent/exercise.md) · [Answers](exercises/first-agent/solutions/answers.md)
 
 **Result boundary:** The saved 18-case comparison graded Nano 11 correct / 4 partial / 3 incorrect and GPT-5.4 17 / 1 / 0. Two follow-up cases generated 20 answers per model; the counts are case grades. [Saved comparison](../app/results/core18-history-v3-2026-10-01/comparison.html).
 
@@ -121,7 +121,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Workspace:** Dedicated CLI/API lab: backend http://127.0.0.1:58006/, gateway http://localhost:4006/, market_test in the separate course-ch6-db container. Use app/scripts/chapter-06-lab.py; this is not the normal Test workspace. Langfuse: http://localhost:3000.
 
-**Materials:** [Exercise](exercises/chapter-06-model-and-gateway/exercise.md) · [Answers](exercises/chapter-06-model-and-gateway/solutions/answers.md)
+**Materials:** [Exercise](exercises/model-and-gateway/exercise.md) · [Answers](exercises/model-and-gateway/solutions/answers.md)
 
 ### 7. Prompt and Context
 
@@ -131,7 +131,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Workspace:** Test workspace http://127.0.0.1:5179/, database market_test; Support with OpenAI Agents SDK and memory off. Inspect marketplace-support traces in local Langfuse.
 
-**Materials:** [Exercise](exercises/chapter-07-prompt-and-context/exercise.md) · [Answers](exercises/chapter-07-prompt-and-context/solutions/answers.md)
+**Materials:** [Exercise](exercises/prompt-and-context/exercise.md) · [Answers](exercises/prompt-and-context/solutions/answers.md)
 
 **Takeaway:** Missing catalog or policy context can change completeness, uncertainty or execution; a successful query alone does not show that all necessary context was supplied.
 
@@ -143,7 +143,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Workspace:** Test workspace http://127.0.0.1:5179/, database market_test. Code extensions use an isolated application copy/disposable database; tracking uses its own JSON fixtures. Optional cloud work requires the learner’s own deployment and database.
 
-**Materials:** [Exercise](exercises/chapter-08-tools-and-mcp/exercise.md) · [Answers](exercises/chapter-08-tools-and-mcp/solutions/answers.md)
+**Materials:** [Exercise](exercises/tools-and-mcp/exercise.md) · [Answers](exercises/tools-and-mcp/solutions/answers.md)
 
 ### 9. Knowledge and Retrieval (RAG)
 
@@ -153,7 +153,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Workspace:** UI: Test workspace http://127.0.0.1:5179/, market_test. Developer reindex/chunk work: dedicated ch09_rag_lab synthetic corpus through the documented CLI; the normal UI does not query that corpus.
 
-**Materials:** [Exercise](exercises/chapter-09-knowledge-and-retrieval/exercise.md) · [Answers](exercises/chapter-09-knowledge-and-retrieval/solutions/answers.md)
+**Materials:** [Exercise](exercises/knowledge-and-retrieval/exercise.md) · [Answers](exercises/knowledge-and-retrieval/solutions/answers.md)
 
 **Takeaway:** New policy text requires reindexing in the isolated lab. Chunk overlap and more retrieved text did not establish a general answer-quality improvement.
 
@@ -165,7 +165,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Workspace:** Core: Test workspace http://127.0.0.1:5179/, market_test. Developer comparison: temporary backend copy and ch10_session_lab. Restore original code/settings separately from database cleanup.
 
-**Materials:** [Exercise](exercises/chapter-10-session-state/exercise.md) · [Answers](exercises/chapter-10-session-state/solutions/answers.md)
+**Materials:** [Exercise](exercises/session-state/exercise.md) · [Answers](exercises/session-state/solutions/answers.md)
 
 **Takeaway:** Stored history and model-visible history differ. Summary strategies are alternatives to measure, not guaranteed token savings.
 
@@ -177,7 +177,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Workspace:** Dedicated Agent Loop UI http://localhost:5181/, database ch11_loop_lab. Use fresh conversations and lab-only execution modes. The normal Test workspace is not this lab.
 
-**Materials:** [Exercise](exercises/chapter-11-agent-loop/exercise.md) · [Answers](exercises/chapter-11-agent-loop/solutions/answers.md)
+**Materials:** [Exercise](exercises/agent-loop/exercise.md) · [Answers](exercises/agent-loop/solutions/answers.md)
 
 ### 12. Runtime and Hosting
 
@@ -187,7 +187,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Workspace:** Local worksheet: Test workspace http://127.0.0.1:5179/, market_test. Optional cloud section: learner’s already deployed full marketplace and its own database. The historical agent-only hosting lab is not this activity.
 
-**Materials:** [Exercise](exercises/chapter-12-runtime-and-hosting/exercise.md) · [Answers](exercises/chapter-12-runtime-and-hosting/solutions/answers.md)
+**Materials:** [Exercise](exercises/runtime-and-hosting/exercise.md) · [Answers](exercises/runtime-and-hosting/solutions/answers.md)
 
 ## D. Observability, Evaluation and Security
 
@@ -199,7 +199,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Workspace:** Local Langfuse http://localhost:3000, project marketplace-support. This is a recorded-evidence investigation; no business database changes, uploads or new model calls are required. The Agent Loop UI is optional for locating existing runs.
 
-**Materials:** [Exercise](exercises/chapter-13-observability/exercise.md) · [Answers](exercises/chapter-13-observability/solutions/answers.md)
+**Materials:** [Exercise](exercises/observability/exercise.md) · [Answers](exercises/observability/solutions/answers.md)
 
 ### 14. Evaluation
 
@@ -209,7 +209,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Workspace:** Local Langfuse http://localhost:3000, project marketplace-support; supplied answer fixtures and repository-root import commands. Reuse Chapter14 structured order comparison with its worker/dispatcher. No marketplace UI or business database is required.
 
-**Materials:** [Exercise](exercises/chapter-14-evaluation/exercise.md) · [Answers](exercises/chapter-14-evaluation/solutions/answers.md) · [Instructor demo](exercises/chapter-14-evaluation/instructor-demo.md)
+**Materials:** [Exercise](exercises/evaluation/exercise.md) · [Answers](exercises/evaluation/solutions/answers.md) · [Instructor demo](exercises/evaluation/instructor-demo.md)
 
 **Takeaway:** Judge agreement is not model accuracy, and feedback is not factual correctness. Human review and deterministic checks have different roles; a single trial does not establish consistency. [Calibration evidence](../app/results/calibration-v3-2026-09-29/CALIBRATION-SUMMARY.md).
 
@@ -221,7 +221,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Workspace:** Test Support http://127.0.0.1:5179/, market_test; OpenAI Agents SDK, memory off and prescribed guardrail/source-authority settings. Local Langfuse marketplace-support. Use isolated policy fixtures and cleanup instructions.
 
-**Materials:** [Exercise](exercises/chapter-15-guardrails-security/exercise.md) · [Answers](exercises/chapter-15-guardrails-security/solutions/answers.md) · [Instructor demo](exercises/chapter-15-guardrails-security/instructor-demo.md)
+**Materials:** [Exercise](exercises/guardrails-security/exercise.md) · [Answers](exercises/guardrails-security/solutions/answers.md) · [Instructor demo](exercises/guardrails-security/instructor-demo.md)
 
 ## E. Advanced Agent Topics
 
@@ -233,7 +233,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Workspace:** Test workspace http://127.0.0.1:5179/, market_test; Support with OpenAI Agents SDK, routing controls, memory/guardrails off and source authority on. Keyword and heuristic use per-question scope; LLM uses either scope.
 
-**Materials:** [Exercise](exercises/chapter-16-model-routing/exercise.md) · [Answers](exercises/chapter-16-model-routing/solutions/answers.md) · [Instructor demo](exercises/chapter-16-model-routing/instructor-demo.md)
+**Materials:** [Exercise](exercises/model-routing/exercise.md) · [Answers](exercises/model-routing/solutions/answers.md) · [Instructor demo](exercises/model-routing/instructor-demo.md)
 
 **Historical conclusion:** Business-context classifier configurations did better on these tested cases. Both scope policies reduced cost but lowered fully correct conversations versus always GPT-5 (4/6 versus 6/6); neither improved this pilot’s quality/cost tradeoff. Larger samples and repeated trials are needed. Cache reuse can affect cost/latency, especially across a conversation; no isolated cache benefit is claimed.
 
@@ -245,7 +245,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Workspace:** Test workspace http://127.0.0.1:5179/, market_test; Support with OpenAI Agents SDK and Agent design demo controls. Routing and memory off. Follow Generate draft, Review draft, Workflow decision and optional Correct draft in local Langfuse.
 
-**Materials:** [Exercise](exercises/chapter-17-agent-design-patterns/exercise.md) · [Answers](exercises/chapter-17-agent-design-patterns/solutions/answers.md) · [Instructor demo](exercises/chapter-17-agent-design-patterns/instructor-demo.md)
+**Materials:** [Exercise](exercises/agent-design-patterns/exercise.md) · [Answers](exercises/agent-design-patterns/solutions/answers.md) · [Instructor demo](exercises/agent-design-patterns/instructor-demo.md)
 
 **Historical conclusion:** The serial business-records/policy split was not tested because no clear benefit justified the handoffs. Seller workers added coordination overhead and one run failed to complete; parallel tool calls can sometimes supply the needed concurrency. Stronger review improved Nano’s fully correct count from 11/18 to 14/18, below GPT-5.4 alone at 17/18. These bounded findings justify checking reviewer capability and coordination cost. [Live controller](../app/backend/marketplace/agent_design_demo.py) · [Seller experiment](../app/scripts/payout-orchestration.py) · [Reviewer experiment](../app/scripts/reviewer-workflow-core18.py).
 
@@ -259,7 +259,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Workspace:** Test workspace http://127.0.0.1:5179/, database market_test; Support with OpenAI Agents SDK. Use the Internal memory/Mem0 selector. Normal support model, routing and Agent design demo off, clean policy and source-authority context on; the main marketplace on 5178 and Agent Loop lab on 5181 do not enable this Mem0 lab. Trace inspection: local Langfuse http://localhost:3000/, project marketplace-support.
 
-**Materials:** [Exercise](exercises/chapter-18-short-and-long-term-memory/exercise.md) · [Answers](exercises/chapter-18-short-and-long-term-memory/solutions/answers.md) · [Instructor demo](exercises/chapter-18-short-and-long-term-memory/instructor-demo.md)
+**Materials:** [Exercise](exercises/short-and-long-term-memory/exercise.md) · [Answers](exercises/short-and-long-term-memory/solutions/answers.md) · [Instructor demo](exercises/short-and-long-term-memory/instructor-demo.md)
 
 **Implemented comparison:** Internal memory uses application-owned PostgreSQL records, trusted owner/provenance, bounded keyword search and version-checked edits through local stdio MCP tools. Saving requires explicit user intent and per-question write permission. The deployed hosted Mem0 integration queues completed turns at New conversation or the configured idle trigger. A conservative user-authored durable-intent gate skips routine business/recall-only turns as `noop`. Eligible full user/assistant context goes to REST V3 add with per-request `marketplace-durable-context-v2` retention guidelines; shared project settings are unchanged. Hosted HTTPS MCP supplies search/list/edit/delete and extraction status polling. Retrieval is a separate agent read operation. Turning retrieval off does not disable extraction while Mem0 is selected. Provider categories are preserved rather than forced into our three-purpose taxonomy; external records do not inherit internal version semantics.
 
@@ -288,14 +288,14 @@ Use familiar support tasks to compare component ownership, capabilities, costs, 
 - **Optional adventurous exercise:** Build the full cloud integration connecting the chat application/backend and business data/MCP to a Google-hosted agent, using the linked cloud instructions. This is separate from standalone Basics and preserves the existing Marketplace Support ADK Lab.
 - **Current verification:** Basics has been created. Native Playground product lookup, same-session held-payout follow-up, missing-record result and model/tool traces have been checked. Memory Bank generation and scoped stored-preference retrieval passed, including an empty result for another test user. Fresh-session preference preload and answer use were subsequently verified in a recovered native trace after the CLI retry timed out; this is not a passed CLI verification suite. The existing cloud integration has its own historical evidence; it is not a fresh learner-project installation rehearsal.
 
-**Materials:** [Setup guide](exercises/chapter-19-google-agent-platform/setup-guide.md) · [Instructor walkthrough](exercises/chapter-19-google-agent-platform/instructor-demo.md) · [Exercise](exercises/chapter-19-google-agent-platform/exercise.md) · [Separate answers](exercises/chapter-19-google-agent-platform/solutions/answers.md) · [Basics code and instructions](../app/google/basics/README.md) · [Optional integration walkthrough](GOOGLE-PLATFORM-PLAN.md).
+**Materials:** [Setup guide](exercises/google-agent-platform/setup-guide.md) · [Instructor walkthrough](exercises/google-agent-platform/instructor-demo.md) · [Exercise](exercises/google-agent-platform/exercise.md) · [Separate answers](exercises/google-agent-platform/solutions/answers.md) · [Basics code and instructions](../app/google/basics/README.md) · [Optional integration walkthrough](GOOGLE-PLATFORM-PLAN.md).
 
 ### 20. Lyzr Agent Studio
 
 - **Lesson:** Purpose and customer fit, product stack (Framework, Studio, ADK/REST, Architect, Cognis and separate Opencontroller governance), deployment/model/data boundaries, benefits/tradeoffs and cost drivers. Documented enterprise choices are distinct from the hosted configuration rehearsed here.
 - **Core demo:** A separate **Support Agent Basics** in native Studio/Playground, using the same fictional JSON source as Google Basics converted deterministically to a native TXT Knowledge Base. Inspect retrieval, a same-session follow-up, missing records and native execution evidence; distinguish KB retrieval from Google's Python lookup tool. Native memory inspection is optional and evidence-bounded.
-- **Setup:** [Separate setup guide](exercises/chapter-20-lyzr-agent-studio/setup-guide.md), followed by [instructor demo](exercises/chapter-20-lyzr-agent-studio/instructor-demo.md). No marketplace, SQL, MCP or tunnel is needed for Basics. Local package checks and bounded hosted API known-order, missing-ID and same-session follow-up checks pass. Native Cognis is enabled with Cross Session OFF; native Playground known-order, same-chat and missing-ID checks passed with actual KB source chunks visible in Activity. Optional owner-scoped native Cognis cross-session API checks verified automatic extraction, record provenance, fresh recall and answer use, plus one other-owner negative check. Cross Session OFF was restored after the experiment. Cross-session Playground behavior and general isolation/CRUD guarantees are not established.
-- **Optional exercise:** One [full cloud integration exercise](exercises/chapter-20-lyzr-agent-studio/exercise.md), following [the Lyzr platform setup plan](LYZR-PLATFORM-PLAN.md) after completed Cloud Setup: cloud chat/backend calls a separate Lyzr marketplace agent, which calls the GCP MCP/data backend. Preserve the standalone Basics and existing instructor agents. [Separate answers](exercises/chapter-20-lyzr-agent-studio/solutions/answers.md).
+- **Setup:** [Separate setup guide](exercises/lyzr-agent-studio/setup-guide.md), followed by [instructor demo](exercises/lyzr-agent-studio/instructor-demo.md). No marketplace, SQL, MCP or tunnel is needed for Basics. Local package checks and bounded hosted API known-order, missing-ID and same-session follow-up checks pass. Native Cognis is enabled with Cross Session OFF; native Playground known-order, same-chat and missing-ID checks passed with actual KB source chunks visible in Activity. Optional owner-scoped native Cognis cross-session API checks verified automatic extraction, record provenance, fresh recall and answer use, plus one other-owner negative check. Cross Session OFF was restored after the experiment. Cross-session Playground behavior and general isolation/CRUD guarantees are not established.
+- **Optional exercise:** One [full cloud integration exercise](exercises/lyzr-agent-studio/exercise.md), following [the Lyzr platform setup plan](LYZR-PLATFORM-PLAN.md) after completed Cloud Setup: cloud chat/backend calls a separate Lyzr marketplace agent, which calls the GCP MCP/data backend. Preserve the standalone Basics and existing instructor agents. [Separate answers](exercises/lyzr-agent-studio/solutions/answers.md).
 - **Reference:** [Existing Lyzr integration](../app/lyzr/README.md) preserves historical configurations and bounded results. Earlier local-tunnel results do not prove a fresh learner cloud deployment.
 
 ### 21. Choosing an Agent Platform
@@ -307,7 +307,7 @@ Use familiar support tasks to compare component ownership, capabilities, costs, 
 - **Capability comparisons:** Review familiar layers, then concrete AWS/Microsoft, OpenAI/Claude and LangSmith/CrewAI/Dify features. Include execution, model/framework access, tools, state/memory, identity and observability/evaluation where documented. Sources and material limits are in speaker notes; no untested feature parity or quality ranking is implied.
 - **Integration and costs:** Use a stable application contract with provider-specific runtime adapters; reuse MCP at the business-tool boundary while retaining backend permissions. Compare inference, execution, persistence, tools/networking, observability/evaluation, subscriptions/licenses and explicit team costs for development, integration, maintenance and on-call support.
 - **Selection process:** State the task, acceptable failures and hard constraints; shortlist two options; compare responsibilities, data paths and total cost; run the same useful trial; decide and record unknowns. A separate conditional flowchart maps those requirements and prior-stack preferences to provider types and named product candidates.
-- **Learner exercise:** Write a short decision using requirements, a two-option component-ownership comparison and a recommendation supported by sources, tradeoffs and remaining validation. The [learner worksheet](exercises/chapter-21-choosing-an-agent-platform/exercise.md) and [separate reference answers](exercises/chapter-21-choosing-an-agent-platform/solutions/answers.md) are in the exercise package; speaker notes retain the instructor walkthrough. No new cloud account or deployment is required.
+- **Learner exercise:** Write a short decision using requirements, a two-option component-ownership comparison and a recommendation supported by sources, tradeoffs and remaining validation. The [learner worksheet](exercises/choosing-an-agent-platform/exercise.md) and [separate reference answers](exercises/choosing-an-agent-platform/solutions/answers.md) are in the exercise package; speaker notes retain the instructor walkthrough. No new cloud account or deployment is required.
 - **Closing:** A concise Recap, with the optional action to apply the decision method to the learner's own agent. There is no following chapter.
 - **Evidence boundary:** SDK/Google/Lyzr results are bounded integration evidence; the other offerings use dated official documentation. Recheck account/region/deployment options and commercial terms. Different models, prompts, contexts, tools, fixtures and memory policies prevent a universal winner claim.
 - **Materials:** [Chapter 21 deck](https://docs.google.com/presentation/d/17AXM8BjDRNuc53p1NGmcE9Mh8lK7cMfF/edit) · [Speaker notes](https://drive.google.com/file/d/1Jbn7KL5nADFuwEbXiMqPhlfZqcT1pTC_/view) · [HTML review](https://drive.google.com/file/d/1ebBuCxTN_8j5pXhOikqODQebKyM3jmxc/view). Historical platform experiments remain in [MILESTONE-LOG.md](../MILESTONE-LOG.md).

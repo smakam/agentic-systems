@@ -365,7 +365,7 @@ Course plan: local SDK for main demonstrations; hosted agents and native platfor
 
 ## Chapter 12 hybrid hosting exercise
 
-The current learner [exercise](../course/exercises/chapter-12-runtime-and-hosting/exercise.md) uses the standard Test workspace and optional full-cloud configuration. The following paragraph describes the historical hosting lab, not a required setup step. The dedicated Compose overlay uses a disposable database, local chat/history, separate Cloud Run agent with direct OpenAI Responses, and laptop HTTP MCP through a tunnel. It is opt-in and does not change normal runtime routing. The temporary instructor cloud deployment was cleaned up after successful tests.
+The current learner [exercise](../course/exercises/runtime-and-hosting/exercise.md) uses the standard Test workspace and optional full-cloud configuration. The following paragraph describes the historical hosting lab, not a required setup step. The dedicated Compose overlay uses a disposable database, local chat/history, separate Cloud Run agent with direct OpenAI Responses, and laptop HTTP MCP through a tunnel. It is opt-in and does not change normal runtime routing. The temporary instructor cloud deployment was cleaned up after successful tests.
 
 ## Starting all course workspaces
 
@@ -376,7 +376,7 @@ The current learner [exercise](../course/exercises/chapter-12-runtime-and-hostin
 
 The test SDK workspace at `http://127.0.0.1:5179/` exposes **Model routing demo**: fixed GPT-5 Nano / GPT-5 or native LiteLLM routing. Keyword rules use question scope; the LLM classifier (GPT-5 Nano) supports conversation or question scope. Changing a policy starts a new conversation. The backend supplies an authenticated conversation session ID; classification and pinning happen inside LiteLLM, not in an app runner.
 
-Follow the [numbered instructor walkthrough](../course/exercises/chapter-16-model-routing/instructor-demo.md). Prepared routes are in [routing-demo.models.yaml](infra/routing-demo.models.yaml). `scripts/start.sh` regenerates the provider config; standalone restarts must retain `LITELLM_CONFIG_PATH=./infra/litellm.provider.generated.yaml`. Provision existing keys with `python3 scripts/provision-gateway-keys.py` after startup. Rebuild the test backend/frontend after source changes. The existing security filters are retained.
+Follow the [numbered instructor walkthrough](../course/exercises/model-routing/instructor-demo.md). Prepared routes are in [routing-demo.models.yaml](infra/routing-demo.models.yaml). `scripts/start.sh` regenerates the provider config; standalone restarts must retain `LITELLM_CONFIG_PATH=./infra/litellm.provider.generated.yaml`. Provision existing keys with `python3 scripts/provision-gateway-keys.py` after startup. Rebuild the test backend/frontend after source changes. The existing security filters are retained.
 
 LiteLLM 1.102.1 applies license limits to customized heuristic and custom-prompt routers. This lab uses one keyword profile, one native heuristic-v2 profile at question scope, and the same shipped LLM prompt for both scopes; the historical business rubric is explained separately. SIMPLE maps to Nano; MEDIUM / COMPLEX / REASONING map to GPT-5. No licensing state or vendor code is changed.
 

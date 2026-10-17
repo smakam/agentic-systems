@@ -2,7 +2,7 @@
 
 **Complete [app/CLOUD-SETUP.md](../app/CLOUD-SETUP.md) first.** This extension is for learners who already have their own working cloud marketplace chat/backend, authenticated business MCP service and database/policy store. This guide connects that stack to a Google-hosted marketplace agent; it does not repeat cloud provisioning.
 
-The required Chapter 19 lesson is the separate [Support Agent Basics setup](exercises/chapter-19-google-agent-platform/setup-guide.md), using fictional JSON and native tools in Google Playground. Basics has no business MCP tools: pointing its configuration at an MCP URL does not turn it into the marketplace agent. For this optional extension, deploy the **marketplace ADK code in `app/google`**, or use your own existing compatible marketplace ADK deployment. Preserve both instructor deployments.
+The required Chapter 19 lesson is the separate [Support Agent Basics setup](exercises/google-agent-platform/setup-guide.md), using fictional JSON and native tools in Google Playground. Basics has no business MCP tools: pointing its configuration at an MCP URL does not turn it into the marketplace agent. For this optional extension, deploy the **marketplace ADK code in `app/google`**, or use your own existing compatible marketplace ADK deployment. Preserve both instructor deployments.
 
 ## Before you start
 
@@ -98,6 +98,6 @@ The existing Terraform code injects `GOOGLE_RUNTIME_RESOURCE` into the **web bac
 
 Open **your cloud marketplace URL**, select **Google hosted runtime**, and start a fresh conversation. Repeat the order-2 question and same-chat quantity follow-up. Check your business tool evidence, native session/trace and application-boundary trace if Langfuse is configured. The managed agent, cloud business tools and chat backend are distinct components; choosing Google in chat changes the execution adapter, not the database or MCP endpoint.
 
-Record the project/resource references, tool results, session continuity, trace links, failures and actual costs you inspect. Do not submit secrets. Complete the [optional exercise observation table](exercises/chapter-19-google-agent-platform/exercise.md#what-to-document). The instructor's historical integration passed, but these instructions have not been rehearsed from scratch in a fresh learner project.
+Record the project/resource references, tool results, session continuity, trace links, failures and actual costs you inspect. Do not submit secrets. Complete the [optional exercise observation table](exercises/google-agent-platform/exercise.md#what-to-document). The instructor's historical integration passed, but these instructions have not been rehearsed from scratch in a fresh learner project.
 
 For cleanup, remove only resources you created and verify remaining billable services. Keep the standalone Basics and instructor resources intact. The laptop/tunnel configuration is an optional historical alternative, not required for this full-cloud path.
