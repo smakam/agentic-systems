@@ -39,7 +39,7 @@ Expected evidence is the model definition plus a successful Playground response 
 
 ### 2. Response cache On/Off in Test
 
-The learner enables **Response caching → Enable response cache** for normal Test SDK support with memory and guardrails Off. They ask the policy question in one fresh conversation and repeat it in another fresh conversation before the two-minute expiry, with unchanged controls and data. The first request fills the cache; the repeat should demonstrate at least one cached model response. Later model calls can miss if tool results or other full inputs differ.
+The learner enables **Response caching → Enable response cache** for normal Test SDK support with memory and guardrails Off. They ask the policy question in one fresh conversation and repeat it in another fresh conversation before the two-minute expiry, with unchanged controls and data. The first request fills the cache; the repeat should demonstrate at least one cached model response. Make the two requests back-to-back and inspect the traces afterward. Pausing to inspect the first trace can exceed the two-minute expiry and make the repeat correctly miss. Later model calls can miss if tool results or other full inputs differ.
 
 In each generation's Langfuse metadata, inspect `gateway_response_cache_hit`, backed by LiteLLM's cache-key response header, and `gateway_response_id`. The repeated hit reuses the response ID. The SDK can still emit a generation observation for that call: absence of a generation is not the cache test.
 
