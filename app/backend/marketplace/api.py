@@ -25,6 +25,9 @@ async def lifespan(app):
                 interrupted.status='failed'
                 interrupted.answer='The backend restarted during this investigation. Please retry; no business state was changed by the agent.'
 
+    from .rag_policy_demo import initialize as initialize_rag_demo
+    initialize_rag_demo()
+
     from .mem0_provider import enabled as mem0_enabled, worker as memory_worker
     task=asyncio.create_task(memory_worker()) if mem0_enabled() else None
     try:
@@ -464,3 +467,54 @@ def readiness(user=Depends(identity),db=Depends(db_session)):
     role(user,'support','operator')
     total=db.scalar(select(func.count()).select_from(Document)); indexed=db.scalar(select(func.count()).select_from(Document).where(Document.embedding!=None))
     return {'documents':total,'indexed':indexed,'retrieval':'pgvector' if total and indexed==total else 'lexical fallback; index documents to enable vectors','cross_session_memory':'explicit user-scoped function tools','agent':'single','model_alias':'support-model'}
+
+
+# Synthetic RAG experiments have their own per-user tables and never use Document.
+from . import rag_policy_demo
+from sqlalchemy.exc import OperationalError
+
+def rag_demo_access(user):
+    role(user,'support','operator')
+    if not rag_policy_demo.enabled(): raise HTTPException(404,'RAG demo is available only in Test')
+
+class RagDemoSource(BaseModel):
+    version:Literal['v1','v2','expanded']
+    strategy:Literal['paragraph','overlap']='paragraph'
+    model_config={'extra':'forbid'}
+class RagDemoQuestion(BaseModel):
+    question:str=Field(min_length=1,max_length=2000)
+    top_k:Literal[1,4]=4
+    model_config={'extra':'forbid'}
+
+@app.get('/api/rag-policy-demo/{experiment}')
+def rag_demo_state(experiment:rag_policy_demo.Experiment,user=Depends(identity),db=Depends(db_session)):
+    rag_demo_access(user)
+    return rag_policy_demo.state(db,user.id,experiment)
+
+@app.post('/api/rag-policy-demo/{experiment}/source')
+def rag_demo_source(experiment:rag_policy_demo.Experiment,body:RagDemoSource,user=Depends(identity),db=Depends(db_session)):
+    rag_demo_access(user)
+    try: return rag_policy_demo.select_source(db,user.id,experiment,body.version,body.strategy)
+    except rag_policy_demo.DemoError as exc: raise HTTPException(400,str(exc))
+    except OperationalError: db.rollback();raise HTTPException(409,'Demo is busy; retry when indexing finishes')
+
+@app.post('/api/rag-policy-demo/{experiment}/index')
+@app.post('/api/rag-policy-demo/{experiment}/restore')
+async def rag_demo_index(experiment:rag_policy_demo.Experiment,request:Request,user=Depends(identity),db=Depends(db_session)):
+    rag_demo_access(user)
+    from .gateway_identity import for_role
+    try:
+        with for_role(user.role):
+            return await rag_policy_demo.index_selected(db,user.id,experiment,restore=request.url.path.endswith('/restore'))
+    except OperationalError: db.rollback();raise HTTPException(409,'Demo is busy; retry when indexing finishes')
+    except Exception: db.rollback();raise HTTPException(503,'Demo indexing failed; the previous index is preserved. Check gateway embedding access and retry.')
+
+@app.post('/api/rag-policy-demo/{experiment}/ask')
+async def rag_demo_ask(experiment:rag_policy_demo.Experiment,body:RagDemoQuestion,user=Depends(identity),db=Depends(db_session)):
+    rag_demo_access(user)
+    from .gateway_identity import for_role
+    try:
+        with for_role(user.role):
+            return await rag_policy_demo.ask(db,user.id,experiment,body.question,body.top_k)
+    except rag_policy_demo.DemoError as exc: raise HTTPException(409,str(exc))
+    except Exception: raise HTTPException(503,'Demo question failed; check model and embedding access, then retry.')

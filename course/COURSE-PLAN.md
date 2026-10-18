@@ -149,13 +149,13 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Learning objective:** Separate retrieval correctness from answer correctness when combining business records with versioned policy evidence.
 
-**Demo and learner practice:** Explain ingestion, paragraph chunks, gateway embeddings, PostgreSQL/pgvector, effective dates and ranking. Ask policy-only and mixed questions. Reindex supplied policy versions, then compare overlapping chunks and retrieval settings without assuming better final answers.
+**Demo and learner practice:** Explain ingestion, embeddings, vector retrieval and optional reranking, then inspect marketplace evidence. Use isolated Test workspace RAG controls to compare V1, stale indexed V1 and reindexed V2. Compare paragraph/overlap at top K one/four using adjacent policy facts; learners use the UI without editing files or running commands.
 
-**Workspace:** UI: Test workspace http://127.0.0.1:5179/, market_test. Developer reindex/chunk work: dedicated ch09_rag_lab synthetic corpus through the documented CLI; the normal UI does not query that corpus.
+**Workspace:** Test workspace http://127.0.0.1:5179/, market_test. RAG experiments use separate synthetic demo tables, not marketplace documents or records. The previous ch09_rag_lab CLI remains a historical reference.
 
 **Materials:** [Exercise](exercises/knowledge-and-retrieval/exercise.md) · [Answers](exercises/knowledge-and-retrieval/solutions/answers.md)
 
-**Takeaway:** New policy text requires reindexing in the isolated lab. Chunk overlap and more retrieved text did not establish a general answer-quality improvement.
+**Takeaway:** Source changes require reindexing. Chunk boundaries and passage limits affect evidence coverage; overlap and more context are not universally better.
 
 ### 10. Session State
 

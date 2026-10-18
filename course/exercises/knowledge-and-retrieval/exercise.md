@@ -1,74 +1,54 @@
-# Chapter 9 — Knowledge and Retrieval
+# Knowledge and Retrieval
 
-## UI, database and cleanup
+## Prerequisites
 
-**UI:** [test marketplace](http://127.0.0.1:5179/) from Course Setup; use the role/workspace named in each task. **Database:** disposable practice database `market_test`, separate from main `market` and the fixed evaluation baseline `market_eval`. Test UI changes do not update the main marketplace. Save your questions, results and traces locally.
+Complete [Course Setup](../../../app/LOCAL-SETUP.md), including document indexing in both marketplace workspaces. Keep the local stack running. Open the [Test marketplace](http://127.0.0.1:5179/), sign in as **operator** or **support**, and open **Support workspace → OpenAI Agents SDK**. Keep memory, response caching, routing, guardrails and context suppression off; use the GPT-5.4 default.
 
-Core policy and SQL-plus-policy questions use Support with OpenAI Agents SDK in the test UI.
+Under **Workspace options → RAG**, marketplace documents should show all chunks indexed. Operator can use **Index documents** if needed. These marketplace documents are separate from the **Open RAG experiments** below, which have their own synthetic corpus and index. Preparing a demo does not replace marketplace policies or change business records. Embedding and model calls incur normal provider usage.
 
-**Developer lab:** reindexing and chunking comparisons run through the supplied CLI against `ch09_rag_lab`, containing only synthetic lab documents. The normal test UI does not automatically query this separate corpus. Its policy changes do not replace the marketplace policies.
+All steps below run in the browser. No terminal commands, file edits or chunker implementation are required.
 
-**Cleanup:** save outputs and, when no lab runner is active, remove only `ch09_rag_lab` using the supplied command. Read-only UI practice needs no reset. Restore source/configuration changes if you used your own implementation.
+## Your task
 
+### Part 1: Inspect retrieval and compare policy versions
 
-## Goals and prerequisites
+#### Quick review: policy and business evidence
 
-Inspect what retrieval contributes to an answer, update an indexed policy, and compare chunking strategies. Use the course's running local Docker backend, gateway and pgvector PostgreSQL services. Embedding/model calls use your configured gateway and incur normal provider usage.
+1. Start a fresh conversation in the ordinary Support chat and ask: **“What conditions must be met before releasing a seller payout?”** Inspect `search_documents` in local Langfuse: actual query, passages, policy version, dates and source citations.
+2. In another fresh conversation ask: **“For order-2, what is each seller’s current payout status, and is their payout eligible for release? Explain why.”** Identify claims supported by current business records versus retrieved policy. Do not assume any payout is held or that eligibility means payment was executed.
 
-Use a dedicated **ch09_rag_lab** database and the supplied lab documents. Keep the main marketplace and fixed market_eval database unchanged. The lab contains only synthetic document chunks, not marketplace business records. The reference script refuses another database name and has no lexical fallback. Its isolated table is intentionally simpler than production's immutable versions and effective-date filters.
+#### Policy versions and reindexing
 
-## Part 1 — repeat the chapter demo
+1. Click **RAG → Open RAG experiments** and select **Policy versions and reindexing**. Use the **Demo question** and **Ask the demo question** button inside this panel, not the ordinary Support chat composer. This question searches only the synthetic demo corpus.
+2. Click **Prepare V1 index** if the demo has not been prepared. If it was previously used, click **Restore V1**. Verify **Selected: V1** and **Indexed: V1**.
+3. Inspect **Selected source document**. V1 requires a **24-hour** wait. The panel supplies fixed facts: payment captured, confirmed delivery **30 hours ago**, no open return. Keep its prefilled question unchanged: **“Is the seller payout eligible for release? State the waiting period and explain why, with policy citations.”**
+4. Click **Ask the demo question**. Inspect the answer and expand **Retrieved passages and source lines**. Record indexed version, waiting period, answer and cited passage. Expected: eligible under the simulated V1 rule; this does not mean a payout was executed.
+5. Select **V2 — 48-hour wait**, but **do not click Index selected settings yet**. Verify the source preview changed to V2, while **Indexed** still says V1 and a stale-index notice is visible. Ask the exact same question again. Check that the passages and answer still use indexed V1.
+6. Click **Index selected settings** and wait until **Indexed: V2** appears. Ask the same question again. Check for the **48-hour** rule and a not-yet-eligible answer: the fixed delivery time is still 30 hours.
+7. Click **Restore V1** after recording the three stages. This restores the demo source and index; it does not reset marketplace data.
 
-1. In the test marketplace Support workspace, select OpenAI Agents SDK and ask a policy-only question: “What conditions must be met before releasing a seller payout?” Inspect search_documents inputs, passages, policy version, scope, dates, and citation support.
-2. Ask “Why is the payout for order-2 held?” Inspect the business evidence as well as the applicable policy. Record which claim comes from SQL and which comes from documents; use the actual current records, not an assumed status.
-3. Save both traces or screenshots and write a short source map. A policy passage cannot prove a payout was executed.
+Explain why changing a document selection alone did not change the retrieved evidence. The demo rebuilds its isolated corpus; it does not demonstrate automatic historical policy-version selection in the marketplace.
 
-### Update a policy and refresh the index
+### Part 2: Compare chunking and the passage limit
 
-Use [payout-v1.md](fixtures/payout-v1.md) and [payout-v2.md](fixtures/payout-v2.md). These are simulated lab policies; they do not replace the marketplace policy. Version 1 requires 24 hours after delivery; version 2 requires 48 hours.
+**Purpose:** test whether the retrieved evidence includes all facts required for an answer. A smaller passage limit can omit a needed fact; overlap can bring adjacent facts into one chunk but also repeats text. Neither overlap nor a larger limit is always better.
 
-Use fixed supplied facts: payment captured, delivery 30 hours ago, no open return. Ask whether the seller payout is eligible, requesting the waiting period and citation.
+1. In the same **Open RAG experiments** panel, select **Chunking and passage limit**. Use its expanded source document. It is a synthetic example; Amber Review is a fictional review flag, not a marketplace product or order field.
+2. Expand **Selected source document**. One paragraph defines the standard wait as **24 hours**. The next says Amber Review adds **48 hours to that standard wait**, without repeating the base value. A complete answer needs both paragraphs: the total is **72 hours**.
+3. Keep the fixed facts unchanged: payment captured, delivery 30 hours ago, no open return, Amber Review applies. Use the same prefilled question for every comparison: **“What are the standard wait, extra review hold and total required wait? Is payout eligible now? Cite the policy.”** The panel automatically supplies the fixed facts to each request.
+4. Select **Paragraph**, then click **Prepare paragraph index** or **Index selected settings** as shown. Set **Maximum passages (top K)** to **1** and ask. Then change only top K to **4** and ask again. Top K changes retrieval, not the index.
+5. Select **Two-paragraph overlap** and click **Index selected settings**. The chunker uses consecutive paragraph pairs with stride one. Ask at top K **1**, then **4**, keeping the question unchanged. Do not ask until the indexed strategy matches the selected strategy.
+6. For each run inspect **Retrieved passages and source lines** and record the following:
 
-1. Index v1 with paragraph chunks; retrieve passages and save the answer.
-2. Prepare v2 on disk but do not index it. Ask again against the v1 corpus. Explain why the indexed evidence remains v1 even though a new document exists on disk.
-3. Rebuild the isolated policy corpus from v2 and generate its embeddings. Ask the identical question again. Verify passage version, source, waiting period, citation and answer.
-4. Restore v1 if repeating the experiment. In the real application's ingestion path, add a new version and correctly set applicability dates; never mutate an existing immutable version.
+| Chunking | Top K | Standard 24-hour rule retrieved? | Extra 48-hour hold retrieved? | Answer and citations | Retrieved characters |
+|---|---:|---|---|---|---:|
+| Paragraph | 1 | | | | |
+| Paragraph | 4 | | | | |
+| Overlap | 1 | | | | |
+| Overlap | 4 | | | | |
 
-Keep before/stale/after passages, two answers, and an explanation locally of why reindexing was necessary. Expected eligibility changes because only the supplied policy changed; the fixed business facts do not change. Do not treat eligibility as executed payment.
+Top K is the **maximum** number of chunks returned, not a similarity threshold. In this lab, blank lines define paragraph boundaries. One paragraph chunk cannot contain both rules; a two-paragraph window spanning the boundary can. Inspect the actual returned text rather than assuming which window ranks first.
 
-## Part 2 — additional challenge: compare overlapping chunks
+If a required policy value is missing, an answer saying it cannot determine eligibility is appropriate. If both rules are returned, the expected calculation is **24 + 48 = 72 hours**, so the simulated payout is not eligible at 30 hours. Compare evidence coverage separately from whether the final answer is right. More characters are a context-volume observation, not a measured API cost or latency result.
 
-Use the longer [expanded-policy.md](fixtures/expanded-policy.md). The standard payout rule and the lab-only Amber Review exception are adjacent paragraphs. The normal waiting period is 24 hours. Amber Review is a fictional review status, not a product name or a field queried from marketplace records. The question supplies that status as a simulated fact. When the flag is present, the exception requires 72 hours after delivery instead of 24 hours. The fixture intentionally includes unrelated material; it is not an operational policy.
-
-1. Implement a paragraph chunker that retains source line ranges.
-2. Implement two-paragraph windows with stride one, preserving source ranges. Compare your implementation with the reference only after trying it.
-3. Reindex each strategy into a separate corpus using the same embedding model, cosine ranking and supplied facts. Ask: “Payment captured, confirmed delivery 30 hours ago, no open return, Amber Review flag present. Is seller payout eligible? Explain the standard rule and exception with citations.”
-4. Compare paragraph versus overlap at top_k=1, then at top_k=4. Hold top_k fixed within each comparison.
-5. Inspect chunk boundaries, retrieved passages, whether the rule and exception are present, returned text length, citations, and the answer. Explain the storage/context cost of overlap. A larger document alone does not guarantee an effect; boundaries and retrieval settings matter.
-
-Keep your chunking code, source ranges, comparison table and recommendation locally to compare with the solution. There is no submission destination. Correct answers under both strategies are a valid result. Do not claim overlap always improves correctness or use similarity scores as confidence.
-
-## Running the reference after attempting the exercises
-
-From the repository root, create the disposable local lab database once:
-
-```sh
-docker compose -f app/compose.yaml exec -T postgres psql -U postgres -d postgres -c 'CREATE DATABASE ch09_rag_lab'
-docker cp course/exercises/knowledge-and-retrieval marketplace-lab-backend-1:/tmp/ch9-lab
-docker compose -f app/compose.yaml exec -T backend env CH9_DATABASE_URL=postgresql://postgres:local-bootstrap-only@postgres:5432/ch09_rag_lab python /tmp/ch9-lab/solutions/rag_lab.py --answers --output /tmp/ch9-lab/results.json
-docker cp marketplace-lab-backend-1:/tmp/ch9-lab/results.json /tmp/ch9-results.json
-```
-
-If the lab database already exists, skip CREATE DATABASE. The local bootstrap credential is only for this supplied Docker lab. Never use cloud or business credentials for this task. If the gateway key cannot access the embedding/support-model aliases, fix lab access before continuing; do not substitute a lexical result and call it vector retrieval.
-
-The script rebuilds only its own lab corpora. It compares two sequential indexed versions, not automatic historical policy selection. Effective-date filtering is inspected in the application demo; an effective-date extension is optional, not required here.
-
-After saving outputs and completing the lab, remove the disposable database:
-
-```sh
-docker compose -f app/compose.yaml exec -T postgres psql -U postgres -d postgres -c 'DROP DATABASE ch09_rag_lab'
-```
-
-## Solution and status
-
-See [worked solution](solutions/answers.md) and [measured results](solutions/results-2026-10-10.json). Reference execution was validated October 10, 2026. Instructor's full application-demo rehearsal and learner walkthrough remain separate checks.
+Click **Restore paragraph baseline** when finished. This returns the demo to paragraph indexing; it does not change the main marketplace or remove conversations. Save your comparison locally; no submission or database reset is required. See the [worked answers](solutions/answers.md) after trying the comparisons.

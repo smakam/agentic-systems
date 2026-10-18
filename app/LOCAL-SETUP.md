@@ -140,7 +140,7 @@ Before moving to the agent lessons, verify document indexing separately in **bot
 
 1. Open **http://localhost:5178/**, sign in as **operator**, open **Support workspace**, select **OpenAI Agents SDK**, then expand **Workspace options → Documents**.
 2. Check the **document chunks indexed** count. If it is incomplete, click **Index documents** and wait until the indexed count equals the total, with a nonzero total—for example, **20 / 20**. The exact total may change with the supplied corpus.
-3. Repeat the same check in **http://127.0.0.1:5179/**. Index there too if needed; checking only the main workspace is insufficient.
+3. Repeat the check in **http://127.0.0.1:5179/** under **Workspace options → RAG → Marketplace documents**. Index there too if needed; checking only the main workspace is insufficient. The separate **RAG experiments** index is for the Knowledge and Retrieval lesson and does not replace this marketplace-document check.
 4. If indexing fails, correct the configured provider key, embedding-model access or billing issue, then retry. A loaded UI or successful policy answer is not proof of vector indexing: unembedded chunks use a labelled keyword fallback.
 
 This creates embeddings for missing chunks using the configured gateway and incurs embedding API usage. It does not reset business records. Recheck after reseeding/resetting a workspace or adding documents; normal read-only questions do not require indexing again. The right-hand count verifies stored embeddings; a retrieval trace can confirm the search method when you inspect agent calls in later lessons.

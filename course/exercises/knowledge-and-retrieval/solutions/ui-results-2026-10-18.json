@@ -1,0 +1,252 @@
+{
+  "v1": {
+    "experiment": "versions",
+    "question": "Is the seller payout eligible for release? State the waiting period and explain why, with policy citations.",
+    "facts": "Simulated fixed facts: payment captured, confirmed delivery 30 hours ago, no open return.",
+    "source_version": "v1",
+    "indexed_version": "v1",
+    "indexed_strategy": "paragraph",
+    "stale": false,
+    "top_k": 4,
+    "passages": [
+      {
+        "id": "passage-2",
+        "source": "payout-demo-v1.md",
+        "version": "v1",
+        "line_start": 3,
+        "line_end": 3,
+        "body": "Captured payment, confirmed delivery and no open return are required. The seller payout becomes eligible at least 24 hours after delivery. Eligibility does not mean a payout was executed."
+      },
+      {
+        "id": "passage-1",
+        "source": "payout-demo-v1.md",
+        "version": "v1",
+        "line_start": 1,
+        "line_end": 1,
+        "body": "# Simulated payout policy V1"
+      }
+    ],
+    "retrieved_characters": 215,
+    "answer": "Yes. Based on the simulated facts, the payout is eligible for release because all required conditions are met: payment was captured, delivery was confirmed, and there is no open return. The policy says the payout \u201cbecomes eligible at least 24 hours after delivery.\u201d Since delivery was confirmed 30 hours ago, that waiting period has passed [passage-2].\n\nWaiting period: at least 24 hours after delivery [passage-2].\n\nWhy: the policy requires:\n- captured payment,\n- confirmed delivery,\n- no open return,\n- and at least 24 hours since delivery [passage-2].\n\nAlso, eligibility is not the same as an executed payout; the policy explicitly says eligibility does not mean the payout was actually executed [passage-2].",
+    "retrieval": "pgvector_cosine"
+  },
+  "stale": {
+    "experiment": "versions",
+    "question": "Is the seller payout eligible for release? State the waiting period and explain why, with policy citations.",
+    "facts": "Simulated fixed facts: payment captured, confirmed delivery 30 hours ago, no open return.",
+    "source_version": "v2",
+    "indexed_version": "v1",
+    "indexed_strategy": "paragraph",
+    "stale": true,
+    "top_k": 4,
+    "passages": [
+      {
+        "id": "passage-2",
+        "source": "payout-demo-v1.md",
+        "version": "v1",
+        "line_start": 3,
+        "line_end": 3,
+        "body": "Captured payment, confirmed delivery and no open return are required. The seller payout becomes eligible at least 24 hours after delivery. Eligibility does not mean a payout was executed."
+      },
+      {
+        "id": "passage-1",
+        "source": "payout-demo-v1.md",
+        "version": "v1",
+        "line_start": 1,
+        "line_end": 1,
+        "body": "# Simulated payout policy V1"
+      }
+    ],
+    "retrieved_characters": 215,
+    "answer": "Yes. Based on the simulated facts, the payout is eligible for release because all listed prerequisites are met: payment is captured, delivery was confirmed, and there is no open return [passage-2].\n\nWaiting period: at least 24 hours after delivery [passage-2].\n\nWhy: the policy says the seller payout \u201cbecomes eligible at least 24 hours after delivery\u201d once those conditions are satisfied [passage-2]. Since delivery was confirmed 30 hours ago, the 24-hour waiting period has passed [passage-2].\n\nImportant limitation: this establishes eligibility only. It does not establish that a payout has actually been executed [passage-2].",
+    "retrieval": "pgvector_cosine"
+  },
+  "v2": {
+    "experiment": "versions",
+    "question": "Is the seller payout eligible for release? State the waiting period and explain why, with policy citations.",
+    "facts": "Simulated fixed facts: payment captured, confirmed delivery 30 hours ago, no open return.",
+    "source_version": "v2",
+    "indexed_version": "v2",
+    "indexed_strategy": "paragraph",
+    "stale": false,
+    "top_k": 4,
+    "passages": [
+      {
+        "id": "passage-2",
+        "source": "payout-demo-v2.md",
+        "version": "v2",
+        "line_start": 3,
+        "line_end": 3,
+        "body": "Captured payment, confirmed delivery and no open return are required. The seller payout becomes eligible at least 48 hours after delivery. Eligibility does not mean a payout was executed."
+      },
+      {
+        "id": "passage-1",
+        "source": "payout-demo-v2.md",
+        "version": "v2",
+        "line_start": 1,
+        "line_end": 1,
+        "body": "# Simulated payout policy V2"
+      }
+    ],
+    "retrieved_characters": 215,
+    "answer": "No. Based on the simulated facts, the seller payout is not yet eligible for release.\n\n- The policy requires:\n  - captured payment,\n  - confirmed delivery,\n  - no open return, and\n  - eligibility only **at least 48 hours after delivery** [passage-2].\n\nHere, the first three conditions are met, but delivery was confirmed only **30 hours ago**. That is **18 hours short** of the minimum 48-hour waiting period, so the payout is not yet eligible [passage-2].\n\nWaiting period: **at least 48 hours after delivery** [passage-2].\n\nAlso, even once that threshold is reached, **eligibility does not mean a payout was executed** [passage-2].",
+    "retrieval": "pgvector_cosine"
+  },
+  "chunking": [
+    {
+      "experiment": "chunking",
+      "question": "What are the standard wait, extra review hold and total required wait? Is payout eligible now? Cite the policy.",
+      "facts": "Simulated facts: payment captured, confirmed delivery 30 hours ago, no open return, Amber Review flag present.",
+      "source_version": "expanded",
+      "indexed_version": "expanded",
+      "indexed_strategy": "paragraph",
+      "stale": false,
+      "top_k": 1,
+      "passages": [
+        {
+          "id": "passage-6",
+          "source": "payout-demo-expanded.md",
+          "version": "expanded",
+          "line_start": 11,
+          "line_end": 11,
+          "body": "The standard seller payout waiting period is 24 hours after confirmed delivery. Captured payment and no open return are required. Purchases carrying a review flag must also satisfy the following review exception."
+        }
+      ],
+      "retrieved_characters": 212,
+      "answer": "From the provided policy:\n\n- **Standard wait:** **24 hours after confirmed delivery** [passage-6]\n- **Base requirements:** **captured payment** and **no open return** [passage-6]\n\nGiven your simulated facts:\n- payment captured\n- confirmed delivery **30 hours ago**\n- no open return\n- **Amber Review flag present**\n\nThe policy also says: **\u201cPurchases carrying a review flag must also satisfy the following review exception.\u201d** [passage-6]\n\nSo:\n\n- **Extra review hold:** **cannot be established from the provided passage** [passage-6]\n- **Total required wait:** **cannot be established from the provided passage**, because the review-exception timing/details are not included [passage-6]\n- **Is payout eligible now?** **Cannot be confirmed from the provided passage.** The order satisfies the standard 24-hour wait and the listed base conditions, but because a **review flag is present**, eligibility depends on the unspecified **review exception** [passage-6]\n\nSo the most supported conclusion is: **not enough policy text was provided to determine current payout eligibility.**",
+      "retrieval": "pgvector_cosine",
+      "has_standard": true,
+      "has_extension": false
+    },
+    {
+      "experiment": "chunking",
+      "question": "What are the standard wait, extra review hold and total required wait? Is payout eligible now? Cite the policy.",
+      "facts": "Simulated facts: payment captured, confirmed delivery 30 hours ago, no open return, Amber Review flag present.",
+      "source_version": "expanded",
+      "indexed_version": "expanded",
+      "indexed_strategy": "paragraph",
+      "stale": false,
+      "top_k": 4,
+      "passages": [
+        {
+          "id": "passage-6",
+          "source": "payout-demo-expanded.md",
+          "version": "expanded",
+          "line_start": 11,
+          "line_end": 11,
+          "body": "The standard seller payout waiting period is 24 hours after confirmed delivery. Captured payment and no open return are required. Purchases carrying a review flag must also satisfy the following review exception."
+        },
+        {
+          "id": "passage-7",
+          "source": "payout-demo-expanded.md",
+          "version": "expanded",
+          "line_start": 13,
+          "line_end": 13,
+          "body": "Amber Review payout exception: add a further 48 hours to the standard waiting period defined in the preceding paragraph. The extra review hold is cumulative, not a replacement for the standard wait. It changes eligibility, not whether a payout was actually executed."
+        },
+        {
+          "id": "passage-1",
+          "source": "payout-demo-expanded.md",
+          "version": "expanded",
+          "line_start": 1,
+          "line_end": 1,
+          "body": "# Simulated expanded payout policy"
+        },
+        {
+          "id": "passage-2",
+          "source": "payout-demo-expanded.md",
+          "version": "expanded",
+          "line_start": 3,
+          "line_end": 3,
+          "body": "Simulated payout policy for a document-retrieval lab. These rules do not change marketplace records."
+        }
+      ],
+      "retrieved_characters": 612,
+      "answer": "- **Standard wait:** 24 hours after confirmed delivery, assuming payment is captured and there is no open return [passage-6].\n- **Extra review hold:** 48 additional hours for an **Amber Review** flag [passage-7].\n- **Total required wait:** 72 hours total, because the 48-hour review hold is **cumulative** and does not replace the standard 24-hour wait [passage-7].\n\n**Is payout eligible now?**  \n**No.** Based on the simulated facts:\n- payment is captured,\n- delivery was confirmed **30 hours ago**,\n- there is **no open return**,\n- but an **Amber Review** flag is present.\n\nThat means eligibility requires **72 hours** after confirmed delivery, and only **30 hours** have passed, so the payout is **not yet eligible** [passage-6] [passage-7].\n\nAlso, per policy, this addresses **eligibility only**, not whether any payout was actually executed [passage-7].",
+      "retrieval": "pgvector_cosine",
+      "has_standard": true,
+      "has_extension": true
+    },
+    {
+      "experiment": "chunking",
+      "question": "What are the standard wait, extra review hold and total required wait? Is payout eligible now? Cite the policy.",
+      "facts": "Simulated facts: payment captured, confirmed delivery 30 hours ago, no open return, Amber Review flag present.",
+      "source_version": "expanded",
+      "indexed_version": "expanded",
+      "indexed_strategy": "overlap",
+      "stale": false,
+      "top_k": 1,
+      "passages": [
+        {
+          "id": "passage-6",
+          "source": "payout-demo-expanded.md",
+          "version": "expanded",
+          "line_start": 11,
+          "line_end": 13,
+          "body": "The standard seller payout waiting period is 24 hours after confirmed delivery. Captured payment and no open return are required. Purchases carrying a review flag must also satisfy the following review exception.\n\nAmber Review payout exception: add a further 48 hours to the standard waiting period defined in the preceding paragraph. The extra review hold is cumulative, not a replacement for the standard wait. It changes eligibility, not whether a payout was actually executed."
+        }
+      ],
+      "retrieved_characters": 480,
+      "answer": "- Standard wait: **24 hours after confirmed delivery** [passage-6]\n- Extra review hold for **Amber Review**: **48 additional hours** [passage-6]\n- Total required wait: **72 hours after confirmed delivery** (24 + 48, cumulative) [passage-6]\n\nGiven the simulated facts:\n- payment captured: satisfied\n- no open return: satisfied\n- confirmed delivery was **30 hours ago**\n- Amber Review flag present: triggers the extra 48-hour hold\n\nSo **payout is not eligible yet** because only 30 of the required 72 hours have passed [passage-6].\n\nPolicy support: the passage states that the standard payout wait is 24 hours after confirmed delivery, that captured payment and no open return are required, and that Amber Review adds a further 48 hours cumulatively; it also notes this affects **eligibility**, not whether a payout was actually executed [passage-6].",
+      "retrieval": "pgvector_cosine",
+      "has_standard": true,
+      "has_extension": true
+    },
+    {
+      "experiment": "chunking",
+      "question": "What are the standard wait, extra review hold and total required wait? Is payout eligible now? Cite the policy.",
+      "facts": "Simulated facts: payment captured, confirmed delivery 30 hours ago, no open return, Amber Review flag present.",
+      "source_version": "expanded",
+      "indexed_version": "expanded",
+      "indexed_strategy": "overlap",
+      "stale": false,
+      "top_k": 4,
+      "passages": [
+        {
+          "id": "passage-6",
+          "source": "payout-demo-expanded.md",
+          "version": "expanded",
+          "line_start": 11,
+          "line_end": 13,
+          "body": "The standard seller payout waiting period is 24 hours after confirmed delivery. Captured payment and no open return are required. Purchases carrying a review flag must also satisfy the following review exception.\n\nAmber Review payout exception: add a further 48 hours to the standard waiting period defined in the preceding paragraph. The extra review hold is cumulative, not a replacement for the standard wait. It changes eligibility, not whether a payout was actually executed."
+        },
+        {
+          "id": "passage-7",
+          "source": "payout-demo-expanded.md",
+          "version": "expanded",
+          "line_start": 13,
+          "line_end": 15,
+          "body": "Amber Review payout exception: add a further 48 hours to the standard waiting period defined in the preceding paragraph. The extra review hold is cumulative, not a replacement for the standard wait. It changes eligibility, not whether a payout was actually executed.\n\nAn open return blocks release while unresolved. A closed return does not prove a refund has completed."
+        },
+        {
+          "id": "passage-5",
+          "source": "payout-demo-expanded.md",
+          "version": "expanded",
+          "line_start": 9,
+          "line_end": 11,
+          "body": "Shipment dispatch is not delivery. A confirmed delivery timestamp starts the policy waiting period.\n\nThe standard seller payout waiting period is 24 hours after confirmed delivery. Captured payment and no open return are required. Purchases carrying a review flag must also satisfy the following review exception."
+        },
+        {
+          "id": "passage-9",
+          "source": "payout-demo-expanded.md",
+          "version": "expanded",
+          "line_start": 17,
+          "line_end": 19,
+          "body": "Seller balances show captured, refunded, fees, paid-out and unpaid amounts. Unpaid money may still be held.\n\nSupport explanations must cite the retrieved policy and distinguish eligibility from a recorded completed payout."
+        }
+      ],
+      "retrieved_characters": 1385,
+      "answer": "Using the simulated facts:\n\n- payment captured\n- confirmed delivery 30 hours ago\n- no open return\n- Amber Review flag present\n\nPolicy says:\n\n- Standard wait: **24 hours after confirmed delivery** [passage-5][passage-6]\n- Amber Review extra hold: **an additional 48 hours**, cumulative with the standard wait [passage-6][passage-7]\n\nSo:\n\n- **Standard wait:** 24 hours [passage-5]\n- **Extra review hold:** 48 hours [passage-6]\n- **Total required wait:** 72 hours after confirmed delivery [passage-6][passage-7]\n\nIs payout eligible now?\n\n- **No.** Only **30 hours** have passed since confirmed delivery, but **72 hours** are required because of the Amber Review flag [passage-5][passage-6].\n- The captured payment and no open return conditions are satisfied based on your simulated facts [passage-5][passage-6].\n\nAlso, policy distinguishes **eligibility** from an actual completed payout: the review hold \u201cchanges eligibility, not whether a payout was actually executed\u201d [passage-6], and support must distinguish eligibility from a recorded completed payout [passage-9].",
+      "retrieval": "pgvector_cosine",
+      "has_standard": true,
+      "has_extension": true
+    }
+  ],
+  "validation": {
+    "date": "2026-10-18",
+    "workspace": "local Test",
+    "model_alias": "support-model-test",
+    "retrieval": "pgvector_cosine",
+    "business_and_marketplace_document_checksums_unchanged": true
+  }
+}

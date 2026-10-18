@@ -1,5 +1,5 @@
-# Solution materials
+# Historical RAG CLI reference
 
-Start with [answers.md](answers.md), the worked answers for this chapter. Keep it closed until you finish the [exercise](../exercise.md).
+The current learner workflow is entirely in the Test workspace UI. Follow [the exercise](../exercise.md) and [worked answers](answers.md).
 
-Other files in this folder are reference implementations or recorded validation evidence linked from the answers. They are not additional learner tasks.
+`rag_lab.py`, `expanded-policy-legacy.md` and `results-2026-10-10.json` retain the earlier terminal-based lab and its dated evidence. That saved run used a self-contained 72-hour exception and returned correct answers in all four chunking settings. It is not evidence for the revised adjacent-fact UI example. The current expanded fixture separates a 24-hour base wait and an additional 48-hour hold. Do not present historical results as a fresh run of the new example.

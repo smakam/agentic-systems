@@ -105,7 +105,7 @@ async def run(args):
               'no open return, Amber Review flag present. Is seller payout eligible? '
               'Explain the standard rule and the exception, with citations.')
         for strategy in ('paragraph', 'overlap'):
-            counts[strategy] = await ingest(db, api, strategy, 'expanded-policy.md', strategy, 'lab-v1')
+            counts[strategy] = await ingest(db, api, strategy, 'expanded-policy-legacy.md', strategy, 'lab-v1')
             for k in (1, 4):
                 rows = await retrieve(db, api, strategy, cq, k)
                 bodies = '\n'.join(r['body'] for r in rows)

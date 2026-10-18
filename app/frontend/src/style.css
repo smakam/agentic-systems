@@ -49,3 +49,7 @@
 .support-settings .workspace-subsection{padding:0;margin:16px 0}
 .support-settings .workspace-subsection+.workspace-subsection{border-top:1px solid #e0e5dc;padding-top:14px}
 .support-settings h4{font-size:12px;margin:0 0 10px}
+
+.rag-policy-demo label{display:block;margin:12px 0}.rag-policy-demo select,.rag-policy-demo textarea{width:100%;margin-top:6px}.rag-policy-demo textarea{min-height:120px}.rag-policy-demo pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;max-height:350px;overflow:auto}.rag-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.rag-stale{padding:10px;background:#fff4d4;border-left:3px solid #b58b2f}.rag-demo-result{margin-top:18px;border-top:1px solid #dce5e4;padding-top:14px}.rag-demo-result .answer{font-size:13px}.rag-demo-result section{border-top:1px solid #dce5e4;padding:10px 0}
+
+.rag-policy-demo-dialog{width:min(1040px,90vw);max-height:85vh;overflow:auto;border:1px solid #cddcd7;border-radius:12px;padding:28px;color:var(--ink,#173c38);background:#fafbf8}.rag-policy-demo-dialog::backdrop{background:rgba(12,35,31,.45)}.rag-policy-demo-dialog>header{display:flex;align-items:center;justify-content:space-between;gap:20px}.rag-policy-demo-dialog>header h3{margin:0}.rag-policy-demo-dialog .rag-demo-result .answer{font-size:15px}.rag-policy-demo-dialog textarea{min-height:80px}.rag-policy-demo-dialog section p{line-height:1.65}
