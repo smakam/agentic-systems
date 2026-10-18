@@ -96,6 +96,7 @@ In the second file, complete the import TODO and the registration TODO. Keep the
 After saving both files, run:
 
 ```sh
+cp course/exercises/tools-and-mcp/solutions/check_seller_balance.py "$TOOLS_MCP_LAB_DIR/solutions/check_seller_balance.py"
 docker exec marketplace-lab-memory-backend-1 mkdir -p /tmp/tools-mcp-lab
 docker cp "$TOOLS_MCP_LAB_DIR/." marketplace-lab-memory-backend-1:/tmp/tools-mcp-lab
 docker exec -w /tmp/tools-mcp-lab \
