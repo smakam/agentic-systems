@@ -62,12 +62,12 @@ Register the tool in an isolated copy of the existing local marketplace MCP serv
 
 Build a separate server exposing `get_tracking_status(tracking_id)` over `tracking-data.json`. It runs as a separate process on the same machine; no extra HTTP backend or database is required. Include status, latest event, observation timestamp and an explicit simulated-data marker. Return a structured not-found response for unknown IDs.
 
-Connect it alongside the marketplace server through a second stdio connection. Ask **“What is the tracking status of DEMO-TRACK-001?”**, inspect the selected tool and returned fixture, then ask **“What is the tracking status of DEMO-TRACK-UNKNOWN?”**. Keep tracking distinct from the marketplace database: this exercise does not add shipment-to-tracking-ID linkage or live carrier data. An HTTP version is optional and uses the same handler.
+Connect it alongside the marketplace server through a second stdio connection. Ask **“What is the simulated tracking status for DEMO-TRACK-001?”**, inspect the selected tool and returned fixture, then ask **“What is the simulated tracking status for DEMO-TRACK-UNKNOWN?”**. Keep tracking distinct from the marketplace database: this exercise does not add shipment-to-tracking-ID linkage or live carrier data. An HTTP version is optional and uses the same handler.
 
 **What to check and record:** server code, discovery schema, two call outputs, and a two-server connection diagram. Explain how adding a new tool differs from connecting a new server.
 
 
 
-Use a separate lab checkout and a disposable practice database for the coding challenges. The tracking service uses only its JSON fixture. When finished, stop the tracking process and restore the lab tool/client configuration. The core read-only task requires no database reset.
+The worked answers provide complete files and commands for an isolated temporary package copy using the existing read-only Test database connection. The tracking service uses only its JSON fixture. Remove the temporary copies when finished; no application restart or database reset is needed.
 
 See [the worked answers and reference implementations](solutions/answers.md).

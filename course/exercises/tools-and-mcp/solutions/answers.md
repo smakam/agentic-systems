@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-Use the running Test marketplace and SDK runtime from [Course Setup](../../../../app/LOCAL-SETUP.md), with GPT-5.4, memory and experimental options off. Open local Langfuse. Cloud comparison requires your own completed [cloud setup](../../../../app/CLOUD-SETUP.md). The coding challenges use a separate lab checkout and disposable practice data.
+Use the running Test marketplace and SDK runtime from [Course Setup](../../../../app/LOCAL-SETUP.md), with GPT-5.4, memory and experimental options off. Open local Langfuse. Cloud comparison requires your own completed [cloud setup](../../../../app/CLOUD-SETUP.md). The coding challenges use an isolated temporary package copy and read-only Test data.
 
 ## Your task
 
@@ -46,36 +46,144 @@ Finish with experimental settings off. Stop Cloud SQL when cloud practice is fin
 
 ### Part 2: Additional challenges (optional coding)
 
-#### Challenge 1: Seller balance implementation
+These solutions run in an **isolated temporary copy**, using the existing Test backend’s Python dependencies and read-only `market_test` connection. They do not replace the running application's files or require a restart. Run the commands below from the repository root, in the same terminal. Complete the Docker-based [Course Setup](../../../../app/LOCAL-SETUP.md) first; the Test backend container must be running.
 
-Copy [seller_balance_tool.py](seller_balance_tool.py) into a lab module in the backend package. In a lab copy of `marketplace/mcp_server.py`, after registering the five existing tools, call `register_seller_balance(server, ctx)`. The shared context gives the new tool the same snapshot and retained evidence lifecycle. Discover six tools in the lab. Do not edit production's HTTP client allowlist for this local extension.
+#### Challenge 1: Add a seller-balance tool
 
-The helper binds `seller_id` through psycopg parameters. A known seller returns at most one row; an unknown ID returns an empty rows collection. Verify the five money fields are integers, match the existing query tool, and satisfy the reconciliation equation. Seller totals must not be repeated across an item join and summed. The fixture's actual values depend on the fixed snapshot; do not manufacture numeric expected results. A malicious-looking ID remains a bound value and cannot become a SQL statement. Do not expose exception details or connection credentials in a published tool.
+**Complete solution files and destinations**
 
-#### Challenge 2: Separate tracking server
+| Supplied final file | Destination inside the temporary backend package | Purpose |
+|---|---|---|
+| [seller_balance_tool.py](seller_balance_tool.py) | `marketplace/seller_balance_tool.py` | Registers `get_seller_balance(seller_id)` using the existing investigation context |
+| [marketplace_mcp_server.py](marketplace_mcp_server.py) | `marketplace/mcp_server.py` | Complete server file, including imports, the five existing tools, new registration and state resource |
+| [check_seller_balance.py](check_seller_balance.py) | `solutions/check_seller_balance.py` | Complete stdio discovery and result check; no model calls |
 
-Run [tracking_server.py](tracking_server.py) with the same Python/dependencies as the backend. Launch it through `MCPServerStdio` with an absolute script path. Keep both the marketplace and tracking connection contexts open for the whole agent run and include both server objects in `Agent(mcp_servers=[marketplace_server, tracking_server])`. The server reads its JSON relative to its script, independent of the working directory.
+The original package is `app/backend/marketplace/`. The commands copy it to a temporary directory before changing either file. In the final server file, `from .seller_balance_tool import register_seller_balance` imports the helper. Immediately after the loop registering the original five tools, `register_seller_balance(server, ctx)` adds the sixth. Both use the **same `ctx`**, so the snapshot, retained evidence and lifecycle remain shared. The bookkeeping resource remains a resource, not a seventh tool.
 
-For a quick check using the existing Docker backend, run these from the repository root:
+**1. Prepare the isolated copy.**
 
 ```sh
-docker cp course/exercises/tools-and-mcp/solutions marketplace-lab-backend-1:/tmp/ch8-solutions
-docker compose -f app/compose.yaml exec -T backend python -c 'import asyncio,json,sys
-from agents.mcp import MCPServerStdio
-async def run():
-    async with MCPServerStdio(params={"command":sys.executable,"args":["/tmp/ch8-solutions/tracking_server.py"]}) as server:
-        print([tool.name for tool in await server.list_tools()])
-        for tracking_id in ("DEMO-TRACK-001", "unknown"):
-            result=await server.call_tool("get_tracking_status", {"tracking_id":tracking_id})
-            print(json.loads(result.content[0].text))
-asyncio.run(run())'
+export TOOLS_MCP_LAB_DIR="$(mktemp -d "${TMPDIR:-/tmp}/tools-mcp-lab.XXXXXX")"
+mkdir -p "$TOOLS_MCP_LAB_DIR/marketplace" "$TOOLS_MCP_LAB_DIR/solutions"
+cp -R app/backend/marketplace/. "$TOOLS_MCP_LAB_DIR/marketplace/"
+cp -R course/exercises/tools-and-mcp/solutions/. "$TOOLS_MCP_LAB_DIR/solutions/"
+cp "$TOOLS_MCP_LAB_DIR/solutions/seller_balance_tool.py" "$TOOLS_MCP_LAB_DIR/marketplace/seller_balance_tool.py"
+cp "$TOOLS_MCP_LAB_DIR/solutions/marketplace_mcp_server.py" "$TOOLS_MCP_LAB_DIR/marketplace/mcp_server.py"
+docker exec marketplace-lab-memory-backend-1 mkdir -p /tmp/tools-mcp-lab
+docker cp "$TOOLS_MCP_LAB_DIR/." marketplace-lab-memory-backend-1:/tmp/tools-mcp-lab
 ```
 
-This starts/stops the tracking subprocess within the check and makes no model calls. To integrate with an agent, use the same connection alongside `marketplace.mcp_client.open_mcp()` inside the backend environment; keep both `async with` contexts active until `Runner.run` returns. Do this in a lab script, rather than modifying the production agent just to demonstrate discovery.
+`marketplace-lab-memory-backend-1` is the Test backend from Course Setup. The scripts explicitly reject a database other than `market_test`. Keep the temporary path shown above for this lab; it is separate from the container's running `/app/marketplace` package.
 
-For `DEMO-TRACK-001`, expect `status: ok`, `simulated: true`, tracking status `in_transit`, the sorting-centre event, and observation time `2026-10-10T09:00:00Z`. For an unknown ID, expect `status: not_found` with the supplied ID and `simulated: true`. Never interpret the timestamp as live freshness or imply a real shipment lookup.
+**2. Discover and call the new tool.**
 
-The marketplace extension reuses its existing context and database. Tracking owns a separate contract, process and fixture. Both can run on the same machine. No new database, carrier account, application login, or marketplace write is needed.
+```sh
+docker exec -w /tmp/tools-mcp-lab \
+  -e PYTHONPATH=/tmp/tools-mcp-lab \
+  -e LANGFUSE_TRACING_ENABLED=false -e OTEL_SDK_DISABLED=true \
+  marketplace-lab-memory-backend-1 \
+  python /tmp/tools-mcp-lab/solutions/check_seller_balance.py
+```
 
+The working directory **and** Python path select the lab package. Omitting the working directory can cause a subprocess to import the running application package instead, which only exposes five tools. This command launches a new stdio server, connects, discovers tools, calls them and closes the connection on exit. Tracing is disabled for these command-line checks; inspect their printed inputs/schema and results in the terminal.
 
-Stop the tracking process and restore only the temporary lab configuration when finished. These extensions do not require editing the running regular marketplace or resetting its data.
+**Expected result:** six discovered tools: `get_catalog`, `query_business_data`, `search_documents`, `fetch_evidence`, `get_order_history` and `get_seller_balance`. The new input schema requires a string `seller_id`. The check calls `seller-1`, an unknown seller and an SQL-looking seller string that must remain a bound value, and compares the known result with the same SELECT through `query_business_data`.
+
+A known seller returns one row with the seller's name and integer `captured`, `refunded`, `fees`, `paid_out` and `unpaid` values in **paise**. An unknown ID returns `status: empty`, no rows and a zero row count. Rows and snapshot must match the original query tool. The check asserts:
+
+```text
+captured = refunded + fees + paid_out + unpaid
+```
+
+It finishes with `PASS: six tools; known/unknown results; same snapshot and rows; reconciliation`. Amounts depend on your current Test revision, so the script checks the equation rather than assuming fixed values. `unpaid` does not establish payout eligibility.
+
+The helper uses a fixed, bounded SELECT against `analytics.seller_balances` with a bound seller parameter; it does not ask the model to write SQL. Avoid joining and re-summing seller totals across order items. This local extension does not require changing the production HTTP tool allowlist, frontend or agent configuration.
+
+#### Challenge 2: Connect a separate simulated tracking server
+
+Use the temporary copy prepared above. If starting directly with this challenge, run Challenge 1's preparation first. All files below were copied into its `solutions` directory.
+
+| Complete solution file | Purpose |
+|---|---|
+| [tracking_server.py](tracking_server.py) | Independent MCP server exposing `get_tracking_status(tracking_id)` |
+| [tracking-data.json](tracking-data.json) | Simulated tracking fixture, stored beside the server script |
+| [check_tracking.py](check_tracking.py) | Discover tracking and check known/unknown IDs without a model |
+| [check_two_servers.py](check_two_servers.py) | Keep both stdio connections open and discover/call each server |
+| [run_two_server_agent.py](run_two_server_agent.py) | Complete optional agent host using both MCP servers |
+
+**1. Check the tracking server independently.**
+
+```sh
+docker exec -w /tmp/tools-mcp-lab \
+  -e PYTHONPATH=/tmp/tools-mcp-lab \
+  -e LANGFUSE_TRACING_ENABLED=false -e OTEL_SDK_DISABLED=true \
+  marketplace-lab-memory-backend-1 \
+  python /tmp/tools-mcp-lab/solutions/check_tracking.py
+```
+
+The client launches the server using an absolute script path. The server loads JSON relative to its own file, so fixture lookup does not depend on the caller's working directory. Its input schema requires a string `tracking_id`. Expect:
+
+- `DEMO-TRACK-001`: `status: ok`, `simulated: true`, tracking status `in_transit`, the demonstration sorting-centre event, and observation time `2026-10-10T09:00:00Z`.
+- `DEMO-TRACK-UNKNOWN`: `status: not_found`, the supplied ID and `simulated: true`.
+- Final line: `PASS: tracking discovery, known fixture and explicit not-found response`.
+
+These are fixture records, not a carrier integration. The timestamp is not a live freshness claim.
+
+**2. Connect both servers from one host.**
+
+```sh
+docker exec -w /tmp/tools-mcp-lab \
+  -e PYTHONPATH=/tmp/tools-mcp-lab \
+  -e LANGFUSE_TRACING_ENABLED=false -e OTEL_SDK_DISABLED=true \
+  marketplace-lab-memory-backend-1 \
+  python /tmp/tools-mcp-lab/solutions/check_two_servers.py
+```
+
+Expect six marketplace tools on one connection and only `get_tracking_status` on the other. The script calls seller balance and tracking while **both connections remain open**, then prints `PASS: two independent stdio connections, both discoverable and callable`. Both servers run on the same machine; separate servers do not require separate hosts or databases. No model call is made in either check.
+
+**3. Optional: let an agent choose between both servers.**
+
+This step uses the Test gateway's configured `support-model-test` alias and incurs normal model usage charges. The complete host file opens two `MCPServerStdio` contexts and passes both objects to `Agent(mcp_servers=[marketplace, tracking])`. Both contexts remain active until the runner finishes. It is a command-line lab, not a new option in the running marketplace UI; tracing is disabled and the terminal prints the actual model-requested tool names.
+
+```sh
+docker exec -w /tmp/tools-mcp-lab \
+  -e PYTHONPATH=/tmp/tools-mcp-lab \
+  -e LANGFUSE_TRACING_ENABLED=false -e OTEL_SDK_DISABLED=true \
+  marketplace-lab-memory-backend-1 \
+  python /tmp/tools-mcp-lab/solutions/run_two_server_agent.py \
+  'Show the balance for seller-1 and the simulated tracking status for DEMO-TRACK-001. Keep the two results separate.'
+```
+
+Expect a grounded seller balance and the simulated tracking result, presented separately. Inspect the printed tool names rather than assuming a fixed call sequence: the model can choose the new balance tool or the original SQL tool. Tracking data must come from the tracking server. The script bounds the run to four model turns and a two-minute timeout.
+
+To try a missing tracking record, run:
+
+```sh
+docker exec -w /tmp/tools-mcp-lab \
+  -e PYTHONPATH=/tmp/tools-mcp-lab \
+  -e LANGFUSE_TRACING_ENABLED=false -e OTEL_SDK_DISABLED=true \
+  marketplace-lab-memory-backend-1 \
+  python /tmp/tools-mcp-lab/solutions/run_two_server_agent.py \
+  'What is the simulated tracking status for DEMO-TRACK-UNKNOWN?'
+```
+
+Expect an explicit not-found answer, without an invented shipment status. The deterministic check in step 1 verifies this tool response even if you skip the paid agent run.
+
+**4. Remove the temporary lab files.**
+
+All subprocesses stop when their client contexts close. After the commands finish, remove only the temporary copies created above:
+
+```sh
+docker exec marketplace-lab-memory-backend-1 rm -rf /tmp/tools-mcp-lab
+python3 - <<'PY'
+import os
+import shutil
+from pathlib import Path
+lab = Path(os.environ['TOOLS_MCP_LAB_DIR']).resolve()
+assert lab.name.startswith('tools-mcp-lab.') and lab.is_dir()
+shutil.rmtree(lab)
+PY
+unset TOOLS_MCP_LAB_DIR
+```
+
+No database reset or application restart is needed. The running marketplace keeps its original five-tool contract throughout this lab.
