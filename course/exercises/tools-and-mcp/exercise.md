@@ -50,7 +50,7 @@ Keep your question, trace references, important inputs/outputs and transport obs
 
 ### Part 2: Add a seller-balance tool (optional coding)
 
-**Purpose:** expose a useful business operation—getting one seller’s balance—as a named tool with a simple seller-ID input. The model can request this operation without composing SQL. You will define its handler, register it with the existing marketplace MCP server and inspect its real input/output contract.
+**Purpose:** create a new MCP tool, `get_seller_balance(seller_id)`, that returns one seller’s captured, refunded, fee, paid-out and unpaid amounts. The model can request this operation without composing SQL. You will define its handler, register it with the existing marketplace MCP server and inspect its real input/output contract.
 
 **Where this runs:** a temporary copy of the backend package, tested entirely in the terminal. The test launches that copied MCP server as a separate stdio process, calls it and stops it. It uses the existing Test container’s Python environment and read-only `market_test` connection. Neither running marketplace application is edited or restarted.
 
@@ -93,7 +93,7 @@ In the second file, complete the import TODO and the registration TODO. Keep the
 
 #### Step 4: Run the supplied terminal test
 
-After saving both files, run:
+After saving both files, return to the **same terminal used for Step 1**, with the **repository root** as its current folder (not the temporary marketplace folder). Run the whole block below. The first command refreshes only the supplied test script; the next two copy your lab into the temporary Docker folder. The final `docker exec` runs the Python client.
 
 ```sh
 cp course/exercises/tools-and-mcp/solutions/check_seller_balance.py "$TOOLS_MCP_LAB_DIR/solutions/check_seller_balance.py"
@@ -106,10 +106,12 @@ docker exec -w /tmp/tools-mcp-lab \
   python /tmp/tools-mcp-lab/solutions/check_seller_balance.py
 ```
 
-The command does two things:
+The Python client, `check_seller_balance.py`, does both operations below. There is no separate command for discovery:
 
 1. Lists the **six MCP tools**: the original five plus `get_seller_balance`.
-2. Calls **`get_seller_balance` for `seller-1`** and prints the returned seller name and balance fields in paise.
+2. Calls **`get_seller_balance` with `seller_id="seller-1"`** and prints that seller’s name and balance fields in paise. In the supplied dataset, this seller is **Cedar & Co.**
+
+Inside the client, `server.list_tools()` gets the tool list, then `server.call_tool("get_seller_balance", {"seller_id": "seller-1"})` requests that seller’s balance. These calls are already supplied; you do not need to add them.
 
 The output starts with `Discovered 6 MCP tools:` and includes `get_seller_balance`. It then shows that seller’s `captured`, `refunded`, `fees`, `paid_out` and `unpaid` amounts. This demonstrates that you registered the new tool and can call it. Exact amounts depend on the Test revision. It makes no model calls.
 
@@ -117,7 +119,7 @@ If discovery shows only five tools, check the registration TODO and keep both th
 
 #### Step 5: Remove the temporary lab copy
 
-The test closes its server process automatically. Remove the two temporary copies after the check finishes:
+The test closes its server process automatically. This last step only removes the temporary folders on your computer and in Docker after you finish. It does not delete application files or business records:
 
 ```sh
 docker exec marketplace-lab-memory-backend-1 rm -rf /tmp/tools-mcp-lab

@@ -96,6 +96,8 @@ cp course/exercises/tools-and-mcp/solutions/mcp_server.py "$TOOLS_MCP_LAB_DIR/ma
 
 #### Step 4: Run the same test
 
+Use the original terminal from Step 1, at the repository root. The first command refreshes the supplied client so an older temporary copy cannot overwrite it. The last command runs that client inside Docker.
+
 ```sh
 cp course/exercises/tools-and-mcp/solutions/check_seller_balance.py "$TOOLS_MCP_LAB_DIR/solutions/check_seller_balance.py"
 docker exec marketplace-lab-memory-backend-1 mkdir -p /tmp/tools-mcp-lab
@@ -110,7 +112,9 @@ docker exec -w /tmp/tools-mcp-lab \
 The complete supplied client is [check_seller_balance.py](check_seller_balance.py), shared by the exercise and solution. It starts the copied stdio server and performs just two operations:
 
 1. **List tools:** expect six names, including the new `get_seller_balance` alongside the existing five.
-2. **Call seller balance:** send `seller_id: seller-1` and display the returned row with seller name and `captured`, `refunded`, `fees`, `paid_out` and `unpaid` in integer paise.
+2. **Call seller balance:** send `seller_id: seller-1` (Cedar & Co. in the supplied dataset) and display the returned row with seller name and `captured`, `refunded`, `fees`, `paid_out` and `unpaid` in integer paise.
+
+Both operations are in this one client: `server.list_tools()` discovers the tools; `server.call_tool("get_seller_balance", {"seller_id": "seller-1"})` calls the new handler. The Docker command launches the client, not a model or the browser application.
 
 The output begins with:
 
