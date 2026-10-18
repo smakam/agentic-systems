@@ -69,7 +69,7 @@ return ctx.query(
 
 #### Step 3: Register it in the copied server
 
-The complete final file is [marketplace_mcp_server.py](marketplace_mcp_server.py). Its destination is `$TOOLS_MCP_LAB_DIR/marketplace/mcp_server.py`—the same file created from the [server template](../starter/marketplace_mcp_server.py).
+The complete final file is [mcp_server.py](mcp_server.py). Its destination is `$TOOLS_MCP_LAB_DIR/marketplace/mcp_server.py`—the same file created from the [server template](../starter/mcp_server.py).
 
 Fill the import TODO near the existing package imports:
 
@@ -91,7 +91,7 @@ To use the two complete reference files instead of filling the templates manuall
 
 ```sh
 cp course/exercises/tools-and-mcp/solutions/seller_balance_tool.py "$TOOLS_MCP_LAB_DIR/marketplace/seller_balance_tool.py"
-cp course/exercises/tools-and-mcp/solutions/marketplace_mcp_server.py "$TOOLS_MCP_LAB_DIR/marketplace/mcp_server.py"
+cp course/exercises/tools-and-mcp/solutions/mcp_server.py "$TOOLS_MCP_LAB_DIR/marketplace/mcp_server.py"
 ```
 
 #### Step 4: Run the same test

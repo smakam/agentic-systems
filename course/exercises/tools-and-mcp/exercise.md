@@ -63,7 +63,7 @@ export TOOLS_MCP_LAB_DIR="$(mktemp -d "${TMPDIR:-/tmp}/tools-mcp-lab.XXXXXX")"
 mkdir -p "$TOOLS_MCP_LAB_DIR/marketplace" "$TOOLS_MCP_LAB_DIR/solutions"
 cp -R app/backend/marketplace/. "$TOOLS_MCP_LAB_DIR/marketplace/"
 cp course/exercises/tools-and-mcp/starter/seller_balance_tool.py "$TOOLS_MCP_LAB_DIR/marketplace/seller_balance_tool.py"
-cp course/exercises/tools-and-mcp/starter/marketplace_mcp_server.py "$TOOLS_MCP_LAB_DIR/marketplace/mcp_server.py"
+cp course/exercises/tools-and-mcp/starter/mcp_server.py "$TOOLS_MCP_LAB_DIR/marketplace/mcp_server.py"
 cp course/exercises/tools-and-mcp/solutions/check_seller_balance.py "$TOOLS_MCP_LAB_DIR/solutions/"
 printf 'Edit the two files in: %s/marketplace\n' "$TOOLS_MCP_LAB_DIR"
 ```
@@ -73,7 +73,7 @@ These commands create the following two files in the printed temporary directory
 | File you create | Template | What you must implement |
 |---|---|---|
 | `marketplace/seller_balance_tool.py` | [Handler template](starter/seller_balance_tool.py) | Return one seller’s balance using `ctx.query` with a fixed SELECT and a bound seller-ID parameter |
-| `marketplace/mcp_server.py` | [Server template](starter/marketplace_mcp_server.py) | Import the registration helper, then call it immediately after the existing tool-registration loop, using the same `server` and `ctx` |
+| `marketplace/mcp_server.py` | [Server template](starter/mcp_server.py) | Import the registration helper, then call it immediately after the existing tool-registration loop, using the same `server` and `ctx` |
 
 The other backend files and the [test script](solutions/check_seller_balance.py) are supplied unchanged. You do not need to write a client or change the browser application.
 
