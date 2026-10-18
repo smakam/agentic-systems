@@ -134,11 +134,20 @@ If startup reports that vector indexing is unavailable, the UI may still load. F
 
 Other seeded marketplace usernames are `buyer`, `buyer2` and `seller`, with the same demo password. Use **localhost** consistently for the main UI and **127.0.0.1** for the test UI. Both hostnames point to your laptop. We intentionally use different hostnames because browser login cookies are scoped by hostname, not by port; this keeps the two workspaces’ login sessions from interfering with each other. Both are started by the same command; no additional setup is required. Section 5 explains test-workspace use and explicit fixture resets. These public demo credentials and loopback port bindings are for a laptop lab; they are not a cloud authentication setup.
 
-Sign in as **operator**, open **Support workspace**, and find **Workspace options → Documents** on the right. Click **Index documents** if needed, and wait for the indexing status. Indexing embeds missing chunks; it does not reset business records.
+### Complete document indexing in both workspaces
+
+Before moving to the agent lessons, verify document indexing separately in **both** the main marketplace and the Test marketplace. They have separate databases: an indexed main workspace does not mean Test is indexed. Startup attempts indexing, but setup is not ready for vector-retrieval lessons until the checks below pass.
+
+1. Open **http://localhost:5178/**, sign in as **operator**, open **Support workspace**, select **OpenAI Agents SDK**, then expand **Workspace options → Documents**.
+2. Check the **document chunks indexed** count. If it is incomplete, click **Index documents** and wait until the indexed count equals the total, with a nonzero total—for example, **20 / 20**. The exact total may change with the supplied corpus.
+3. Repeat the same check in **http://127.0.0.1:5179/**. Index there too if needed; checking only the main workspace is insufficient.
+4. If indexing fails, correct the configured provider key, embedding-model access or billing issue, then retry. A loaded UI or successful policy answer is not proof of vector indexing: unembedded chunks use a labelled keyword fallback.
+
+This creates embeddings for missing chunks using the configured gateway and incurs embedding API usage. It does not reset business records. Recheck after reseeding/resetting a workspace or adding documents; normal read-only questions do not require indexing again. The right-hand count verifies stored embeddings; a retrieval trace can confirm the search method when you inspect agent calls in later lessons.
 
 ## 4. Verify the services and logins
 
-For this setup chapter, confirm that the services are running and that you can open and sign in to all four applications. You do not need to ask an agent question yet.
+For this setup chapter, confirm that the services are running, that you can open and sign in to all four applications, and that document indexing is complete in both marketplace workspaces as described above. You do not need to ask an agent question yet.
 
 | Application | Check |
 |---|---|
@@ -153,7 +162,7 @@ Use the documented main/test hostnames to keep login sessions separate. If a ser
 
 `./scripts/start.sh` starts both workspaces. The main UI uses `market`; the test UI uses disposable `market_test`. Startup creates the test database if missing; the test backend initializes/seeds an empty database, while existing test data is preserved. Both workspaces share the gateway and observability services, but not business records, logins, conversations or memories. An operator-created memory does not become a support user's memory.
 
-No additional first-run command is needed. Open **[127.0.0.1:5179](http://127.0.0.1:5179/)** and sign in with the seeded demo accounts. Use **127.0.0.1**, not localhost: the test backend allows that origin, and the separate hostname avoids login-cookie collisions with the main workspace. Test questions still incur inference charges. Startup indexes documents in both workspaces; verify readiness before using vector-retrieval exercises.
+No additional first-run command is needed. Open **[127.0.0.1:5179](http://127.0.0.1:5179/)** and sign in with the seeded demo accounts. Use **127.0.0.1**, not localhost: the test backend allows that origin, and the separate hostname avoids login-cookie collisions with the main workspace. Test questions still incur inference charges. Startup attempts indexing in both workspaces; complete the separate document-indexing checks above before using vector-retrieval exercises.
 
 Never run a fixture reset, `scripts/test.sh`, or another runner against `market_test` while someone is using the test UI. They share and may replace that disposable database. No fixture/reset command here should be pointed at a real external database.
 

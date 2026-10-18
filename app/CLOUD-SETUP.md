@@ -182,11 +182,12 @@ Record the `web` and `mcp` URLs from `terraform output service_urls`; the MCP en
 
 ## 6. Verify access and one agent request
 
-1. Open **your cloud marketplace web URL** and sign in as `support` or `operator` with the demo password you chose during credential setup.
-2. Open the Support workspace and select **OpenAI Agents SDK**.
-3. Ask: **“What products, quantities and sellers are in order-1? Retrieve current records.”**
-4. Confirm that the answer completes and its evidence links open the retained records. Expect facts from your cloud data, which may differ from the laptop's modified data.
-5. Use the application's Langfuse link to open **your selected Langfuse Cloud project**, then inspect the trace associated with that question. Check model-generation and business-tool observations. Run metadata should identify HTTP MCP; a tool name alone does not establish transport.
+1. Open **your cloud marketplace web URL** and sign in as **operator** with the demo password you chose during credential setup. Cloud SQL and the required cloud services must be ready.
+2. Open **Support workspace → OpenAI Agents SDK → Workspace options → Documents**. Check **document chunks indexed**. If incomplete, click **Index documents** and wait until the indexed count equals the total, with a nonzero total—for example, **20 / 20**. The exact total depends on your corpus. This creates missing embeddings through the cloud gateway and incurs embedding API usage; it does not reset business data.
+3. Confirm indexing in this cloud deployment even if your laptop already shows all chunks indexed: the databases are independent. If it fails, correct provider credentials, embedding-model access, billing or gateway connectivity and retry. Policy answers can use a labelled keyword fallback when embeddings are missing, so a successful answer alone is not a completed vector-retrieval setup.
+4. Ask: **“What products, quantities and sellers are in order-1? Retrieve current records.”**
+5. Confirm that the answer completes and its evidence links open the retained records. Expect facts from your cloud data, which may differ from the laptop's modified data.
+6. Use the application's Langfuse link to open **your selected Langfuse Cloud project**, then inspect the trace associated with that question. Check model-generation and business-tool observations. Run metadata should identify HTTP MCP; a tool name alone does not establish transport.
 
 The private LiteLLM service is accessed by authenticated runtimes; it is not a public dashboard login checkpoint. Langfuse Cloud is a hosted account, not the laptop's seeded Langfuse login. A first request after idle time may take longer while services start.
 
