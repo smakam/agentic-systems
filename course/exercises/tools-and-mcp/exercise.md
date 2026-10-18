@@ -48,26 +48,86 @@ First complete the [cloud setup guide](../../../app/CLOUD-SETUP.md) and start yo
 
 Keep your question, trace references, important inputs/outputs and transport observations locally. Nothing needs to be submitted. Complete Part 1 before checking the [worked answers](solutions/answers.md).
 
-### Part 2: Additional challenges (optional coding)
+### Part 2: Add a seller-balance tool (optional coding)
 
-#### Challenge 1: Add a tool to the marketplace server
+**Purpose:** expose a useful business operation—getting one seller’s balance—as a named tool with a simple seller-ID input. The model can request this operation without composing SQL. You will define its handler, register it with the existing marketplace MCP server and inspect its real input/output contract.
 
-Implement `get_seller_balance(seller_id)` as a bounded, parameterized read of `analytics.seller_balances`. Return seller identity, captured, refunded, fees, paid_out and unpaid in integer paise, using the existing evidence envelope and snapshot. Unknown seller returns no rows. Clarify that unpaid includes held/failed payouts and does not imply release eligibility.
+**Where this runs:** a temporary copy of the backend package, tested entirely in the terminal. The test launches that copied MCP server as a separate stdio process, calls it and stops it. It uses the existing Test container’s Python environment and read-only `market_test` connection. Neither running marketplace application is edited or restarted.
 
-Register the tool in an isolated copy of the existing local marketplace MCP server. Discover it, call it for a known seller and an unknown seller, and compare with the existing query tool under the same snapshot. Prove that input is bound as a value, not concatenated into SQL. Keep production's five-tool allowlist unchanged.
+#### Step 1: Create the lab copy and two files from templates
 
-**What to check and record:** implementation diff, discovery schema, calls/results, reconciliation check (`captured = refunded + fees + paid_out + unpaid`) and a note on grain (one row per seller). Compare stored expected facts rather than model wording.
+Run from the repository root, in one terminal, with the Docker Test backend running from Course Setup. Keep this terminal open for the remaining steps.
 
-#### Challenge 2: Create a tracking MCP server
+```sh
+export TOOLS_MCP_LAB_DIR="$(mktemp -d "${TMPDIR:-/tmp}/tools-mcp-lab.XXXXXX")"
+mkdir -p "$TOOLS_MCP_LAB_DIR/marketplace" "$TOOLS_MCP_LAB_DIR/solutions"
+cp -R app/backend/marketplace/. "$TOOLS_MCP_LAB_DIR/marketplace/"
+cp course/exercises/tools-and-mcp/starter/seller_balance_tool.py "$TOOLS_MCP_LAB_DIR/marketplace/seller_balance_tool.py"
+cp course/exercises/tools-and-mcp/starter/marketplace_mcp_server.py "$TOOLS_MCP_LAB_DIR/marketplace/mcp_server.py"
+cp course/exercises/tools-and-mcp/solutions/check_seller_balance.py "$TOOLS_MCP_LAB_DIR/solutions/"
+printf 'Edit the two files in: %s/marketplace\n' "$TOOLS_MCP_LAB_DIR"
+```
 
-Build a separate server exposing `get_tracking_status(tracking_id)` over `tracking-data.json`. It runs as a separate process on the same machine; no extra HTTP backend or database is required. Include status, latest event, observation timestamp and an explicit simulated-data marker. Return a structured not-found response for unknown IDs.
+These commands create the following two files in the printed temporary directory. Open them in your editor; complete only the marked TODOs.
 
-Connect it alongside the marketplace server through a second stdio connection. Ask **“What is the simulated tracking status for DEMO-TRACK-001?”**, inspect the selected tool and returned fixture, then ask **“What is the simulated tracking status for DEMO-TRACK-UNKNOWN?”**. Keep tracking distinct from the marketplace database: this exercise does not add shipment-to-tracking-ID linkage or live carrier data. An HTTP version is optional and uses the same handler.
+| File you create | Template | What you must implement |
+|---|---|---|
+| `marketplace/seller_balance_tool.py` | [Handler template](starter/seller_balance_tool.py) | Return one seller’s balance using `ctx.query` with a fixed SELECT and a bound seller-ID parameter |
+| `marketplace/mcp_server.py` | [Server template](starter/marketplace_mcp_server.py) | Import the registration helper, then call it immediately after the existing tool-registration loop, using the same `server` and `ctx` |
 
-**What to check and record:** server code, discovery schema, two call outputs, and a two-server connection diagram. Explain how adding a new tool differs from connecting a new server.
+The other backend files and the [test script](solutions/check_seller_balance.py) are supplied unchanged. You do not need to write a client or change the browser application.
 
+#### Step 2: Complete the seller-balance handler
 
+Inside `get_seller_balance(seller_id)`, replace the placeholder with a call to `ctx.query(sql, parameters, purpose)` that:
 
-The worked answers provide complete files and commands for an isolated temporary package copy using the existing read-only Test database connection. The tracking service uses only its JSON fixture. Remove the temporary copies when finished; no application restart or database reset is needed.
+- Selects `seller_id`, `name`, `captured`, `refunded`, `fees`, `paid_out` and `unpaid` from `analytics.seller_balances`.
+- Filters to the requested seller with `WHERE seller_id = %(seller_id)s` and passes `{'seller_id': seller_id}` separately. Do not concatenate the input into SQL.
+- Returns the existing query result envelope, including snapshot and evidence reference. An unknown seller returns no rows.
 
-See [the worked answers and reference implementations](solutions/answers.md).
+Money stays in integer paise. One row represents one seller; do not join and repeat seller totals across order items. Unpaid includes held/failed payouts and is not proof that funds are eligible for release.
+
+#### Step 3: Register the handler in the copied server
+
+In the second file, complete the import TODO and the registration TODO. Keep the existing five tools, state resource and context cleanup. Register the new helper with the same investigation context so the six tools share its snapshot and evidence lifecycle.
+
+#### Step 4: Run the supplied terminal test
+
+After saving both files, run:
+
+```sh
+docker exec marketplace-lab-memory-backend-1 mkdir -p /tmp/tools-mcp-lab
+docker cp "$TOOLS_MCP_LAB_DIR/." marketplace-lab-memory-backend-1:/tmp/tools-mcp-lab
+docker exec -w /tmp/tools-mcp-lab \
+  -e PYTHONPATH=/tmp/tools-mcp-lab \
+  -e LANGFUSE_TRACING_ENABLED=false -e OTEL_SDK_DISABLED=true \
+  marketplace-lab-memory-backend-1 \
+  python /tmp/tools-mcp-lab/solutions/check_seller_balance.py
+```
+
+The test discovers the copied server’s tools, prints the new input schema, calls seller balance for known, unknown and SQL-looking IDs, and compares the known result with `query_business_data` under the same snapshot. It makes no model calls. Expect six tools, one known seller row, no rows for unknown/SQL-looking IDs, and this final line:
+
+```text
+PASS: six tools; known/unknown results; same snapshot and rows; reconciliation
+```
+
+The check also verifies `captured = refunded + fees + paid_out + unpaid`. Amounts depend on the Test revision. If discovery shows only five tools, check the registration TODO and keep both the supplied working-directory and Python-path settings. If the handler raises `NotImplementedError`, its TODO is unfinished. After another edit, repeat the same test commands to copy the updated files into the temporary container directory.
+
+#### Step 5: Remove the temporary lab copy
+
+The test closes its server process automatically. Remove the two temporary copies after the check finishes:
+
+```sh
+docker exec marketplace-lab-memory-backend-1 rm -rf /tmp/tools-mcp-lab
+python3 - <<'PYCODE'
+import os
+import shutil
+from pathlib import Path
+lab = Path(os.environ['TOOLS_MCP_LAB_DIR']).resolve()
+assert lab.name.startswith('tools-mcp-lab.') and lab.is_dir()
+shutil.rmtree(lab)
+PYCODE
+unset TOOLS_MCP_LAB_DIR
+```
+
+Keep the two completed files and your discovery/input/output observations if useful. No database reset is needed. [Worked answers](solutions/answers.md) use these same files, steps and test command, with the TODOs completed.

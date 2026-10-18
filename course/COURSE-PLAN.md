@@ -139,9 +139,9 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Learning objective:** Distinguish tool contract, implementation and transport, including SQL validation, read-only permissions, evidence references and limits.
 
-**Demo and learner practice:** Inspect business, retrieval and memory tools; compare stdio and remote HTTP MCP. Core learners repeat the tool investigation. Developer extensions add a seller-balance tool and a separate tracking MCP server using supplied JSON fixtures.
+**Demo and learner practice:** Inspect business, retrieval and memory tools; compare stdio and remote HTTP MCP. Core learners repeat the tool investigation. The optional developer extension adds a seller-balance tool to an isolated copy of the existing MCP server, using two templates and a terminal test.
 
-**Workspace:** Test workspace http://127.0.0.1:5179/, database market_test. Code extensions use an isolated application copy/disposable database; tracking uses its own JSON fixtures. Optional cloud work requires the learner’s own deployment and database.
+**Workspace:** Test workspace http://127.0.0.1:5179/, database market_test. The code extension uses a temporary backend-package copy and the read-only Test database connection, without editing or restarting either running application. Optional cloud work requires the learner’s own deployment and database.
 
 **Materials:** [Exercise](exercises/tools-and-mcp/exercise.md) · [Answers](exercises/tools-and-mcp/solutions/answers.md)
 
