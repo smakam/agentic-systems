@@ -10,7 +10,7 @@ from openai import AsyncOpenAI, DefaultAsyncHttpxClient
 from .seed import DATA
 
 TABLES={'sellers','products','listings','orders','order_items','payments','shipments','allocations','payouts','returns','refunds','events','tickets','incidents','customers','freshness','seller_balances'}
-FUNCTIONS={'SUM','COUNT','AVG','MIN','MAX','COALESCE','ROUND','ABS','LOWER','UPPER','LENGTH','NULLIF','CAST','EXTRACT','DATE_TRUNC','AND','OR','JSON_EXTRACT_SCALAR'}
+FUNCTIONS={'SUM','COUNT','AVG','MIN','MAX','COALESCE','ROUND','ABS','LOWER','UPPER','REPLACE','LENGTH','NULLIF','CAST','EXTRACT','DATE_TRUNC','AND','OR','JSON_EXTRACT_SCALAR'}
 
 def validate_sql(sql):
     if len(sql)>8000: raise ValueError('Query is too long')
