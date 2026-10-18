@@ -27,7 +27,7 @@ Ask:
 
 Let the agent choose its evidence sources. Open its Langfuse trace and inspect:
 
-- **get_catalog → Preview:** collapse the JSON to its top-level branches, then expand one entity, the unpaid metric and one relationship. Identify currency and money units.
+- **get_catalog → Preview:** collapse the JSON to its top-level branches, then expand one entity, the unpaid metric and one relationship. Identify currency and money units. Map the remaining sections too: metrics, time guidance, cautions, catalog/ontology versions, validation status/issues and catalog hash. Validation checks structural coverage; it does not prove the business definitions are correct.
 - **query_business_data:** seller resolution and current payout, delivery and return records. Inspect the actual SQL and result grain.
 - **search_documents:** returned policy passages, source/version and relevant payout conditions.
 - **Later model calls:** how earlier tool calls and results become model context, and how final citations support the answer.

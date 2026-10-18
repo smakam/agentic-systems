@@ -23,7 +23,7 @@ A fresh GPT-5.4 rehearsal retrieved the catalog, resolved the seller, queried cu
 
 ## Static and dynamic input
 
-Stable configuration includes the investigator role, tool contracts, read-only boundaries, citation requirements and freshness rules. Dynamic input includes the question, snapshot metadata, retained messages, catalog results, business query results and retrieved policy passages. Catalog content can be relatively stable while still arriving dynamically through a tool call. Policies are separately retrieved documents, not part of the catalog payload. The relationship map does not imply a separate graph database.
+Stable configuration includes the investigator role, tool contracts, read-only boundaries, citation requirements and freshness rules. Dynamic input includes the question, snapshot metadata, retained messages, catalog results, business query results and retrieved policy passages. Catalog content can be relatively stable while still arriving dynamically through a tool call. Policies are separately retrieved documents, not part of the catalog payload. The relationship map does not imply a separate graph database. The catalog also includes currency/money units, metric definitions, time guidance, cautions, catalog/ontology versions, validation and a catalog hash. Validation covers table/field coverage and relationship/key endpoints; meanings and cardinalities require review.
 
 The application attaches the current revision and demo clock before the first model call for every question, including follow-ups. The initial call cannot contain a result from a tool that has not returned. Later calls retain tool calls and evidence. Prior generated prose is not equivalent to fresh verified business evidence.
 
