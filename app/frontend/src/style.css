@@ -41,3 +41,11 @@
 .run-metrics .routing-result{flex-basis:100%;font-size:14px;line-height:1.5;padding:8px 10px;background:#eaf1e9;color:#193d39;border-left:3px solid #557864;}
 
 .memory-job{margin-top:12px;padding-top:10px;border-top:1px solid var(--line,#dce5e4)}.memory-job strong{display:block}.memory-job button{margin-top:8px}
+
+/* Consistent disclosure groups for shared Support workspace settings. */
+.support-settings .workspace-option>summary{font-family:Manrope,sans-serif;font-size:14px;font-weight:700;color:#244438;line-height:1.5}
+.support-settings .workspace-option{padding:16px;margin:10px 0}
+.support-settings .workspace-option[open]>summary{margin-bottom:14px}
+.support-settings .workspace-subsection{padding:0;margin:16px 0}
+.support-settings .workspace-subsection+.workspace-subsection{border-top:1px solid #e0e5dc;padding-top:14px}
+.support-settings h4{font-size:12px;margin:0 0 10px}

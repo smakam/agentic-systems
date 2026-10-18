@@ -1,4 +1,4 @@
-# Chapter 7 reference solution
+# Prompt and Context — Reference Answers
 
 ## UI, database and cleanup
 
@@ -9,21 +9,23 @@ Use Support with OpenAI Agents SDK and a fresh conversation for each condition. 
 **Cleanup:** restore both suppression controls to off and the original workspace options. No business database reset is required; saved conversations and traces remain.
 
 
-## The separate context queries
+## The integrated context investigation
 
-| Query | Context to inspect | Expected reasoning |
+Question: **For Cedar & Co., which payouts are currently held, why are they held, and what must happen before each can be released?**
+
+| Evidence | What to inspect | How it supports the answer |
 |---|---|---|
-| Entity definitions | Catalog balance metrics, units, grain and current balance rows | Report current amounts in rupees. Unpaid can include held and failed payouts and does not by itself mean release is allowed. |
-| Relationships | Catalog relationship definitions, order items, listings/products and sellers | Use item grain and correct joins. Quantity is not the number of order-item rows. |
-| Policies | Retrieved settlement policy or runbook, version and effective date | Payout requires delivery confirmation and a 24-hour hold. Active returns can block release. The operator releases payouts manually. |
+| Catalog | Entity definitions, unpaid metric, units and relationships | Distinguishes unpaid from payout eligibility and supplies correct joins/grain. |
+| Business records | Seller, payout, delivery and return state | Establishes the current held amounts and blockers. |
+| Retrieved policy | Delivery/hold/return rules and citations | Explains the conditions for release. |
 
-Fresh run amounts and eligibility depend on the recorded revision and clock. Confirm them from tool evidence instead of copying historical values. The full catalog can include both entity and relationship context even when the question emphasizes one category.
+A fresh GPT-5.4 rehearsal retrieved the catalog, resolved the seller, queried current records and retrieved four policy chunks without tool errors. At revision 2, it found a held payout of ₹2,249.10 that still required delivery and the 24-hour hold, with no active return blocker. Verify current amounts from your own evidence rather than copying that snapshot. Tool sequence and call counts can vary.
 
 ## Static and dynamic input
 
 Stable configuration includes the investigator role, tool contracts, read-only boundaries, citation requirements and freshness rules. Dynamic input includes the question, snapshot metadata, retained messages, catalog results, business query results and retrieved policy passages. Catalog content can be relatively stable while still arriving dynamically through a tool call. Policies are separately retrieved documents, not part of the catalog payload. The relationship map does not imply a separate graph database.
 
-The initial call cannot contain a result from a tool that has not returned. Later calls retain tool calls and evidence. Prior generated prose is not equivalent to fresh verified business evidence.
+The application attaches the current revision and demo clock before the first model call for every question, including follow-ups. The initial call cannot contain a result from a tool that has not returned. Later calls retain tool calls and evidence. Prior generated prose is not equivalent to fresh verified business evidence.
 
 ## The UI context comparison
 
@@ -31,7 +33,20 @@ The request carries separate catalog and document-retrieval suppression options.
 
 Both tool calls succeed with empty context. Catalog data is null and policy passages are empty. Retrieval does not fall back to another method. The model should explain missing evidence rather than inventing a policy. Inspect evidence and actual answers; do not equate a completed run with a correct conclusion.
 
-Live successful-empty-context checks showed that the agent attempted SQL after receiving null catalog data. Both catalog-empty runs reached the eight-turn limit without a complete answer. Remaining SQL hints in the stable prompt made query construction possible. Empty policy passages led to an answer declining to confirm policy rules. Restored context retrieved normal definitions and policy evidence. Business state was unchanged. This differs from the earlier explicit-error catalog test, which stopped before SQL.
+## Verified GPT-5.4 comparison observations
+
+Fresh conversations, memory and response caching off, same model and revision 2 snapshot:
+
+| Condition | Actual behavior |
+|---|---|
+| Normal policy | Retrieved policy passages and cited the 30-day return window. |
+| Policy retrieval suppressed | Repeated retrieval and fetched evidence, received no passages, then declined to state the current policy without retrieved text. It did not claim the policy does not exist. |
+| Normal catalog | Corrected one query error and completed a reconciled breakdown by category, including the meaning of unpaid. |
+| Catalog suppressed | Ran several queries, some successful and some erroneous, then reached the eight-model-turn limit without a complete conclusion. It did not stop immediately or fail to construct every query. |
+
+For the normal category question, the recorded snapshot placed Cedar & Co. in Travel: captured ₹7,497; refunded ₹0; fees ₹749.70; paid out ₹0; unpaid ₹6,747.30. Captured minus refunds, fees and paid-out equals unpaid. Unpaid includes held and failed amounts; release eligibility requires additional current records and policy evidence.
+
+Both restored-context rehearsal runs completed: policy passages returned and the category breakdown reconciled to the same totals, with recovery from one SQL error. Restore both controls and repeat the same questions to confirm evidence returns in your run. **New conversation** clears experimental controls, so set the intended comparison switch afterward. This is an exploratory observation per condition, not a guaranteed result or a model benchmark. Business state remained unchanged.
 
 ## Saved observations
 
