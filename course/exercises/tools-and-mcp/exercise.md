@@ -105,13 +105,14 @@ docker exec -w /tmp/tools-mcp-lab \
   python /tmp/tools-mcp-lab/solutions/check_seller_balance.py
 ```
 
-The test discovers the copied server’s tools, prints the new input schema, calls seller balance for known, unknown and SQL-looking IDs, and compares the known result with `query_business_data` under the same snapshot. It makes no model calls. Expect six tools, one known seller row, no rows for unknown/SQL-looking IDs, and this final line:
+The command does two things:
 
-```text
-PASS: six tools; known/unknown results; same snapshot and rows; reconciliation
-```
+1. Lists the **six MCP tools**: the original five plus `get_seller_balance`.
+2. Calls **`get_seller_balance` for `seller-1`** and prints the returned seller name and balance fields in paise.
 
-The check also verifies `captured = refunded + fees + paid_out + unpaid`. Amounts depend on the Test revision. If discovery shows only five tools, check the registration TODO and keep both the supplied working-directory and Python-path settings. If the handler raises `NotImplementedError`, its TODO is unfinished. After another edit, repeat the same test commands to copy the updated files into the temporary container directory.
+The output starts with `Discovered 6 MCP tools:` and includes `get_seller_balance`. It then shows that seller’s `captured`, `refunded`, `fees`, `paid_out` and `unpaid` amounts. This demonstrates that you registered the new tool and can call it. Exact amounts depend on the Test revision. It makes no model calls.
+
+If discovery shows only five tools, check the registration TODO and keep both the supplied working-directory and Python-path settings. If the handler raises `NotImplementedError`, its TODO is unfinished. After another edit, repeat the same test commands to copy the updated files into the temporary container directory.
 
 #### Step 5: Remove the temporary lab copy
 

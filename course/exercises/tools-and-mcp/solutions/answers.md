@@ -106,27 +106,26 @@ docker exec -w /tmp/tools-mcp-lab \
   python /tmp/tools-mcp-lab/solutions/check_seller_balance.py
 ```
 
-The complete supplied client is [check_seller_balance.py](check_seller_balance.py); it is unchanged between exercise and solution. It opens the stdio connection, discovers and calls the tools, then closes the connection. Tracing is disabled for this terminal check; read the printed schema and outputs here rather than looking for a new Langfuse trace.
+The complete supplied client is [check_seller_balance.py](check_seller_balance.py), shared by the exercise and solution. It starts the copied stdio server and performs just two operations:
 
-Expected checks:
+1. **List tools:** expect six names, including the new `get_seller_balance` alongside the existing five.
+2. **Call seller balance:** send `seller_id: seller-1` and display the returned row with seller name and `captured`, `refunded`, `fees`, `paid_out` and `unpaid` in integer paise.
 
-| Check | Expected result |
-|---|---|
-| Discovery | The original five tools plus `get_seller_balance` |
-| Input schema | Required string `seller_id` |
-| `seller-1` | One row containing seller identity and five integer money fields |
-| Unknown seller | `status: empty`, zero rows |
-| SQL-looking seller string | Zero rows; input remains a bound value |
-| Existing query tool comparison | Same rows and snapshot |
-| Reconciliation | `captured = refunded + fees + paid_out + unpaid` |
-
-The final line is:
+The output begins with:
 
 ```text
-PASS: six tools; known/unknown results; same snapshot and rows; reconciliation
+Discovered 6 MCP tools:
+  fetch_evidence
+  get_catalog
+  get_order_history
+  get_seller_balance
+  query_business_data
+  search_documents
 ```
 
-Exact amounts depend on the current Test revision. The test checks the equation, not a hardcoded fixture balance. The command's working directory **and** Python path select the lab package; omitting them can load the unmodified application server. A database-name assertion rejects connections outside `market_test`. No model call or business-data write occurs.
+The seller-balance result follows. Exact amounts depend on the current Test revision. The script closes the connection and stops its server subprocess afterward. It makes no model calls or business-data writes. Tracing is disabled; inspect this output in the terminal.
+
+Keep the command's working directory and Python path so the subprocess loads the lab package. A database-name assertion rejects connections outside `market_test`.
 
 #### Step 5: Use the same cleanup
 
