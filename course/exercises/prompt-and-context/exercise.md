@@ -74,6 +74,6 @@ The model may still construct queries with an empty catalog. Do not require fail
 
 Record missing context, actual tool calls, SQL, answer differences and citations. Report observed results without requiring removal to cause a wrong answer. For a fresh run, amounts and eligibility depend on current records and demo time.
 
-See [the reference solution](solutions/answers.md). The [historical comparison note](supplied-trace.md) describes a different earlier experiment and is not a prerequisite for the current UI exercise.
+See [the reference solution](solutions/answers.md).
 
 Verified GPT-5.4 rehearsal: the normal catalog run completed after correcting one query error; the suppressed run made both successful and erroneous queries before reaching the eight-model-turn limit without a complete conclusion. With policy suppressed, the agent declined to state policy rules because it could not retrieve passages. Treat these as observations, not guaranteed outcomes.

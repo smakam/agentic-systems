@@ -48,14 +48,6 @@ For the normal category question, the recorded snapshot placed Cedar & Co. in Tr
 
 Both restored-context rehearsal runs completed: policy passages returned and the category breakdown reconciled to the same totals, with recovery from one SQL error. Restore both controls and repeat the same questions to confirm evidence returns in your run. **New conversation** clears experimental controls, so set the intended comparison switch afterward. This is an exploratory observation per condition, not a guaranteed result or a model benchmark. Business state remained unchanged.
 
-## Saved observations
-
-The earlier six-run test completed full, reduced and restored conditions for two questions. It produced no incorrect numeric answer or join. For Cedar & Co., all conditions reported captured ₹9,396, refunded ₹4,398, fees ₹499.80, paid out ₹4,498.20 and unpaid ₹0 at that recorded snapshot. Semantic removal reduced the explanation: it omitted held/failed payout and immediate-release distinctions. Relationship removal still returned the correct products, quantities and sellers for order-1.
-
-This is a single exploratory run per condition. Schema names, keys, field descriptions and static guidance remained available. The semantic variant removed several sections together, so it cannot attribute the difference to one definition. Prior training is a possible explanation, not an established cause. Do not require the learner run to reproduce a failure or the historical amounts.
-
-The [historical comparison note](../supplied-trace.md) distinguishes the earlier selected-field ablation from the current UI experiment. Inspect the traces from your own UI run for the current exercise.
-
 ## Local review checklist
 
 - Static configuration and dynamic context are distinct.
