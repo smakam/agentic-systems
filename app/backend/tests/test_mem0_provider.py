@@ -186,7 +186,7 @@ def test_api_provider_binding_ownership_and_validation(isolated_db,monkeypatch):
             got=client.post('/api/conversations/'+cid+'/ask',json={'question':'hello','memory_provider':'mem0','memory_enabled':False})
             assert got.status_code==200 and got.json()['metrics']['memory_provider']=='mem0'
             assert client.post('/api/conversations/'+cid+'/memory/finalize').json()['status']=='noop'
-            assert client.get('/api/conversations').json()[-1]['memory_provider']=='mem0'
+            assert next(c for c in client.get('/api/conversations').json() if c['id']==cid)['memory_provider']=='mem0'
             @asynccontextmanager
             async def wrapped():
                 try:yield FakeMCP()
