@@ -1,66 +1,56 @@
-# Chapter 8 exercise: Tools and MCP
-
-## UI, database and cleanup
-
-**UI:** [test marketplace](http://127.0.0.1:5179/) from Course Setup; use the role/workspace named in each task. **Database:** disposable practice database `market_test`, separate from main `market` and the fixed evaluation baseline `market_eval`. Test UI changes do not update the main marketplace. Save your questions, results and traces locally.
-
-For order and balance comparisons, keep the practice database state fixed while comparing answers. For memory practice, use the same test login and delete only the uniquely labelled preference you create.
-
-**Developer and cloud exceptions:** the seller-balance tool runs in an isolated code copy, explicitly connected to `market_test` or a disposable copy of it; do not inherit a main-database connection. The tracking server reads its JSON fixture and needs no business database. Optional cloud HTTP MCP uses your own cloud UI, MCP endpoint and independent cloud database.
-
-**Cleanup:** stop the tracking process, delete only the exercise memory and restore temporary tool/client configuration. If you edited running application code, undo those edits and restart the affected backend. Read-only business questions do not require a database reset.
-
-
-The solution is separate so you can try the tasks before checking the reference implementation.
-
-## Learning goal
-
-Discover and call tools through MCP, distinguish connection transport from tool behavior, extend an existing server, and connect a separate tool system.
+# Tools and MCP exercise
 
 ## Prerequisites
 
-Use the local environment from **Course Setup**. Cloud deployment is optional and uses your own endpoints/credentials. Keep experiment code in a separate lab checkout. Use `market_test` for business reads; keep its records fixed during each comparison. The tracking service uses the supplied JSON fixture and needs no database or carrier account.
+- Complete [Course Setup](../../../app/LOCAL-SETUP.md) and keep the application running.
+- Open the [Test marketplace](http://127.0.0.1:5179/) as Support or Operator and select **Support workspace → OpenAI Agents SDK**.
+- Under **Gateway → Gateway model mapping**, restore the GPT-5.4 default. Keep long-term memory, response caching, guardrails and context suppression off.
+- Open [local Langfuse](http://localhost:3000/) and the marketplace support project.
+- Keep the business records and demo clock unchanged during the comparison. Use your own trace results; fixed amounts and tool sequences are not guaranteed across datasets or model runs.
 
-## Part 1: Repeat what was covered in the demo
+## Your task
 
-Use **OpenAI Agents SDK** in the test marketplace Support workspace. Run the sample questions, or inspect the supplied historical traces from the speaker notes. Fresh runs use your own records and return their own trace IDs; an instructor trace is not your new run.
+### Part 1: Inspect the tool inputs and outputs
 
-1. Discover the marketplace and memory tools. Group them into **business**, **retrieval** and **memory**. Business and retrieval share the marketplace server; `fetch_evidence` retrieves saved results for those two groups. Personal memory uses a separate server.
-2. Run the order and policy questions below in fresh conversations with long-term memory off. Inspect tool names, input arguments, returned records/passages, evidence handles and the final answer.
-3. Use the memory save-and-recall sequence below. Inspect its separate memory calls and clean up only the preference created for this exercise.
+Start a **New conversation** and ask:
 
-| Example | Sample question / operation | What to inspect |
+> For order-1, show each seller’s name, payout amount and status, the payout attempt history, and what the policy requires before release.
+
+Open the corresponding Langfuse trace. Select each tool and use **Preview** to inspect the actual input and output. **Attributes** describes the tool contract and metadata; it is not the place to read the invocation arguments.
+
+| Tool | Input to inspect | Output to inspect |
 |---|---|---|
-| Business order records | **“What products, quantities and sellers are in order-1? Retrieve current records.”** | Catalog definitions and order-history/SQL results used by the answer |
-| Business balance example from the saved trace | **“What are Cedar & Co.'s captured amount and unpaid balance?”** | Bound SQL, current seller-balance records and evidence |
-| Document retrieval | **“What must happen before a seller payout can be released?”** | `search_documents` query, applicable policy passages and citations |
-| Memory save | **“Remember that my tools-and-mcp-demo display preference is amounts in rupees.”** | `save_memory` inputs and saved record ID/version |
-| Memory recall in a new chat | **“What display preference did I save for tools-and-mcp-demo?”** | `search_memories` and the returned user-scoped preference |
+| `get_catalog` | No business arguments | Entity definitions, field types, relationships, metrics and units |
+| `get_order_history` | `order_id` | Current order-related records and chronological event evidence, including recorded failures or retries |
+| `query_business_data` | SQL, bound parameters and purpose | Rows, columns, snapshot details and evidence reference |
+| `search_documents` | Query text, effective time, scope and maximum passages (`top_k`) | Policy/runbook passages, source/version details and evidence reference |
 
-### Memory settings and cleanup
+Explain how the tool results support the final answer. Distinguish current payout status from earlier attempts, and policy eligibility from an actual completed payout. Money is stored in paise and displayed in rupees.
 
-Enable long-term memory and allow memory changes for the **save** question. Use the unique `tools-and-mcp-demo` label so this practice does not replace an existing preference. For recall, start a new chat under the same login, enable memory, and leave memory changes off. Conversation history alone should not be the source of the recalled preference.
+This question produced all four model-requested tools in the recording rehearsal. Their order and number of calls can vary. If a tool is absent in your run, record that observation and inspect whether the needed evidence was obtained another way. Do not assume a missing tool means the answer is unsupported without checking its inputs and evidence.
 
-When finished, allow memory changes for a new question and ask: **“Forget only the tools-and-mcp-demo display preference I just saved.”** Inspect `delete_memory`; if the agent finds multiple matching records, select only this exercise's record. Use a fresh chat to check that it is no longer returned. Old conversation messages remain. Do not delete other memories or reset the workspace.
+To identify the local connection, select the **top-level support-investigation → Attributes → Metadata** and find **`mcp_transport: stdio`**. Tool names alone do not establish the transport. The model requests history through the tool; the application no longer preloads it into the question.
 
-### Optional: compare cloud HTTP MCP
+Memory tools are demonstrated by the instructor; there is no memory save, recall or deletion task in this exercise. `fetch_evidence` is available for retained results but is not a required call here.
 
-First complete the optional [cloud setup guide](../../../app/CLOUD-SETUP.md) from **Course Setup**. Skip live cloud calls if you have not deployed that environment; you can inspect the supplied historical remote trace instead.
+#### Optional: repeat the same question through cloud HTTP MCP
 
-1. Open **your cloud marketplace URL**, sign in to Support and select OpenAI Agents SDK.
-2. Ask the same order question: **“What products, quantities and sellers are in order-1? Retrieve current records.”**
-3. Open the corresponding trace in **your Langfuse Cloud project**. Inspect model requests, MCP tool inputs/results and final evidence. Record your own trace ID.
-4. Compare local **stdio** with cloud **HTTP** using configuration and run metadata alongside the traces. Identical tool names do not prove transport. Compare business facts only if both deployments have the same starting records; local and cloud data do not synchronize automatically.
+First complete the [cloud setup guide](../../../app/CLOUD-SETUP.md) and start your cloud services, including Cloud SQL. Use your own cloud marketplace and Langfuse project. If you have not set up cloud, skip this optional activity.
 
-There is no rejected-write demo or required cloud deployment in this exercise.
+1. Open your cloud marketplace, sign in as Support or Operator and select **OpenAI Agents SDK**.
+2. Start a fresh conversation with memory off and ask the **exact same question**:
 
-### What to check and record
+   > For order-1, show each seller’s name, payout amount and status, the payout attempt history, and what the policy requires before release.
 
-Keep the tool-category map, questions/operations, relevant tool inputs/results, trace IDs and connection metadata locally. Use these to compare with the solution; there is no submission destination. The speaker notes include historical business, policy, memory and remote trace references, identified by their originating environment.
+3. In the resulting cloud Langfuse trace, inspect the same four tools’ actual arguments and results. Model-selected calls can vary just as they do locally.
+4. Select **top-level support-investigation → Attributes → Metadata**. Compare **`mcp_transport: http`** and **`mcp_endpoint_host`** with the local stdio trace. A Cloud Run endpoint identifies the cloud MCP service; a tunnel endpoint identifies a separately reachable laptop service. HTTP describes transport, not where the agent itself runs.
+5. Compare tool contracts rather than assuming identical balances: local and cloud databases are independent. Stop Cloud SQL when you finish using cloud; storage and backup charges can remain while it is stopped.
 
-## Part 2: Additional challenges
+Keep your question, trace references, important inputs/outputs and transport observations locally. Nothing needs to be submitted. Complete Part 1 before checking the [worked answers](solutions/answers.md).
 
-### Challenge 1: Add a tool to the marketplace server
+### Part 2: Additional challenges (optional coding)
+
+#### Challenge 1: Add a tool to the marketplace server
 
 Implement `get_seller_balance(seller_id)` as a bounded, parameterized read of `analytics.seller_balances`. Return seller identity, captured, refunded, fees, paid_out and unpaid in integer paise, using the existing evidence envelope and snapshot. Unknown seller returns no rows. Clarify that unpaid includes held/failed payouts and does not imply release eligibility.
 
@@ -68,7 +58,7 @@ Register the tool in an isolated copy of the existing local marketplace MCP serv
 
 **What to check and record:** implementation diff, discovery schema, calls/results, reconciliation check (`captured = refunded + fees + paid_out + unpaid`) and a note on grain (one row per seller). Compare stored expected facts rather than model wording.
 
-### Challenge 2: Create a tracking MCP server
+#### Challenge 2: Create a tracking MCP server
 
 Build a separate server exposing `get_tracking_status(tracking_id)` over `tracking-data.json`. It runs as a separate process on the same machine; no extra HTTP backend or database is required. Include status, latest event, observation timestamp and an explicit simulated-data marker. Return a structured not-found response for unknown IDs.
 
@@ -76,6 +66,8 @@ Connect it alongside the marketplace server through a second stdio connection. A
 
 **What to check and record:** server code, discovery schema, two call outputs, and a two-server connection diagram. Explain how adding a new tool differs from connecting a new server.
 
-## Cleanup and reference solution
 
-Stop the tracking process, remove disposable memory records, and restore the original lab configuration. Keep credentials out of recorded results. See [the worked solution](solutions/answers.md) and its supplied fixture/server.
+
+Use a separate lab checkout and a disposable practice database for the coding challenges. The tracking service uses only its JSON fixture. When finished, stop the tracking process and restore the lab tool/client configuration. The core read-only task requires no database reset.
+
+See [the worked answers and reference implementations](solutions/answers.md).
