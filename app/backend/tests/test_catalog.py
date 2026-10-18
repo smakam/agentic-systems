@@ -70,9 +70,10 @@ def test_three_questions_keep_metadata_and_complete_tool_history():
     asyncio.run(run())
 
 
-def test_question_metadata_follows_prefetched_evidence():
-    text=build_question_input('Explain history',{'revision':7,'clock':'2026-10-01T12:00:00Z'},[{'current_records':{'rows':[]}}])
-    assert text.index('current_records') < text.index('Application investigation metadata')
+def test_history_question_has_metadata_without_preloaded_business_evidence():
+    text=build_question_input('Explain history',{'revision':7,'clock':'2026-10-01T12:00:00Z'})
+    assert text.startswith('Explain history\n\nApplication investigation metadata')
+    assert 'order-history evidence' not in text
     assert text.endswith('"revision": 7}')
 
 
