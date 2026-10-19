@@ -29,7 +29,7 @@ Version changes prepare documents automatically. Unchanged content reuses cached
 
 Preparation can add a dedicated lab seller/product and a new Test order, affecting Test counts and aggregate totals. It does not alter existing orders, seller balances, inventory or the demo clock. Reset keeps the created records and conversation history. The [verified order-backed rehearsal](order-policy-results-2026-10-19.json) reused the same recorded order at delivery age 30 hours: V1 answered eligible and V2 answered not yet eligible, both citing the order records and retrieved policy. The recorded payout remained held. The saved older main-chat evidence documents the previous synthetic version experiment only; its chunking observations remain separately labelled below.
 
-### Part 2: Compare chunking and the passage limit
+### Chunking and passage-limit observations
 
 Select **Chunking and passage limit**. The expanded synthetic policy separates two needed facts across adjacent paragraphs:
 

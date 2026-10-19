@@ -10,9 +10,9 @@ All steps below run in the browser. No terminal commands, file edits or chunker 
 
 ## Your task
 
-Repeat both instructor demonstrations: policy versions and chunking/passage limits. Document your observations for the four chunking settings using the table in Part 2.
+Repeat both instructor demonstrations: policy versions and chunking/passage limits. Document your observations for the four chunking settings using the observation table below.
 
-### Part 1: Inspect retrieval and compare policy versions
+### Repeat the demo: RAG calls and policy versions
 
 #### Quick review: policy and business evidence
 
@@ -34,7 +34,7 @@ Do not move the demo clock, change delivery/payment/return records or execute th
 
 This compares selected lab policies against actual Test records. It does not demonstrate automatic historical policy selection or replace the operational payout execution rules. There is no manual indexing or stale-index step.
 
-### Part 2: Compare chunking and the passage limit
+### Repeat the demo: chunking and passage limit
 
 **Purpose:** test whether the retrieved evidence includes all facts required for an answer. A smaller passage limit can omit a needed fact; overlap can bring adjacent facts into one chunk but also repeats text. Neither overlap nor a larger limit is always better.
 
@@ -43,7 +43,11 @@ This compares selected lab policies against actual Test records. It does not dem
 3. Click **Use example question**: **“What is the total payout waiting time for Amber products? Explain the standard wait and additional wait, with policy citations.”** Ask the identical question in every comparison. This is a policy-only question; no order facts or fixed delivery scenario are supplied. As an optional simpler question, ask “What is the payout waiting time for regular products?” (24 hours).
 4. Select **Paragraph** and wait for **Ready**. Set **Maximum passages (top K)** to **1**, start a fresh conversation and ask. Then change only top K to **4**, start a fresh conversation and repeat the same question. Top K changes retrieval, not the document index.
 5. Select **Two-paragraph overlap** and wait for automatic preparation to show **Ready**. The chunker uses consecutive paragraph pairs with stride one. Ask at top K **1**, then **4**, using a fresh conversation and the identical question for each run. Do not ask until the indexed strategy matches the selected strategy.
-6. For each run inspect **Retrieved passages and source lines** and record the following:
+6. For each run inspect **Retrieved passages and source lines**.
+
+### Record observations
+
+For the four chunking settings, record the following:
 
 | Chunking | Top K | Standard 24-hour rule retrieved? | Extra 48-hour hold retrieved? | Answer and citations | Retrieved characters |
 |---|---:|---|---|---|---:|
