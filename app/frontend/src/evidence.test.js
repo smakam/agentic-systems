@@ -54,3 +54,19 @@ test('citations cannot resolve evidence from a later answer', () => {
   const runs=withCitationEvidence([{id:'a',conversation_id:'one',evidence:{}},{id:'b',conversation_id:'one',evidence}]);
   assert.deepEqual(runs[0].citationEvidence,{});
 });
+
+test('RAG citations resolve only the saved passages and order in their own answer', () => {
+  const make=(id,body)=>({id,conversation_id:'same',metrics:{rag_demo:{indexed_version:id,passages:[{id:'passage-2',source:'policy.md',line_start:3,line_end:3,body}],order:{order_id:id}}}});
+  const runs=withCitationEvidence([make('v1','Wait 24 hours'),make('v2','Wait 48 hours'),{conversation_id:'same',evidence:{}}]);
+  for (let i=0;i<2;i++) {
+    const text=formatEvidence('[passage-2] [order-record]',runs[i].citationEvidence);
+    assert.equal(text,'[View passage-2](#evidence-rag-passage-2) [View order records](#evidence-rag-order-record)');
+    assert.equal(formatEvidence(text,runs[i].citationEvidence),text);
+    assert.equal(runs[i].citationEvidence['evidence-rag-order-record'].rows[0].value,i?'v2':'v1');
+  }
+  assert.equal(runs[0].citationEvidence['evidence-rag-passage-2'].chunks[0].body,'Wait 24 hours');
+  assert.equal(runs[1].citationEvidence['evidence-rag-passage-2'].chunks[0].body,'Wait 48 hours');
+  assert.equal(formatEvidence('[passage-2] [order-record]',runs[2].citationEvidence),'[Source unavailable] [Source unavailable]');
+  assert.equal(formatEvidence('[passage-99]',runs[0].citationEvidence),'[Source unavailable]');
+  assert.equal(formatEvidence('[Docs](https://example.com/passage-2)',runs[0].citationEvidence),'[Docs](https://example.com/passage-2)');
+});

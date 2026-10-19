@@ -26,7 +26,7 @@ export default function RagPolicyDemo({api,disabled=false,experiment,onExperimen
     <p role="status"><strong>{error?'Preparation failed':busy?'Preparing documents':state.ready?(experiment==='versions'&&!state.order_ready?'Prepare demo order':'Ready'):'Not ready'}</strong> · Selected {state.source_version.toUpperCase()} / {state.strategy} · Indexed {state.indexed_version?.toUpperCase()||'none'} / {state.indexed_strategy||'none'}</p>
     {state.stale&&<p className="rag-stale">Document preparation is pending; retry preparation before asking.</p>}
 
-    <button disabled={locked} onClick={()=>action('restore')}>{experiment==='versions'?'Restore V1':'Restore paragraph baseline'}</button>
+    {experiment!=='versions'&&<button disabled={locked} onClick={()=>action('restore')}>Restore paragraph baseline</button>}
     <button disabled={locked||!state.ready||(experiment==='versions'&&!state.order_ready)} onClick={()=>onQuestion(state.question)}>{experiment==='versions'?'Use order question':'Use example question'}</button>
     <details><summary>Selected source document</summary><pre>{state.source_text}</pre></details>
     <p>Unchanged chunks reuse stored embeddings. Changing top K needs no document indexing. Questions still use query-embedding and model API calls.</p>
