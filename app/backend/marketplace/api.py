@@ -474,8 +474,23 @@ async def compact_conversation(cid:str,body:CompactHistoryRequest,user=Depends(i
             except Exception:raise HTTPException(503,'Compaction failed; conversation history is unchanged. Retry after checking model readiness.')from None
             if generated:
                 state.update(usage=usage,created_at=datetime.now(timezone.utc).isoformat(),model=model)
-                latest=previous[0];latest.metrics={**(latest.metrics or {}),'history_compaction':state};db.commit()
+                latest=previous[0];updated={**(latest.metrics or {}),'history_compaction':state};updated.pop('session_history_reset',None);latest.metrics=updated;db.commit()
             return {'summary':state,'generated':generated,'history_preserved':True,'usage':usage if generated else {'requests':0,'input_tokens':0,'output_tokens':0}}
+        finally:lock.execute(text('SELECT pg_advisory_unlock(hashtext(:cid))'),{'cid':cid})
+
+@app.post('/api/conversations/{cid}/history/reset')
+def reset_conversation_history(cid:str,body:CompactHistoryRequest,user=Depends(identity),db=Depends(db_session)):
+    role(user,'support','operator')
+    conv=owned(db,user,cid)
+    if not is_test():raise HTTPException(403,'Session history comparison requires the Test workspace')
+    with engine.connect() as lock:
+        if not lock.execute(text('SELECT pg_try_advisory_lock(hashtext(:cid))'),{'cid':cid}).scalar():
+            raise HTTPException(409,'This conversation already has a running operation')
+        try:
+            latest=db.scalars(select(Run).where(Run.conversation_id==cid).order_by(Run.created_at.desc())).first()
+            if latest:
+                latest.metrics={**(latest.metrics or {}),'session_history_reset':True,'session_history_mode':'off'};db.commit()
+            return {'reset':True,'history_preserved':True}
         finally:lock.execute(text('SELECT pg_advisory_unlock(hashtext(:cid))'),{'cid':cid})
 
 class MemoryChange(BaseModel):
