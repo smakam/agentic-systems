@@ -156,6 +156,8 @@ def test_authenticated_api_preserves_runtime_and_rejects_override(monkeypatch):
     finally:
         api.app.dependency_overrides.clear()
         with Session.begin() as db:
+            from marketplace.db import MemoryConversation
+            db.execute(delete(MemoryConversation).where(MemoryConversation.conversation_id.in_(created)))
             db.execute(delete(Conversation).where(Conversation.id.in_(created)))
 
 

@@ -1,81 +1,64 @@
-# Chapter 10 — Session state
+# Session State — exercise
 
-## UI, database and cleanup
+## Purpose and workspace
 
-**UI:** [test marketplace](http://127.0.0.1:5179/) from Course Setup; use the role/workspace named in each task. **Database:** disposable practice database `market_test`, separate from main `market` and the fixed evaluation baseline `market_eval`. Test UI changes do not update the main marketplace. Save your questions, results and traces locally.
+Repeat the instructor demo, then compare how retained history changes the model input. Use the **Test marketplace → Support → OpenAI Agents SDK** from Course Setup. Keep long-term memory, response caching, RAG experiments and other comparisons off. All required practice runs in the browser; no source edits, terminal commands or database copies are needed.
 
-Part 1 uses Support with OpenAI Agents SDK and newly prepared test orders. Dispatch those orders in the same test marketplace; the fixed evaluation baseline remains unchanged.
+One question block includes the user question, associated assistant responses, tool calls and tool results. Full history stays stored even when older blocks are omitted or summarized for model input. Use a new conversation for each comparison and keep the same model and questions.
 
-**Developer lab:** the optional reference runner uses a temporary backend code copy and disposable `ch10_session_lab`, not the database behind the test UI. The reference resets only that lab between comparisons.
+## 1. Repeat the continuity, reuse and freshness checks
 
-**Cleanup:** the reference runner restores its temporary in-memory session class in `finally`; it does not undo source-file edits. If implementing your own approach, restore the original six-block sliding window and history selector, undo other source/configuration edits and restart the affected backend. Save outputs before deleting the disposable lab. Reset the UI practice database only when a clean seed is needed and no other test user or runner is active; never reset `market_eval`.
+Prepare a fresh Test order with two units and a pending shipment using the marketplace workflow. Note its order ID and a valid seller ID, ideally its seller. Do not use or reset the fixed evaluation database.
 
+1. In a new conversation ask: **“What is the current shipment status for <order ID>? Cite the evidence.”** Replace the placeholder. Follow up: **“How many units are in that order?”** Inspect the history and tool arguments: the order reference should carry across questions. A fresh quantity query is valid if the first result did not contain quantity.
+2. In another new conversation ask: **“For <seller ID>, show the current captured, refunded, fees, paid-out and unpaid amounts. Cite the evidence.”** Confirm the structured result contains all five amounts; note the revision and evidence handle. Without changing data or clock, follow up: **“What is that seller’s current unpaid balance?”** Inspect the tool calls for evidence reuse without new balance SQL.
+3. Keep that balance conversation open. Dispatch the prepared pending shipment through the Test marketplace. Confirm success and a newer business revision. Return to the balance conversation and ask: **“What is that seller’s current unpaid balance? Cite current evidence.”** Inspect the new SQL result and revision. The amount may remain unchanged: the global revision can require refresh after an unrelated change.
 
-Status: instructions, reference solutions and saved validation are available. Use the normal configured gateway for learner runs. Instructor UI rehearsal remains separate.
+Reuse and refresh are instructions to the model, not guaranteed middleware behavior. Record what the trace actually shows. An unchanged revision permits reuse only when earlier successful, non-truncated records fully cover the question. Current time and policy applicability still matter.
 
-## Choose your practice path
+## 2. Compare two-, six- and eight-block windows
 
-- **Part 1: UI practice.** Use the already running local marketplace and Langfuse from Course Setup. Prepare a fresh demo order in the test marketplace (`market_test`); keep the fixed evaluation database `market_eval` unchanged. You do not need to create or reset a lab database just to repeat these UI questions.
-- **Part 2: optional developer challenges.** If you want to change the history-selection code, use the disposable lab setup in the solution. The database-copy and script commands apply to this path, or to an automated instructor rehearsal.
+Open **Workspace options → Session history → History strategy**. Select two blocks for the first run, six for the second, and eight for the third. Selecting a different strategy starts a new conversation. If repeating the same setting, use **New conversation** yourself.
 
-## Starting state for the scripted developer lab
+Use this identical sequence for each setting, sending one question at a time:
 
-Keep the fixed evaluation database unchanged. For scripted developer runs, create a disposable lab database from the same baseline for each comparison. Use the same model alias and mapping, history strategy, input questions, and initial marketplace state in each comparison. Record these settings with the results. Reset only the disposable lab between complete runs; never reset the fixed evaluation or main marketplace database. A practice-UI reset is a separate operation, only when a clean seed is needed and no other user or runner is active.
+1. **“For this conversation, use the fictional label cedar-window-731 for my sample. Reply only: noted.”**
+2. **“What is 1 plus ten? Answer in one short sentence.”**
+3. **“What is 2 plus ten? Answer in one short sentence.”**
+4. **“What is 3 plus ten? Answer in one short sentence.”**
+5. **“What is 4 plus ten? Answer in one short sentence.”**
+6. **“What is 5 plus ten? Answer in one short sentence.”**
+7. **“What is 6 plus ten? Answer in one short sentence.”**
+8. **“What fictional label did I give my sample at the beginning?”**
 
-For developer implementations, store full conversation history in PostgreSQL. Apply history-selection changes only to the input selected for the next model call. Preserve complete tool-call/result pairs and current investigation metadata.
+Do not repeat the label in the intervening questions. Check that the assistant did not repeat it either. Under the eighth answer, expand **Session history → Selected prior history supplied to the model**. Compare this with the original messages still visible in the conversation.
 
-## Part 1 — repeat the three demos
-
-1. In a new conversation, prepare a fresh demo order with two units and a pending shipment. Ask: “What is the current shipment status for <your prepared order ID>? Cite the evidence.” Replace the placeholder with the actual order ID. Follow up with “How many units are in that order?” Inspect the next model input and show how the earlier question supplies the order reference.
-2. In the same conversation, dispatch the prepared shipment through the marketplace. Ask: “What is the current shipment status of that order now? Cite current evidence.” Compare business revisions, fresh tool evidence, and the answer. History preserves the reference; fresh evidence establishes the current status. Refresh is instructed by the prompt, so verify it in the trace.
-3. In another new conversation, introduce a distinctive fictional label. Add six unrelated question blocks without repeating the label in questions or answers. Ask for the original label. Verify that it remains in stored history but is absent from the selected six-block history and the actual next model input. Do not rely only on the final answer to prove exclusion.
-
-Keep the questions, relevant trace/input excerpts, revisions, and a short explanation for each case locally for comparison with the solution. There is no submission destination. Redact credentials and provider reasoning items.
-
-## Part 2 — optional developer challenges
-
-### Developer extension 1 — change the window
-
-Use the same seven-block history fixture for every strategy. These are the exact user messages:
-
-1. “My fictional sample label is cedar-window-731.”
-2. “What is 1 plus ten?”
-3. “What is 2 plus ten?”
-4. “What is 3 plus ten?”
-5. “What is 4 plus ten?”
-6. “What is 5 plus ten?”
-7. “What is 6 plus ten?”
-
-Then ask the same eighth question for each comparison: **“What fictional label did I give my sample at the beginning?”**
-
-The reference runner supplies the first seven exchanges as a fixed fixture, including their known answers; it makes a real model call for the eighth question. It does not generate seven new answers for every strategy. Use a separate lab conversation restored to that identical fixture for each strategy so one comparison does not append extra turns to the next.
-
-| Selection policy | Prior blocks supplied for the eighth question |
+| Setting | What to inspect before judging recall |
 |---|---|
-| Two-block window | Blocks 6–7 |
-| Six-block window | Blocks 2–7 |
-| Eight-block limit | All seven available blocks |
+| Two blocks | Which two prior question blocks were supplied? |
+| Six blocks | Is the first label block outside the supplied window? |
+| Eight blocks | Do all seven available prior blocks, including the label, reach the model? |
 
-There are seven prior blocks, not eight to ten. An eight-block limit can include all seven. Inspect whether the label is in the actual model input before judging the answer; missing input and incorrect recall are separate observations.
+The limit is on prior blocks: the eighth question has seven previous blocks, not eight. A correct guess or failed recall alone does not prove which history was supplied.
 
-Make the question-block window configurable in a lab implementation. Compare the same saved conversation with windows of two, six, and eight blocks. Verify which original details are included, input size, and complete tool-call/result pairs. Increasing the window should recover an early detail only if its block now falls inside the window. Restore the production default of six afterwards.
+## 3. Trigger compaction manually
 
-### Developer extension 2 — compaction plus sliding window
+Use the six-block comparison conversation after its recall question, or create a longer conversation of eight to ten exchanges. Keep the distinctive detail only in the original first exchange. No particular history length is required for the button.
 
-This uses the same seven-block fixture and eighth recall question from extension one. Summarize blocks 1–5, and keep blocks 6–7 verbatim. The new input is the older-history summary plus the two recent complete blocks and the current recall question.
+1. Open **Workspace options → Session history** and click **Compact history**.
+2. Inspect **Compacted conversation summary**. Does it preserve the original label accurately? It summarizes the full stored conversation, including earlier blocks outside the current sliding window.
+3. Ask again: **“What fictional label did I give my sample at the beginning?”**
+4. Inspect the next answer’s supplied history. It should include the saved historical summary plus any exchanges added after compaction. The original full history remains stored.
+5. Add a few new exchanges and inspect their inclusion. Compaction does not run automatically. Click **Compact history** again when you choose to refresh the summary. Repeating the click without new history reuses the existing summary without another model call.
 
-Why retain the last two blocks? A summary can lose exact wording, identifiers or tool evidence. Keeping recent blocks intact preserves the immediate exchange while testing whether a summary carries older context. Two is a chosen lab setting, not a universal rule. Summary-only is possible, but is a different comparison and is not required here.
+Compaction itself makes a model call, and the UI shows its input/output token usage. A summary may omit details or introduce errors. Compare its contents and the answer; do not assume summary-only input is always better or cheaper. Token-budget selection and selective history retrieval are discussed conceptually, not provided by these controls.
 
-Keeping stored history unchanged means creating the summary for model input without deleting or rewriting the full saved conversation. Treating it as historical data means it describes earlier exchanges, not new agent instructions or proof of current business status. Preserve the fictional label in the summary so the final question can be answered. In a business conversation, preserve order identifiers and evidence provenance too; current revision and clock must still govern freshness.
+## Record observations
 
-Replace the lab's pure sliding window with a summary of older turns plus two recent complete question blocks. Keep the full stored history unchanged. Label the summary as historical, untrusted conversation data, not instructions or current business evidence. Preserve identifiers and important user facts, and keep current revision, clock, and document metadata separate.
+For each window and manual-compaction run, record the setting, stored versus supplied blocks, whether the label appears in the supplied input, final answer, citations where relevant, and model usage. For the business checks also record revisions and fresh versus reused tool evidence. Keep observations locally; there is no submission destination.
 
-Use the same early-detail conversation as the window comparison. Compare retained details, input size, summary-generation usage, answer usage, and answers. Inspect omissions and unsupported additions in the summary. A smaller input is not evidence of better accuracy.
+## Finish
 
-## What to check and record
+Use **Reset to defaults** to restore the six-block default and normal workspace settings. It keeps the current conversation open and preserves stored messages and business data; the next question stops using the active summary. Start a new conversation yourself for a clean comparison. Test orders remain in the practice database.
 
-For both extensions record the selected blocks or summary, whether the original label reaches the actual model input, the final answer, input characters/tokens, and usage. For compaction also record the summary-generation usage. Do not assume summaries save money or improve answers; the supplied short fixture can make the summary larger than the older text it replaces.
-
-## Cleanup
-
-If you edited source files yourself, undo those edits, restore the six-block sliding window and original selector, and restart the affected backend. The reference runner restores only its in-memory override. Remove only disposable lab conversations/data after saving results. Retain sanitized results and settings so another person can reproduce the experiment. The fixed evaluation database must remain unchanged.
+[Worked answers](solutions/answers.md)

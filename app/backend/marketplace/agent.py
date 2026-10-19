@@ -63,9 +63,16 @@ class BudgetHooks(RunHooks):
 
 class DatabaseSession:
     """SDK session protocol backed by the application conversation row."""
-    def __init__(self,conversation_id): self.session_id=conversation_id
+    def __init__(self,conversation_id, *, history_mode="off", compaction=None):
+        self.session_id=conversation_id; self.history_mode=history_mode; self.compaction=compaction; self.history_metadata=None; self._selected=None
     async def get_items(self,limit=None):
         with Session() as db: items=db.get(Conversation,self.session_id).items
+        if self.history_mode != 'off' or self.compaction:
+            if limit == 0:return []
+            if self._selected is None:
+                from .session_history import select_history
+                self._selected,self.history_metadata=await select_history(items,self.history_mode,cached=self.compaction)
+            return self._selected
         # Keep complete question blocks, including paired function calls/results.
         # Six questions replaces the old 12-message window; never cut a tool pair.
         if limit == 0: return []
@@ -146,6 +153,7 @@ async def _run_answer(conversation_id,question,ctx,server,stack, *, evaluation_c
     run_id=uid('run'); started=time.monotonic()
     api=client()
     config=evaluation_config or {}
+    history_session=None
     from . import response_cache_demo
     stack.enter_context(response_cache_demo.capture())
     hooks=BudgetHooks(config.get('input_rate',float(os.getenv('AGENT_INPUT_RATE','.05'))),config.get('output_rate',float(os.getenv('AGENT_OUTPUT_RATE','.40'))),config.get('budget'))
@@ -252,12 +260,13 @@ For counts and aggregates, lead with the count and state the actual date range u
             # Business evidence enters context only through model-requested tools.
             # History remains available as get_order_history, not a keyword preload.
             question_input=build_question_input(question,{**ctx.snapshot,'document_revision':ctx.doc_hash})
+            history_session=DatabaseSession(conversation_id,history_mode=config.get('session_history_mode','off'),compaction=config.get('history_compaction'))
             if config.get('workflow'):
                 from .agent_design_demo import execute
                 final=await execute(agent,question_input,DatabaseSession(conversation_id),ctx,server,api,hooks,lf,observation,
                     config['workflow'],workflow_state,MAX_TURNS,MAX_SECONDS)
             else:
-                result=await asyncio.wait_for(Runner.run(agent,question_input,session=DatabaseSession(conversation_id),max_turns=1 if config.get('loop_mode')=='turn_limit' else MAX_TURNS,hooks=hooks),timeout=MAX_SECONDS)
+                result=await asyncio.wait_for(Runner.run(agent,question_input,session=history_session,max_turns=1 if config.get('loop_mode')=='turn_limit' else MAX_TURNS,hooks=hooks),timeout=MAX_SECONDS)
                 final=str(result.final_output)
             metrics={'requests':hooks.requests,'input_tokens':hooks.input_tokens,'output_tokens':hooks.output_tokens,'total_tokens':hooks.input_tokens+hooks.output_tokens,'model':config.get('model',os.getenv('OPENAI_MODEL','gpt-5-nano')),'price_status':'uncached list-rate estimate, excludes embeddings; not an invoice','estimated_model_cost_usd':round(hooks.cost,8)}
             if observation:
@@ -285,6 +294,9 @@ For counts and aggregates, lead with the count and state the actual date range u
         logging.getLogger(__name__).warning('Agent run failed (%s): %s',type(e).__name__,str(e)[:400])
         metrics.update(error_type=type(e).__name__,usage_status='Incomplete app usage on failed run; inspect Langfuse model spans for billed attempts')
     finally:
+        metrics['session_history_mode']=config.get('session_history_mode','off')
+        if config.get('session_history_reset'):metrics['session_history_reset']=True
+        if history_session and history_session.history_metadata:metrics['session_history']=history_session.history_metadata
         if config.get('workflow'):
             workflow_state['status']=status
             metrics['workflow']=workflow_state
@@ -299,7 +311,7 @@ For counts and aggregates, lead with the count and state the actual date range u
         metrics.update(input_tokens=hooks.input_tokens,output_tokens=hooks.output_tokens,cached_input_tokens=hooks.cached_tokens,
                        requests=hooks.requests,estimated_model_cost_usd=round(hooks.cost,8))
         if evaluation_config:
-            metrics.update(tool_attempts=hooks.tool_attempts,prompt_hash=hooks.prompt_hash,model=config['model'],
+            metrics.update(tool_attempts=hooks.tool_attempts,prompt_hash=hooks.prompt_hash,model=config.get('model',os.getenv('OPENAI_MODEL','gpt-5-nano')),
                            preloaded_history=False)
         if server:
             try:

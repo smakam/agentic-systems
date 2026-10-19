@@ -161,9 +161,9 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Learning objective:** Distinguish retained conversation history, per-run state and persistent memory, including isolation and evidence freshness.
 
-**Demo and learner practice:** Show a follow-up, fresh evidence after a business-state change, and an early detail leaving the model input after six later question blocks while remaining stored. Core learners repeat the observations. Developers compare window sizes and summarization plus a recent window.
+**Demo and learner practice:** Show a follow-up, fresh evidence after a business-state change, and an early detail leaving the model input after six later question blocks while remaining stored. Learners repeat the four observations, then compare two-, six- and eight-block windows and manually compact stored history through browser controls.
 
-**Workspace:** Core: Test workspace http://127.0.0.1:5179/, market_test. Developer comparison: temporary backend copy and ch10_session_lab. Restore original code/settings separately from database cleanup.
+**Workspace:** Test workspace http://127.0.0.1:5179/, market_test. Session history controls apply to the owned local SDK conversation. Reset to defaults restores the six-block baseline without opening a new conversation.
 
 **Materials:** [Exercise](exercises/session-state/exercise.md) · [Answers](exercises/session-state/solutions/answers.md)
 
