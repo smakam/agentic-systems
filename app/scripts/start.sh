@@ -26,7 +26,5 @@ compose up -d --build --wait --wait-timeout 240
 # Nginx resolves backend container addresses at startup; refresh after rebuild.
 compose restart frontend
 compose restart memory-frontend
-compose exec -T backend python -m marketplace.index || printf 'Main-workspace vector indexing unavailable; configure the API key and use Index documents in the operator UI.\n'
-compose exec -T memory-backend python -m marketplace.index || printf 'Test-workspace vector indexing unavailable; configure the API key and use Index documents in the test operator UI.\n'
 ./scripts/start-labs.sh
 printf '\nMarketplace: http://localhost:5178\nTest workspace: http://127.0.0.1:5179\nLangfuse: http://localhost:3000\nDemo password: demo-marketplace\n'

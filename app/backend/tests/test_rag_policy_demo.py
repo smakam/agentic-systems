@@ -47,9 +47,53 @@ def test_embedding_failure_does_not_replace_working_index(monkeypatch):
     from unittest.mock import AsyncMock
     row=SimpleNamespace(source_version='v2',strategy='paragraph',indexed_version='v1',indexed_strategy='paragraph')
     monkeypatch.setattr(demo,'locked_state',lambda *args:row)
-    api_client=SimpleNamespace(embeddings=SimpleNamespace(create=AsyncMock(side_effect=RuntimeError('provider unavailable'))),close=AsyncMock())
-    monkeypatch.setattr(demo,'client',lambda:api_client)
+    from marketplace import embedding_cache
+    mock=AsyncMock(side_effect=RuntimeError('provider unavailable'))
+    monkeypatch.setattr(embedding_cache,'vectors',mock)
     db=SimpleNamespace(query=lambda *args:pytest.fail('Previous chunks must not be deleted before embedding succeeds'))
     with pytest.raises(RuntimeError):asyncio.run(demo.index_selected(db,'owner','versions'))
     assert row.indexed_version=='v1' and row.indexed_strategy=='paragraph'
-    api_client.close.assert_awaited_once()
+    mock.assert_awaited_once()
+
+@pytest.mark.parametrize('stale',[False,True])
+def test_source_change_prepares_automatically_except_intentional_stale(monkeypatch,stale):
+    from unittest.mock import AsyncMock,Mock
+    monkeypatch.setattr(demo,'enabled',lambda:True)
+    selected=Mock(return_value={'ready':True,'stale':stale})
+    prepared=AsyncMock(return_value={'ready':True,'stale':False})
+    monkeypatch.setattr(demo,'select_source',selected)
+    monkeypatch.setattr(demo,'state',lambda *a:{'ready':True,'stale':True})
+    monkeypatch.setattr(demo,'index_selected',prepared)
+    api.app.dependency_overrides[api.identity]=lambda:SimpleNamespace(id='owner',role='support')
+    api.app.dependency_overrides[api.db_session]=lambda:SimpleNamespace()
+    try:
+        response=TestClient(api.app).post('/api/rag-policy-demo/versions/source',json={'version':'v2','demonstrate_stale':stale})
+        assert response.status_code==200
+        assert response.json()['stale']==stale
+        assert prepared.await_count==(0 if stale else 1)
+    finally:api.app.dependency_overrides.clear()
+
+
+def test_reset_restores_existing_demo_defaults_without_touching_conversations(monkeypatch):
+    from unittest.mock import AsyncMock
+    from marketplace import index,gateway_demo
+    monkeypatch.setattr(api,'is_test',lambda:True)
+    monkeypatch.setattr(api,'fixture_status',lambda:{'variant':'clean'})
+    monkeypatch.setattr(gateway_demo,'enabled',lambda:False)
+    prepared=AsyncMock(return_value={'indexed':0});monkeypatch.setattr(index,'index',prepared)
+    restored=AsyncMock();monkeypatch.setattr(demo,'index_selected',restored)
+    class DB:
+        def __enter__(self):return self
+        def __exit__(self,*a):pass
+        def get(self,model,key):
+            assert model is demo.DemoState
+            return SimpleNamespace() if key==('owner','versions') else None
+    monkeypatch.setattr(api,'Session',DB)
+    api.app.dependency_overrides[api.identity]=lambda:SimpleNamespace(id='owner',role='support')
+    try:
+        response=TestClient(api.app).post('/api/workspace-options/reset',json={})
+        assert response.status_code==200 and response.json()['reset']
+        restored.assert_awaited_once()
+        assert restored.await_args.kwargs=={'restore':True}
+        prepared.assert_awaited_once()
+    finally:api.app.dependency_overrides.clear()

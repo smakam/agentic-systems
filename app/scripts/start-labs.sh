@@ -44,6 +44,5 @@ else
   printf 'Legacy hosting UI is available; the current deployment worksheet uses the standard test marketplace.\n'
 fi
 for backend in $new_backends; do
-  compose exec -T "$backend" python -m marketplace.index || printf 'Lab vector indexing unavailable; configure the gateway and use Index documents in that lab UI.\n'
 done
 printf 'Agent Loop lab: http://localhost:5181\nRuntime and Hosting lab: http://localhost:5192\nExisting lab data preserved; no seed reset or cloud deployment performed.\n'

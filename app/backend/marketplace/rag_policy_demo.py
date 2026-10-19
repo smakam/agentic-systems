@@ -19,6 +19,7 @@ class DemoState(DemoBase):
     strategy: Mapped[str]
     indexed_version: Mapped[str | None]
     indexed_strategy: Mapped[str | None]
+    indexed_fingerprint: Mapped[str | None]
 class DemoChunk(DemoBase):
     __tablename__ = 'rag_policy_demo_chunks'
     owner_id: Mapped[str] = mapped_column(String, primary_key=True)
@@ -56,7 +57,11 @@ class DemoError(ValueError): pass
 
 def enabled(): return engine.url.database == 'market_test'
 def initialize():
-    if enabled(): DemoBase.metadata.create_all(engine)
+    if enabled():
+        DemoBase.metadata.create_all(engine)
+        from sqlalchemy import text
+        with engine.begin() as db:
+            db.execute(text('ALTER TABLE rag_policy_demo_state ADD COLUMN IF NOT EXISTS indexed_fingerprint VARCHAR'))
 
 def paragraphs(body):
     lines=body.splitlines(); result=[]; start=0
@@ -82,7 +87,9 @@ def state(db, owner, experiment):
     row=db.get(DemoState,(owner,experiment))
     current={key:getattr(row,key) for key in ('source_version','strategy','indexed_version','indexed_strategy')} if row else {**default,'indexed_version':None,'indexed_strategy':None}
     count=db.query(DemoChunk).filter_by(owner_id=owner,experiment=experiment).count() if row else 0
-    return {'enabled':True,'experiment':experiment,**current,'ready':bool(current['indexed_version']),
+    from .embedding_cache import cache_key
+    matches=bool(row and row.indexed_fingerprint==cache_key(DOCUMENTS.get(current['indexed_version'],'')+'|'+str(current['indexed_strategy'])))
+    return {'enabled':True,'experiment':experiment,**current,'ready':bool(current['indexed_version']) and matches,
             'stale':bool(current['indexed_version']) and (current['source_version']!=current['indexed_version'] or current['strategy']!=current['indexed_strategy']),
             'chunk_count':count,'source_text':DOCUMENTS[current['source_version']],
             'facts':('Simulated facts: payment captured, confirmed delivery 30 hours ago, no open return, Amber Review flag present.' if experiment=='chunking' else FACTS),
@@ -107,20 +114,17 @@ async def index_selected(db,owner,experiment,restore=False):
     if restore:
         row.source_version=defaults(experiment)['source_version'];row.strategy='paragraph'
     version,strategy=row.source_version,row.strategy
-    if row.indexed_version==version and row.indexed_strategy==strategy:
-        db.commit();return state(db,owner,experiment)
     parts=chunk_document(DOCUMENTS[version],strategy)
-    api=client()
-    try: response=await api.embeddings.create(model='embedding',input=[p['body'] for p in parts])
-    finally: await api.close()
-    vectors=sorted(response.data,key=lambda item:item.index)
-    if len(vectors)!=len(parts) or any(len(item.embedding)!=1536 for item in vectors):
-        raise DemoError('Embedding response does not match the demo corpus')
+    from .embedding_cache import cache_key, vectors as cached_vectors
+    fingerprint=cache_key(DOCUMENTS[version]+'|'+strategy)
+    if row.indexed_version==version and row.indexed_strategy==strategy and getattr(row,'indexed_fingerprint',None)==fingerprint:
+        db.commit();return state(db,owner,experiment)
+    vectors=await cached_vectors([p['body'] for p in parts])
     db.query(DemoChunk).filter_by(owner_id=owner,experiment=experiment).delete()
     for i,(part,item) in enumerate(zip(parts,vectors)):
         db.add(DemoChunk(owner_id=owner,experiment=experiment,sequence=i,version=version,strategy=strategy,
-                         source=f'payout-demo-{version}.md',embedding=item.embedding,**part))
-    row.indexed_version=version;row.indexed_strategy=strategy;db.commit()
+                         source=f'payout-demo-{version}.md',embedding=item,**part))
+    row.indexed_version=version;row.indexed_strategy=strategy;row.indexed_fingerprint=fingerprint;db.commit()
     return state(db,owner,experiment)
 
 async def ask(db,owner,experiment,question,top_k):

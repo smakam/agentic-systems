@@ -149,7 +149,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Learning objective:** Separate retrieval correctness from answer correctness when combining business records with versioned policy evidence.
 
-**Demo and learner practice:** Explain ingestion, embeddings, vector retrieval and optional reranking, then inspect marketplace evidence. Use isolated Test workspace RAG controls to compare V1, stale indexed V1 and reindexed V2. Compare paragraph/overlap at top K one/four using adjacent policy facts; learners use the UI without editing files or running commands.
+**Demo and learner practice:** Explain ingestion, embeddings, vector retrieval and optional reranking, then inspect marketplace evidence. Use isolated Test workspace RAG controls and the main question box, with automatic cached indexing, to compare V1, stale indexed V1 and reindexed V2. Compare paragraph/overlap at top K one/four using adjacent policy facts; learners use the UI without editing files or running commands.
 
 **Workspace:** Test workspace http://127.0.0.1:5179/, market_test. RAG experiments use separate synthetic demo tables, not marketplace documents or records. The previous ch09_rag_lab CLI remains a historical reference.
 

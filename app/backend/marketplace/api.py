@@ -27,12 +27,25 @@ async def lifespan(app):
 
     from .rag_policy_demo import initialize as initialize_rag_demo
     initialize_rag_demo()
+    from .embedding_cache import initialize as initialize_embedding_cache
+    initialize_embedding_cache()
+    from .index import index as prepare_documents
+    async def prepare_on_startup():
+        try: await prepare_documents()
+        except Exception:
+            import logging
+            logging.getLogger(__name__).warning('Automatic document preparation failed; UI retry is available')
+    index_task=asyncio.create_task(prepare_on_startup())
 
     from .mem0_provider import enabled as mem0_enabled, worker as memory_worker
     task=asyncio.create_task(memory_worker()) if mem0_enabled() else None
     try:
         yield
     finally:
+        if not index_task.done():
+            index_task.cancel()
+            try: await index_task
+            except asyncio.CancelledError: pass
         if task:
             task.cancel()
             try: await task
@@ -217,6 +230,9 @@ class Question(BaseModel):
     design_mode:Literal['off','single','review']='off'
     generator_model:Literal['nano','gpt54']='nano'
     reviewer_model:Literal['nano','gpt54']='gpt54'
+    rag_experiment:Literal['off','versions','chunking']='off'
+    rag_top_k:Literal[1,4]=4
+    settings_reset:bool=False
 
 @app.get('/api/agent-design-demo')
 def agent_design_demo_options(user=Depends(identity)):
@@ -318,8 +334,26 @@ async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session
         if not acquired: raise HTTPException(409,'This conversation already has a running question')
         corpus_locked=False
         try:
-            prior = db.scalars(select(Run).where(Run.conversation_id == cid).order_by(Run.created_at)).first()
-            if prior and (prior.metrics or {}).get('routing', {}).get('policy', 'off') != body.routing_policy:
+            prior = db.scalars(select(Run).where(Run.conversation_id == cid).order_by(Run.created_at.desc())).first()
+            if body.settings_reset and (body.rag_experiment!='off' or body.routing_policy!='off' or body.design_mode!='off' or body.memory_enabled or body.memory_write or body.memory_provider!='internal' or body.guardrail!='off' or body.suppress_catalog or body.suppress_documents or not body.source_authority or body.marker_mode!='off' or body.loop_mode!='normal' or body.cache_enabled):
+                raise HTTPException(400,'Reset override requires default workspace options')
+            if body.rag_experiment!='off':
+                rag_demo_access(user)
+                if runtime!='sdk' or body.memory_enabled or body.memory_write or body.memory_provider!='internal' or body.guardrail!='off' or body.routing_policy!='off' or body.design_mode!='off' or body.loop_mode!='normal' or body.marker_mode!='off' or body.suppress_catalog or body.suppress_documents or body.cache_enabled or not body.source_authority:
+                    raise HTTPException(400,'RAG experiments require SDK with other experiments and memory off')
+                from .gateway_identity import for_role
+                try:
+                    with for_role(user.role): result=await rag_policy_demo.ask(db,user.id,body.rag_experiment,body.question,body.rag_top_k)
+                except rag_policy_demo.DemoError as exc:raise HTTPException(409,str(exc))
+                except Exception:raise HTTPException(503,'RAG question failed; check document preparation and model access, then retry.')
+                run=Run(id=uid('run'),conversation_id=cid,revision=db.get(State,1).revision,question=body.question,answer=result['answer'],status='completed',created_at=datetime.now(timezone.utc),evidence={},metrics={'runtime':'sdk','rag_demo':result})
+                db.add(run)
+                if conv.title=='New investigation':conv.title=body.question[:70]
+                db.commit()
+                return jsonable_encoder(run)
+            if body.settings_reset: prior=None
+
+            if prior and not (prior.metrics or {}).get('rag_demo') and (prior.metrics or {}).get('routing', {}).get('policy', 'off') != body.routing_policy:
                 raise HTTPException(400, 'Start a fresh conversation before changing the routing policy')
             if prior:
                 old=(prior.metrics or {}).get('workflow', {})
@@ -343,6 +377,12 @@ async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session
                     raise HTTPException(400,str(exc)) from None
                 except RuntimeError as exc:
                     raise HTTPException(502,str(exc)) from None
+            if not body.suppress_documents:
+                from .index import index as prepare_documents
+                from .gateway_identity import for_role
+                try:
+                    with for_role(user.role): await prepare_documents()
+                except Exception:raise HTTPException(503,'Document preparation is unavailable. Retry preparation before asking policy questions.')
             from .agent import answer
             from . import response_cache_demo, gateway_demo
             try:
@@ -362,7 +402,7 @@ async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session
             if gateway_demo.enabled() and not route_config and not design_config:
                 try: mapping=await gateway_demo.current()
                 except gateway_demo.Unavailable as exc: raise HTTPException(503,str(exc)) from None
-                if prior and (prior.metrics or {}).get('gateway_model_mapping',{}).get('choice') != mapping['choice']:
+                if prior and not (prior.metrics or {}).get('rag_demo') and (prior.metrics or {}).get('gateway_model_mapping',{}).get('choice') != mapping['choice']:
                     raise HTTPException(400,'The support model mapping changed; start a fresh conversation')
                 lab_config={**(lab_config or {}), **gateway_demo.configuration(mapping),'response_cache':{'enabled':body.cache_enabled,'scope':str(user.id)+':'+mapping['model']}}
             key_context = for_key(os.environ['EVAL_GATEWAY_KEY']) if (route_config or design_config) else for_role(user.role)
@@ -463,10 +503,17 @@ async def index(user=Depends(identity)):
     try: return await index()
     except Exception: raise HTTPException(503,'Embedding service unavailable; check gateway/API credentials')
 @app.get('/api/readiness')
-def readiness(user=Depends(identity),db=Depends(db_session)):
+async def readiness(user=Depends(identity),db=Depends(db_session)):
     role(user,'support','operator')
+    preparation_error=False
+    try:
+        from .index import index as prepare_documents
+        from .gateway_identity import for_role
+        with for_role(user.role): await prepare_documents()
+    except Exception: preparation_error=True
+    db.expire_all()
     total=db.scalar(select(func.count()).select_from(Document)); indexed=db.scalar(select(func.count()).select_from(Document).where(Document.embedding!=None))
-    return {'documents':total,'indexed':indexed,'retrieval':'pgvector' if total and indexed==total else 'lexical fallback; index documents to enable vectors','cross_session_memory':'explicit user-scoped function tools','agent':'single','model_alias':'support-model'}
+    return {'ready':bool(total and indexed==total and not preparation_error),'preparation_failed':preparation_error,'documents':total,'indexed':indexed,'retrieval':'pgvector' if total and indexed==total else 'Documents are being prepared automatically; retry if preparation failed','cross_session_memory':'explicit user-scoped function tools','agent':'single','model_alias':'support-model'}
 
 
 # Synthetic RAG experiments have their own per-user tables and never use Document.
@@ -480,6 +527,7 @@ def rag_demo_access(user):
 class RagDemoSource(BaseModel):
     version:Literal['v1','v2','expanded']
     strategy:Literal['paragraph','overlap']='paragraph'
+    demonstrate_stale:bool=False
     model_config={'extra':'forbid'}
 class RagDemoQuestion(BaseModel):
     question:str=Field(min_length=1,max_length=2000)
@@ -492,11 +540,18 @@ def rag_demo_state(experiment:rag_policy_demo.Experiment,user=Depends(identity),
     return rag_policy_demo.state(db,user.id,experiment)
 
 @app.post('/api/rag-policy-demo/{experiment}/source')
-def rag_demo_source(experiment:rag_policy_demo.Experiment,body:RagDemoSource,user=Depends(identity),db=Depends(db_session)):
+async def rag_demo_source(experiment:rag_policy_demo.Experiment,body:RagDemoSource,user=Depends(identity),db=Depends(db_session)):
     rag_demo_access(user)
-    try: return rag_policy_demo.select_source(db,user.id,experiment,body.version,body.strategy)
+    try:
+        if body.demonstrate_stale and experiment!='versions': raise rag_policy_demo.DemoError('Stale-index demonstration requires policy versions')
+        rag_policy_demo.select_source(db,user.id,experiment,body.version,body.strategy)
+        if body.demonstrate_stale:
+            return rag_policy_demo.state(db,user.id,experiment)
+        from .gateway_identity import for_role
+        with for_role(user.role): return await rag_policy_demo.index_selected(db,user.id,experiment)
     except rag_policy_demo.DemoError as exc: raise HTTPException(400,str(exc))
     except OperationalError: db.rollback();raise HTTPException(409,'Demo is busy; retry when indexing finishes')
+    except Exception: db.rollback();raise HTTPException(503,'Document preparation failed. Previous index preserved; retry preparation.')
 
 @app.post('/api/rag-policy-demo/{experiment}/index')
 @app.post('/api/rag-policy-demo/{experiment}/restore')
@@ -518,3 +573,25 @@ async def rag_demo_ask(experiment:rag_policy_demo.Experiment,body:RagDemoQuestio
             return await rag_policy_demo.ask(db,user.id,experiment,body.question,body.top_k)
     except rag_policy_demo.DemoError as exc: raise HTTPException(409,str(exc))
     except Exception: raise HTTPException(503,'Demo question failed; check model and embedding access, then retry.')
+
+@app.post('/api/workspace-options/reset')
+async def reset_workspace_options(user=Depends(identity)):
+    role(user,'support','operator')
+    from .gateway_identity import for_role
+    from . import gateway_demo
+    try:
+        with for_role(user.role):
+            if is_test():
+                if fixture_status()['variant']!='clean': await set_fixture('clean')
+                if gateway_demo.enabled() and (await gateway_demo.current())['choice']!='gpt54':
+                    await gateway_model_change(GatewayModelChange(choice='gpt54'),user)
+                with Session() as db:
+                    for experiment in ('versions','chunking'):
+                        if db.get(rag_policy_demo.DemoState,(user.id,experiment)):
+                            await rag_policy_demo.index_selected(db,user.id,experiment,restore=True)
+            # Experiments are off after reset; unused demo indexes are not created.
+            from .index import index as prepare_documents
+            await prepare_documents()
+        return {'reset':True,'message':'Settings reset. Start a new conversation for a clean comparison.'}
+    except HTTPException:raise
+    except Exception:raise HTTPException(503,'Defaults could not be fully restored. Retry reset; the current conversation is preserved.')

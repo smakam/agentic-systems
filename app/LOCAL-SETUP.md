@@ -134,16 +134,11 @@ If startup reports that vector indexing is unavailable, the UI may still load. F
 
 Other seeded marketplace usernames are `buyer`, `buyer2` and `seller`, with the same demo password. Use **localhost** consistently for the main UI and **127.0.0.1** for the test UI. Both hostnames point to your laptop. We intentionally use different hostnames because browser login cookies are scoped by hostname, not by port; this keeps the two workspaces’ login sessions from interfering with each other. Both are started by the same command; no additional setup is required. Section 5 explains test-workspace use and explicit fixture resets. These public demo credentials and loopback port bindings are for a laptop lab; they are not a cloud authentication setup.
 
-### Complete document indexing in both workspaces
+### Automatic document preparation
 
-Before moving to the agent lessons, verify document indexing separately in **both** the main marketplace and the Test marketplace. They have separate databases: an indexed main workspace does not mean Test is indexed. Startup attempts indexing, but setup is not ready for vector-retrieval lessons until the checks below pass.
+Document indexing runs automatically after startup and when required by document changes. There is no manual indexing step. In each marketplace, **Support workspace → Workspace options → Documents** (main) or **RAG → Marketplace documents** (Test) shows **Preparing documents** followed by **Ready**. Confirm Ready in both workspaces before retrieval lessons; the databases are independent.
 
-1. Open **http://localhost:5178/**, sign in as **operator**, open **Support workspace**, select **OpenAI Agents SDK**, then expand **Workspace options → Documents**.
-2. Check the **document chunks indexed** count. If it is incomplete, click **Index documents** and wait until the indexed count equals the total, with a nonzero total—for example, **20 / 20**. The exact total may change with the supplied corpus.
-3. Repeat the check in **http://127.0.0.1:5179/** under **Workspace options → RAG → Marketplace documents**. Index there too if needed; checking only the main workspace is insufficient. The separate **RAG experiments** index is for the Knowledge and Retrieval lesson and does not replace this marketplace-document check.
-4. If indexing fails, correct the configured provider key, embedding-model access or billing issue, then retry. A loaded UI or successful policy answer is not proof of vector indexing: unembedded chunks use a labelled keyword fallback.
-
-This creates embeddings for missing chunks using the configured gateway and incurs embedding API usage. It does not reset business records. Recheck after reseeding/resetting a workspace or adding documents; normal read-only questions do not require indexing again. The right-hand count verifies stored embeddings; a retrieval trace can confirm the search method when you inspect agent calls in later lessons.
+If preparation fails, correct provider credentials, embedding-model access, billing or gateway connectivity, then use **Retry preparation**. Existing embeddings are reused; only uncached content needs document-embedding API calls. Query embeddings and model answers still incur their normal usage. Business records are preserved.
 
 ## 4. Verify the services and logins
 
@@ -162,7 +157,7 @@ Use the documented main/test hostnames to keep login sessions separate. If a ser
 
 `./scripts/start.sh` starts both workspaces. The main UI uses `market`; the test UI uses disposable `market_test`. Startup creates the test database if missing; the test backend initializes/seeds an empty database, while existing test data is preserved. Both workspaces share the gateway and observability services, but not business records, logins, conversations or memories. An operator-created memory does not become a support user's memory.
 
-No additional first-run command is needed. Open **[127.0.0.1:5179](http://127.0.0.1:5179/)** and sign in with the seeded demo accounts. Use **127.0.0.1**, not localhost: the test backend allows that origin, and the separate hostname avoids login-cookie collisions with the main workspace. Test questions still incur inference charges. Startup attempts indexing in both workspaces; complete the separate document-indexing checks above before using vector-retrieval exercises.
+No additional first-run command is needed. Open **[127.0.0.1:5179](http://127.0.0.1:5179/)** and sign in with the seeded demo accounts. Use **127.0.0.1**, not localhost: the test backend allows that origin, and the separate hostname avoids login-cookie collisions with the main workspace. Test questions still incur inference charges. Document indexing is automatic in both workspaces; wait for Ready before vector-retrieval exercises.
 
 Never run a fixture reset, `scripts/test.sh`, or another runner against `market_test` while someone is using the test UI. They share and may replace that disposable database. No fixture/reset command here should be pointed at a real external database.
 
@@ -209,7 +204,7 @@ Use the standard test marketplace for general exercises, including the current R
 
 The two reset commands target different databases: `./scripts/reset.sh --confirm-demo-reset` resets only the main `market` workspace and does not reset `market_test`. `./scripts/memory-repeatable.sh --reset` resets only `market_test` and does not change the main workspace.
 
-The stop command above includes all four local UIs and the lab services. After either database reset, sign in again and check document indexing. Do not use `docker compose down -v` as normal cleanup: it deletes named volumes, including database and trace storage.
+The stop command above includes all four local UIs and the lab services. After either database reset, sign in again and wait for automatic document preparation to show Ready. Do not use `docker compose down -v` as normal cleanup: it deletes named volumes, including database and trace storage.
 
 The integration test command `./scripts/test.sh` also uses disposable `market_test`, not the interactive `market` database. The evaluation command `./scripts/evaluate.sh` uses `market_eval` and makes **paid model calls**. Neither is required for the first UI smoke check.
 
@@ -258,7 +253,7 @@ Only the initial WSL/Docker setup and the shell/file locations differ from Mac. 
 | Keys changed but old behavior persists | Rerun `./scripts/start.sh` so gateway environment and generated keys reach dependent containers |
 | Origin rejected in test UI | Use exactly `http://127.0.0.1:5179/`; refresh and sign in after test backend rebuild |
 | Wrong user or unexpected login expires | Main uses localhost, test uses 127.0.0.1; use the documented URLs and sign in again after a reset |
-| Retrieval uses lexical fallback | Fix embedding access, then use operator **Workspace options → Documents → Index documents** |
+| Retrieval uses lexical fallback | Fix embedding access, then use **Retry preparation** if shown; indexing is automatic |
 | Trace/feedback score missing | Wait briefly and refresh local Langfuse; check `langfuse-web`/`langfuse-worker` logs. An app-stored vote is not proof of score export |
 | Memory not recalled | Same user and provider, new conversation, retrieval enabled; inspect actual saved entry, search result and answer use. For Mem0 inspect extraction status separately; see the Chapter 18 subsection above |
 | Mem0 unavailable in Test workspace | Configure your own MEM0_API_KEY in the private app/.env, rerun ./scripts/start.sh, refresh 127.0.0.1:5179 and select SDK. An enabled selector does not prove authenticated provider access; inspect the extraction/search result and account quota |
