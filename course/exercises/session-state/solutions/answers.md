@@ -10,7 +10,7 @@ Follow the browser steps in the [exercise](../exercise.md). These are expected i
 
 ## Window comparison
 
-For the supplied seven-block fixture, the eighth recall question receives:
+The fourth instructor check and repeated learner comparison use the same seven prior blocks. The eighth recall question receives:
 
 | History strategy | Prior blocks supplied | Original label in input? |
 |---|---|---|
@@ -21,6 +21,15 @@ For the supplied seven-block fixture, the eighth recall question receives:
 Full stored history still contains all seven prior blocks in every case. The current recall question is supplied separately. Whole blocks preserve tool-call/result pairs. The final response may be wrong even with the label present, or may guess it despite absence; inspect the supplied input to distinguish those cases.
 
 ## Manual compaction
+
+Use the **same two-block conversation** before and after compaction; keep its window setting unchanged and do not repeat the label in a new user message.
+
+| Stage | Evidence available to the answer model | Expected observation |
+|---|---|---|
+| Before compaction | Last two prior blocks; original label omitted | Cannot recover the label from the supplied input |
+| After Compact history | Saved summary of full stored history, plus any later exchanges | Recalls `cedar-window-731` if the summary preserved it |
+
+Inspect the supplied input and summary as well as both answers. A pre-compaction guess is not proof of input coverage. This comparison demonstrates summary-based recovery of older details, not an increase in the two-block window.
 
 **Compact history** summarizes all available stored history in the selected conversation when clicked. It has no six-block threshold and does not automatically retain two recent blocks. Immediately after compaction, the next question receives the historical summary; exchanges added afterward are supplied alongside it, subject to the selected window. Stored original messages are not deleted or rewritten.
 

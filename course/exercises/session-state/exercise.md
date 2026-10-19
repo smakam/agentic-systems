@@ -2,7 +2,7 @@
 
 ## Purpose and workspace
 
-Repeat the instructor demo, then compare how retained history changes the model input. Use the **Test marketplace → Support → OpenAI Agents SDK** from Course Setup. Keep long-term memory, response caching, RAG experiments and other comparisons off. All required practice runs in the browser; no source edits, terminal commands or database copies are needed.
+Repeat the four instructor checks, including the two-/six-/eight-block comparison, then test manual compaction in the two-block conversation. Use the **Test marketplace → Support → OpenAI Agents SDK** from Course Setup. Keep long-term memory, response caching, RAG experiments and other comparisons off. All required practice runs in the browser; no source edits, terminal commands or database copies are needed.
 
 One question block includes the user question, associated assistant responses, tool calls and tool results. Full history stays stored even when older blocks are omitted or summarized for model input. Use a new conversation for each comparison and keep the same model and questions.
 
@@ -17,6 +17,8 @@ Prepare a fresh Test order with two units and a pending shipment using the marke
 Reuse and refresh are instructions to the model, not guaranteed middleware behavior. Record what the trace actually shows. An unchanged revision permits reuse only when earlier successful, non-truncated records fully cover the question. Current time and policy applicability still matter.
 
 ## 2. Compare two-, six- and eight-block windows
+
+This is the fourth instructor check. Repeat it with the same label question for each setting.
 
 Open **Workspace options → Session history → History strategy**. Select two blocks for the first run, six for the second, and eight for the third. Selecting a different strategy starts a new conversation. If repeating the same setting, use **New conversation** yourself.
 
@@ -43,13 +45,15 @@ The limit is on prior blocks: the eighth question has seven previous blocks, not
 
 ## 3. Trigger compaction manually
 
-Use the six-block comparison conversation after its recall question, or create a longer conversation of eight to ten exchanges. Keep the distinctive detail only in the original first exchange. No particular history length is required for the button.
+Use the **two-block comparison conversation** after its recall question. This learner extension shows whether summarizing stored history restores a detail that the two-block input omitted. If the conversation is unavailable, select two blocks and repeat the exact eight-question sequence above in a fresh conversation.
 
-1. Open **Workspace options → Session history** and click **Compact history**.
-2. Inspect **Compacted conversation summary**. Does it preserve the original label accurately? It summarizes the full stored conversation, including earlier blocks outside the current sliding window.
-3. Ask again: **“What fictional label did I give my sample at the beginning?”**
-4. Inspect the next answer’s supplied history. It should include the saved historical summary plus any exchanges added after compaction. The original full history remains stored.
-5. Add a few new exchanges and inspect their inclusion. Compaction does not run automatically. Click **Compact history** again when you choose to refresh the summary. Repeating the click without new history reuses the existing summary without another model call.
+1. Confirm **Sliding window — two blocks** is still selected. Inspect the recall answer’s selected input: it should omit the original label block. Expected: the answer cannot recall the label from that input. Record what actually happened.
+2. **Stay in the same conversation and keep the two-block setting.** Open **Workspace options → Session history** and click **Compact history**. Do not start a new conversation or type the label again.
+3. Inspect **Compacted conversation summary**. Does it preserve the original label accurately? The summarizer reads full stored history, including blocks outside the two-block window.
+4. Ask the identical question again: **“What fictional label did I give my sample at the beginning?”** Expected: the answer now recalls the label from the saved summary.
+5. Inspect the next answer’s supplied history and compare it with the pre-compaction input. The summary should supply the label; the selected window remains two blocks. Original messages remain stored. Compaction does not mean all original blocks are sent to the answer model.
+6. Record omissions or incorrect recall. If the summary omits or changes the label, that is a summary failure. If it preserves the label but the answer fails, investigate answer generation. A correct guess before compaction does not prove the label was in the earlier input.
+7. Optionally add a few exchanges and inspect their inclusion alongside the summary. Compaction does not run automatically. Clicking again after new history refreshes the summary; repeating the click without changes reuses it without another model call. No minimum number of exchanges is required.
 
 Compaction itself makes a model call, and the UI shows its input/output token usage. A summary may omit details or introduce errors. Compare its contents and the answer; do not assume summary-only input is always better or cheaper. Token-budget selection and selective history retrieval are discussed conceptually, not provided by these controls.
 
