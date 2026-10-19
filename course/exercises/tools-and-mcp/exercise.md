@@ -77,9 +77,9 @@ These commands create the following two files in the printed temporary directory
 
 The other backend files and the [test script](solutions/check_seller_balance.py) are supplied unchanged. You do not need to write a client or change the browser application.
 
-#### Step 2: Complete the seller-balance handler
+#### Step 2: Complete the seller-balance handler in `marketplace/seller_balance_tool.py`
 
-Inside `get_seller_balance(seller_id)`, replace the placeholder with a call to `ctx.query(sql, parameters, purpose)` that:
+Open `$TOOLS_MCP_LAB_DIR/marketplace/seller_balance_tool.py`. Inside `get_seller_balance(seller_id)`, replace the placeholder with a call to `ctx.query(sql, parameters, purpose)` that:
 
 - Selects `seller_id`, `name`, `captured`, `refunded`, `fees`, `paid_out` and `unpaid` from `analytics.seller_balances`.
 - Filters to the requested seller with `WHERE seller_id = %(seller_id)s` and passes `{'seller_id': seller_id}` separately. Do not concatenate the input into SQL.
@@ -87,9 +87,9 @@ Inside `get_seller_balance(seller_id)`, replace the placeholder with a call to `
 
 Money stays in integer paise. One row represents one seller; do not join and repeat seller totals across order items. Unpaid includes held/failed payouts and is not proof that funds are eligible for release.
 
-#### Step 3: Register the handler in the copied server
+#### Step 3: Register the handler in `marketplace/mcp_server.py`
 
-In the second file, complete the import TODO and the registration TODO. Keep the existing five tools, state resource and context cleanup. Register the new helper with the same investigation context so the six tools share its snapshot and evidence lifecycle.
+Open `$TOOLS_MCP_LAB_DIR/marketplace/mcp_server.py` and complete the import TODO and the registration TODO. Keep the existing five tools, state resource and context cleanup. Register the new helper with the same investigation context so the six tools share its snapshot and evidence lifecycle.
 
 #### Step 4: Run the supplied terminal test
 
