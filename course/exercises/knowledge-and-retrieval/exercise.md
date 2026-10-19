@@ -4,7 +4,7 @@
 
 Complete [Course Setup](../../../app/LOCAL-SETUP.md), and wait for automatic document preparation to show Ready in both marketplace workspaces. Keep the local stack running. Open the [Test marketplace](http://127.0.0.1:5179/), sign in as **operator** or **support**, and open **Support workspace → OpenAI Agents SDK**. Keep memory, response caching, routing, guardrails and context suppression off; use the GPT-5.4 default.
 
-Under **Workspace options → RAG**, marketplace documents should show **Ready**. Indexing is automatic; if preparation fails, resolve embedding access and use **Retry preparation**. The RAG experiment selector changes what the main Support question box searches: Off uses marketplace evidence; either experiment uses isolated lab documents and fixed facts. Marketplace records and policies are preserved. Embedding and model calls incur normal provider usage.
+Under **Workspace options → RAG**, marketplace documents should show **Ready**. Indexing is automatic; if preparation fails, resolve embedding access and use **Retry preparation**. The RAG experiment selector changes what the main Support question box searches: Off uses marketplace evidence; policy-version mode applies isolated lab policy documents to current Test order records; chunking mode uses isolated lab documents and fixed facts. Preparing an order can add labelled Test records, but does not modify existing orders or marketplace policies. Embedding and model calls incur normal provider usage.
 
 All steps below run in the browser. No terminal commands, file edits or chunker implementation are required.
 
@@ -17,17 +17,20 @@ All steps below run in the browser. No terminal commands, file edits or chunker 
 1. Start a fresh conversation in the ordinary Support chat and ask: **“What conditions must be met before releasing a seller payout?”** Inspect `search_documents` in local Langfuse: actual query, passages, policy version, dates and source citations.
 2. In another fresh conversation ask: **“For order-2, what is each seller’s current payout status, and is their payout eligible for release? Explain why.”** Identify claims supported by current business records versus retrieved policy. Do not assume any payout is held or that eligibility means payment was executed.
 
-#### Policy versions and reindexing
+#### Policy versions and order eligibility
 
-1. Under **Workspace options → RAG → RAG experiment**, select **Policy versions and reindexing**. Questions are asked in the main Support question box. Other experiment controls are disabled until you turn RAG experiments Off.
-2. Click **Restore V1** if needed. Document preparation is automatic. Wait for **Ready**, with both selected and indexed version showing V1.
-3. Inspect **Selected source document**. V1 requires a **24-hour** wait. Fixed facts are supplied automatically: payment captured, confirmed delivery **30 hours ago**, no open return. Click **Use example question**: **“Is the seller payout eligible for release? State the waiting period and explain why, with policy citations.”**
-4. Start a fresh conversation, keep the experiment selected, and ask in the main composer. Inspect **Retrieved passages and source lines** under the answer. Expected: eligible under V1; eligibility does not mean a payout was executed.
-5. Click **Demonstrate source change without reindexing**. This deliberately selects V2 while retaining indexed V1. Verify the stale-index notice. Start a new conversation and ask the identical question; the evidence and answer should still use the indexed 24-hour rule.
-6. Click **Apply changed source**, wait for **Ready / Indexed V2**, then ask the same question in a new conversation. Expected: **48-hour** rule, not yet eligible at 30 hours. Ordinary changes in the policy-version dropdown prepare the selected policy automatically; only the explicit stale-index action skips this.
-7. Click **Restore V1**. Previously embedded text is reused. Turn the RAG experiment **Off** to return the main composer to marketplace retrieval.
+**Purpose:** hold one order's recorded facts constant and show how a retrieved policy changes the eligibility explanation. V1 requires 24 hours; V2 requires 48 hours.
 
-Explain why changing a document selection alone did not change the retrieved evidence. The demo rebuilds its isolated corpus; it does not demonstrate automatic historical policy-version selection in the marketplace.
+1. Under **Workspace options → RAG → RAG experiment**, select **Policy versions and order eligibility**. Ask questions in the main Support question box.
+2. Click **Prepare demo order**. The application first reuses a suitable recorded Test order: captured payment, delivered between 24 and 48 hours before the current demo clock, no active return and a positive held payout. Otherwise it creates a labelled single-item Test order delivered 30 hours before that clock. The panel shows its **order ID, delivery age and held payout status**. Keep that ID for both runs.
+3. Choose **V1 — 24-hour wait** and wait for **Ready**. Expand **Selected source document**, below **Use order question**, to read the policy. Reference copies: [V1 source](fixtures/payout-demo-v1.md) and [V2 source](fixtures/payout-demo-v2.md). Changing the version prepares the selected policy automatically and reuses cached embeddings when available.
+4. Click **Use order question** to fill a question containing the displayed order ID. Start a fresh conversation, keep this experiment selected, and ask that question. Inspect **Current order records** and **Retrieved passages and source lines** below the answer. Expected: eligible under V1, with record and policy citations. A held payout is still held; eligibility does not mean payment was executed.
+5. Choose **V2 — 48-hour wait** and wait for **Ready**. Start a fresh conversation and ask the identical order question. Expected: not yet eligible. Confirm the same order and delivery timestamp were used, with the 48-hour retrieved policy.
+6. **Restore V1**, then turn the experiment **Off**. This restores normal marketplace retrieval. It keeps the prepared order; it does not undo or execute any payout.
+
+Do not move the demo clock, change delivery/payment/return records or execute the payout between the two runs. If the clock or order changes and it is no longer suitable, click **Prepare demo order** again and repeat both versions with the returned ID. Preparation leaves existing orders and the clock unchanged. A newly created fixture adds Test records and can change workspace-wide counts or totals; it uses a dedicated lab seller and product. Reset to defaults does not delete these records.
+
+This compares selected lab policies against actual Test records. It does not demonstrate automatic historical policy selection or replace the operational payout execution rules. There is no manual indexing or stale-index step.
 
 ### Part 2: Compare chunking and the passage limit
 

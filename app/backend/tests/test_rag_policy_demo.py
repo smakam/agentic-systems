@@ -55,22 +55,34 @@ def test_embedding_failure_does_not_replace_working_index(monkeypatch):
     assert row.indexed_version=='v1' and row.indexed_strategy=='paragraph'
     mock.assert_awaited_once()
 
-@pytest.mark.parametrize('stale',[False,True])
-def test_source_change_prepares_automatically_except_intentional_stale(monkeypatch,stale):
+def test_source_change_always_prepares_automatically(monkeypatch):
     from unittest.mock import AsyncMock,Mock
     monkeypatch.setattr(demo,'enabled',lambda:True)
-    selected=Mock(return_value={'ready':True,'stale':stale})
+    selected=Mock(return_value={'ready':True,'stale':True})
     prepared=AsyncMock(return_value={'ready':True,'stale':False})
     monkeypatch.setattr(demo,'select_source',selected)
-    monkeypatch.setattr(demo,'state',lambda *a:{'ready':True,'stale':True})
     monkeypatch.setattr(demo,'index_selected',prepared)
     api.app.dependency_overrides[api.identity]=lambda:SimpleNamespace(id='owner',role='support')
     api.app.dependency_overrides[api.db_session]=lambda:SimpleNamespace()
     try:
-        response=TestClient(api.app).post('/api/rag-policy-demo/versions/source',json={'version':'v2','demonstrate_stale':stale})
-        assert response.status_code==200
-        assert response.json()['stale']==stale
-        assert prepared.await_count==(0 if stale else 1)
+        response=TestClient(api.app).post('/api/rag-policy-demo/versions/source',json={'version':'v2'})
+        assert response.status_code==200 and not response.json()['stale']
+        prepared.assert_awaited_once()
+        stale=TestClient(api.app).post('/api/rag-policy-demo/versions/source',json={'version':'v2','demonstrate_stale':True})
+        assert stale.status_code==422
+    finally:api.app.dependency_overrides.clear()
+
+@pytest.mark.parametrize('user_role',['buyer','seller'])
+def test_non_support_roles_cannot_prepare_order(monkeypatch,user_role):
+    monkeypatch.setattr(demo,'enabled',lambda:True)
+    api.app.dependency_overrides[api.identity]=lambda:SimpleNamespace(id='user',role=user_role)
+    try: assert TestClient(api.app).post('/api/rag-policy-demo/versions/prepare-order',json={}).status_code==403
+    finally:api.app.dependency_overrides.clear()
+
+def test_cannot_prepare_order_outside_test(monkeypatch):
+    monkeypatch.setattr(demo,'enabled',lambda:False)
+    api.app.dependency_overrides[api.identity]=lambda:SimpleNamespace(id='operator',role='operator')
+    try: assert TestClient(api.app).post('/api/rag-policy-demo/versions/prepare-order',json={}).status_code==404
     finally:api.app.dependency_overrides.clear()
 
 

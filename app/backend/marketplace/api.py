@@ -527,12 +527,22 @@ def rag_demo_access(user):
 class RagDemoSource(BaseModel):
     version:Literal['v1','v2','expanded']
     strategy:Literal['paragraph','overlap']='paragraph'
-    demonstrate_stale:bool=False
     model_config={'extra':'forbid'}
 class RagDemoQuestion(BaseModel):
     question:str=Field(min_length=1,max_length=2000)
     top_k:Literal[1,4]=4
     model_config={'extra':'forbid'}
+
+@app.post('/api/rag-policy-demo/versions/prepare-order')
+async def rag_demo_prepare_order(user=Depends(identity),db=Depends(db_session)):
+    rag_demo_access(user)
+    from .rag_demo_orders import prepare
+    try:
+        record=prepare(db,user.id)
+        return {**rag_policy_demo.state(db,user.id,'versions'),'order_reused':record['reused']}
+    except ValueError as exc:db.rollback();raise HTTPException(400,str(exc))
+    except OperationalError:db.rollback();raise HTTPException(409,'Demo preparation is busy; retry shortly')
+    except Exception:db.rollback();raise HTTPException(503,'Demo order preparation failed; retry to recover or reuse the prepared order')
 
 @app.get('/api/rag-policy-demo/{experiment}')
 def rag_demo_state(experiment:rag_policy_demo.Experiment,user=Depends(identity),db=Depends(db_session)):
@@ -543,10 +553,7 @@ def rag_demo_state(experiment:rag_policy_demo.Experiment,user=Depends(identity),
 async def rag_demo_source(experiment:rag_policy_demo.Experiment,body:RagDemoSource,user=Depends(identity),db=Depends(db_session)):
     rag_demo_access(user)
     try:
-        if body.demonstrate_stale and experiment!='versions': raise rag_policy_demo.DemoError('Stale-index demonstration requires policy versions')
         rag_policy_demo.select_source(db,user.id,experiment,body.version,body.strategy)
-        if body.demonstrate_stale:
-            return rag_policy_demo.state(db,user.id,experiment)
         from .gateway_identity import for_role
         with for_role(user.role): return await rag_policy_demo.index_selected(db,user.id,experiment)
     except rag_policy_demo.DemoError as exc: raise HTTPException(400,str(exc))
