@@ -8,7 +8,7 @@ async def index():
     with Session() as db:
         if not db.scalar(text("SELECT pg_try_advisory_xact_lock(hashtext('marketplace-document-index'))")):
             raise RuntimeError('Document preparation is already running')
-        docs=db.scalars(select(Document).where((Document.embedding==None) | (Document.embedding_model!=namespace()))).all()
+        docs=db.scalars(select(Document).where((Document.embedding==None) | (Document.embedding_model==None) | (Document.embedding_model!=namespace()))).all()
         if not docs:return {'indexed':0}
         # Adopt compatible pre-cache embeddings; the first upgrade must not charge for them again.
         if os.getenv('EMBEDDING_MODEL_REVISION','text-embedding-3-small:1536:v1')=='text-embedding-3-small:1536:v1':
