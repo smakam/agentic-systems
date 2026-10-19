@@ -4,11 +4,13 @@
 
 Complete [Course Setup](../../../app/LOCAL-SETUP.md), and wait for automatic document preparation to show Ready in both marketplace workspaces. Keep the local stack running. Open the [Test marketplace](http://127.0.0.1:5179/), sign in as **operator** or **support**, and open **Support workspace → OpenAI Agents SDK**. Keep memory, response caching, routing, guardrails and context suppression off; use the GPT-5.4 default.
 
-Under **Workspace options → RAG**, marketplace documents should show **Ready**. Indexing is automatic; if preparation fails, resolve embedding access and use **Retry preparation**. The RAG experiment selector changes what the main Support question box searches: Off uses marketplace evidence; policy-version mode applies isolated lab policy documents to current Test order records; chunking mode uses isolated lab documents and fixed facts. Preparing an order can add labelled Test records, but does not modify existing orders or marketplace policies. Embedding and model calls incur normal provider usage.
+Under **Workspace options → RAG**, marketplace documents should show **Ready**. Indexing is automatic; if preparation fails, resolve embedding access and use **Retry preparation**. The RAG experiment selector changes what the main Support question box searches: Off uses marketplace evidence; policy-version mode applies isolated lab policy documents to current Test order records; chunking mode asks policy-only questions about isolated lab documents, without fixed order facts. Preparing an order can add labelled Test records, but does not modify existing orders or marketplace policies. Embedding and model calls incur normal provider usage.
 
 All steps below run in the browser. No terminal commands, file edits or chunker implementation are required.
 
 ## Your task
+
+Repeat both instructor demonstrations: policy versions and chunking/passage limits. Document your observations for the four chunking settings using the table in Part 2.
 
 ### Part 1: Inspect retrieval and compare policy versions
 
@@ -49,6 +51,8 @@ This compares selected lab policies against actual Test records. It does not dem
 | Paragraph | 4 | | | | |
 | Overlap | 1 | | | | |
 | Overlap | 4 | | | | |
+
+After filling the four rows, write one or two sentences explaining how the passage limit and overlap affected evidence coverage. Report your actual results, even if they differ from the instructor’s.
 
 Top K is the **maximum** number of chunks returned, not a similarity threshold. In this lab, blank lines define paragraph boundaries. One paragraph chunk cannot contain both rules; a two-paragraph window spanning the boundary can. Inspect the actual returned text rather than assuming which window ranks first.
 
