@@ -2,11 +2,11 @@
 
 ## Prerequisites
 
-Use the [exercise](../exercise.md) prerequisites and the same Test workspace UI. No learner terminal commands or file edits are required. The ordinary Support chat uses marketplace evidence; policy-version mode uses isolated policy documents with current Test order records; chunking uses synthetic documents and fixed facts. Preparing a missing suitable order can add labelled Test records. Neither policy switch executes payouts or rewrites existing records.
+Use the [exercise](../exercise.md) prerequisites and the same Test workspace UI. No learner terminal commands or file edits are required. The ordinary Support chat uses marketplace evidence; policy-version mode uses isolated policy documents with current Test order records; chunking asks policy-only questions about isolated lab documents, without fixed order facts. Preparing a missing suitable order can add labelled Test records. Neither policy switch executes payouts or rewrites existing records.
 
 ## Your task
 
-### Part 1: Inspect retrieval and compare policy versions
+### RAG calls and policy versions
 
 #### Quick review: policy and business evidence
 
@@ -27,7 +27,7 @@ Inspect the actual order records, elapsed hours, source text and retrieved citat
 
 Version changes prepare documents automatically. Unchanged content reuses cached embeddings; selecting an already prepared version, changing passage limits, asking another question or resetting unchanged settings does not require new document embeddings. Questions still use query embeddings and model calls. Turn the experiment Off afterward. To compare V1 again, select V1 in the policy version control.
 
-Preparation can add a dedicated lab seller/product and a new Test order, affecting Test counts and aggregate totals. It does not alter existing orders, seller balances, inventory or the demo clock. Reset keeps the created records and conversation history. The [verified order-backed rehearsal](order-policy-results-2026-10-19.json) reused the same recorded order at delivery age 30 hours: V1 answered eligible and V2 answered not yet eligible, both citing the order records and retrieved policy. The recorded payout remained held. The saved older main-chat evidence documents the previous synthetic version experiment only; its chunking observations remain separately labelled below.
+Preparation can add a dedicated lab seller/product and a new Test order, affecting Test counts and aggregate totals. It does not alter existing orders, seller balances, inventory or the demo clock. Reset keeps the created records and conversation history.
 
 ### Chunking and passage-limit observations
 
@@ -42,7 +42,7 @@ Use the same steps and question as the exercise. Select **Paragraph**, wait for 
 
 The developer supplies both chunkers. Paragraph mode splits on blank lines and keeps source-line ranges. Overlap joins consecutive pairs of paragraphs at stride one, including a window containing the standard rule and extension together. A top-one window can therefore contain two paragraphs, even though only one chunk is returned.
 
-The [verified Amber product rehearsal](amber-product-results-2026-10-19.json) returned only the additional 48-hour rule for paragraph/top-one and correctly declined to state a numeric total. Paragraph/top-four and both overlap settings retrieved both rules and answered 72 hours. No fixed scenario facts or order records were supplied.
+The instructor rehearsal returned only the additional 48-hour rule for paragraph/top-one and correctly declined to state a numeric total. Paragraph/top-four and both overlap settings retrieved both rules and answered 72 hours. No fixed scenario facts or order records were supplied.
 
 #### How to interpret the comparison
 
@@ -53,8 +53,6 @@ The [verified Amber product rehearsal](amber-product-results-2026-10-19.json) re
 | Overlap, top K 1 | Does the winning window span both paragraphs? | One chunk can provide both facts and support the 72-hour calculation |
 | Overlap, top K 4 | How much text repeats across windows? | More overlap/context may add no decision benefit after both facts are present |
 
-The following results used the earlier Amber Review scenario, not the current Amber product question. In the earlier [verified main-chat rehearsal](main-chat-results-2026-10-19.json), paragraph/top-one returned only the standard rule and could not establish the extension or numeric total. Paragraph/top-four and both overlap settings retrieved both rules and calculated 72 hours. Retrieved characters were 212, 612, 480 and 1385 for paragraph/1, paragraph/4, overlap/1 and overlap/4 respectively. These are retained observations for the fixed demo question, not guaranteed outputs for every new run. The [new order-feature regression rehearsal](chunking-results-2026-10-19.json) reproduced the same passage-coverage pattern across all four settings.
-
 This is a controlled teaching fixture, not proof that overlap always improves production retrieval. Ranking and model responses can vary; record actual passage coverage, citations, text volume and answer. A similarity score is not confidence, and a citation alone does not prove a supported conclusion. Character counts do not measure total API cost or latency.
 
-Turn RAG experiments **Off** afterward. **Reset to defaults** also restores the existing demo baselines and normal workspace options; it keeps the current conversation, history, saved memories and business data. An existing conversation retains its runtime and memory-provider binding; choose New conversation yourself for a clean comparison. Keep your four observations locally; there is no submission and no business-data cleanup. The historical CLI and its saved results remain reference evidence for the earlier version of this lab, not commands learners must execute for the current UI workflow.
+Turn RAG experiments **Off** afterward. **Reset to defaults** also restores the existing demo baselines and normal workspace options; it keeps the current conversation, history, saved memories and business data. An existing conversation retains its runtime and memory-provider binding; choose New conversation yourself for a clean comparison. Keep your four observations locally; there is no submission and no business-data cleanup.
