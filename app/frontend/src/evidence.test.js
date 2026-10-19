@@ -62,6 +62,7 @@ test('RAG citations resolve only the saved passages and order in their own answe
     const text=formatEvidence('[passage-2] [order-record]',runs[i].citationEvidence);
     assert.equal(text,'[View passage-2](#evidence-rag-passage-2) [View order records](#evidence-rag-order-record)');
     assert.equal(formatEvidence(text,runs[i].citationEvidence),text);
+    assert.equal(formatEvidence('(passage-2) order-record',runs[i].citationEvidence),text);
     assert.equal(runs[i].citationEvidence['evidence-rag-order-record'].rows[0].value,i?'v2':'v1');
   }
   assert.equal(runs[0].citationEvidence['evidence-rag-passage-2'].chunks[0].body,'Wait 24 hours');

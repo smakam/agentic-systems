@@ -39,7 +39,8 @@ export function withCitationEvidence(runs) {
 // Support canonical citations, existing Markdown links and older bare IDs.
 // Only recorded evidence can become a source link.
 export function formatEvidence(answer, evidence = {}) {
-  const labLinked = answer.replace(/\[[^\]\n]*\]\([^\)\n]*\)|\[(passage-\d+|order-record)\]/g, (match, id) => {
+  const labLinked = answer.replace(/\[[^\]\n]*\]\([^\)\n]*\)|\[(passage-\d+|order-record)\]|\((passage-\d+|order-record)\)|\b(passage-\d+|order-record)\b/g, (match, bracketed, parenthesized, bare) => {
+    const id = bracketed || parenthesized || bare;
     if (!id) return match;
     const handle = `evidence-rag-${id}`;
     return evidence[handle] ? `[${sourceLabel(evidence[handle])}](#${handle})` : '[Source unavailable]';
