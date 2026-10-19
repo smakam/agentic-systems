@@ -1,0 +1,222 @@
+[
+  {
+    "strategy": "paragraph",
+    "top_k": 1,
+    "standard_returned": false,
+    "extra_returned": true,
+    "response": {
+      "id": "run-279f80f0b9",
+      "conversation_id": "chat-edb4f95cde",
+      "revision": 2,
+      "question": "What is the total payout waiting time for Amber products? Explain the standard wait and additional wait, with policy citations.",
+      "answer": "I can establish the additional Amber-specific wait, but not the full total from the retrieved evidence.\n\n- Additional wait for Amber products: 48 hours [passage-7]\n- This 48 hours is cumulative, not a replacement for the standard waiting period [passage-7]\n- Therefore, total payout waiting time for Amber products = standard waiting period + 48 hours [passage-7]\n\nWhat cannot be established:\n- The exact standard waiting period is not included in the retrieved passages, so the exact total payout waiting time cannot be determined from the supplied evidence.\n- The passage also states these lab-only product rules do not change marketplace payout execution [passage-7]",
+      "status": "completed",
+      "created_at": "2026-10-19T07:15:58.320768+00:00",
+      "evidence": {},
+      "metrics": {
+        "runtime": "sdk",
+        "rag_demo": {
+          "experiment": "chunking",
+          "question": "What is the total payout waiting time for Amber products? Explain the standard wait and additional wait, with policy citations.",
+          "facts": null,
+          "source_version": "expanded",
+          "indexed_version": "expanded",
+          "indexed_strategy": "paragraph",
+          "stale": false,
+          "top_k": 1,
+          "passages": [
+            {
+              "id": "passage-7",
+              "source": "payout-demo-expanded.md",
+              "version": "expanded",
+              "line_start": 13,
+              "line_end": 13,
+              "body": "For Amber products, add a further 48 hours to the standard waiting period defined in the preceding paragraph. This additional wait is cumulative, not a replacement for the standard wait. These lab-only product rules do not change marketplace payout execution."
+            }
+          ],
+          "retrieved_characters": 259,
+          "answer": "I can establish the additional Amber-specific wait, but not the full total from the retrieved evidence.\n\n- Additional wait for Amber products: 48 hours [passage-7]\n- This 48 hours is cumulative, not a replacement for the standard waiting period [passage-7]\n- Therefore, total payout waiting time for Amber products = standard waiting period + 48 hours [passage-7]\n\nWhat cannot be established:\n- The exact standard waiting period is not included in the retrieved passages, so the exact total payout waiting time cannot be determined from the supplied evidence.\n- The passage also states these lab-only product rules do not change marketplace payout execution [passage-7]",
+          "retrieval": "pgvector_cosine",
+          "order": null
+        }
+      }
+    }
+  },
+  {
+    "strategy": "paragraph",
+    "top_k": 4,
+    "standard_returned": true,
+    "extra_returned": true,
+    "response": {
+      "id": "run-dbacfbd97c",
+      "conversation_id": "chat-175440aa19",
+      "revision": 2,
+      "question": "What is the total payout waiting time for Amber products? Explain the standard wait and additional wait, with policy citations.",
+      "answer": "For Amber products, the total payout waiting time is **72 hours after confirmed delivery**, made up of:\n\n- **Standard wait:** **24 hours after confirmed delivery** [passage-6]  \n- **Additional Amber wait:** **48 more hours** [passage-7]\n\nThe policy explicitly says the Amber wait is **\u201ccumulative, not a replacement\u201d** for the standard wait [passage-7], so:\n\n**24 hours + 48 hours = 72 hours total**.\n\nRelated conditions in the policy:\n- The standard waiting period also requires **captured payment** and **no open return** [passage-6].\n- These rules affect **eligibility timing** only and **do not change marketplace payout execution** [passage-7].\n- I also cannot establish any actual payout status or timeline for a specific order because **no order records were provided**.",
+      "status": "completed",
+      "created_at": "2026-10-19T07:16:03.694722+00:00",
+      "evidence": {},
+      "metrics": {
+        "runtime": "sdk",
+        "rag_demo": {
+          "experiment": "chunking",
+          "question": "What is the total payout waiting time for Amber products? Explain the standard wait and additional wait, with policy citations.",
+          "facts": null,
+          "source_version": "expanded",
+          "indexed_version": "expanded",
+          "indexed_strategy": "paragraph",
+          "stale": false,
+          "top_k": 4,
+          "passages": [
+            {
+              "id": "passage-7",
+              "source": "payout-demo-expanded.md",
+              "version": "expanded",
+              "line_start": 13,
+              "line_end": 13,
+              "body": "For Amber products, add a further 48 hours to the standard waiting period defined in the preceding paragraph. This additional wait is cumulative, not a replacement for the standard wait. These lab-only product rules do not change marketplace payout execution."
+            },
+            {
+              "id": "passage-6",
+              "source": "payout-demo-expanded.md",
+              "version": "expanded",
+              "line_start": 11,
+              "line_end": 11,
+              "body": "The standard seller payout waiting period is 24 hours after confirmed delivery. Captured payment and no open return are required. Amber products must also satisfy the additional wait in the following paragraph."
+            },
+            {
+              "id": "passage-1",
+              "source": "payout-demo-expanded.md",
+              "version": "expanded",
+              "line_start": 1,
+              "line_end": 1,
+              "body": "# Simulated expanded payout policy"
+            },
+            {
+              "id": "passage-10",
+              "source": "payout-demo-expanded.md",
+              "version": "expanded",
+              "line_start": 19,
+              "line_end": 19,
+              "body": "Support explanations must cite the retrieved policy and distinguish eligibility from a recorded completed payout."
+            }
+          ],
+          "retrieved_characters": 616,
+          "answer": "For Amber products, the total payout waiting time is **72 hours after confirmed delivery**, made up of:\n\n- **Standard wait:** **24 hours after confirmed delivery** [passage-6]  \n- **Additional Amber wait:** **48 more hours** [passage-7]\n\nThe policy explicitly says the Amber wait is **\u201ccumulative, not a replacement\u201d** for the standard wait [passage-7], so:\n\n**24 hours + 48 hours = 72 hours total**.\n\nRelated conditions in the policy:\n- The standard waiting period also requires **captured payment** and **no open return** [passage-6].\n- These rules affect **eligibility timing** only and **do not change marketplace payout execution** [passage-7].\n- I also cannot establish any actual payout status or timeline for a specific order because **no order records were provided**.",
+          "retrieval": "pgvector_cosine",
+          "order": null
+        }
+      }
+    }
+  },
+  {
+    "strategy": "overlap",
+    "top_k": 1,
+    "standard_returned": true,
+    "extra_returned": true,
+    "response": {
+      "id": "run-50f8bcecf2",
+      "conversation_id": "chat-0eba3c8877",
+      "revision": 2,
+      "question": "What is the total payout waiting time for Amber products? Explain the standard wait and additional wait, with policy citations.",
+      "answer": "For Amber products, the total payout waiting time is 72 hours:\n\n- Standard wait: 24 hours after confirmed delivery, assuming captured payment and no open return [passage-6].\n- Additional Amber wait: 48 more hours [passage-6].\n- Total: 24 + 48 = 72 hours, and the passage explicitly says the Amber wait is cumulative, not a replacement [passage-6].\n\nI can state the policy timing, but I cannot establish whether any specific order has met those conditions because no order records were retrieved.",
+      "status": "completed",
+      "created_at": "2026-10-19T07:16:07.636957+00:00",
+      "evidence": {},
+      "metrics": {
+        "runtime": "sdk",
+        "rag_demo": {
+          "experiment": "chunking",
+          "question": "What is the total payout waiting time for Amber products? Explain the standard wait and additional wait, with policy citations.",
+          "facts": null,
+          "source_version": "expanded",
+          "indexed_version": "expanded",
+          "indexed_strategy": "overlap",
+          "stale": false,
+          "top_k": 1,
+          "passages": [
+            {
+              "id": "passage-6",
+              "source": "payout-demo-expanded.md",
+              "version": "expanded",
+              "line_start": 11,
+              "line_end": 13,
+              "body": "The standard seller payout waiting period is 24 hours after confirmed delivery. Captured payment and no open return are required. Amber products must also satisfy the additional wait in the following paragraph.\n\nFor Amber products, add a further 48 hours to the standard waiting period defined in the preceding paragraph. This additional wait is cumulative, not a replacement for the standard wait. These lab-only product rules do not change marketplace payout execution."
+            }
+          ],
+          "retrieved_characters": 471,
+          "answer": "For Amber products, the total payout waiting time is 72 hours:\n\n- Standard wait: 24 hours after confirmed delivery, assuming captured payment and no open return [passage-6].\n- Additional Amber wait: 48 more hours [passage-6].\n- Total: 24 + 48 = 72 hours, and the passage explicitly says the Amber wait is cumulative, not a replacement [passage-6].\n\nI can state the policy timing, but I cannot establish whether any specific order has met those conditions because no order records were retrieved.",
+          "retrieval": "pgvector_cosine",
+          "order": null
+        }
+      }
+    }
+  },
+  {
+    "strategy": "overlap",
+    "top_k": 4,
+    "standard_returned": true,
+    "extra_returned": true,
+    "response": {
+      "id": "run-35a637f72c",
+      "conversation_id": "chat-ffc0e817ff",
+      "revision": 2,
+      "question": "What is the total payout waiting time for Amber products? Explain the standard wait and additional wait, with policy citations.",
+      "answer": "For Amber products, the total policy waiting time is **72 hours after confirmed delivery**:\n\n- **Standard wait:** **24 hours after confirmed delivery** [passage-5], [passage-6]\n- **Additional Amber wait:** **48 more hours** [passage-6], [passage-7]\n\nBecause the Amber wait is **cumulative, not a replacement**, the total is:\n\n- **24 hours + 48 hours = 72 hours** [passage-6], [passage-7]\n\nRelated conditions from the policy:\n\n- The waiting period starts from **confirmed delivery**, not shipment dispatch [passage-5].\n- **Captured payment** and **no open return** are required for payout waiting to be satisfied [passage-5], [passage-6].\n- An **open return blocks release while unresolved** [passage-7].\n\nThere are **no order records retrieved** for a specific order, so I **cannot establish any order-specific payout status, delivery time, payment capture state, or whether the wait has already elapsed**.",
+      "status": "completed",
+      "created_at": "2026-10-19T07:16:12.915942+00:00",
+      "evidence": {},
+      "metrics": {
+        "runtime": "sdk",
+        "rag_demo": {
+          "experiment": "chunking",
+          "question": "What is the total payout waiting time for Amber products? Explain the standard wait and additional wait, with policy citations.",
+          "facts": null,
+          "source_version": "expanded",
+          "indexed_version": "expanded",
+          "indexed_strategy": "overlap",
+          "stale": false,
+          "top_k": 4,
+          "passages": [
+            {
+              "id": "passage-6",
+              "source": "payout-demo-expanded.md",
+              "version": "expanded",
+              "line_start": 11,
+              "line_end": 13,
+              "body": "The standard seller payout waiting period is 24 hours after confirmed delivery. Captured payment and no open return are required. Amber products must also satisfy the additional wait in the following paragraph.\n\nFor Amber products, add a further 48 hours to the standard waiting period defined in the preceding paragraph. This additional wait is cumulative, not a replacement for the standard wait. These lab-only product rules do not change marketplace payout execution."
+            },
+            {
+              "id": "passage-7",
+              "source": "payout-demo-expanded.md",
+              "version": "expanded",
+              "line_start": 13,
+              "line_end": 15,
+              "body": "For Amber products, add a further 48 hours to the standard waiting period defined in the preceding paragraph. This additional wait is cumulative, not a replacement for the standard wait. These lab-only product rules do not change marketplace payout execution.\n\nAn open return blocks release while unresolved. A closed return does not prove a refund has completed."
+            },
+            {
+              "id": "passage-5",
+              "source": "payout-demo-expanded.md",
+              "version": "expanded",
+              "line_start": 9,
+              "line_end": 11,
+              "body": "Shipment dispatch is not delivery. A confirmed delivery timestamp starts the policy waiting period.\n\nThe standard seller payout waiting period is 24 hours after confirmed delivery. Captured payment and no open return are required. Amber products must also satisfy the additional wait in the following paragraph."
+            },
+            {
+              "id": "passage-1",
+              "source": "payout-demo-expanded.md",
+              "version": "expanded",
+              "line_start": 1,
+              "line_end": 3,
+              "body": "# Simulated expanded payout policy\n\nSimulated payout policy for a document-retrieval lab. These rules do not change marketplace records."
+            }
+          ],
+          "retrieved_characters": 1281,
+          "answer": "For Amber products, the total policy waiting time is **72 hours after confirmed delivery**:\n\n- **Standard wait:** **24 hours after confirmed delivery** [passage-5], [passage-6]\n- **Additional Amber wait:** **48 more hours** [passage-6], [passage-7]\n\nBecause the Amber wait is **cumulative, not a replacement**, the total is:\n\n- **24 hours + 48 hours = 72 hours** [passage-6], [passage-7]\n\nRelated conditions from the policy:\n\n- The waiting period starts from **confirmed delivery**, not shipment dispatch [passage-5].\n- **Captured payment** and **no open return** are required for payout waiting to be satisfied [passage-5], [passage-6].\n- An **open return blocks release while unresolved** [passage-7].\n\nThere are **no order records retrieved** for a specific order, so I **cannot establish any order-specific payout status, delivery time, payment capture state, or whether the wait has already elapsed**.",
+          "retrieval": "pgvector_cosine",
+          "order": null
+        }
+      }
+    }
+  }
+]

@@ -37,14 +37,14 @@ class DemoChunk(DemoBase):
 FACTS = 'Simulated fixed facts: payment captured, confirmed delivery 30 hours ago, no open return.'
 QUESTIONS = {
     'versions': 'Is the seller payout eligible for release? State the waiting period and explain why, with policy citations.',
-    'chunking': 'What are the standard wait, extra review hold and total required wait? Is payout eligible now? Cite the policy.'}
+    'chunking': 'What is the total payout waiting time for Amber products? Explain the standard wait and additional wait, with policy citations.'}
 EXPANDED = [
     'Simulated payout policy for a document-retrieval lab. These rules do not change marketplace records.',
     'Sellers keep a current business address and support contact. Listing changes do not alter previously captured payments.',
     'Payment authorization and payment capture are different. The scenario must state whether payment was captured.',
     'Shipment dispatch is not delivery. A confirmed delivery timestamp starts the policy waiting period.',
-    'The standard seller payout waiting period is 24 hours after confirmed delivery. Captured payment and no open return are required. Purchases carrying a review flag must also satisfy the following review exception.',
-    'Amber Review payout exception: add a further 48 hours to the standard waiting period defined in the preceding paragraph. The extra review hold is cumulative, not a replacement for the standard wait. It changes eligibility, not whether a payout was actually executed.',
+    'The standard seller payout waiting period is 24 hours after confirmed delivery. Captured payment and no open return are required. Amber products must also satisfy the additional wait in the following paragraph.',
+    'For Amber products, add a further 48 hours to the standard waiting period defined in the preceding paragraph. This additional wait is cumulative, not a replacement for the standard wait. These lab-only product rules do not change marketplace payout execution.',
     'An open return blocks release while unresolved. A closed return does not prove a refund has completed.',
     'Seller balances show captured, refunded, fees, paid-out and unpaid amounts. Unpaid money may still be held.',
     'Support explanations must cite the retrieved policy and distinguish eligibility from a recorded completed payout.'
@@ -97,7 +97,7 @@ def state(db, owner, experiment):
     return {'enabled':True,'experiment':experiment,**current,'ready':bool(current['indexed_version']) and matches and current['source_version']==current['indexed_version'] and current['strategy']==current['indexed_strategy'],
             'stale':bool(current['indexed_version']) and (current['source_version']!=current['indexed_version'] or current['strategy']!=current['indexed_strategy']),
             'chunk_count':count,'source_text':DOCUMENTS[current['source_version']],
-            'facts':('Simulated facts: payment captured, confirmed delivery 30 hours ago, no open return, Amber Review flag present.' if experiment=='chunking' else None),
+            'facts':None,
             'question':question,'order':record,'order_ready':suitable(record) if experiment=='versions' else True}
 
 def locked_state(db, owner, experiment):
@@ -141,7 +141,7 @@ async def ask(db,owner,experiment,question,top_k):
         if experiment=='versions':
             from .rag_demo_orders import suitable
             if not suitable(current['order']):raise DemoError('Prepare a demo order delivered between 24 and 48 hours ago before asking')
-        query=(question if experiment=='versions' else current['facts']+' '+question)
+        query=question
         vector=(await api.embeddings.create(model='embedding',input=query)).data[0].embedding
         distance=DemoChunk.embedding.cosine_distance(vector)
         rows=db.scalars(select(DemoChunk).where(DemoChunk.owner_id==owner,DemoChunk.experiment==experiment,

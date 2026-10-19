@@ -34,13 +34,15 @@ Preparation can add a dedicated lab seller/product and a new Test order, affecti
 Select **Chunking and passage limit**. The expanded synthetic policy separates two needed facts across adjacent paragraphs:
 
 - The standard wait is **24 hours after confirmed delivery**.
-- Amber Review adds **48 more hours to the standard wait**. The extension does not restate the standard value.
+- Amber products add **48 more hours to the standard wait**. The extension does not restate the standard value.
 
-The fixed scenario includes Amber Review and delivery 30 hours ago. With both facts, the total is **72 hours**, so payout is not yet eligible. If only one fact is retrieved, the appropriate answer identifies the missing evidence rather than guessing the absent policy value.
+This is now a policy-only question: “What is the total payout waiting time for Amber products? Explain the standard wait and additional wait, with policy citations.” With both rules, the total is **72 hours**. Regular products use the standard **24-hour** wait. No order or fixed delivery scenario is supplied. If only one fact is retrieved, the appropriate answer identifies the missing evidence rather than guessing the absent policy value.
 
 Use the same steps and question as the exercise. Select **Paragraph**, wait for **Ready**, then ask in the main question box at top K 1 and 4. Select **Two-paragraph overlap**, wait for automatic preparation to finish, then ask at top K 1 and 4. Use a fresh conversation for each comparison. Changing top K alone needs no reindexing. Selected and indexed strategies must match when comparing chunkers.
 
 The developer supplies both chunkers. Paragraph mode splits on blank lines and keeps source-line ranges. Overlap joins consecutive pairs of paragraphs at stride one, including a window containing the standard rule and extension together. A top-one window can therefore contain two paragraphs, even though only one chunk is returned.
+
+The [verified Amber product rehearsal](amber-product-results-2026-10-19.json) returned only the additional 48-hour rule for paragraph/top-one and correctly declined to state a numeric total. Paragraph/top-four and both overlap settings retrieved both rules and answered 72 hours. No fixed scenario facts or order records were supplied.
 
 #### How to interpret the comparison
 
@@ -51,8 +53,8 @@ The developer supplies both chunkers. Paragraph mode splits on blank lines and k
 | Overlap, top K 1 | Does the winning window span both paragraphs? | One chunk can provide both facts and support the 72-hour calculation |
 | Overlap, top K 4 | How much text repeats across windows? | More overlap/context may add no decision benefit after both facts are present |
 
-In the earlier [verified main-chat rehearsal](main-chat-results-2026-10-19.json), paragraph/top-one returned only the standard rule and could not establish the extension or numeric total. Paragraph/top-four and both overlap settings retrieved both rules and calculated 72 hours. Retrieved characters were 212, 612, 480 and 1385 for paragraph/1, paragraph/4, overlap/1 and overlap/4 respectively. These are retained observations for the fixed demo question, not guaranteed outputs for every new run. The [new order-feature regression rehearsal](chunking-results-2026-10-19.json) reproduced the same passage-coverage pattern across all four settings.
+The following results used the earlier Amber Review scenario, not the current Amber product question. In the earlier [verified main-chat rehearsal](main-chat-results-2026-10-19.json), paragraph/top-one returned only the standard rule and could not establish the extension or numeric total. Paragraph/top-four and both overlap settings retrieved both rules and calculated 72 hours. Retrieved characters were 212, 612, 480 and 1385 for paragraph/1, paragraph/4, overlap/1 and overlap/4 respectively. These are retained observations for the fixed demo question, not guaranteed outputs for every new run. The [new order-feature regression rehearsal](chunking-results-2026-10-19.json) reproduced the same passage-coverage pattern across all four settings.
 
 This is a controlled teaching fixture, not proof that overlap always improves production retrieval. Ranking and model responses can vary; record actual passage coverage, citations, text volume and answer. A similarity score is not confidence, and a citation alone does not prove a supported conclusion. Character counts do not measure total API cost or latency.
 
-Click **Restore paragraph baseline** and turn RAG experiments **Off** afterward. **Reset to defaults** also restores the existing demo baselines and normal workspace options; it keeps the current conversation, history, saved memories and business data. An existing conversation retains its runtime and memory-provider binding; choose New conversation yourself for a clean comparison. Keep your four observations locally; there is no submission and no business-data cleanup. The historical CLI and its saved results remain reference evidence for the earlier version of this lab, not commands learners must execute for the current UI workflow.
+Turn RAG experiments **Off** afterward. **Reset to defaults** also restores the existing demo baselines and normal workspace options; it keeps the current conversation, history, saved memories and business data. An existing conversation retains its runtime and memory-provider binding; choose New conversation yourself for a clean comparison. Keep your four observations locally; there is no submission and no business-data cleanup. The historical CLI and its saved results remain reference evidence for the earlier version of this lab, not commands learners must execute for the current UI workflow.
