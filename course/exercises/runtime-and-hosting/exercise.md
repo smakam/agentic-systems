@@ -1,5 +1,8 @@
 # Runtime and Hosting — deployment walkthrough
 
+> Optional reference only. Chapter 12 has no required hands-on exercise. The instructor demo uses the container map and a local CPU/memory snapshot.
+
+
 Document how the existing marketplace is deployed locally. If you have already deployed the full cloud marketplace, optionally complete the cloud comparison. Trace the connections among the chat application, OpenAI Agents SDK agent, LiteLLM model gateway, MCP tool handlers and persistent data.
 
 This is a read-only inspection exercise. It requires no new agent service, tunnel, database reset, code change or deployment. Use the setup already prepared in [Course Setup](../../../app/LOCAL-SETUP.md). If you have deployed the full cloud marketplace, use [Cloud Setup](../../../app/CLOUD-SETUP.md) to identify its services.

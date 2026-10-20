@@ -181,13 +181,13 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 ### 12. Runtime and Hosting
 
-**Learning objective:** Separate framework choice from hosting, and distinguish infrastructure responsibilities from agent-system capabilities.
+**Learning objective:** Separate Agent SDK choice from hosting, and distinguish infrastructure responsibilities from agent-system capabilities.
 
-**Demo and learner practice:** Inspect existing local Docker and full-cloud marketplace configurations: chat/agent, gateway, MCP, databases and external history. Complete six local architecture questions and six optional cloud questions, citing configuration/service/trace evidence. No new deployment or tunnel is required.
+**Demo:** Map the local deployment into five logical groups, then show a captured CPU/memory snapshot. Use the existing local/cloud diagrams to explain component placement. No live code or cloud inspection is required.
 
-**Workspace:** Local worksheet: Test workspace http://127.0.0.1:5179/, market_test. Optional cloud section: learner’s already deployed full marketplace and its own database. The historical agent-only hosting lab is not this activity.
+**Learner check:** No required hands-on exercise. Briefly identify where the SDK agent executes, what the gateway does, and where persistent data lives.
 
-**Materials:** [Exercise](exercises/runtime-and-hosting/exercise.md) · [Answers](exercises/runtime-and-hosting/solutions/answers.md)
+**Materials:** [Optional inspection reference](exercises/runtime-and-hosting/exercise.md) · [Reference answers](exercises/runtime-and-hosting/solutions/answers.md)
 
 ## D. Observability, Evaluation and Security
 

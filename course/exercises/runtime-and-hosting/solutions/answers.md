@@ -1,5 +1,8 @@
 # Runtime and Hosting — reference answers
 
+> Optional reference only. Chapter 12 has no required hands-on exercise. The instructor demo uses the container map and a local CPU/memory snapshot.
+
+
 This solution mirrors the deployment walkthrough: six local questions followed by six optional cloud questions. It describes the **standard local test marketplace** and the **full Google Cloud marketplace**. Verify your actual configuration; the table’s source values are not fresh live-service observations.
 
 ## Part 1 — local deployment
