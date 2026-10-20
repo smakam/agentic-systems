@@ -140,6 +140,38 @@ If preparation fails, correct provider credentials, embedding-model access, bill
 
 ### Which container does what?
 
+
+Five logical groups contain the eleven baseline containers. The SDK runs inside each backend; it is not another container.
+
+```mermaid
+flowchart TB
+  subgraph local["Local deployment: 11 baseline containers"]
+    subgraph main["Main marketplace: 2 containers"]
+      MF[Frontend] --> MB["Backend + SDK agent"]
+    end
+    subgraph test["Test marketplace: 2 containers"]
+      TF["Test frontend"] --> TB["Test backend + SDK agent"]
+    end
+    GW["Shared gateway: 1 container / LiteLLM"]
+    PG["Shared PostgreSQL: 1 container / separate databases"]
+    subgraph lf["Langfuse: 5 containers"]
+      LFW[Web]
+      LFK[Worker]
+      R[Redis]
+      CH[ClickHouse]
+      MI[MinIO]
+    end
+  end
+  MB --> GW
+  TB --> GW
+  MB --> PG
+  TB --> PG
+  MB -. traces .-> LFW
+  TB -. traces .-> LFW
+```
+
+This overview groups containers by purpose. Langfuse and the gateway also use their own metadata databases on the shared PostgreSQL server. The optional remote MCP endpoint adds a twelfth container; model inference runs externally.
+
 Inspect the running containers without image hashes or container IDs:
 
 ```sh
