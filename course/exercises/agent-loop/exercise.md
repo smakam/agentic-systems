@@ -38,19 +38,29 @@ docker compose -p marketplace-lab -f app/compose.yaml -f app/compose.memory.yaml
 
 The separate temporary process uses the configured Test gateway and the existing backend dependencies. It prints the answer, conversation messages and execution events as JSON, then exits. It does not restart the UI agent or save a Support conversation.
 
-### How it works
+### Minimal agent architecture
+
+The starter, custom loop, prompt and local tool together form this minimal agent implementation. The model is accessed through the configured Test gateway. There is no Agents SDK Runner in this example.
 
 ```mermaid
-flowchart TD
-    A[Starter: question and local tool definition] --> B[Our custom run_loop]
-    B --> C[Real model: first call]
-    C -->|Requests lookup_quantity| D[Loop executes local tool]
-    D -->|Sample quantity: 2| E[Loop appends tool result to messages]
-    E --> F[Real model: next call]
-    F -->|Answer from tool result| G[Loop returns answer and JSON events]
+flowchart LR
+    subgraph Agent[Our minimal agent implementation]
+        S[Starter: starter.py]
+        P[Instructions / prompt<br/>User question<br/>Tool schema]
+        L[Custom runner loop<br/>solutions/minimal_loop.py]
+        T[Local tool: lookup_quantity<br/>Fixed sample data: quantity 2]
+        S -->|Configures and invokes| L
+        P -->|Inputs supplied by starter| L
+        L -->|Executes requested function| T
+        T -->|Tool result| L
+    end
+    M[Real model<br/>via Test gateway]
+    L -->|Prompt, question, tool schema<br/>and accumulated messages| M
+    M -->|Tool request or final answer| L
+    L -->|Completed result| O[Starter prints JSON]
 ```
 
-The sample quantity is fixed local data; the model's tool request and answer are not scripted. The validated run used two model calls and one tool call. Inspect your actual events because model behavior can vary. The browser demo already covers the turn-limit test; do not repeat it here.
+**Responsibilities:** the model chooses a tool request or produces an answer; our loop executes the requested tool and feeds its result back; the tool supplies the sample data. The prompt is input to the model, supplied on its behalf by the loop. The sample data is fixed, but the model responses are real. The temporary Docker container provides the execution environment; it is not the agent's orchestration logic.
 
 ### What happens when you run the command
 
