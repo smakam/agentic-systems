@@ -2,45 +2,63 @@
 
 ## Workspace for this activity
 
-Use the dedicated [Agent Loop lab](http://localhost:5181), **Support workspace**, with the disposable **ch11_loop_lab** database. This activity does not use the general Test workspace on port 5179. Inspect traces in [local Langfuse](http://localhost:3000), project **marketplace-support**.
+Use the standard [Test workspace](http://127.0.0.1:5179/), **Support → OpenAI Agents SDK → Workspace options → Agent loop**. Inspect traces in [local Langfuse](http://localhost:3000), project **marketplace-support**. The separate legacy Agent Loop UI is not needed for these browser checks.
 
 ## Goal and starting point
 
-Understand how the runtime alternates model calls and tool execution. Repeat the three UI demos, then implement the orchestration yourself without the Agents SDK runner. Use the supplied OpenAI client and native MCP adapters; the marketplace server continues to enforce read-only SQL.
+Understand model steps, tool feedback and stopping within one question’s run. Repeat the three UI checks below; no code walkthrough or edits are required. The supplied-loop activity afterward runs its own loop separately; learners run it and explain the files without editing them.
 
-Prerequisites: repository checkout, local Docker stack, indexed documents in the Agent Loop lab, working `support-model` and `embedding` gateway aliases with provider credit. Use the dedicated `ch11_loop_lab` database; leave fixed `market_eval` unchanged. Course Setup already starts this dedicated lab UI; no extra startup or database reset is required for the three read-only demos. Allow about 20 minutes for the UI tasks and 60–90 minutes for the developer extension. Scripted checks cost nothing; live runs consume model and embedding tokens. Gateway estimates are not invoices.
+Use the existing Test database; leave main and fixed evaluation data unchanged. Document preparation is automatic. Keep memory, RAG experiments, response caching, routing and other comparisons off, guardrail Off and source authority on. Changing loop mode starts a fresh conversation and turns other experiments off. The mode stays selected until changed or reset; its error injection or step allowance starts fresh for each question. Selecting a mode does not restart the service or edit source code. Live model requests consume API usage.
 
-## Core — repeat and explain the three demos
+## Core — Normal, recovery and stopping
 
-Open http://localhost:5181, sign in as operator, open Support workspace, select the SDK runtime, disable long-term memory, keep guardrail Off and source authority on. Use a fresh conversation for each mode; changing the mode does this automatically.
+1. Select **Normal** and click **Use example question**. Inspect the completed model-response and tool-attempt counts beneath the answer; compare them with model generations and tool invocations in Langfuse. Do not confuse the response-cache denominator with cache hits, or evidence-save counts with tool attempts. No source-code walkthrough is needed.
+2. Select **Fail first business query**, use the same example, and investigate. Only the first `query_business_data` attempt per question returns `LAB_TEMPORARY_READ_FAILURE` before SQL execution. Catalog and document tools are unaffected. Inspect the error, the later model-requested query, and its successful result. Prompt instructions and tool feedback guide recovery; no unconditional retry loop guarantees success. A failed query must not become “no matching records.”
+3. Select **Stop after one model step** and repeat the example. The SDK allows one logical model invocation and its response handling. Its requested tools can finish and save evidence, but the SDK prevents another model invocation. Expect `MaxTurnsExceeded` and an incomplete result when another step is required. A prevented second model call is not a failed provider call and does not appear as a second model span. If a question finishes in one step, it has not demonstrated this stop—use the multi-step example.
 
-Use exactly this question:
+Example question (also filled by the button):
 
 > For order-2, query its current shipment and payout status using query_business_data, then retrieve settlement policy with search_documents and explain why payout is held. Include evidence citations.
 
-1. **Normal execution:** follow the code and trace from model request to tools to final answer. Read the model-call and tool-invocation counters beneath the answer and compare them with the trace. Identify catalog, business records and policy passage. Verify pending shipment and held payout against returned records, not prose alone.
-2. **Tool-error recovery:** find the first `query_business_data` attempt returning `LAB_TEMPORARY_READ_FAILURE`. It is simulated before SQL execution. Verify a later real read succeeds and supports the final answer. An error must never become “no matching records.”
-3. **Turn-limit stop:** verify one model invocation, `MaxTurnsExceeded`, retained evidence and an explicit incomplete result. Select Normal afterward to restore the mode. The ordinary eight-turn setting was not globally modified.
+One user question creates one SDK run in this application. The normal eight-step limit is per run, not per conversation. The SDK calls a model step a “turn”; tools run during response handling and do not each consume another turn. Transport retries inside a logical model request are distinct from a new model step. The current question, earlier retained question blocks, model steps and tool calls are different units.
 
-Keep a table locally with mode, run ID, trace ID, actual model/tool counts, evidence and stopping reason. Counts can vary between live runs; verify the behavior, rather than requiring the saved exact count.
+The SDK enforces its step limit. The application adds an elapsed-time timeout and an accumulated estimated-cost check after completed model responses; a completed call can exceed the estimate before the hook stops further execution. New evidence-save attempts also have an application-specific budget across the question. The cost check is not an invoice guarantee.
 
-## Developer extension — implement a minimal loop
+Record mode, completed model responses, tool attempts, trace link, failure/recovery sequence, retained evidence and stopping reason. Counts vary with model behavior; verify the actual sequence rather than a fixed count. Read current returned records instead of assuming a historical status or demo clock.
 
-Complete `starter.py` using its existing `run_loop` signature. Do not call `agents.Runner` or delegate orchestration to an agent framework.
+## Run and explain the supplied loop without SDK Runner
 
-1. Build the message list from instructions and question.
-2. Call the supplied model adapter; count that invocation as one turn.
-3. If the response includes tool calls, retain the assistant message, validate the allowed name and JSON-object arguments, execute each permitted call, and append each result with its original `tool_call_id`.
-4. Pass those messages to the next model call. Return an answer only when no tool calls remain. Text alongside tool calls is not the final result.
-5. Keep errors as structured errors so the model can repair a request. Stop after `max_turns` without another model invocation; report incomplete instead of inventing a business answer.
-6. Record model responses, tool requests and results in a transcript. Do not print credentials.
+The complete [starter.py](starter.py) is ready to run. You do not need to write a loop or edit source files. It calls a model adapter, executes requested tools, passes results back and stops when an answer or step limit is reached. This is a separate example; the marketplace UI continues to use its SDK runner.
 
-The UI continues to use its SDK loop. Your implementation runs only in the separate developer command; it does not replace or stop the SDK path. Run the five scripted checks with `LOOP_IMPLEMENTATION=starter`; then use `live_adapters.py --implementation starter`. Compare one live marketplace investigation with the SDK trace. Tool order and answer wording need not be identical. Explain which responsibilities you implemented and which remain in the adapters/server/SDK.
+From the repository root, first run the free offline example:
 
-Expected outputs: completed `starter.py`, five passing scripted checks, one live transcript with cited evidence, and a short SDK comparison. This small loop has no handoffs, streaming, durable sessions or full production guardrails. You are learning orchestration, not recreating all SDK features.
+```bash
+python3 course/exercises/agent-loop/starter.py
+```
+
+It uses scripted responses and a sample quantity, with no API calls or database access. Inspect the JSON: the first model step requests a tool; its result reaches the second step, which answers. The turn-limit comparison is already covered in the browser demo and does not need repeating here.
+
+### File walkthrough — document these roles
+
+After running the command, write one or two sentences about each file. No coding or feature implementation is required.
+
+| File | Role to inspect |
+| --- | --- |
+| [starter.py](starter.py) | Runnable entry point: supplies scripted model responses, a sample tool and a question, then calls the loop. |
+| [solutions/minimal_loop.py](solutions/minimal_loop.py) | The actual `run_loop`: calls the model, executes requested tools, passes results back, and stops at an answer or the step limit. |
+| [solutions/live_adapters.py](solutions/live_adapters.py) | Optional connections to a real model and read-only MCP server. Discovers tool schemas and supplies model/tool functions to the same loop. |
+| [solutions/test_loop.py](solutions/test_loop.py) | Automated checks using scripted responses. It tests the loop; it does not register an SDK agent or run the live application. |
+
+A results JSON file is generated output containing messages, model/tool events and the stopping result. It is not another implementation file and is not needed to start the loop.
+
+### Live adapters — reference only for this activity
+
+Inspect `solutions/live_adapters.py` to understand where real model requests and MCP tool execution would connect to the same loop. Running it requires a configured backend environment and consumes API usage. It is not required for this activity; the supplied offline command is the runnable learner path. Live backend setup instructions are being aligned separately.
+
+For the required write-up, document the four file roles above and describe how a tool result reaches the next model call. The live run and automated checks are optional; no files need editing.
 
 ## Cleanup
 
-Select Normal after the comparison. Use a fresh conversation for each read-only repetition; no database reset is required. Stop all local workspaces through the normal Course Setup instructions when finished. Do not run Compose `down --volumes`, reset the fixed source or modify the main marketplace. Keep your transcripts outside the disposable database.
+Select **Normal** or **Reset to defaults** after the comparison. Reset keeps the current conversation open; start a new one yourself for a clean run. Use a fresh conversation for each read-only repetition; no database reset is required. Stop all local workspaces through the normal Course Setup instructions when finished. Do not run Compose `down --volumes`, reset the fixed source or modify the main marketplace. Keep your transcripts outside the disposable database.
 
-Try first; the worked implementation and measured results are in `solutions/`.
+Run the supplied example first; explanations are in the worked answers.
