@@ -1,57 +1,74 @@
-# Chapter 13 — Inspect recorded traces and build a monitoring dashboard
+# Chapter 13 — Build a token-usage dashboard and investigate a high-average day
 
-Review six complete recorded investigations, inspect cost, latency and feedback, then create two monitoring charts. Use the same workflow as the instructor demo. No synthetic upload, new deployment, database reset or code change is required.
+## Prerequisites
 
-## Exercise environment
+Complete the common course setup and earlier agent activities. Open [local Langfuse](http://localhost:3000/) and your configured telemetry project (`marketplace-support` in the instructor setup). Use existing recorded SDK support investigations; no new deployment, synthetic upload, paid model call or database reset is needed.
 
-| Item | Use for this exercise |
-|---|---|
-| Observability UI | Local Langfuse at `http://localhost:3000` |
-| Telemetry store | Your configured local Langfuse project; the instructor project is `marketplace-support` |
-| Trace input | The six recorded scenarios listed below, or corresponding recordings from your earlier labs |
-| Marketplace UI | Test workspace at `http://127.0.0.1:5179` if you need to locate your existing question runs |
-| Business database | Existing disposable practice/lab database associated with the earlier run; inspection does not modify it |
+## Learning goal
 
-Instructor IDs identify recordings in the instructor's project, not records automatically present in every learner's project. Use your corresponding Chapter 11 and Chapter 10 recordings when available. The separate solution includes the instructor's reference inventory and saved evidence sources. If a scenario is absent, state that gap rather than substitute an unrelated trace. You can still build the dashboard from your available recorded support investigations; one day of traffic is a valid small sample.
+Build one dashboard, compare **average tokens per investigation** across days, then use original traces to explain a high-average day. Higher daily token totals can simply mean more requests; normalize by investigation count before comparing work per question.
 
-## Part 1 — Review the six recorded scenarios
+## Part 1 — Build one dashboard
 
-| Scenario | Instructor trace ID | What to explain |
-|---|---|---|
-| Normal payout investigation | `ff9cfc4226ca599acefdd696843d1ae1` | Question → catalog → business data → settlement policy → cited answer |
-| Read failure and recovery | `b7d2f229e68a46e53428c689e5c9518c` | Controlled failed read → model-requested retry → successful evidence → answer |
-| Turn-limit stop | `4a0c39e87ecb4b137f5bbd902655c9b6` | One generation and catalog call, then stop before a second generation |
-| Initial shipment status | `0e1638805b5bf0af2ed7b5d719d51d32` | Fresh evidence establishes pending status |
-| Quantity follow-up | `81a6601ef96763ce592a9414e00731cd` | Same conversation; history supplies two units without a new tool call |
-| Fresh status after dispatch | `cd16ec570ade71d09c563112ff8c5682` | Changed order state → fresh business query → dispatched answer |
+1. Open **Dashboards → New dashboard**. Name it **Support investigation token usage — your name**.
+2. Choose a recent range containing your recorded calls. Use the same time range, timezone and daily buckets for both widgets below. Compare complete days, not a partial first or current day.
+3. Click **Add Widget → Custom Chart**. Create the first widget:
 
-In **Tracing**, select a date range containing the recording, search its trace ID, and open the matching table row. Most recorded roots have the generic name `support-investigation`, so scenario labels alone do not uniquely select a run. For each trace, inspect the question and answer, then model outputs/tool requests, tool arguments/results, evidence citations, timings and final status. Keep the last three traces together as one conversation. The recovery failure and one-turn cap were deliberate lab conditions; the subsequent model/tool behavior was actually recorded.
+   | Setting | Value |
+   |---|---|
+   | View | Observations |
+   | Metric | Total Tokens |
+   | Aggregation | Sum |
+   | Filter | Observation Name = `generation` |
+   | Filter | Environment = `default` in the instructor setup |
+   | Breakdown | None |
+   | Chart | Line Chart or Bar Chart, time series |
+   | Name | Daily model tokens |
 
-Record model invocations and tool attempts separately. A recovered tool error does not make the final investigation unsuccessful. The turn-limit response comes from the application; the blocked second model call does not occur. Enclosing workflow, agent and turn spans overlap with their children: do not add all span durations together.
+4. Check the preview contains the intended SDK support model calls, then save. Exclude imported evaluation wrappers, synthetic fixtures, gateway audits and enclosing workflow/turn spans. If your project uses a different observation name/environment, select the corresponding cohort. Do not combine other agents' model calls with Support investigation counts.
+5. Create a second widget using **the identical filters, time range and timezone**:
 
-## Part 2 — Inspect monitoring
+   | Setting | Value |
+   |---|---|
+   | View | Observations |
+   | Metric | Trace Id |
+   | Aggregation | Uniq |
+   | Chart | Bar Chart or Line Chart, time series |
+   | Name | Daily investigations with model calls |
 
-1. Open **Home**, choose a range containing your recordings, and select only the recorded environment (`default` in the instructor setup). Exclude `ch13-synthetic`.
-2. **Cost and tokens:** inspect Model costs and Model Usage. Identify the model aliases, token totals and any available costs. New SDK calls forward LiteLLM's per-call pricing estimate to their existing generation observation. Older observations may have no cost; a displayed zero is not proof that those calls were free. Report cost coverage and its pricing basis; these values are not invoices. Do not alter old observations or repeat uploads to fill missing costs.
-3. **Latency:** compare whole-investigation percentiles with individual model/tool latency. In the observation table, `generation` is the model call; `turn` is a chain wrapper; `Marketplace support` and `Agent workflow` enclose larger execution. A panel title is not a substitute for checking observation type and name. Use a trace to verify any proposed time breakdown.
-4. **Scores:** find `user_feedback`, where recorded thumbs-up/down responses are represented as 1/0. Note the number of rated answers and average. Missing feedback is not a negative rating. Other score names may represent different assessments; scores do not automatically prove correctness. Open a rated run to inspect its question, answer and evidence.
+   This counts distinct investigation traces represented by the selected generations, not the number of model calls. An investigation with five model calls counts once. Investigations that have no recorded generation are outside this token-analysis cohort.
 
-The total Home trace count includes multiple application boundaries and tool-service roots. Use `support-investigation` roots for SDK question-run volume, rather than treating every listed root as a user question. The gateway audit span is not another paid model generation.
+6. Hover the same daily points in both charts and record their values. Calculate:
 
-## Part 3 — Create your dashboard
+   **Average tokens per investigation = daily model token sum ÷ daily distinct investigation count.**
 
-1. Select **Dashboards → New dashboard** and give it a clear name.
-2. Add a **run count** time-series widget: view **Observations**, metric **Count**, aggregation **Count**, chart **Bar time series**.
-3. Apply filters to that widget: **Name = support-investigation**, **Is Root Observation = true**, **Environment = default**. If the editor exposes Type, also restrict to the span root used by your SDK path. Use the actual environment/name of your deployment if different.
-4. Add a **latency** time-series widget: view **Observations**, metric **Latency**, aggregation **99th percentile**, chart **Line time series**. Use exactly the same filters as the count widget.
-5. Select the same seven-day range for both charts. On the instructor's v4.46.0 installation these charts use daily buckets. Check the displayed bucket interval/timezone in your version. A rolling seven-day range can include partial first and last days; use complete calendar-day boundaries for a strict day-by-day comparison.
-6. Compare daily run count with daily p99 latency. State the sample size; one run makes its percentile that run's duration. A no-run day has no latency value, not zero latency. A relationship in these charts does not establish that volume caused the delay: question mix, model, tools, retries and configuration can change too.
-7. Hover or click a point to read its date and value. In the installed version this does not navigate to a trace. Go to **Tracing**, select that day's range, apply the same root/name/environment filters, sort latency descending and inspect one or more slow investigations.
+   Use at least two complete days with nonzero counts. The installed builder supports these two source widgets; compute the ratio in your findings table. **Do not select Average on generation tokens and label it per investigation**: that would calculate tokens per model call. Tokens are usage units, not monetary cost.
 
-No script or API key is needed for this UI exercise. The instructor's two widgets are saved in **Chapter 13 — Recorded investigation trends**; create your own rather than change the shared demonstration.
+7. Keep the dashboard and a small findings table:
 
-## Submit and cleanup
+   | Day | Total tokens | Distinct investigations | Average tokens per investigation |
+   |---|---:|---:|---:|
+   | Your first day | | | |
+   | Your second day | | | |
 
-Submit your dashboard name/link, time range, filters, bucket interval, supporting trace IDs and a short findings table covering the six scenarios, cost availability, latency and feedback. Include a count-versus-latency observation and the trace evidence used to investigate it. State any missing scenarios or telemetry.
+Daily model tokens are assigned to the date of each generation. For this simple comparison use runs completed within one day; if an investigation crosses midnight, inspect it and explain the boundary instead of treating its partial-day tokens as a complete run.
 
-Keep the dashboard and recordings for review. No business-data or code restoration is needed because this exercise only inspects telemetry and creates a dashboard. Remove only your own dashboard if desired; preserve the shared project, instructor dashboard and existing traces. The previous synthetic fixture scripts remain historical authoring material, not required learner steps.
+## Part 2 — Investigate a high-average day
+
+1. Pick a day with a higher **average**, not merely a higher total. Note the investigation count; a day with one unusual run is different from a broad shift.
+2. Open **Tracing** separately. Apply the matching day and environment, and select root investigations named `support-investigation`. Clear unrelated filters. Dashboard points may only show values; they are not automatic trace links.
+3. Inspect token usage for the matching investigations. Use the token/usage column if available; otherwise open candidate traces and inspect their generation totals. Find a high-token run and a lower-token comparison from the same day or a comparable day.
+4. Read the original question and final answer. In the trace tree inspect the generations, their input/output usage, conversation history and tool inputs/results. Confirm the selected generations belong to that support investigation.
+5. Explain a supported contributor: more model/tool rounds, a longer input/history, a large tool response, or a longer model output. Report only what the recorded spans show. More tokens do not by themselves prove waste, bad quality or a model defect; different questions can require different work.
+6. State one follow-up check or improvement hypothesis. Explain how you would verify it on comparable runs. You do not need to change the application or rerun models.
+
+## Submit
+
+- Dashboard name/link, filters, date range, timezone and bucket size.
+- The daily table with token totals, distinct investigation counts and calculated averages.
+- Original trace references for the high-token run and comparison, with one evidence-backed finding.
+- Any missing usage, cross-midnight runs or cohort mismatch that limits the conclusion.
+
+Keep your dashboard for review. Do not delete shared dashboards, traces, the telemetry project or business databases. No application settings need restoring.
+
+The instructor's latency investigation, Cedar model comparison and cost-widget construction are demonstrations. This learner task applies the same monitoring-to-tracing method to token usage; it does not require the older six-trace checklist or synthetic fixture scripts.

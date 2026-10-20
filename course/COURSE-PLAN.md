@@ -191,9 +191,11 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Learning objective:** Explain one run through tracing and behavior over time through monitoring; assess observability platforms by practical capabilities and boundaries.
 
-**Demo and learner practice:** Investigate six supplied recorded runs and two dashboard widgets for daily count and daily p99. Inspect tool timing, recovered errors versus failed roots, feedback, available cost and conversation links. Native platform telemetry is covered in platform chapters.
+**Instructor demo:** Investigate a high-P99 day through original traces; compare the Cedar clarification case where Nano scores 0 and GPT-5.4 scores 2, following the evaluation result to original queries; create a daily estimated-model-cost widget. Briefly orient learners to Home monitoring views. Native platform telemetry is covered in platform chapters.
 
-**Workspace:** Local Langfuse http://localhost:3000, project marketplace-support. This is a recorded-evidence investigation; no business database changes, uploads or new model calls are required. The Agent Loop UI is optional for locating existing runs.
+**User exercise:** Create one token-usage dashboard, calculate average daily tokens per investigation from matching token sums and distinct investigation counts, then explain a high-average day using original trace evidence.
+
+**Workspace:** Local Langfuse http://localhost:3000, project marketplace-support. This is a recorded-evidence investigation; no business database changes, uploads or new model calls are required. Use existing support recordings and the historical model-comparison results.
 
 **Materials:** [Exercise](exercises/observability/exercise.md) · [Answers](exercises/observability/solutions/answers.md)
 

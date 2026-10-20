@@ -1,54 +1,43 @@
-# Chapter 13 — Reference findings and dashboard recipe
+# Chapter 13 — Token dashboard reference solution
 
-This solution follows the exercise: inspect six recorded investigations, review cost/latency/feedback, and build matching count and latency charts in local Langfuse. It requires no synthetic upload, database mutation or new model call.
+The exercise builds one dashboard and explains a day with high **average tokens per investigation** using recorded execution evidence. Daily values depend on each learner's recordings; no fixed token total or model ranking is required.
 
-## Part 1 — Six recorded traces
+## Dashboard configuration
 
-The instructor project is `marketplace-support` at `http://localhost:3000`. Instructor references will not automatically exist in a learner's local project; use corresponding earlier-lab recordings, or the saved source records below, and report unavailable examples explicitly.
+Create two time-series widgets in the same dashboard, using the same date range, timezone and cohort. In the instructor installation, local SDK calls use **Observation Name = generation**, **Environment = default**. Confirm the corresponding original traces are Support investigations; exclude unrelated agents, imported experiments and synthetic fixtures.
 
-| Scenario | Trace ID | Recorded duration | Model calls | Tokens | Finding |
-|---|---|---:|---:|---:|---|
-| Normal payout investigation | `ff9cfc4226ca599acefdd696843d1ae1` | 17.63 s | 4 | 39,515 | Catalog, business query and policy support the cited payout answer |
-| Recovery | `b7d2f229e68a46e53428c689e5c9518c` | 21.26 s | 5 | 52,008 | Four tool attempts include a controlled failed read and a successful retry; final run completes |
-| Turn limit | `4a0c39e87ecb4b137f5bbd902655c9b6` | 2.99 s | 1 | 2,081 | Catalog executes, then Runner refuses a second model invocation; application returns incomplete status |
-| Initial shipment status | `0e1638805b5bf0af2ed7b5d719d51d32` | 9.70 s | 3 | 25,612 | Shipment pending; two units in order ord-500d17bb22 |
-| Quantity follow-up | `81a6601ef96763ce592a9414e00731cd` | 2.03 s | 1 | 12,214 | Same conversation, two units from history, no new tool call |
-| Fresh status after dispatch | `cd16ec570ade71d09c563112ff8c5682` | 7.29 s | 3 | 56,394 | Fresh business lookup reflects dispatched status after the earlier practice change |
+| Widget | View | Metric | Aggregation |
+|---|---|---|---|
+| Daily model tokens | Observations | Total Tokens | Sum |
+| Daily investigations with model calls | Observations | Trace Id | Uniq |
 
-The last three recordings belong to `chat-ch10-follow-ec25467cea`; inspect conversation metadata, not an assumed native Langfuse Session. The separate history-window example is excluded because its earlier eight-question conversation is not part of this walkthrough.
+The denominator is distinct investigation traces represented by those same generations. Count on Trace Id counts model observations; **Uniq** counts investigations. Average on Total Tokens is per generation, not per investigation. Root spans, workflow wrappers and gateway audits must not be added to generation usage.
 
-Saved source records include [Agent Loop results](historical-agent-loop-results.json). Historical Session State run references are retained in the current [recorded-investigations.json](recorded-investigations.json) inventory; retired terminal-lab files are no longer part of the learner exercise. The timings above are whole root durations; the app's elapsed values can differ slightly. A single normal/recovery pair is a teaching comparison, not a production benchmark.
+The installed builder exposes one metric per custom widget. Use the two widgets as numerator and denominator and calculate the ratio in the submission table:
 
-## Part 2 — Monitoring interpretation
+**Average tokens per investigation = total tokens for the day ÷ distinct investigations with recorded model calls that day.**
 
-**Cost:** historical generations report aliases without matched pricing or supplied cost. Missing cost must remain unavailable. Future backend chat-completion calls attach LiteLLM's reported pricing estimate before export to the existing SDK generation. This does not add another generation or duplicate usage. The one authorized live verification recorded one generation, 31 tokens and $0.000165. Older observations are immutable in Langfuse v4: re-sending them can duplicate records and inflate metrics. No historical observations were rewritten.
+For illustration only, 120,000 tokens across 20 investigations gives 6,000 tokens per investigation. Another day with 180,000 tokens across 60 investigations gives 3,000. The second day consumes more in total, while the first uses more per investigation. These numbers are arithmetic examples, not recorded measurements.
 
-**Latency:** enclosing spans overlap. In the normal recording, four generations total 16.637 s, tools total 0.958 s and the root is 17.628 s. Model calls account for most of this sequential run. The workflow/agent durations include that work and must not be added again. Per-call percentiles across a cohort cannot be subtracted from whole-run percentiles to obtain overhead. The Home latency panels may show several observation types despite their titles; check type and name.
+Use complete days with nonzero counts. A zero-count day has no defined average. Investigations without recorded generations are outside this cohort. Generations are bucketed by their own timestamps: inspect cross-midnight runs separately or choose within-day runs for the simple comparison. Missing telemetry is not evidence of zero usage.
 
-**Scores:** `user_feedback` represents recorded thumbs up (1) or down (0). Its count is rated answers, not all questions; an average is calculated over available ratings. It is human feedback, not a correctness guarantee. Missing ratings are not zero. Other score names can have different meanings.
+## Trace investigation
 
-Home's total root count mixes SDK question runs, hosted-agent request boundaries and separately marked MCP application roots. `marketplace-hosted-answer` records our backend request/response boundary to Google/Lyzr, not all their internal model execution. For SDK question volume, select roots named `support-investigation`.
+1. Note a high-average day's total tokens and distinct investigation count.
+2. Open Tracing with that day and environment, select root `support-investigation` runs, and inspect high-token original executions. A trace must belong to the dashboard's generation cohort.
+3. Read the question and final answer before inspecting the tree.
+4. Sum usage from the actual model generations only. Compare input tokens, output tokens, number of rounds, conversation history and tool-result sizes with another run.
+5. Tie the finding to observed evidence. For example: “This investigation contains more sequential model calls, each carrying the accumulated history; the database calls themselves are brief.” State the actual counts/values from the chosen traces before making that claim.
+6. Consider question mix, model and settings. A single expensive question is not proof of a system regression. Propose a bounded check and say what evidence would confirm an improvement.
 
-## Part 3 — Dashboard recipe and reference
+## What a good submission establishes
 
-Saved instructor dashboard: **Chapter 13 — Recorded investigation trends** (`cmv6ctgsl000dp907f3gqw0t5`). It contains two widgets, verified in local v4.46.0:
+The dashboard selects a coherent population; numerator and denominator match; the calculation distinguishes request volume from work per investigation; and the trace explanation cites the question, usage and execution evidence. Tokens are not currency. A cost comparison additionally needs the model's applicable input/output pricing and available cost reporting.
 
-| Setting | Run count | Latency |
-|---|---|---|
-| View | Observations | Observations |
-| Metric / aggregation | Count / Count | Latency / p99 |
-| Chart | Bar time series | Line time series |
-| Name filter | support-investigation | support-investigation |
-| Root filter | Is Root Observation = true | Is Root Observation = true |
-| Environment | default | default |
-| Period / buckets | Same selected range / daily | Same selected range / daily |
+## Connection to the instructor demonstrations
 
-The installed line widget displays one metric series; p99 was selected explicitly. Use a separate widget if you also want p50. No-run days have no latency point. A rolling seven-day range may cover eight calendar labels due to partial boundary days. Keep the bucket interval and timezone aligned before comparing days.
+- **Monitoring → tracing:** daily run count and P99 investigation latency identify a period to inspect. The October 18 historical example has 35 investigations and P99 about 33.74 s. Its inspected 35.37-second run spends about 35.20 s across eight model generations; tool calls are brief. This supports investigating sequential model rounds, not claiming the database is slow.
+- **Evaluation → tracing:** the Cedar clarification case has human and provisional judge correctness 2 for GPT-5.4 and 0 for Nano. Both first clarify seller versus product. The follow-up “I mean the seller” is available in the original generation input alongside the initial question. Nano's query adds an unrequested September 27–28 date window and returns no rows; GPT-5.4 returns the seller's September 24 order. A successful tool call can still answer the wrong scope. This is a dated case, not proof of general model accuracy.
+- **Dashboard construction:** the instructor creates a daily **Total Cost / Sum** chart over recorded generations. Earlier runs predate cost reporting; do not interpret their missing cost as free generation. The learning goal is selecting a metric, aggregation, filters and visualization, then saving the widget.
 
-At the readback, October 7 had 51 support runs and p99 approximately 33.56 s. This identifies a period to inspect; it does not prove that volume caused latency. Open Tracing, filter the date/name/root/environment, sort by latency and inspect the actual model/tool operations. Clicking a chart point shows a tooltip, not automatic trace navigation. Counts change as more runs are added, so do not require learners to reproduce the instructor's exact totals.
-
-## Evidence boundaries
-
-No synthetic fixtures are used in the main demo or required exercise. Learners use their existing local recordings. No live alerts, platform comparison benchmarks or production-performance claims are made. Evaluation still checks answer quality; monitoring finds patterns and traces help explain individual executions.
-
-References: [Langfuse custom dashboards](https://langfuse.com/docs/metrics/features/custom-dashboards), [token and cost tracking](https://langfuse.com/docs/observability/features/token-and-cost-tracking), [immutable observations and supported annotations](https://langfuse.com/faq/all/tracing-data-updates).
+The old six-scenario walkthrough and synthetic loader are not required exercise steps. No deployment, paid model request or business-data mutation is needed.
