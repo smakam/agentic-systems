@@ -9,7 +9,7 @@ Review six complete recorded investigations, inspect cost, latency and feedback,
 | Observability UI | Local Langfuse at `http://localhost:3000` |
 | Telemetry store | Your configured local Langfuse project; the instructor project is `marketplace-support` |
 | Trace input | The six recorded scenarios listed below, or corresponding recordings from your earlier labs |
-| Marketplace UI | Agent Loop lab at `http://localhost:5181` if you need to locate your existing question runs |
+| Marketplace UI | Test workspace at `http://127.0.0.1:5179` if you need to locate your existing question runs |
 | Business database | Existing disposable practice/lab database associated with the earlier run; inspection does not modify it |
 
 Instructor IDs identify recordings in the instructor's project, not records automatically present in every learner's project. Use your corresponding Chapter 11 and Chapter 10 recordings when available. The separate solution includes the instructor's reference inventory and saved evidence sources. If a scenario is absent, state that gap rather than substitute an unrelated trace. You can still build the dashboard from your available recorded support investigations; one day of traffic is a valid small sample.

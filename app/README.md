@@ -369,7 +369,7 @@ The current learner [exercise](../course/exercises/runtime-and-hosting/exercise.
 
 ## Starting all course workspaces
 
-`./scripts/start.sh` starts main and test plus the existing **Agent Loop** and legacy **Runtime and Hosting** lab UIs. Use `./scripts/stop.sh` to stop them together without deleting data. See [Local setup](LOCAL-SETUP.md#chapter-specific-lab-environments) for the UI/database mapping. The Agent Loop UI demos now use Test → Support → Workspace options → Agent loop; the separate legacy lab is not required for the current activity. The current Runtime and Hosting worksheet uses the standard test marketplace and full-cloud configuration; the legacy agent-only lab is not required. Initializing an empty lab is separate from resetting an existing fixture; startup does not reset data or deploy cloud resources.
+`./scripts/start.sh` starts the main and Test marketplaces with the shared gateway, PostgreSQL and Langfuse services. `./scripts/stop.sh` stops that stack without deleting stored data. The separate Chapter 11/12 lab containers are retired. Chapter 11 uses Test → Support → Workspace options → Agent loop; its supplied custom loop runs in a temporary Test backend container. Chapter 12 inspects the same local deployment and optionally an already deployed full-cloud marketplace. No extra chapter-specific ports, lab database initialization, tunnel or cloud deployment is required. See [Local setup](LOCAL-SETUP.md#chapter-specific-lab-environments).
 
 
 ### Chapter 16 native routing demo

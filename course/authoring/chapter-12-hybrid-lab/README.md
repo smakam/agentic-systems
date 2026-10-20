@@ -6,9 +6,9 @@ The current exercise is a read-only local/cloud deployment worksheet, with refer
 
 Source scripts and command text are retained as historical snapshots; relative paths may reflect their original location. They are not supported worksheet entry points. Recorded service availability and cleanup describe the validation date, not current live state.
 
-## Topic-based configuration names
+## Retired configuration names
 
-The course overlays are `app/compose.course-agent-loop.yaml` and
+These historical overlays are not part of normal startup; the separate lab containers have been retired. The preserved source overlays are `app/compose.course-agent-loop.yaml` and
 `app/compose.course-runtime-and-hosting.yaml`. The private hosting configuration
 is `app/.course-runtime-and-hosting.env`; its tunnel log/PID and cloud state use
 the same `.course-runtime-and-hosting` prefix. These files stay ignored by Git.

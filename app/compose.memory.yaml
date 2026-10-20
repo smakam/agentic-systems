@@ -1,6 +1,8 @@
-# Optional, separate memory-test UI. The normal frontend/backend remain on market.
+# Full Test workspace. Historical service keys preserve existing course commands.
+# Explicit container names identify this as Test in docker ps.
 services:
   memory-backend:
+    container_name: marketplace-lab-test-backend-1
     extends:
       file: compose.yaml
       service: backend
@@ -23,6 +25,7 @@ services:
       - ../course/exercises/agent-loop:/exercise:ro
     ports: !reset []
   memory-frontend:
+    container_name: marketplace-lab-test-frontend-1
     extends:
       file: compose.yaml
       service: frontend

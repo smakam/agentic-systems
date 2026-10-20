@@ -21,6 +21,12 @@ Use these source files from the repository root:
 
 Do not share full resolved Compose output, private environment files, database passwords or API keys. Record setting names, non-secret targets, and Secret Manager resource references instead. A configured source value is evidence of intended configuration; it is not proof of the current live deployment.
 
+## Start with the running containers
+
+Run `docker ps` and use the [container-purpose map in the setup guide](../../../app/LOCAL-SETUP.md#which-container-does-what) to identify the main and Test frontend/backend pairs, shared gateway and PostgreSQL, and Langfuse services. The Test container names now say `test`; the Compose service keys still use `memory` for command compatibility. Redis, ClickHouse and MinIO support Langfuse. The optional remote MCP container is separate from the default backend-local stdio MCP connection.
+
+Then locate the SDK runner in the backend code: it is a library running inside the backend, not another Docker container. No separate Chapter 11/12 deployment is needed.
+
 ## Part 1 — six local questions
 
 1. **Where do the chat UI, backend and SDK agent run?** Name their Docker services or processes. Which components share a container, and which are separate?

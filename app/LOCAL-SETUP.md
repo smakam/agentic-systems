@@ -109,14 +109,13 @@ docker compose ps
 curl --fail http://localhost:58000/api/health
 ```
 
-Startup creates PostgreSQL, initializes the gateway database, provisions scoped keys into the gitignored `.env`, and starts all four local UIs: main marketplace, test marketplace, Agent Loop lab, and Runtime and Hosting lab, alongside the shared gateway and Langfuse services. It creates missing practice/lab databases and seeds only empty ones; initialized workspaces are preserved. It attempts document indexing in main/test and newly initialized labs. The legacy hosting UI can open without cloud credentials. The current Runtime and Hosting worksheet uses the standard test marketplace and existing full-cloud configuration; the earlier hosted-agent/tunnel experiment is a historical authoring record. Startup does not deploy cloud resources or start a tunnel. The first run may take several minutes. Restarting an existing setup does not reset its business data or conversations.
+Startup creates PostgreSQL, initializes the gateway database, provisions scoped keys into the gitignored `.env`, and starts the main and Test marketplace UIs alongside the shared gateway and Langfuse services. It creates the Test database only if missing; existing business data, conversations and evidence are preserved. The separate Chapter 11/12 lab containers are retired and no longer start automatically. Startup does not deploy cloud resources or start a tunnel. The first run may take several minutes.
 
 | Workspace | Purpose |
 |---|---|
 | Main marketplace | Normal exploration: place orders, change business states and keep your ongoing conversations/data |
 | Isolated test marketplace | Repeatable lessons and exercises using a known seeded baseline or a named fixture, without changing main-workspace data |
 | Test marketplace → Agent loop | Normal execution, simulated business-query recovery and one-step stopping for **The Agent Loop** |
-| Runtime and Hosting lab | Legacy interface for the earlier hosted-agent experiment; not required by the current **Runtime and Hosting** worksheet |
 
 Most investigation exercises only read business records, so they do not require a reset after each question. Questions still save conversations and traces. Some lessons deliberately change marketplace state or saved memory; those lessons specify when to restore their seed/fixture before repeating the scenario. Reset only when the required starting state has changed, not after every read-only exercise. Normal startup preserves both workspaces and never performs a lesson reset. Section 5 explains isolation; lesson-specific guides provide any required reset instructions.
 
@@ -126,8 +125,6 @@ If startup reports that vector indexing is unavailable, the UI may still load. F
 |---|---|---|
 | Marketplace | [localhost:5178](http://localhost:5178/) | `operator` or `support`, password `demo-marketplace` |
 | Isolated test marketplace | [127.0.0.1:5179](http://127.0.0.1:5179/) | Same seeded demo accounts/password, with separate data and sessions |
-| Agent Loop lab | [localhost:5181](http://localhost:5181/) | Same demo accounts/password; separate lab data |
-| Runtime and Hosting lab | [localhost:5192](http://localhost:5192/) | Same demo accounts/password; separate lab data |
 | Local Langfuse | [localhost:3000](http://localhost:3000/) | `operator@example.local`, password `demo-marketplace` |
 | LiteLLM dashboard | [localhost:4000/ui](http://localhost:4000/ui/) | `admin`, password `sk-marketplace-local` (**local demo gateway master key**, not a provider API key) |
 | Backend API docs | [localhost:58000/docs](http://localhost:58000/docs) | Browser/API authentication required for protected operations |
@@ -139,6 +136,36 @@ Other seeded marketplace usernames are `buyer`, `buyer2` and `seller`, with the 
 Document indexing runs automatically after startup and when required by document changes. There is no manual indexing step. In each marketplace, **Support workspace → Workspace options → Documents** (main) or **RAG → Marketplace documents** (Test) shows **Preparing documents** followed by **Ready**. Confirm Ready in both workspaces before retrieval lessons; the databases are independent.
 
 If preparation fails, correct provider credentials, embedding-model access, billing or gateway connectivity, then use **Retry preparation**. Existing embeddings are reused; only uncached content needs document-embedding API calls. Query embeddings and model answers still incur their normal usage. Business records are preserved.
+
+
+### Which container does what?
+
+Inspect the running containers without image hashes or container IDs:
+
+```sh
+docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+```
+
+The names below use the default `marketplace-lab` project. There are eleven baseline containers; the optional remote MCP endpoint adds one more.
+
+| Container | Purpose |
+|---|---|
+| `marketplace-lab-frontend-1` | Main marketplace web UI, port 5178 |
+| `marketplace-lab-backend-1` | Main chat API, SDK agent loop and local MCP subprocess; main `market` database, API port 58000 |
+| `marketplace-lab-test-frontend-1` | Full Test marketplace UI, port 5179; includes memory, RAG, session history and Agent Loop activities |
+| `marketplace-lab-test-backend-1` | Test API and SDK agent loop; separate `market_test` database, reached through the Test frontend |
+| `marketplace-lab-gateway-1` | Shared LiteLLM gateway for model requests, port 4000 |
+| `marketplace-lab-postgres-1` | Marketplace records, session history/runs/evidence, RAG chunks/embeddings and internal long-term memory; separate main/Test databases, plus gateway and Langfuse metadata databases; SQL port 55432 |
+| `marketplace-lab-langfuse-web-1` | Langfuse tracing UI and API, port 3000 |
+| `marketplace-lab-langfuse-worker-1` | Langfuse background ingestion and processing |
+| `marketplace-lab-redis-1` | Langfuse queue/cache support |
+| `marketplace-lab-clickhouse-1` | Langfuse trace and observation analytics storage |
+| `marketplace-lab-minio-1` | Langfuse event/media object storage; storage endpoint port 9090 |
+| `marketplace-lab-remote-mcp-1` (optional) | HTTP MCP endpoint for separately enabled remote/hosted-agent integrations, port 58001; not required for the default local stdio tool connection |
+
+The Test containers were originally named `memory-frontend` and `memory-backend`. Their Compose service keys retain those historical names so existing commands keep working; their displayed container names now say **test**. Redis, ClickHouse and MinIO support Langfuse in this setup, rather than the marketplace backend or gateway.
+
+`docker ps` lists containers, not every process. The OpenAI Agents SDK runs inside each backend process, and the default local MCP server runs as a backend child process. The model provider runs externally. Separate Chapter 11/12 frontend, backend and MCP containers are retired; the current lessons use the standard Test workspace.
 
 ## 4. Verify the services and logins
 
@@ -183,9 +210,11 @@ If Mem0 is unavailable or an operation fails, continue the internal-memory lab a
 
 ### Chapter-specific lab environments
 
-The same `./scripts/start.sh` launches both lab interfaces; separate launch commands and a host npm build are not required. Agent Loop uses `ch11_loop_lab`; Runtime and Hosting uses `ch12_hosting_lab`. Both are disposable, isolated from main `market`, practice `market_test` and fixed evaluation `market_eval`. They reuse the marketplace code and shared PostgreSQL/gateway/Langfuse infrastructure. Existing lab conversations and business state survive startup. On first use, missing/empty labs receive the normal synthetic seed.
+Current Chapter 11 Agent Loop checks run in Test → Support → Workspace options → Agent loop. The supplied custom loop uses a temporary Test backend container. Chapter 12 inspects the standard local deployment and optionally the existing full-cloud deployment. Neither chapter requires a separate frontend, backend, MCP service or port.
 
-Use the standard test marketplace for general exercises, including the current Runtime and Hosting deployment worksheet. The Agent Loop browser demos now use Test → Support → Workspace options → Agent loop. The current custom-loop example runs in a temporary Test backend container; the dedicated Agent Loop lab is not required. The hosting lab is retained for the earlier experiment, whose records are in `course/authoring/chapter-12-hybrid-lab`; it is not a worksheet prerequisite. The hosting lab needs its own cloud-agent credentials and tunnel before hosted questions work; merely opening its local UI does not prove cloud connectivity. Startup starts its HTTP MCP service only when the existing private configuration contains its authentication key. It never runs cloud deployment or a lesson reset. Lesson-specific reset commands remain explicit when a clean fixture is needed. All localhost-based UIs share browser login-cookie scope: if switching between main and the dedicated labs causes a login rejection, sign in again in the selected UI. The standard test UI uses 127.0.0.1 to separate its cookie scope.
+The old chapter-specific containers are retired. Normal start/stop commands now manage main, Test and their shared services only. Existing legacy lab databases and named volumes are preserved; no data migration or reset is required. The old `start-labs.sh` entry point prints a retirement notice and starts nothing. Historical configuration and results remain available for reference in `course/authoring/chapter-12-hybrid-lab`.
+
+The separately configured remote MCP endpoint is an optional integration for other hosted-agent workflows, not the local SDK tool path. Its explicit start/stop commands remain separate from normal marketplace startup.
 
 ## 6. Stop, resume and reset deliberately
 
