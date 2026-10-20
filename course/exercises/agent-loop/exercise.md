@@ -59,7 +59,6 @@ The sample quantity is fixed local data; the model's tool request and answer are
 | [starter.py](starter.py) | Defines the sample question, local quantity tool and its schema; connects the real model through the configured Test gateway; calls the loop and prints its result. |
 | [solutions/minimal_loop.py](solutions/minimal_loop.py) | Implements the repeated model call, tool execution and feedback sequence, stopping at a final answer or the step limit. |
 | [solutions/answers.md](solutions/answers.md) | Explains the expected execution and file responsibilities. |
-| [exercise.md](exercise.md) | Supplies the command and observation task. |
 
 **Your write-up:** explain the role of the starter and loop implementation, then identify the tool request, returned quantity and final answer in the printed JSON. No source edits, automated tests or extra live-adapter files are required.
 
