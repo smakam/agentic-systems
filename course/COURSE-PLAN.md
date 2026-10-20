@@ -32,7 +32,7 @@ Speaker notes contain presentation cues, demo steps and exercise instructions. K
 
 ## Chapter quizzes
 
-**Draft bank prepared (15 October 2026):** Five single-answer multiple-choice questions for each of Chapters 1–21, 105 questions overall, alongside the existing demonstrations and hands-on exercises. The bank has 97 course-based questions and eight brief official-documentation research checks. The research questions are a small minority and require no paid service access.
+**Draft bank prepared (15 October 2026):** Five single-answer multiple-choice questions for each of Chapters 1–21, 105 questions overall, alongside the existing demonstrations and hands-on exercises. The bank has 98 course-based questions and seven brief official-documentation research checks. The research questions are a small minority and require no paid service access.
 
 - Mix foundational checks, applied decisions and more challenging scenarios. Difficulty labels are author estimates in the instructor key, not calibrated pass rates.
 - Tie course-based questions to actual lesson topics; mark research extensions and provide the official source and relevant section.
