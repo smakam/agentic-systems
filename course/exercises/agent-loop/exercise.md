@@ -52,6 +52,18 @@ flowchart TD
 
 The sample quantity is fixed local data; the model's tool request and answer are not scripted. The validated run used two model calls and one tool call. Inspect your actual events because model behavior can vary. The browser demo already covers the turn-limit test; do not repeat it here.
 
+### What happens when you run the command
+
+1. Docker Compose starts a temporary backend container and runs `starter.py`.
+2. The starter defines one local tool, `lookup_quantity`, and its JSON schema. It passes that tool definition, the sample question and instructions into `run_loop`.
+3. The loop sends the instructions, question and available tool schema to the real model through the Test gateway. The model does not run Python itself.
+4. The model returns a tool request: the function name `lookup_quantity`, a tool-call ID and arguments `{}`. Empty arguments are intentional: this tool has one built-in sample order and needs no order ID.
+5. Our loop validates the request and calls the starter's local `execute` function. That function returns `{"order_id": "sample-order", "quantity": 2}`. It reads no database and calls no MCP server.
+6. The loop appends the model's tool request and the matching tool result to the conversation. It sends the updated messages to the real model again.
+7. The model answers from that result. When its response contains no further tool calls, the loop returns the answer and execution record. The starter prints them as JSON, and the temporary container exits.
+
+In the output, `messages` shows the conversation sent between steps; `events` records model responses and tool execution. These are two views of the same run, not duplicate calls. A tool-call ID pairs a result with its request. The validated example has two model calls and one tool call.
+
 ### File walkthrough
 
 | File | Purpose |
