@@ -2,7 +2,7 @@ import json
 import os
 import unittest
 from unittest.mock import patch
-from marketplace.loop_lab import validate, inject_once
+from marketplace.loop_lab import validate, inject_once, enabled
 
 class LabTests(unittest.IsolatedAsyncioTestCase):
     def test_lab_controls_fail_closed(self):
@@ -13,6 +13,20 @@ class LabTests(unittest.IsolatedAsyncioTestCase):
         with patch('marketplace.loop_lab.enabled',return_value=True):
             with self.assertRaises(ValueError): validate('tool_error','google')
             validate('tool_error')
+
+    def test_only_matching_test_and_legacy_databases_are_enabled(self):
+        from types import SimpleNamespace
+        for database, reader, flag, expected in (
+            ('market_test','market_test','true',True),
+            ('ch11_loop_lab','ch11_loop_lab','true',True),
+            ('market','market','true',False),
+            ('market_eval','market_eval','true',False),
+            ('market_test','market','true',False),
+            ('market_test','market_test','false',False),
+        ):
+            with self.subTest(database=database,reader=reader,flag=flag):
+                with patch('marketplace.db.engine',SimpleNamespace(url=SimpleNamespace(database=database))), patch('marketplace.loop_lab.setting',return_value=flag), patch.dict(os.environ,{'READ_DATABASE_URL':'postgresql://reader@localhost/'+reader}):
+                    self.assertEqual(enabled(),expected)
 
     async def test_error_is_once_per_investigation_and_skips_execution(self):
         class Server:

@@ -324,6 +324,11 @@ async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session
     from .loop_lab import validate as validate_loop, enabled as loop_enabled
     try: validate_loop(body.loop_mode,runtime)
     except ValueError as exc: raise HTTPException(403,str(exc))
+    if body.loop_mode != 'normal':
+        from .hosting_client import enabled as remote_loop_hosting
+        if remote_loop_hosting():raise HTTPException(403,'Agent-loop experiments require the local Test SDK runtime')
+        if body.session_history_mode!='off' or body.rag_experiment!='off' or body.routing_policy!='off' or body.design_mode!='off' or body.memory_enabled or body.memory_write or body.memory_provider!='internal' or body.guardrail!='off' or body.marker_mode!='off' or body.suppress_catalog or body.suppress_documents or body.cache_enabled or not body.source_authority:
+            raise HTTPException(400,'Agent-loop experiments require memory and other experiments off, clean context and source authority on')
     try: validate_controls(runtime,body)
     except ValueError as exc: raise HTTPException(400,str(exc))
     if (body.suppress_catalog or body.suppress_documents) and not is_test(): raise HTTPException(403,'Context comparison is available only in the test workspace')
@@ -397,7 +402,7 @@ async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session
             try:
                 response_cache_demo.validate(body.cache_enabled,available=gateway_demo.enabled(),runtime=runtime,routing=body.routing_policy,design=body.design_mode,memory=body.memory_enabled or body.memory_write,guardrail=body.guardrail,loop=body.loop_mode)
             except ValueError as exc: raise HTTPException(400,str(exc)) from None
-            lab_config={'loop_mode':body.loop_mode,'tool_transport':'mcp','model':os.getenv('OPENAI_MODEL','gpt-5.4')} if loop_enabled() else None
+            lab_config={'loop_mode':body.loop_mode,'tool_transport':'mcp','model':os.getenv('OPENAI_MODEL','gpt-5.4')} if loop_enabled() and (body.loop_mode!='normal' or engine.url.database=='ch11_loop_lab') else None
             from .gateway_identity import for_role, for_key
             route_config = routing_configuration(body.routing_policy, cid)
             if route_config:

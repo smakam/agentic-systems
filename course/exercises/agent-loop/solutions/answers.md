@@ -4,7 +4,7 @@ Run all shell commands from your repository root unless a different directory is
 
 ## Part 1 — repeat the three UI checks
 
-Follow the exact question and three UI sequences in [exercise.md](../exercise.md). Use [Test workspace](http://127.0.0.1:5179/) → Support → OpenAI Agents SDK → Workspace options → Agent loop. No separate UI launch, code edit, service restart or database reset is required.
+Use “What is the status of order-2?” and follow the three UI sequences in [exercise.md](../exercise.md). Use [Test workspace](http://127.0.0.1:5179/) → Support → OpenAI Agents SDK → Workspace options → Agent loop. No separate UI launch, code edit, service restart or database reset is required.
 
 - **Normal:** the model-response and tool-attempt counts under the answer should match the corresponding completed generations and tool invocations in Langfuse. A cache statistic is a different measurement; an evidence save is not necessarily one tool call.
 - **Fail first business query:** the first query_business_data attempt fails before SQL execution. A subsequent model-selected retry should succeed and support the answer. Only that tool’s first attempt is injected, and a fresh question gets its own injection. Record what the model actually does; instructions do not guarantee recovery.

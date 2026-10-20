@@ -355,7 +355,9 @@ For counts and aggregates, lead with the count and state the actual date range u
             if observation:observation.update(metadata={'gateway_response_cache_enabled':config['response_cache']['enabled'],'gateway_response_cache_calls':response_cache_demo.observed()})
         metrics['guardrails']=PROFILES[guardrail]
         metrics['catalog_version']='2.0'
-        metrics.update(elapsed_seconds=round(time.monotonic()-started,2),tool_calls=ctx.calls+metrics['memory_tool_calls'],business_tool_calls=ctx.calls,document_revision=ctx.doc_hash)
+        metrics.update(elapsed_seconds=round(time.monotonic()-started,2),
+                       actual_tool_invocations=len(hooks.tool_attempts),evidence_save_attempts=ctx.calls,
+                       tool_calls=ctx.calls+metrics['memory_tool_calls'],business_tool_calls=ctx.calls,document_revision=ctx.doc_hash)
         with Session.begin() as db:
             row=db.get(Run,run_id); row.status=status; row.answer=final; row.evidence=ctx.evidence; row.metrics=metrics
         await api.close()

@@ -95,7 +95,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Demo and learner practice:** Follow the Mac-first written setup guide for Git, Docker Compose, editor/Python, provider keys, demo accounts, costs, seeded data and reset checks. Linux and Windows notes are separate. Native platform setup belongs in later chapters.
 
-**Workspace:** Use app/LOCAL-SETUP.md. It identifies the main UI, Test workspace, dedicated Agent Loop lab and Langfuse; verify each service before its activity.
+**Workspace:** Use app/LOCAL-SETUP.md. It identifies the main UI, Test workspace and Langfuse, plus legacy isolated developer labs; verify each service before its activity.
 
 **Guide:** [Local setup](../app/LOCAL-SETUP.md).
 
@@ -173,9 +173,9 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Learning objective:** Explain the model/tool loop and SDK capabilities: agent setup, execution and streaming, tools/MCP, state/results, hooks/tracing, guardrails, human review and orchestration.
 
-**Demo and learner practice:** Map Agent, Runner and Hooks to normal execution, a controlled temporary tool-error recovery, and a turn-limit stop. Core learners annotate model/tool counts, evidence and stopping. Developers implement a minimal loop with supplied adapters and compare it with the SDK. SDK guardrails are a separate integration point from our gateway privacy/injection checks.
+**Demo and learner practice:** Map Agent, Runner and Hooks to normal execution, a controlled temporary tool-error recovery, and a turn-limit stop. Core learners annotate model/tool counts, evidence and stopping. Learners run and explain a supplied custom runner loop with a real model and a local sample tool; no file edits are required. SDK guardrails are a separate integration point from our gateway privacy/injection checks.
 
-**Workspace:** Dedicated Agent Loop UI http://localhost:5181/, database ch11_loop_lab. Use fresh conversations and lab-only execution modes. The normal Test workspace is not this lab.
+**Workspace:** Standard Test workspace http://127.0.0.1:5179/, database market_test → Support → Workspace options → Agent loop. Normal, Fail first business query and Stop after one model step apply per question. Use fresh conversations when changing modes; reset restores Normal. The custom-loop command runs in a temporary Test backend container; the legacy lab is not required.
 
 **Materials:** [Exercise](exercises/agent-loop/exercise.md) · [Answers](exercises/agent-loop/solutions/answers.md)
 
