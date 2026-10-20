@@ -365,7 +365,7 @@ Course plan: local SDK for main demonstrations; hosted agents and native platfor
 
 ## Chapter 12 hybrid hosting exercise
 
-The current learner [exercise](../course/exercises/runtime-and-hosting/exercise.md) uses the standard Test workspace and optional full-cloud configuration. The following paragraph describes the historical hosting lab, not a required setup step. The dedicated Compose overlay uses a disposable database, local chat/history, separate Cloud Run agent with direct OpenAI Responses, and laptop HTTP MCP through a tunnel. It is opt-in and does not change normal runtime routing. The temporary instructor cloud deployment was cleaned up after successful tests.
+Chapter 12 is conceptual and has no exercise package. Container inspection and resource illustrations belong to Course Setup. The following paragraph describes the historical hosting lab, not a required setup step. The dedicated Compose overlay uses a disposable database, local chat/history, separate Cloud Run agent with direct OpenAI Responses, and laptop HTTP MCP through a tunnel. It is opt-in and does not change normal runtime routing. The temporary instructor cloud deployment was cleaned up after successful tests.
 
 ## Starting all course workspaces
 

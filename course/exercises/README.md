@@ -13,7 +13,6 @@ Solutions use **solutions/answers.md** consistently. Instructor guides are for d
 | Knowledge and retrieval | [Exercise](knowledge-and-retrieval/exercise.md) · [Answers](knowledge-and-retrieval/solutions/answers.md) |
 | Session state | [Exercise](session-state/exercise.md) · [Answers](session-state/solutions/answers.md) |
 | Agent loop | [Exercise](agent-loop/exercise.md) · [Answers](agent-loop/solutions/answers.md) |
-| Runtime and hosting | [Exercise](runtime-and-hosting/exercise.md) · [Answers](runtime-and-hosting/solutions/answers.md) |
 | Observability | [Exercise](observability/exercise.md) · [Answers](observability/solutions/answers.md) |
 | Evaluation | [Exercise](evaluation/exercise.md) · [Answers](evaluation/solutions/answers.md) · [Instructor guide](evaluation/instructor-demo.md) |
 | Guardrails security | [Exercise](guardrails-security/exercise.md) · [Answers](guardrails-security/solutions/answers.md) · [Instructor guide](guardrails-security/instructor-demo.md) |

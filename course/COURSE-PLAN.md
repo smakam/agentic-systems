@@ -95,7 +95,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Demo and learner practice:** Follow the Mac-first written setup guide for Git, Docker Compose, editor/Python, provider keys, demo accounts, costs, seeded data and reset checks. Linux and Windows notes are separate. Native platform setup belongs in later chapters.
 
-**Workspace:** Use app/LOCAL-SETUP.md. It identifies the main UI, Test workspace and Langfuse, plus legacy isolated developer labs; verify each service before its activity.
+**Workspace:** Use app/LOCAL-SETUP.md. It identifies the main UI, Test workspace and shared services. Show the five-group container map and local CPU/memory snapshot alongside the setup walkthrough; verify each service before its activity.
 
 **Guide:** [Local setup](../app/LOCAL-SETUP.md).
 
@@ -183,11 +183,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Learning objective:** Separate Agent SDK choice from hosting, and distinguish infrastructure responsibilities from agent-system capabilities.
 
-**Demo:** Map the local deployment into five logical groups, then show a captured CPU/memory snapshot. Use the existing local/cloud diagrams to explain component placement. No live code or cloud inspection is required.
-
-**Learner check:** No required hands-on exercise. Briefly identify where the SDK agent executes, what the gateway does, and where persistent data lives.
-
-**Materials:** [Optional inspection reference](exercises/runtime-and-hosting/exercise.md) · [Reference answers](exercises/runtime-and-hosting/solutions/answers.md)
+**Core topics:** Agent SDK, runtime and hosting definitions; self-managed and managed options; infrastructure and agent capabilities; representative SDKs and managed offerings; local Docker and full-cloud architecture differences.
 
 ## D. Observability, Evaluation and Security
 
