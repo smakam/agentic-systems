@@ -28,51 +28,40 @@ Record mode, completed model responses, tool attempts, trace link, failure/recov
 
 ## Run and explain the supplied loop without SDK Runner
 
-The complete [starter.py](starter.py) is ready to run. You do not need to write a loop or edit source files. It calls a model adapter, executes requested tools, passes results back and stops when an answer or step limit is reached. This is a separate example; the marketplace UI continues to use its SDK runner.
+Run the complete example unchanged, then document what each source file does. This uses a **real model and one local sample tool**. It consumes API credit but makes no MCP calls or marketplace database queries. The marketplace UI continues to use its existing SDK runner.
 
-From the repository root, first run the free offline example:
+With Course Setup already running, run this command from the repository root (the top-level `agentic-systems` folder):
 
 ```bash
-python3 course/exercises/agent-loop/starter.py
+docker compose -p marketplace-lab -f app/compose.yaml -f app/compose.memory.yaml run --rm --no-deps -T memory-backend python /exercise/starter.py
 ```
 
-It uses scripted responses and a sample quantity, with no API calls or database access. Inspect the JSON: the first model step requests a tool; its result reaches the second step, which answers. The turn-limit comparison is already covered in the browser demo and does not need repeating here.
+The separate temporary process uses the configured Test gateway and the existing backend dependencies. It prints the answer, conversation messages and execution events as JSON, then exits. It does not restart the UI agent or save a Support conversation.
 
-### How the offline example works
-
-This example calls no real model and no MCP server. Both the tool request and final answer are scripted in advance; the loop still executes the local tool and passes its result back. The scripted final answer does not infer its wording from that result.
+### How it works
 
 ```mermaid
 flowchart TD
-    A[Starter: sample question and tool schema] --> B[Custom run_loop]
-    B --> C[Scripted model function]
-    C -->|First response: request lookup_quantity| B
-    B --> D[Local tool function]
-    D -->|Returns quantity 2| E[Loop appends tool result to messages]
-    E --> C
-    C -->|Second response: predetermined final answer| F[Loop returns answer and JSON events]
+    A[Starter: question and local tool definition] --> B[Our custom run_loop]
+    B --> C[Real model: first call]
+    C -->|Requests lookup_quantity| D[Loop executes local tool]
+    D -->|Sample quantity: 2| E[Loop appends tool result to messages]
+    E --> F[Real model: next call]
+    F -->|Answer from tool result| G[Loop returns answer and JSON events]
 ```
 
-The loop code is real orchestration; the model function is a stand-in. It receives the messages but returns the next predefined response. This makes the example repeatable and free. A real-model connection would instead let the model decide which tool to request and how to answer from the returned evidence.
+The sample quantity is fixed local data; the model's tool request and answer are not scripted. The validated run used two model calls and one tool call. Inspect your actual events because model behavior can vary. The browser demo already covers the turn-limit test; do not repeat it here.
 
-### File walkthrough — document these roles
+### File walkthrough
 
-After running the command, write one or two sentences about each file. No coding or feature implementation is required.
-
-| File | Role to inspect |
+| File | Purpose |
 | --- | --- |
-| [starter.py](starter.py) | Runnable entry point: supplies scripted model responses, a sample tool and a question, then calls the loop. |
-| [solutions/minimal_loop.py](solutions/minimal_loop.py) | The actual `run_loop`: calls the model, executes requested tools, passes results back, and stops at an answer or the step limit. |
-| [solutions/live_adapters.py](solutions/live_adapters.py) | Optional connections to a real model and read-only MCP server. Discovers tool schemas and supplies model/tool functions to the same loop. |
-| [solutions/test_loop.py](solutions/test_loop.py) | Automated checks using scripted responses. It tests the loop; it does not register an SDK agent or run the live application. |
+| [starter.py](starter.py) | Defines the sample question, local quantity tool and its schema; connects the real model through the configured Test gateway; calls the loop and prints its result. |
+| [solutions/minimal_loop.py](solutions/minimal_loop.py) | Implements the repeated model call, tool execution and feedback sequence, stopping at a final answer or the step limit. |
+| [solutions/answers.md](solutions/answers.md) | Explains the expected execution and file responsibilities. |
+| [exercise.md](exercise.md) | Supplies the command and observation task. |
 
-A results JSON file is generated output containing messages, model/tool events and the stopping result. It is not another implementation file and is not needed to start the loop.
-
-### Live adapters — reference only for this activity
-
-Inspect `solutions/live_adapters.py` to understand where real model requests and MCP tool execution would connect to the same loop. Running it requires a configured backend environment and consumes API usage. It is not required for this activity; the supplied offline command is the runnable learner path. Live backend setup instructions are being aligned separately.
-
-For the required write-up, document the four file roles above and describe how a tool result reaches the next model call. The live run and automated checks are optional; no files need editing.
+**Your write-up:** explain the role of the starter and loop implementation, then identify the tool request, returned quantity and final answer in the printed JSON. No source edits, automated tests or extra live-adapter files are required.
 
 ## Cleanup
 

@@ -10,6 +10,8 @@ services:
       LITELLM_API_KEY: ${TEST_SUPPORT_GATEWAY_KEY:-}
       OPERATOR_GATEWAY_KEY: ${TEST_OPERATOR_GATEWAY_KEY:-}
       GATEWAY_MODEL_DEMO_ENABLED: "true"
+      AGENT_LOOP_LAB: "true"
+      PYTHONPATH: /app
       GATEWAY_MODEL_DEMO_ADMIN_KEY: ${LITELLM_MASTER_KEY:-sk-marketplace-local}
       MEM0_API_KEY: ${MEM0_API_KEY:-}
       MEM0_IDLE_TIMEOUT_SECONDS: ${MEM0_IDLE_TIMEOUT_SECONDS:-900}
@@ -17,6 +19,8 @@ services:
       DATABASE_URL: postgresql+psycopg://market:market-local@postgres:5432/market_test
       READ_DATABASE_URL: postgresql://agent_reader:reader-local@postgres:5432/market_test
       ALLOWED_ORIGINS: http://127.0.0.1:5179
+    volumes:
+      - ../course/exercises/agent-loop:/exercise:ro
     ports: !reset []
   memory-frontend:
     extends:

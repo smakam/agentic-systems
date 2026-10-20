@@ -1,29 +1,37 @@
-"""Complete runnable teaching loop. No Agents SDK runner. Run this file for a free scripted example."""
+"""Real model + one local sample tool, orchestrated without Agents SDK Runner."""
+import asyncio
 import json
 from solutions.minimal_loop import run_loop
 
+TOOLS = [{'type': 'function', 'function': {
+    'name': 'lookup_quantity',
+    'description': 'Read the quantity for the sample order.',
+    'parameters': {'type': 'object', 'properties': {}, 'additionalProperties': False},
+}}]
 
-async def _offline_example(max_steps):
-    """A fixed example with no network, marketplace reads or API charges."""
-    outputs = [
-        {'tool_calls': [{'id': 'lookup-1', 'type': 'function',
-                         'function': {'name': 'lookup_quantity', 'arguments': '{}'}}]},
-        {'content': 'The sample order contains two units.'},
-    ]
-    async def model(messages, tools):
-        return outputs.pop(0)
-    async def execute(name, arguments):
-        return {'status': 'ok', 'rows': [{'quantity': 2}]}
-    tools = [{'type': 'function', 'function': {'name': 'lookup_quantity',
-              'description': 'Read the scripted sample quantity',
-              'parameters': {'type': 'object', 'properties': {}}}}]
-    return await run_loop(model, execute, tools, 'How many units are in the sample order?',
-                          instructions='Answer from the tool result.', max_turns=max_steps)
+async def execute(name, arguments):
+    """Local sample data only: no MCP server or marketplace database."""
+    if name != 'lookup_quantity' or arguments:
+        raise ValueError('Unknown tool or unexpected arguments')
+    return {'order_id': 'sample-order', 'quantity': 2}
+
+async def main():
+    # Course backend supplies the configured gateway client and credentials.
+    from marketplace.tools import client
+    api = client()
+    try:
+        async def model(messages, tools):
+            response = await api.chat.completions.create(
+                model='support-model-test', messages=messages, tools=tools,
+                parallel_tool_calls=False, max_completion_tokens=1024)
+            return response.choices[0].message.model_dump(exclude_none=True)
+        result = await asyncio.wait_for(run_loop(
+            model, execute, TOOLS, 'How many units are in the sample order?',
+            instructions='Use lookup_quantity to retrieve the sample order quantity before answering. Answer only from the returned result.',
+            max_turns=8), timeout=150)
+        print(json.dumps(result, indent=2))
+    finally:
+        await api.close()
 
 if __name__ == '__main__':
-    import argparse
-    import asyncio
-    parser = argparse.ArgumentParser(description='Run the complete free, offline loop example.')
-    parser.add_argument('--max-steps', type=int, default=8)
-    args = parser.parse_args()
-    print(json.dumps(asyncio.run(_offline_example(args.max_steps)), indent=2))
+    asyncio.run(main())

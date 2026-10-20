@@ -14,42 +14,21 @@ The settings apply per question and persist until changed/reset. A new question 
 
 The responsibilities are separate: gateway/client retries (when configured) repeat failed model requests; the SDK runs the loop and enforces the turn limit; the model chooses tool retry/argument repair; application/tool code returns errors, enforces permissions/time/cost/evidence budgets and reports incomplete. The model-finish hook checks accumulated estimated cost after a response, not before charging for it. Tool hooks duplicate some Langfuse measurements for local UI use; they are not required for tracing.
 
-[Earlier saved validation](VALIDATION.md) describes historical runs in the legacy lab. Do not treat those dates, exact counts or order statuses as current Test facts.
 
-## Run and explain — supplied loop example
 
-The [complete starter](../starter.py) already implements the small model–tool loop; no TODOs or coding are required. The default offline example returns two model steps, one tool invocation and a completed answer. These runs are free and do not access the marketplace database.
+## Run and explain — supplied real-model loop
 
-The live-adapter file is reference material for this activity: it shows how real model calls and read-only MCP tools connect to the same loop. Its backend setup is separate and is not required for the learner run. The UI remains on the SDK runner.
+Use the single command in [exercise.md](../exercise.md). The supplied files are complete; no coding is required. This is a separate process, not a replacement for the marketplace UI's SDK runner.
 
-The offline model function returns predefined responses in sequence. It does not interpret the prompt or infer the answer from the tool result. The loop really executes the local tool and forwards its result; the scripted final answer remains predetermined. See the block diagram in the exercise.
+### File roles
 
-### File roles — expected write-up
+- **starter.py:** defines the local sample quantity tool and its schema. Its model function sends the messages and tool schema to the real model through the configured Test gateway. It calls the imported `run_loop` and prints the result.
+- **solutions/minimal_loop.py:** owns orchestration. It retains the model response, validates and executes requested tools, pairs each result with its tool-call ID and supplies the updated conversation to the next model call. It returns the final answer or an incomplete result at the step limit.
+- **exercise.md:** gives the command and observation task.
+- **solutions/answers.md:** provides these explanations.
 
-- **starter.py:** the ready-to-run offline entry point. It defines a scripted model, a sample tool and its schema, then calls the imported `run_loop`. No edits are required.
-- **solutions/minimal_loop.py:** the reusable orchestration function. This is where the repeated model → requested tools → tool feedback sequence lives.
-- **solutions/live_adapters.py:** connects the same loop to real model requests and read-only MCP tools. It discovers available tool schemas and passes the model/tool functions into the loop. There is no SDK Agent registration or Runner in this example.
-- **solutions/test_loop.py:** verifies the loop with scripted model/tool functions. Tests check behavior rather than provide the live connections.
-- **Results JSON:** generated observations, not source code. It records messages, events, the answer and the stopping status. Older saved results describe their own run, not necessarily today’s records.
+### Expected observations
 
-The offline run requests a tool in its first model step, appends the tool result to the messages, then supplies those messages to the second model step to produce the final answer. The browser demo already covers the turn-limit comparison; learners do not repeat it here.
+The first model response requests `lookup_quantity`. The local function returns the sample quantity, two. The loop appends that result to the messages. The next model call reads it and answers. The validated live run completed with two model calls and one tool invocation; model behavior can vary, so inspect the actual events.
 
-### What the supplied loop does
-
-1. Starts with instructions and the question.
-2. Requests a model response and retains it.
-3. Executes only allowed tool requests, pairing results with their call IDs.
-4. Supplies results/errors to the next model step.
-5. Returns a final answer when no tool calls remain, or stops incomplete at the selected limit.
-
-This illustrates orchestration rather than production feature parity. Network connections, provider API calls and real MCP execution belong to the adapters. Validation and read-only SQL permissions remain in the tool server. Changing the separate example does not change the UI agent or business records.
-
-### Optional scripted checks
-
-These five checks verify tool-result pairing, multiple tool calls in one model step, rejected malformed requests, repair feedback and the step boundary. They make no API calls:
-
-```bash
-LOOP_IMPLEMENTATION=starter python3 -m unittest discover -s course/exercises/agent-loop/solutions -p test_loop.py
-```
-
-The reference implementation remains available in [minimal_loop.py](minimal_loop.py), and the earlier [validation record](VALIDATION.md) is historical. No database reset is required after these read-only examples. Do not run the legacy reset scripts against the shared Test workspace.
+The quantity is fixed sample data, but neither the model's tool request nor its final answer is scripted. No MCP server or marketplace database is accessed by this sample tool. The real model calls consume API credit. JSON is printed output, not an additional source file learners must manage. The browser activity already demonstrates stopping; this activity focuses on how the custom loop works.
