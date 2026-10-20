@@ -38,6 +38,23 @@ python3 course/exercises/agent-loop/starter.py
 
 It uses scripted responses and a sample quantity, with no API calls or database access. Inspect the JSON: the first model step requests a tool; its result reaches the second step, which answers. The turn-limit comparison is already covered in the browser demo and does not need repeating here.
 
+### How the offline example works
+
+This example calls no real model and no MCP server. Both the tool request and final answer are scripted in advance; the loop still executes the local tool and passes its result back. The scripted final answer does not infer its wording from that result.
+
+```mermaid
+flowchart TD
+    A[Starter: sample question and tool schema] --> B[Custom run_loop]
+    B --> C[Scripted model function]
+    C -->|First response: request lookup_quantity| B
+    B --> D[Local tool function]
+    D -->|Returns quantity 2| E[Loop appends tool result to messages]
+    E --> C
+    C -->|Second response: predetermined final answer| F[Loop returns answer and JSON events]
+```
+
+The loop code is real orchestration; the model function is a stand-in. It receives the messages but returns the next predefined response. This makes the example repeatable and free. A real-model connection would instead let the model decide which tool to request and how to answer from the returned evidence.
+
 ### File walkthrough — document these roles
 
 After running the command, write one or two sentences about each file. No coding or feature implementation is required.

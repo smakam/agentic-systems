@@ -22,6 +22,8 @@ The [complete starter](../starter.py) already implements the small model–tool 
 
 The live-adapter file is reference material for this activity: it shows how real model calls and read-only MCP tools connect to the same loop. Its backend setup is separate and is not required for the learner run. The UI remains on the SDK runner.
 
+The offline model function returns predefined responses in sequence. It does not interpret the prompt or infer the answer from the tool result. The loop really executes the local tool and forwards its result; the scripted final answer remains predetermined. See the block diagram in the exercise.
+
 ### File roles — expected write-up
 
 - **starter.py:** the ready-to-run offline entry point. It defines a scripted model, a sample tool and its schema, then calls the imported `run_loop`. No edits are required.
