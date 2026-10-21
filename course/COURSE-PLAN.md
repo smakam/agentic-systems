@@ -207,7 +207,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Workspace:** Local Langfuse http://localhost:3000, project marketplace-support; supplied answer fixtures and repository-root import commands. Reuse Chapter14 structured order comparison with its worker/dispatcher. No marketplace UI or business database is required.
 
-**Materials:** [Exercise](exercises/evaluation/exercise.md) · [Answers](exercises/evaluation/solutions/answers.md) · [Instructor demo](exercises/evaluation/instructor-demo.md)
+**Materials:** [Exercise](exercises/evaluation/exercise.md) · [Answers](exercises/evaluation/solutions/answers.md) · [Instructor demo](exercises/evaluation/exercise.md#instructor-demo)
 
 **Takeaway:** Judge agreement is not model accuracy, and feedback is not factual correctness. Human review and deterministic checks have different roles; a single trial does not establish consistency. [Calibration evidence](../app/results/calibration-v3-2026-09-29/CALIBRATION-SUMMARY.md).
 

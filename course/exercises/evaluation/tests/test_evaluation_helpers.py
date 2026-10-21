@@ -1,4 +1,7 @@
 import unittest
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from evaluation_helpers import load_cases,validate_grade
 from run_claude_demo import blind_payload
 class GradingContractTests(unittest.TestCase):

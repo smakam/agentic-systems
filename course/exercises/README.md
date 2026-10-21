@@ -14,7 +14,7 @@ Solutions use **solutions/answers.md** consistently. Instructor guides are for d
 | Session state | [Exercise](session-state/exercise.md) · [Answers](session-state/solutions/answers.md) |
 | Agent loop | [Exercise](agent-loop/exercise.md) · [Answers](agent-loop/solutions/answers.md) |
 | Observability | [Exercise](observability/exercise.md) · [Answers](observability/solutions/answers.md) |
-| Evaluation | [Exercise](evaluation/exercise.md) · [Answers](evaluation/solutions/answers.md) · [Instructor guide](evaluation/instructor-demo.md) |
+| Evaluation | [Exercise](evaluation/exercise.md) · [Answers](evaluation/solutions/answers.md) · [Instructor guide](evaluation/exercise.md#instructor-demo) |
 | Guardrails security | [Exercise](guardrails-security/exercise.md) · [Answers](guardrails-security/solutions/answers.md) · [Instructor guide](guardrails-security/instructor-demo.md) |
 | Model routing | [Exercise](model-routing/exercise.md) · [Answers](model-routing/solutions/answers.md) · [Instructor guide](model-routing/instructor-demo.md) |
 | Agent design patterns | [Exercise](agent-design-patterns/exercise.md) · [Answers](agent-design-patterns/solutions/answers.md) · [Instructor guide](agent-design-patterns/instructor-demo.md) |

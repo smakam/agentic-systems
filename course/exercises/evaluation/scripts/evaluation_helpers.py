@@ -1,7 +1,7 @@
 """Shared I/O and result publication. No model calls in this module."""
 import json, os
 from pathlib import Path
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent
 LABELS = {0: 'incorrect', 1: 'partial', 2: 'correct'}
 def load_cases(name, expected_count=5):
     path = ROOT / name
