@@ -1,4 +1,4 @@
-# Chapter 11 — The Agent Loop with OpenAI Agents SDK
+# The Agent Loop with OpenAI Agents SDK
 
 ## Workspace for this activity
 

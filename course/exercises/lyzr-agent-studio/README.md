@@ -1,4 +1,4 @@
-# Chapter 20: Lyzr Agent Studio
+# Lyzr Agent Studio
 
 The core lesson uses **Support Agent Basics** in native Lyzr Studio and Playground, with a separate Knowledge Base containing fictional orders. It uses the same JSON source as the Google Basics lab, converted to TXT for native Lyzr ingestion. It does not run Google's Python lookup tool or connect to the marketplace database.
 

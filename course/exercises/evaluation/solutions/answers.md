@@ -1,4 +1,4 @@
-# Chapter 14 solutions
+# Evaluation — solutions
 
 Complete the exercise before reading the historical grades. Human judgments and automated judge outputs are evidence to inspect, not interchangeable truth labels.
 

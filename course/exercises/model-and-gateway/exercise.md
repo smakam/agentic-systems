@@ -1,4 +1,4 @@
-# Chapter 6 exercise: Model and gateway
+# Model and gateway — learner exercise
 
 ## Learning goal
 

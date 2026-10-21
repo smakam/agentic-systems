@@ -1,4 +1,4 @@
-# Chapter 13 — Token dashboard reference solution
+# Token dashboard reference solution
 
 The exercise builds one dashboard and explains a day with high **average tokens per investigation** using recorded execution evidence. Daily values depend on each learner's recordings; no fixed token total or model ranking is required.
 

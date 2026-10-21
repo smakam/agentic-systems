@@ -1,4 +1,4 @@
-# Chapter 21: Choosing an Agent Platform — learner exercise
+# Choosing an Agent Platform — learner exercise
 
 ## Workspace and goal
 

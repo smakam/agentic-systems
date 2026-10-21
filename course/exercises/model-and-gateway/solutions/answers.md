@@ -1,4 +1,4 @@
-# Chapter 6 reference solution: Model and gateway
+# Model and gateway — reference solution
 
 The core exercise repeats the instructor demo in the normal Test UI. The additional tasks use LiteLLM Playground and the existing Test workspace; no separate environment is required. Exact answer wording, cost and latency vary.
 

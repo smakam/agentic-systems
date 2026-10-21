@@ -1,4 +1,4 @@
-# Chapter 20 reference answers
+# Lyzr Agent Studio — reference answers
 
 These are evidence checkpoints, not promised fresh model outputs. The core lab uses native Lyzr KB retrieval; the optional exercise connects a separate marketplace agent to your GCP backend.
 

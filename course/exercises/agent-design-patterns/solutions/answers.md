@@ -1,4 +1,4 @@
-# Chapter 17: Agent Design Patterns — reference answers
+# Agent Design Patterns — reference answers
 
 These are reference interpretations, not fixed text or mandatory branch outcomes. Model generation and review can vary; check current business data and the evidence in each run.
 

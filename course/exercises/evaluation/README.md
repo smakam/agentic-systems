@@ -1,4 +1,4 @@
-# Chapter 14 evaluation package
+# Evaluation exercise package
 
 [Full 18-case human/Claude comparison](../../evaluation/chapter-14-model-comparison/README.md)
 

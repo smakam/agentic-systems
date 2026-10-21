@@ -1,4 +1,4 @@
-# Chapter 17: Agent Design Patterns — learner exercise
+# Agent Design Patterns — learner exercise
 
 ## Workspace for this activity
 

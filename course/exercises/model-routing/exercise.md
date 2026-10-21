@@ -1,4 +1,4 @@
-# Chapter 16 — Model routing learner exercise
+# Model routing learner exercise
 
 ## Workspace for this activity
 

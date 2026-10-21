@@ -1,4 +1,4 @@
-# Chapter 16 — Model routing reference answers
+# Model routing reference answers
 
 Use this after completing [the learner exercise](../exercise.md). These are interpretation checks, not text learners must reproduce. Fresh classifications and answers may vary; use the learner's actual trace and current business records.
 

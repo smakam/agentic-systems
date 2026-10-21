@@ -1,4 +1,4 @@
-# Chapter 15 — Learner exercise
+# Guardrails and Agent Security — learner exercise
 
 ## Workspace for this activity
 

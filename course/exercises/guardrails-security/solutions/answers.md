@@ -1,4 +1,4 @@
-# Chapter 15 — Separate solutions
+# Guardrails and Agent Security — reference answers
 
 Review after completing the worksheet. These are recorded observations and grading criteria, not promises that a fresh model run reproduces every response.
 

@@ -1,4 +1,4 @@
-# Chapter 13 — Build a token-usage dashboard and investigate a high-average day
+# Build a token-usage dashboard and investigate a high-average day
 
 ## Prerequisites
 

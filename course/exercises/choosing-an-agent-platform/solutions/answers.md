@@ -1,4 +1,4 @@
-# Chapter 21: Choosing an Agent Platform — reference answers
+# Choosing an Agent Platform — reference answers
 
 Read after completing [the exercise](../exercise.md). This is an illustrative decision and review rubric, not a universal provider ranking or a new benchmark.
 

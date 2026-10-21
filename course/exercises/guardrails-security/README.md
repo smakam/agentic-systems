@@ -1,4 +1,4 @@
-# Chapter 15 — Guardrails and Agent Security
+# Guardrails and Agent Security
 
 The package reuses four existing Security demo cases: built-in input privacy, output-only privacy, Presidio card blocking and Lakera on retrieved attack content. The slide deck presents combined OWASP risks, runtime controls, security design and prevention/detection/response.
 

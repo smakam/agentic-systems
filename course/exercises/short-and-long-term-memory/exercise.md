@@ -1,4 +1,4 @@
-# Chapter 18 learner exercise: observe memory across conversations
+# Learner exercise: observe memory across conversations
 
 You will run specified questions, inspect storage and Langfuse evidence, and document what occurred. The goal is to understand how conversation history, memory extraction and retrieval differ. You do not need to tune a provider or prove which one is generally better.
 

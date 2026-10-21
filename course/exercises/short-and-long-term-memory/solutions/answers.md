@@ -1,4 +1,4 @@
-# Chapter 18 reference answers
+# Short-term and long-term memory — reference answers
 
 **Automatic-save eligibility:** before calling Mem0, the application checks user messages for durable intent. Natural preferences such as “I like payout explanations in a compact table”, accepted reusable checklists and explicit historical resume requests can qualify. Chats containing only business questions, recall requests or temporary formatting instructions produce a completed no-op without a provider add call. For an eligible chat, the full conversation goes to the extraction API with per-request guidelines; Mem0 still chooses what to retain.
 

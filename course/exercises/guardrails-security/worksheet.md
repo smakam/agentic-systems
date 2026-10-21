@@ -1,4 +1,4 @@
-# Chapter 15 — Results worksheet
+# Guardrails and Agent Security — results worksheet
 
 | Case | Off/On settings and fixture | Observed outcome | Enforcement point | Evidence / trace links | Limitation |
 |---|---|---|---|---|---|
