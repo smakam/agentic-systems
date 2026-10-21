@@ -30,7 +30,7 @@ A dataset is not a set of model answers by itself. Its expected output is the go
 
 #### 1. Show the five golden cases
 
-Open [chapter14-claude-v1](http://localhost:3000/project/marketplace-support/datasets/cmv6hmtqx0017r007w81poch4/items).
+In Langfuse, select **Datasets** in the left sidebar, then open the [chapter14-claude-v1 dataset](http://localhost:3000/project/marketplace-support/datasets/cmv6hmtqx0017r007w81poch4/items).
 
 Confirm five items. Pick the product-and-quantity question for order-1. Show its input and expected facts: two Canvas Weekenders from Cedar and two Desk Lamps from Northstar. Explain that these references were established independently of the candidate answer.
 
