@@ -1,6 +1,6 @@
 # Validation — 10 October 2026
 
-Local Langfuse v4.46.0 OSS, project marketplace-support. The supplied upload script ingested six synthetic roots and 25 observations; API readback verified every case, duration, token count and supplied dollar total. The stored manifest and readback are in solutions/validated-manifest.json and solutions/upload-readback.json. No model requests or business mutations were used.
+Local Langfuse v4.46.0 OSS, project marketplace-support. The supplied upload script ingested six synthetic roots and 25 observations; API readback verified every case, duration, token count and supplied dollar total. The stored manifest and readback are in ../../authoring/chapter-13-legacy-trace-validation/validated-manifest.json and ../../authoring/chapter-13-legacy-trace-validation/upload-readback.json. No model requests or business mutations were used.
 
 Batch: `ch13-58634577764b`. Dashboard: `cmv2ohrtp0005p907lx49at4d`.
 
