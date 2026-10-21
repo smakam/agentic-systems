@@ -102,7 +102,7 @@ Use the model-labelled alternative if you need **Show details** to identify the 
 
 These are saved answers imported for code scoring; no model calls are needed. The dataset and experiment labels identify this example, while the score source and rule association establish where grading ran.
 
-### Part C — Fixtures, human evaluation and judge comparison
+### Part C — Core 18: fixtures, human evaluation and judge comparison
 
 **Objective:** show a case whose known starting state was prepared by our test script before running the agent. A human reviewed the saved answer; Claude graded it separately. Inspect the human grade and compare the two judgments. The dataset name contains “core18” because this collection has 18 test cases.
 
