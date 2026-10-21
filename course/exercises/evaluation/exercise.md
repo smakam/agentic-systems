@@ -8,7 +8,7 @@ Two tasks: human-grade five supplied answers, then use Langfuse's native code ev
 
 ## Before starting
 
-Use the existing local marketplace lab and Langfuse project **marketplace-support**. Run upload commands from the application repository root. The native TypeScript evaluator and local dispatcher must already be configured; reuse **Chapter14 structured order comparison**. Complete the [learner setup in the package README](README.md#learner-setup--complete-once-before-the-exercise) to enable the local dispatcher and create your own evaluator/rule. Keep solutions closed until you finish.
+Use the existing local marketplace lab and Langfuse project **marketplace-support**. Run upload commands from the application repository root. You do not need the instructor's existing evaluator. Part B below walks through enabling the local dispatcher, creating your own TypeScript evaluator and attaching its rule before importing answers. If you already completed those steps in your own project, inspect and reuse that evaluator/rule. Keep solutions closed until you finish.
 
 ## Part A — Human evaluation of five answers
 
@@ -56,11 +56,53 @@ docker compose -p marketplace-lab -f app/compose.yaml --profile evaluation \
 
 ## Part B — Native evaluation of three structured answers
 
-### 1. Inspect the supplied JSON
+### 1. Create the evaluator in your own Langfuse project
+
+The instructor's evaluator is local to the instructor's project. In your project, complete the following setup before importing the three answers. The human-grading upload in Part A does not require this evaluator.
+
+#### Enable the code-evaluation runtime
+
+From the repository root, with the normal Course Setup services already running:
+
+```sh
+docker compose -p marketplace-lab \
+  -f app/compose.yaml \
+  -f course/exercises/evaluation/compose.code-eval.yaml \
+  up -d --no-deps langfuse-web langfuse-worker
+
+docker compose -p marketplace-lab \
+  -f app/compose.yaml \
+  -f course/exercises/evaluation/compose.code-eval.yaml \
+  ps langfuse-web langfuse-worker
+```
+
+Confirm both services are running. Include any additional Compose overlays used by your local setup as well. The supplied overlay enables the TypeScript dispatcher and worker queue; include it whenever you recreate these two services for this activity. It retains existing data and does not reset the marketplace. This local dispatcher runs trusted supplied TypeScript in the worker process; use the reviewed course evaluator, not untrusted code. Refresh Langfuse after restarting.
+
+#### Add the TypeScript evaluator
+
+1. Open [local Langfuse](http://localhost:3000) and select your project (`marketplace-support` in the standard local setup). Import credentials must belong to that same project.
+2. Open **Evaluators** in the left sidebar, then **New evaluator**.
+3. Choose **Code evaluator** in the gallery and select **TypeScript** as the language. Do not choose an LLM-as-a-judge evaluator for this task.
+4. Open the supplied [structured-evaluator.ts](structured-evaluator.ts), copy its complete contents and replace the sample code in the editor. This is the grading code. `structured-three.json` is input data and must not be pasted as code.
+5. Set the name to **Chapter14 structured order comparison**. Suggested description: “Compare shipment status and quantity with independent expected fields.” Save the evaluator using the page's save control. Exact control labels can vary with Langfuse version.
+6. Do not expect sample observations yet in a fresh project. First save the evaluator and configure its rule below; import the supplied answers in step 3, then test a sample in step 4.
+
+The code reads the actual answer from `ctx.observation.output`. It reads the reference from `ctx.experiment.itemExpectedOutput`, falling back to `ctx.observation.metadata.expected_output`. The importer supplies those references. There is no judge-model configuration, provider API key, or separate prompt-variable mapping for this code evaluator.
+
+#### Attach and enable an observation rule
+
+1. From the saved evaluator, open **Rules** and create an observation rule, or attach this evaluator to an existing suitable rule. If your project already has the course rule, reuse it instead of creating a duplicate.
+2. Set the observation **Name equals `chapter14-structured-answer`**. This is the answer observation emitted by the supplied importer, not the experiment's overall root span.
+3. Attach **Chapter14 structured order comparison**, set sampling to **100%**, and save/enable the rule for new matching observations. In a shared project, also restrict it to your lab dataset/experiment using available filters, or use an isolated project.
+4. Confirm the evaluator has one appropriate enabled rule before importing. The filter selects what gets graded; dataset `judge_model` metadata only describes provenance and does not switch on grading.
+
+**Expected setup result:** your project contains the saved TypeScript evaluator and an enabled matching rule. No sample test or new experiment has run yet. The upcoming import creates the observations that the rule will grade.
+
+### 2. Inspect the supplied JSON
 
 Open [structured-three.json](structured-three.json) in this package. Each item has a question, expected shipment status and quantity, and an actual recorded GPT-5.4 answer. Do not generate new model answers.
 
-### 2. Import the three outputs
+### 3. Import the three outputs
 
 ```sh
 docker compose -p marketplace-lab -f app/compose.yaml --profile evaluation \
@@ -73,20 +115,22 @@ docker compose -p marketplace-lab -f app/compose.yaml --profile evaluation \
 
 **Expected:** three imported items, zero model calls and an experiment URL. This script imports answers, not grades.
 
-### 3. Use the native evaluator
+### 4. Test the native evaluator
 
 In Langfuse, open **Evaluators → Chapter14 structured order comparison**. On the right, use **Test with sample observations**. Select the radio button for one of your imported `chapter14-structured-answer` rows, then click **Run test on this sample**. Inspect the returned checks. This reruns code grading of a saved answer; it makes no new agent answer and does not create an experiment. Inspect the TypeScript source and confirm the rule targets `chapter14-structured-answer` at 100% sampling. Reuse the existing rule. If using a shared project, restrict it to your dataset/experiment where appropriate.
 
 The import creates a named experiment and links each saved answer to a dataset item. The enabled observation rule triggers grading automatically; you do not need the UI **Run experiment** button for this supplied-answer workflow. The Langfuse worker executes the comparison asynchronously. If the rule was created after import, include past matching observations. Upload completion alone does not mean grading finished.
 
-### 4. Inspect the experiment results
+### 5. Inspect the experiment results
 
 Open the URL printed by the import command. Compare question, golden fields, actual JSON and scores. Record `schema_valid`, `status_matches`, `quantity_matches`, and `structured_grade`. Confirm source **EVAL** for native scoring. The three supplied outputs match their references, so expect three `correct` grades and true schema/status/quantity checks. The overall grade is categorical; it does not use the human 0–2 scale. Explain what each check proves; these field checks do not establish citation grounding or full semantic correctness.
 
 ### If the sample test cannot run
 
-If it reports **code eval dispatcher is not configured**, repeat the dispatcher setup in the [package README](README.md#learner-setup--complete-once-before-the-exercise) for both Langfuse web and worker, preserving any additional local Compose overlays. Refresh and repeat the sample test. A passing sample test confirms that one code execution works; separately check the scores on all three experiment items. If scores remain absent, check the enabled rule, matching observation name, 100% sampling and worker queue before importing another run.
+If it reports **code eval dispatcher is not configured**, repeat the runtime setup in Part B step 1 for both Langfuse web and worker, preserving any additional local Compose overlays. Refresh and repeat the sample test. A passing sample test confirms that one code execution works; separately check the scores on all three experiment items. If scores remain absent, check the enabled rule, matching observation name, 100% sampling and worker queue before importing another run.
 
 ## Submit
 
 Provide your completed human worksheet, both experiment URLs, one explanation of a human grade, and the three native results with field checks. Keep human grades and native code results distinct. Do not include credentials. Compare with the separate solutions after submission.
+
+Setup reference: [Langfuse code evaluator creation, testing and rules](https://langfuse.com/docs/evaluation/evaluation-methods/code-evaluators), checked 21 October 2026. The existing-project sample test passed locally; the new-project creation sequence is documented but has not been rehearsed in an empty project.

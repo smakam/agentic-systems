@@ -11,7 +11,7 @@ The learner exercises make no model API calls. Candidate answers and golden refe
 
 Learners edit `human-worksheet.json` directly in this exercise folder and inspect `structured-three.json` alongside it. These supplied-answer files are not database setup fixtures. Script reference data is kept in `preparation/fixtures/`. Earlier unneeded import records and the unused review template are preserved separately in `course/evaluation/chapter-14-preparation-history/`.
 
-Read [the exercise](exercise.md) and keep [the solutions](solutions/answers.md) separate until the learner finishes.
+The [learner exercise](exercise.md#1-create-the-evaluator-in-your-own-langfuse-project) includes the full evaluator creation and rule setup; learners do not need the instructor's existing evaluator. Read [the exercise](exercise.md) and keep [the solutions](solutions/answers.md) separate until the learner finishes.
 
 ## Learner setup — complete once before the exercise
 
