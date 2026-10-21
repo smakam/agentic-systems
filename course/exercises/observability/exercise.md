@@ -4,6 +4,14 @@
 
 Complete the common course setup and earlier agent activities. Open [local Langfuse](http://localhost:3000/) and your configured telemetry project (`marketplace-support` in the instructor setup). Use existing recorded SDK support investigations; no new deployment, synthetic upload, paid model call or database reset is needed.
 
+## What the instructor demonstrated
+
+1. **Monitoring → tracing:** open the recorded-investigation dashboard, compare daily run count and P99 latency, select a high-latency day, then inspect its slow investigations. Use generation and tool timings to locate the delay; check the question and experiment settings before explaining the cause. A long generation alone does not prove a provider problem.
+2. **Evaluation → tracing:** compare the GPT-5.4 and Nano experiment runs. Find the Cedar seller-clarification case with human correctness scores of 2 and 0, open each result’s full output, and use its second original trace ID to inspect the corresponding second turn. Compare the conversation, query inputs and answers: Nano added a “today” filter that the user did not request.
+3. **Create a monitoring widget:** on **Chapter 13 — Recorded investigation trends**, add a Custom Chart using **Observations → Total Cost → Sum**, filter **Observation Name = `generation`** and **Environment = `default`**, and display the estimated model cost by day. This shows daily total estimated spend; the learner exercise below instead compares tokens per investigation.
+
+You will now apply the same dashboard-to-trace method to daily token usage.
+
 ## Learning goal
 
 Build one dashboard, compare **average tokens per investigation** across days, then use original traces to explain a high-average day. Higher daily token totals can simply mean more requests; normalize by investigation count before comparing work per question.
