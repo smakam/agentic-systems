@@ -140,9 +140,9 @@ Use the existing local marketplace lab and Langfuse project **marketplace-suppor
 
 #### 1. Open the worksheet in this exercise folder
 
-Open [human-worksheet.json](human-worksheet.json) directly in `course/exercises/evaluation/`. It contains five questions, golden references and actual saved Nano answers. Edit this file in place; there is no copy step. If you already completed an older copy under `app/results/chapter-14/`, keep it and use its `/results/chapter-14/human-worksheet.json` path with the same validation/upload commands instead.
+Open [human-worksheet.json](human-worksheet.json) directly in `course/exercises/evaluation/`. It contains five questions, golden references and actual saved Nano answers. Fill in the score and reason for each answer in this file.
 
-The worksheet is a human-grading submission, not a database fixture. Keep the [solutions](solutions/answers.md) closed until you finish.
+Keep the [solutions](solutions/answers.md) closed until you finish.
 
 #### 2. Grade each model answer
 
