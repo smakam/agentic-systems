@@ -4,7 +4,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 LABELS = {0: 'incorrect', 1: 'partial', 2: 'correct'}
 def load_cases(name, expected_count=5):
-    path = ROOT / 'fixtures' / name
+    path = ROOT / name
+    if not path.exists():
+        path = ROOT / 'fixtures' / name
     if not path.exists():
         path = ROOT / 'preparation' / 'fixtures' / name
     data = json.loads(path.read_text())
