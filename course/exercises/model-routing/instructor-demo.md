@@ -93,4 +93,4 @@ For the learner exercise, use the separate [numbered instructions and observatio
 - The small one-pass known-case studies illustrate methodology, not a general ranking. Business-context setups did better on those cases, but no matched ablation proves that context alone caused the improvement.
 - The fresh native demo verifies implementation mechanics; it does not replace or reproduce the historical benchmark. Per-call and named-stage routing are explained conceptually, not presented as tested results.
 
-[Verified rehearsal and checks](verification.md)
+[Verified rehearsal and checks](../../authoring/chapter-16-native-routing/verification.md)

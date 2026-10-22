@@ -132,4 +132,4 @@ Select **Mode → Normal support model** to start a fresh ordinary conversation.
 
 - [Instructor demo and setup](instructor-demo.md)
 - [Separate reference answers](solutions/answers.md) — read after completing the exercise
-- Optional historical context: [18 classifier cases](evidence/eighteen-classifier-cases.md) and [six scope conversations](evidence/six-scope-conversations.md). These are dated studies, not expected outputs for this live exercise.
+- Optional historical context: [18 classifier cases](../../evaluation/chapter-16-model-routing/eighteen-classifier-cases.md) and [six scope conversations](../../evaluation/chapter-16-model-routing/six-scope-conversations.md). These are dated studies, not expected outputs for this live exercise.
