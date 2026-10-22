@@ -50,7 +50,7 @@ Use the same LLM classifier, answer pool, security settings and question sequenc
 
 ### Case B1 — Per conversation
 
-1. Set **Native LiteLLM routing → LLM · GPT-5 Nano → Per conversation**.
+1. Set **Mode → Native LiteLLM routing**, **Classifier → LLM · GPT-5 Nano**, and **Scope → Per conversation**.
 2. Ask `Hello.` This makes the first selection easy to inspect. Record the tier, actual model and cause. In verification, this selected Nano.
 3. Ask `Why has the seller not been paid for order-2, and what must happen before payout is eligible?`
 4. Ask `What exact amount would the seller receive after fees for order-2?`
