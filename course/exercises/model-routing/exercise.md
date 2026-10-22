@@ -106,9 +106,9 @@ Use this exact question sequence:
 
 **Write two short observations:** Which policy reused its first selection? Which policy made new decisions, and did its model change? Explain why three model calls within one question do not mean three separate per-question decisions.
 
-## What to hand in
+## Review your observations
 
-One Markdown document containing:
+Nothing needs to be submitted or uploaded. Use your own notes to review:
 
 1. Workspace revision/clock and the selected preparation settings.
 2. Completed Tables A and B, final answers, evidence checks and trace links.
