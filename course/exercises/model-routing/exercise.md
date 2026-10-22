@@ -16,6 +16,14 @@ Use the test UI to understand how classifiers select a model and how scope contr
 
 These runs make paid provider calls. This is an understanding and documentation exercise, not a statistically meaningful benchmark. The prepared answer pool is Nano/GPT-5. The LLM classifier itself uses Nano. The heuristic v2 choice uses LiteLLM's bundled trained classifier, not the older default heuristic from the historical study.
 
+## Instructor demo recap
+
+The instructor compared **Keyword rules** and **LLM · GPT-5 Nano** on the same explicit lookup and causal payout questions, with **Scope → Per question**. The trace connected the requested classifier, decision cause, assigned tier and actual answer model. An optional fixed-model control bypassed classification.
+
+The instructor then held the LLM classifier fixed and compared **Per conversation** with **Per question** using the same three-question sequence. Conversation scope reused its first selection; question scope made a new decision for each user question and reused it across that question's tool continuations. A new decision does not guarantee a different model.
+
+**Your practice:** Part A repeats the classifier comparison with different questions and adds **Built-in heuristic v2**. Part B repeats **both scope conditions**, again holding the LLM classifier fixed. You are not defining a new model pool or changing routing code. See the [detailed instructor demo](instructor-demo.md) when needed.
+
 ## Part A — Compare three classifiers
 
 Use these exact questions:
