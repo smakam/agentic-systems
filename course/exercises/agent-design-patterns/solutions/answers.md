@@ -7,7 +7,7 @@ These are reference interpretations, not fixed text or mandatory branch outcomes
 - A1: one generator role, selected Nano model, read-only tool loop; no reviewer or correction.
 - A2: Nano generator → Nano reviewer → application decision → optional Nano correction.
 - A3: Nano generator → GPT-5.4 reviewer → application decision → optional Nano correction.
-- Part B keeps Nano generator and GPT-5.4 reviewer through two questions in one conversation. The second question may use retained context, but current evidence must match the snapshot.
+- Optional Part B checks context handoff, not a new reviewer-quality comparison. It keeps Nano generator and GPT-5.4 reviewer through two questions in one conversation. The second question may use retained context, but current evidence must match the snapshot.
 - “Off” returns to normal support. “Generator only” changes the fixed demo generator model without adding review.
 
 The generator passes its draft and original evidence to review, alongside the question/snapshot and relevant prior conversation context. The reviewer returns `needs_revision`, `issues`, `correction_instructions` and `sufficient_evidence`. Application code accepts the draft or makes at most one correction attempt. The correction receives the generated conversation and feedback, treated as a hypothesis, and uses the generator model. It can call read-only tools. The reviewer is an SDK Agent configured for one structured call with no tools and no golden answer.
@@ -27,11 +27,15 @@ Changed data can yield different valid facts. Grade evidence use and role interp
 - Failed stage: name it and inspect the error trace. No successful hybrid completion should be claimed.
 - No difference between A2 and A3: valid observation; it does not prove reviewers are equivalent. Different outputs also do not isolate reviewer capability because fresh generator drafts were created for each run.
 
+## Optional follow-up: what to inspect
+
+In the second review input, “that order” should be understandable from the supplied prior context. Look for the earlier order reference, current question, original evidence and relevant conversation context. The lesson is whether each role received enough information; it is not a guarantee that the reviewer reasons correctly. Generator/correction may retrieve evidence, while the reviewer cannot. The one-correction limit still applies. This check is optional and requires no submission.
+
 ## Recorded instructor rehearsal
 
 The simple order-2 lookup was accepted by GPT-5.4 review after Nano generation. The complex order-1 eligibility question was flagged for missing delivery evidence and unsupported conclusions. Nano correction made uncertainty explicit but did not retrieve the missing shipment data. The controller and role handoffs worked; the final business answer remained incomplete. These saved examples teach debugging, not a performance ranking.
 
-## Four short-answer points
+## Self-review points
 
 1. The handoff should include question, snapshot, draft and source evidence, followed by specific structured feedback. Passing only prose loses the evidence contract.
 2. Code owns the branch and bound. Generator/correction have read-only tools; the reviewer has none. One role can contain several model calls, so generation count is not agent count.
