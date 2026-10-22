@@ -135,7 +135,7 @@ def conversations(user=Depends(identity),db=Depends(db_session)):
     latest = select(Run.conversation_id,func.max(Run.created_at).label('activity_at')).group_by(Run.conversation_id).subquery()
     statement = (select(Conversation).outerjoin(latest,latest.c.conversation_id==Conversation.id)
                  .where(Conversation.owner_id==user.id)
-                 .order_by(latest.c.activity_at.desc().nulls_last(),Conversation.id))
+                 .order_by(latest.c.activity_at.desc().nulls_last(),Conversation.id).limit(50))
     return [{'id':c.id,'title':c.title,'runtime':runtime_binding(c)['runtime'],'memory_provider':memory_provider_for(db,c.id)} for c in db.scalars(statement).all()]
 from .mem0_provider import provider_for as memory_provider_for
 from .platform_runtime import binding as runtime_binding, configured as runtime_configured, initial_items, options as runtime_options, validate_controls, hosted_answer

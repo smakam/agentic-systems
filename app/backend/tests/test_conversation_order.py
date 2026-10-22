@@ -41,3 +41,19 @@ def test_history_keeps_owner_isolation_and_runtime_provider_metadata(history):
     rows=conversations(SimpleNamespace(id='owner',role='support'),db)
     assert all(c['runtime']=='sdk' for c in rows)
     assert next(c for c in rows if c['id']=='old')['memory_provider']=='mem0'
+
+
+def test_history_limits_to_50_latest_owned_conversations(history):
+    db,start=history
+    for index in range(60):
+        cid=f'history-{index:02}'
+        db.add(Conversation(id=cid,owner_id='owner',title=cid,items=[]))
+        db.add(Run(id=cid,conversation_id=cid,revision=1,question='q',answer='a',status='completed',created_at=start+timedelta(days=1,minutes=index)))
+    # A newer question in an older investigation determines its position.
+    db.add(Run(id='latest-followup',conversation_id='old',revision=1,question='again',answer='a',status='completed',created_at=start+timedelta(days=2)))
+    db.commit()
+    rows=conversations(SimpleNamespace(id='owner',role='support'),db)
+    assert [c['id'] for c in rows] == ['old']+[f'history-{i:02}' for i in range(59,10,-1)]
+    # The display limit does not delete any saved conversations or questions.
+    assert db.get(Conversation,'history-00') is not None
+    assert db.get(Run,'history-00') is not None

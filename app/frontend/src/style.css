@@ -55,3 +55,13 @@
 .rag-policy-demo-dialog{width:min(1040px,90vw);max-height:85vh;overflow:auto;border:1px solid #cddcd7;border-radius:12px;padding:28px;color:var(--ink,#173c38);background:#fafbf8}.rag-policy-demo-dialog::backdrop{background:rgba(12,35,31,.45)}.rag-policy-demo-dialog>header{display:flex;align-items:center;justify-content:space-between;gap:20px}.rag-policy-demo-dialog>header h3{margin:0}.rag-policy-demo-dialog .rag-demo-result .answer{font-size:15px}.rag-policy-demo-dialog textarea{min-height:80px}.rag-policy-demo-dialog section p{line-height:1.65}
 
 .workspace-controls{border:0;padding:0;margin:0;min-width:0}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}.rag-chat-result{display:block;width:100%}.rag-chat-result section{margin:12px 0}
+
+/* Recent investigation history opens at the newest entry rather than the selection. */
+.investigation-history{position:relative;flex:1;min-width:180px}
+.investigation-history-trigger{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;min-width:0;text-align:left;background:white;border:1px solid #d4dfcd;padding:12px}
+.investigation-history-trigger>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.investigation-history-list{position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:20;max-height:min(420px,60vh);overflow-y:auto;overflow-anchor:none;background:white;border:1px solid #d4dfcd;border-radius:6px;box-shadow:0 8px 24px #31493022;padding:4px}
+.investigation-history-list>[role="option"]{display:block;width:100%;text-align:left;background:white;border:0;border-radius:4px;padding:10px;white-space:normal;overflow-wrap:anywhere;font-weight:400}
+.investigation-history-list>[aria-selected="true"]{background:#eaf0e6}
+.investigation-history-list>[role="option"]:focus{outline:2px solid #55764f;outline-offset:-2px;background:#eaf0e6}
+.investigation-history-list p{padding:8px;font-size:12px}
