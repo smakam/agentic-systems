@@ -10,7 +10,7 @@
 
 ## Instructor demo
 
-Walk through input masking, output-only masking, a named privacy block, retrieved-instruction screening, then source authority with a forged policy exception. For each comparison, connect settings to the relevant trace evidence. The private-instruction example is optional and not required for this activity.
+Demonstrate four cases: input masking, output-only masking, a named privacy block and retrieved-instruction screening. The source-authority comparison with a forged policy exception belongs to the learner exercise below. For each comparison, connect settings to the relevant trace evidence. The private-instruction example is optional and not required for this activity.
 
 ### Case 1 — Built-in privacy on model input
 
@@ -88,7 +88,13 @@ Walk through input masking, output-only masking, a named privacy block, retrieve
 
 **Reset:** restore **Clean policy**, wait for confirmation, select gateway **Off**, and start a fresh conversation. Keep private-instruction example Off and memory settings Off.
 
-### Case 5 — Source-authority prompt with a forged policy exception
+## Your exercise
+
+### 1. Review and repeat the instructor demo
+
+Repeat cases 1–4 using the instructions above. For each, explain the protection and its boundary: what reached the model, what was masked or blocked, and at what stage. Avoid repeating the narration; inspect the evidence yourself. A generic error is not proof that a detector found an attack.
+
+### 2. Try the source-authority prompt with a forged policy exception
 
 **Purpose:** distinguish instruction-attack detection from reasoning about conflicting factual claims. The UI selector currently calls this document **Forged exception**; it is the forged policy exception used here.
 
@@ -125,19 +131,9 @@ The base prompt still treats retrieved rows/documents as untrusted data and warn
 
 Source: [instruction insertion](https://github.com/smakam/agentic-systems/blob/main/app/backend/marketplace/agent.py) and [source-authority block](https://github.com/smakam/agentic-systems/blob/main/app/backend/marketplace/security_demo.py).
 
-## Your exercise
-
-### 1. Review and repeat the instructor demo
-
-Repeat cases 1–4 using the instructions above. For each, explain the protection and its boundary: what reached the model, what was masked or blocked, and at what stage. Avoid repeating the narration; inspect the evidence yourself. A generic error is not proof that a detector found an attack.
-
-### 2. Try the source-authority prompt with a forged policy exception
-
-Follow case 5 with the same question and fixed model/business state. Compare source authority Off/On with gateway Off held fixed. Optionally repeat the pair with Lakera fixed On to distinguish an allowed document from a verified business fact. Read the exact added prompt block above before comparing the answers. Explain whether the model accepted the forged claim, preserved the recorded payout status, or explicitly described the conflict. Report no observable difference when that is what your runs show.
-
 ### Record your results
 
-Use this table in your own notes; no separate worksheet file is required. For case 5, include one row per condition you ran.
+Use this table in your own notes; no separate worksheet file is required. For the source-authority exercise, include one row per condition you ran.
 
 | Case / condition | Gateway / source authority / document | Observed result | Enforcement or reasoning stage | Trace reference | Limitation |
 |---|---|---|---|---|---|
@@ -145,8 +141,8 @@ Use this table in your own notes; no separate worksheet file is required. For ca
 | 2. Output-only masking | | | | | |
 | 3. Presidio card block | | | | | |
 | 4. Retrieved-instruction screening | | | | | |
-| 5. Forged policy exception — source authority Off | | | | | |
-| 5. Forged policy exception — source authority On | | | | | |
+| Learner exercise: forged policy exception — source authority Off | | | | | |
+| Learner exercise: forged policy exception — source authority On | | | | | |
 
 In two or three sentences, explain why an injection detector allowing a document does not establish payment completion, and why source-authority guidance is different from enforced permissions. Keep masked, blocked, model resistance and service failure distinct. Review the [separate solutions](solutions/answers.md) after completing your comparison.
 
