@@ -15,7 +15,7 @@ Solutions use **solutions/answers.md** consistently. Instructor guides are for d
 | Agent loop | [Exercise](agent-loop/exercise.md) · [Answers](agent-loop/solutions/answers.md) |
 | Observability | [Exercise](observability/exercise.md) · [Answers](observability/solutions/answers.md) |
 | Evaluation | [Exercise](evaluation/exercise.md) · [Answers](evaluation/solutions/answers.md) · [Instructor guide](evaluation/exercise.md#instructor-demo) |
-| Guardrails security | [Exercise](guardrails-security/exercise.md) · [Answers](guardrails-security/solutions/answers.md) · [Instructor guide](guardrails-security/instructor-demo.md) |
+| Guardrails security | [Exercise](guardrails-security/exercise.md) · [Answers](guardrails-security/solutions/answers.md) · [Instructor guide](guardrails-security/exercise.md#instructor-demo) |
 | Model routing | [Exercise](model-routing/exercise.md) · [Answers](model-routing/solutions/answers.md) · [Instructor guide](model-routing/instructor-demo.md) |
 | Agent design patterns | [Exercise](agent-design-patterns/exercise.md) · [Answers](agent-design-patterns/solutions/answers.md) · [Instructor guide](agent-design-patterns/instructor-demo.md) |
 | Short and long term memory | [Exercise](short-and-long-term-memory/exercise.md) · [Answers](short-and-long-term-memory/solutions/answers.md) · [Instructor guide](short-and-long-term-memory/instructor-demo.md) · Test workspace: http://127.0.0.1:5179/ (`market_test`, Support, OpenAI Agents SDK) |

@@ -215,11 +215,11 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Learning objective:** Explain privacy, prompt injection, source authority, tool enforcement and protection boundaries through bounded examples.
 
-**Demo and learner practice:** Run input/output masking, a sensitive-card blocking case and a retrieved instruction-attack case. Distinguish detector decisions, model behavior, source-authority guidance and enforced read-only tools. Teach prevention, detection and response without claiming complete OWASP coverage.
+**Demo and learner practice:** Run input/output masking, a sensitive-card blocking case, a retrieved instruction-attack case and a source-authority Off/On comparison with a forged policy exception. Distinguish detector decisions, model behavior, source-authority guidance and enforced read-only tools. Teach prevention, detection and response without claiming complete OWASP coverage.
 
 **Workspace:** Test Support http://127.0.0.1:5179/, market_test; OpenAI Agents SDK, memory off and prescribed guardrail/source-authority settings. Local Langfuse marketplace-support. Use isolated policy fixtures and cleanup instructions.
 
-**Materials:** [Exercise](exercises/guardrails-security/exercise.md) · [Answers](exercises/guardrails-security/solutions/answers.md) · [Instructor demo](exercises/guardrails-security/instructor-demo.md)
+**Materials:** [Exercise](exercises/guardrails-security/exercise.md) · [Answers](exercises/guardrails-security/solutions/answers.md) · [Instructor demo](exercises/guardrails-security/exercise.md#instructor-demo)
 
 ## E. Advanced Agent Topics
 

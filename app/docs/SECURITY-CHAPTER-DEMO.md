@@ -4,7 +4,7 @@ Prepared October 7, 2026. This catalog maps our completed experiments to copy/pa
 
 ## Current course walkthrough
 
-The October 13 Chapter 15 package uses four existing UI cases: built-in input privacy, output-only privacy, Presidio card blocking and Lakera on retrieved content. Use the [numbered instructor guide](../../course/exercises/guardrails-security/instructor-demo.md), [learner exercise](../../course/exercises/guardrails-security/exercise.md), [worksheet](../../course/exercises/guardrails-security/worksheet.md) and separate solutions. The broader catalogue below preserves earlier experiments and optional supporting examples; it is not an instruction to run every case in the current chapter. No fresh security run was performed while authoring the package.
+The Chapter 15 package now covers five cases: built-in input privacy, output-only privacy, Presidio card blocking, Lakera on retrieved content and source authority with a forged policy exception. Use the [numbered instructor guide](../../course/exercises/guardrails-security/exercise.md#instructor-demo), [learner exercise](../../course/exercises/guardrails-security/exercise.md), [worksheet](../../course/exercises/guardrails-security/exercise.md#record-your-results) and separate solutions. The consolidated exercise guide contains prerequisites, the instructor demo, learner practice, the exact source-authority prompt difference and a results table. The broader catalogue below preserves historical experiments and optional supporting examples. The October 21 rehearsal outcomes are labeled user-reported in the saved evidence; documentation editing did not itself execute new model calls.
 
 ## What actually happened
 
