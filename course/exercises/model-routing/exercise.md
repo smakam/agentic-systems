@@ -24,6 +24,10 @@ The instructor then held the LLM classifier fixed and compared **Per conversatio
 
 **Your practice:** Part A repeats the classifier comparison with different questions and adds **Built-in heuristic v2**. Part B repeats **both scope conditions**, again holding the LLM classifier fixed. You are not defining a new model pool or changing routing code. See the [detailed instructor demo](instructor-demo.md) when needed.
 
+## Your practice
+
+Repeat the instructor demo with the different learner questions supplied below. Compare keyword and LLM routing, then compare per-conversation and per-question scope with the LLM classifier fixed. Also experiment with **Built-in heuristic v2** on the same learner questions. Use traces to document the tier, decision cause, actual model and reuse, then explain the routing flow from that evidence. The tables organize your own observations; no submission is required.
+
 ## Part A — Compare three classifiers
 
 Use these exact questions:
