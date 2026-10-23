@@ -23,18 +23,13 @@ Use this one question, without a clarification follow-up:
 5. Check the cited records and query scope: does a field describe the whole order, the seller's item, or its allocation/payout? Did the correction clarify the distinction without changing valid amounts or inventing unseen items?
 6. Open **Workflow trace** and inspect the draft/evidence passed to review, its feedback, the application branch, and the correction output. The reviewer has no tools; generator/correction can use read-only tools. Code permits one correction, with no second review.
 
-## If your run is already correct
+## If the reviewer requests no changes
 
-In the fresh verification, this exact seller-detail question produced the substantive clarification in **one of two hybrid runs**; the other draft was accepted. Do not keep rerunning until a mistake appears. An accepted draft is a valid observation, but does not itself demonstrate a correction.
+Fresh runs can differ. In two verification runs with this question, one draft needed correction and the other was accepted unchanged. Acceptance means GPT-5.4 requested no changes to Nano's original draft, so the correction stage was skipped.
 
-If your draft is accepted, inspect the [recorded successful seller correction](http://localhost:3000/project/marketplace-support/traces/d33e6c4b1d6dd6e6bae2602b3d214671). Compare its original draft, reviewer finding and final answer, clearly labelling that comparison as recorded. This gives every learner an actual correction to inspect without claiming a guaranteed live outcome.
+In the corrected run, Nano reported the right amounts but did not explain their different scopes: INR 7,596 was the whole order's buyer payment, INR 4,998 was Cedar's item total, and INR 4,498.20 was Cedar's net payout. GPT-5.4 flagged that missing distinction, and Nano added the explanation. The correction clarified the answer rather than changing the amounts.
 
-## Check your understanding
-
-- Which amounts cover the whole order and which cover the selected seller's item?
-- What exact omission or unsupported claim did the reviewer identify?
-- Did the final answer fix it, and which evidence supports that judgment?
-- What would remain unresolved if correction only suggested a query instead of executing it?
+If your reviewer requests no changes, inspect the [recorded seller correction](http://localhost:3000/project/marketplace-support/traces/d33e6c4b1d6dd6e6bae2602b3d214671), where that omission was identified and corrected. Compare its original draft, reviewer feedback and final answer. Label it as a recorded example; a live correction is not guaranteed, and no second review is performed after correction.
 
 An optional extra comparison can use Nano as reviewer, but it is not required. Read the separate [reference answers](solutions/answers.md) after inspecting the drafts and evidence.
 
