@@ -1,4 +1,6 @@
-# Chapter 17 demo verification
+# Chapter 17 — earlier demo verification
+
+This records the earlier accept/incomplete-correction rehearsal. The revised instructor and learner examples are documented in [success-rehearsal.md](success-rehearsal.md).
 
 - Focused controller tests: draft acceptance without correction, one correction, preservation of tool call/result pairs, exclusion of internal feedback from conversation history, reviewer failure without draft commit, shared deadline and approved model/workspace boundaries.
 - Frontend production build passed.

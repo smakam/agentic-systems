@@ -14,6 +14,8 @@ The instructor showed an accepted product lookup and a return-after-payout expla
 
 The learner case instead checks order-level versus seller-item-level claims. It also includes a follow-up, so context handoff is inspected within the same exercise rather than in a separate optional section.
 
+The detailed [instructor demo](instructor-demo.md) includes the return setup and trace walkthrough.
+
 ## Prepare
 
 1. Open [Test workspace](http://127.0.0.1:5179), sign in as `support` (`demo-marketplace`) and open **Support workspace**.
