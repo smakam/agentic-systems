@@ -40,16 +40,12 @@ All roles use the OpenAI Agents SDK. The generator and correction roles can use 
 
 This is the main correction example. A fresh rehearsal on 23 October 2026 showed Nano repeating the return status without explaining its cause; GPT-5.4 identified the missing post-payout rule, and Nano added the supported reason. A fresh run may already answer correctly or produce different feedback. Do not rerun until a desired mistake appears.
 
-### Prepare the business scenario once
+### Create the prepared scenario
 
-Use a new order in **Test workspace**. This setup deliberately creates simulated business events and advances the shared Test demo clock; it is not a support-agent action. Keep existing investigations and records; do not reset the workspace.
-
-1. As **buyer**, purchase one Desk Lamp. Note the new order ID.
-2. In **Orders & fulfillment**, use an authorized operator/seller account to dispatch and deliver that item's shipment.
-3. As **operator**, open **Seller settlement** and use **Advance demo clock 24h**. Confirm delivery occurred at least 24 hours before the new clock.
-4. For the new order's item, choose **Release payout** and confirm its status is **completed**. Do not use Simulate failure.
-5. Switch to **buyer** and request a return for that delivered item. Confirm the return is **manual_review**. The completed payout must precede the return request.
-6. Return to **Support workspace** as support. Use the actual new order ID in the question below; historical experiment order IDs are not guaranteed to exist here.
+1. In Test → Support workspace → **Agent design patterns**, click **Create return-after-payout scenario**.
+2. The app displays a new order ID, seller payout **completed**, and return **manual_review**. It also fills the question box. The button prepares a simulated history in a dedicated demo seller/product: captured payment, confirmed delivery, the 24-hour waiting period, completed payout, then the return request. Existing orders, their inventory/balances and the demo clock remain unchanged.
+3. Repeat clicks reuse a suitable prepared scenario. Start a new conversation when comparing models, then use **Use scenario question** to put the same order question back into the input if needed.
+4. Use the displayed order ID in every run; historical experiment IDs may not exist in this workspace. No manual purchase, account switching, payout action or clock advance is needed.
 
 ### Run and inspect
 
@@ -62,21 +58,15 @@ Use a new order in **Test workspace**. This setup deliberately creates simulated
 7. Verify the final explanation against payout and return records, event chronology, and the policy note. Neither an accepted draft nor a completed correction independently proves correctness.
 8. If the fresh draft is already complete, explain the accept path and show the recorded successful correction below rather than manufacturing an error.
 
-[Recorded successful return correction](http://localhost:3000/project/marketplace-support/traces/e4f50865dc8ad540661f4670538d7d24).
+[Recorded successful correction using the new Create scenario button](http://localhost:3000/project/marketplace-support/traces/ef30c8655cdaa281a4043e28fdf20da9).
+
+The UI-created scenario was also verified end to end: its hybrid draft omitted the post-payout cause and misinterpreted a scenario-audit event; review identified those issues, and correction added the completed-payout-before-return explanation with policy and timeline support. The separate Nano-only run mistook the order ID for a return ID and returned an empty lookup; this is another reason to compare the hybrid run's own draft and final answer rather than attribute differences between fresh runs solely to review.
 
 [Rehearsal setup, before/after summary and limits](../../authoring/chapter-17-agent-design/success-rehearsal.md).
 
 ### Optional limitation example
 
 The earlier order-1 question, **For order-1, which items can have their seller payout released at the current demo clock? Separate policy eligibility from current payout status**, exposed missing delivery evidence. Review withdrew unsupported eligibility claims, but correction did not retrieve the missing records. Keep this only as an explicitly incomplete correction, not the main success demonstration.
-
-## Case C — optional controlled model change
-
-1. Select **Generator only**, **Generator: GPT-5 Nano**, and repeat the prepared return question in a fresh conversation. Document its answer and evidence.
-2. Select **Hybrid · generate, review, correct**, keeping **Generator: GPT-5 Nano**. Choose **Reviewer: GPT-5 Nano** and repeat the same question.
-3. Change only **Reviewer** to **GPT-5.4** and repeat in the fresh conversation created by that change.
-4. Inspect role inputs, feedback and any correction. Changing reviewer settings also generates a fresh draft, so these live runs are not a matched-draft reviewer ablation. Explain the interactions; do not infer a quality ranking from one run.
-5. Learners may choose GPT-5.4 as generator too. The correction role always uses the selected generator model.
 
 ## Read the workflow in Langfuse
 

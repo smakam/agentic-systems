@@ -1,48 +1,41 @@
 # Agent Design Patterns — learner exercise
 
-## Workspace for this activity
+## Workspace and prerequisites
 
-Use the [Test workspace](http://127.0.0.1:5179), **Support workspace**, with the disposable **market_test** database. Inspect agent-role handoffs in [local Langfuse](http://localhost:3000), project **marketplace-support**. Select **Agent design demo** in this workspace, rather than the normal marketplace on port 5178.
+Use the [Test workspace](http://127.0.0.1:5179), **Support workspace**, **Agent design patterns**, with indexed documents and the clean policy corpus. Routing and long-term memory stay off. Keep business data unchanged during the investigations. No submission or upload is required.
 
-## Learner practice — separate order payment from seller payout
-
-Apply the instructor's generate/review/correct flow to a different problem: a seller-order lookup. Inspect whether the final answer distinguishes the buyer's full order payment from the selected seller's line item and payout. No submission or upload is required.
+The existing seeded **order-1** contains items from more than one seller, one full buyer payment and separate seller-item payouts. No scenario creation is needed for this learner case. Extra orders may exist; use the current records.
 
 ## Instructor demo recap
 
-The instructor showed an accepted product lookup and a return-after-payout explanation. In the verified return rehearsal, Nano omitted why manual review was required; GPT-5.4 identified the completed payout before the return, and Nano added that reason and the supporting policy.
+The [detailed instructor demo](instructor-demo.md) first shows an accepted product lookup, then a prepared return after the seller was paid. In the verified hybrid run, Nano omitted why manual review was required; GPT-5.4 identified the completed payout before the return, and Nano added that reason and the supporting policy. The Create scenario button prepares that instructor example.
 
-The learner case instead checks order-level versus seller-item-level claims. It also includes a follow-up, so context handoff is inspected within the same exercise rather than in a separate optional section.
+## Your task — inspect a payment-versus-payout correction
 
-The detailed [instructor demo](instructor-demo.md) includes the return setup and trace walkthrough.
+Use this one question, without a clarification follow-up:
 
-## Prepare
+**Show the orders for seller Cedar & Co. Include order payment, item quantity and seller payout details.**
 
-1. Open [Test workspace](http://127.0.0.1:5179), sign in as `support` (`demo-marketplace`) and open **Support workspace**.
-2. Check documents are indexed and the installed policy is clean; ask the operator to restore Clean policy if needed. Record the revision and demo clock; do not change business state.
-3. Use **Agent design demo**, not the Model routing demo. Changing its settings starts a fresh conversation. Memory and routing remain off in this lab.
+1. Select **Generator only**, **Generator: GPT-5 Nano**. Start a fresh conversation and ask the question. Inspect the answer and evidence.
+2. Select **Hybrid · generate, review, correct**, **Generator: GPT-5 Nano**, **Reviewer: GPT-5.4**. Ask exactly the same question in the fresh conversation created by changing the settings.
+3. Expand **Generate draft** and **Review draft**. Identify what, if anything, review considers unsupported or missing. The learning focus is whether order-level buyer payment is clearly separated from seller-item allocation and payout.
+4. Inspect **Workflow decision** and any **Correct draft**. Compare the hybrid run's own draft with its final answer. The separate generator-only answer is another fresh generation, not a matched baseline for claiming a reviewer effect.
+5. Check the cited records and query scope: does a field describe the whole order, the seller's item, or its allocation/payout? Did the correction clarify the distinction without changing valid amounts or inventing unseen items?
+6. Open **Workflow trace** and inspect the draft/evidence passed to review, its feedback, the application branch, and the correction output. The reviewer has no tools; generator/correction can use read-only tools. Code permits one correction, with no second review.
 
-## Practice — seller lookup and correction
+## If your run is already correct
 
-1. Select **Hybrid · generate, review, correct**, **Generator: GPT-5 Nano**, **Reviewer: GPT-5.4**. Start a fresh conversation.
-2. Ask: **Show orders for Cedar.**
-3. In the same conversation, ask: **I mean the seller.** If the first answer already resolved Cedar & Co. unambiguously, still inspect how the follow-up retains that scope; do not assume the first question must trigger clarification.
-4. Inspect the second turn's generator draft, review, application decision and any correction. In the reviewer input, locate the earlier question/answer, current question and original evidence. This is the context-handoff check.
-5. Compare its own draft with its final answer. Look especially for full-order buyer payment being presented as a seller-specific amount, or a seller's one delivered line being presented as the entire order.
-6. Check the query scope and evidence grain: order/payment fields describe the order; item, shipment and payout fields may describe only Cedar & Co.'s line item. State unknowns rather than inventing missing other-item details.
-7. Open **Workflow trace** and follow **Generate draft → Review draft → Workflow decision → Correct draft**, when correction is requested. The reviewer has no tools; generator/correction can call read-only tools. Code permits one correction and no second review.
+In the fresh verification, this exact seller-detail question produced the substantive clarification in **one of two hybrid runs**; the other draft was accepted. Do not keep rerunning until a mistake appears. An accepted draft is a valid observation, but does not itself demonstrate a correction.
 
-### Optional reviewer comparison
+If your draft is accepted, inspect the [recorded successful seller correction](http://localhost:3000/project/marketplace-support/traces/d33e6c4b1d6dd6e6bae2602b3d214671). Compare its original draft, reviewer finding and final answer, clearly labelling that comparison as recorded. This gives every learner an actual correction to inspect without claiming a guaranteed live outcome.
 
-Repeat the same two questions in fresh conversations with **Generator only: Nano**, or with **Nano generator + Nano reviewer**. Keep all other settings fixed. Each run produces a new draft, so this is practice observing behavior, not a controlled reviewer ranking.
+## Check your understanding
 
-### Review your observations
+- Which amounts cover the whole order and which cover the selected seller's item?
+- What exact omission or unsupported claim did the reviewer identify?
+- Did the final answer fix it, and which evidence supports that judgment?
+- What would remain unresolved if correction only suggested a query instead of executing it?
 
-- Did the draft distinguish whole-order payment from the seller's item and payout?
-- Did the reviewer receive enough prior context to resolve “the seller”?
-- What specific issue did review identify, and did the final answer actually fix it?
-- Was a missing fact retrieved, left unknown, or merely proposed as a next step?
+An optional extra comparison can use Nano as reviewer, but it is not required. Read the separate [reference answers](solutions/answers.md) after inspecting the drafts and evidence.
 
-The seeded order-1 contains multiple sellers; verify current records if the workspace has changed. Do not assume a correction is mandatory. A fresh draft may already handle the distinction correctly. Compare with the [reference answers](solutions/answers.md) after inspecting your run. The answer key links a clearly labelled recorded successful correction if your run takes a different branch.
-
-Finish by selecting **Off · normal support** and starting a fresh conversation.
+Finish with **Off · normal support** and a fresh conversation.

@@ -4,13 +4,13 @@ These are interpretations of evidence and verified examples, not mandatory outpu
 
 ## Instructor example: return after completed payout
 
-The prepared order's seller payout was completed before the return request. The return enters manual_review because post-payout returns require manual review and automatic recovery is not implemented. Manual review does not establish that the seller rejected it.
+The instructor button creates a dedicated simulated order whose seller payout was completed before the return request. The return enters manual_review because post-payout returns require manual review and automatic recovery is not implemented. Manual review does not establish that the seller rejected it.
 
 In the fresh 23 October 2026 rehearsal, Nano initially repeated the status without its cause. GPT-5.4 identified the missing reason using the existing payout/return evidence and policy note; Nano added the post-payout explanation and the absence of recorded rejection. Correction made no new tool calls because the relevant evidence was already available. This is a successful correction of the missing explanation, not an assertion that every possible defect was eliminated.
 
 ## Learner example: seller lookup
 
-Use the current evidence to resolve Cedar to the seller, retaining the prior conversation context. In the seeded order-1:
+The learner asks explicitly for seller Cedar & Co., including payment, quantity and payout details, in one question. No clarification follow-up is needed. In the seeded order-1:
 
 - The full buyer payment is 759,600 paise (INR 7,596.00). It covers the entire order.
 - Cedar & Co.'s item has quantity 2 at 249,900 paise per unit: gross 499,800 paise (INR 4,998.00).
@@ -18,13 +18,15 @@ Use the current evidence to resolve Cedar to the seller, retaining the prior con
 
 The buyer's payment is not Cedar & Co.'s payout. A seller-filtered query does not prove that its returned item is the whole order. Describe the seller's line separately from order-level facts and do not infer unseen other-item details. Check current revisions instead of copying seed values blindly.
 
-In the fresh rehearsal, Nano listed whole-order payment beside seller-item fields without explaining the different scopes. GPT-5.4 flagged that conflation. Nano's final answer separated the full-order payment from Cedar's line item, shipment and failed payout, addressing the identified issue. The reviewer also requested an explicit order identifier; the substantive correction was the evidence-grain distinction.
+In the fresh one-question verification, the exact seller-detail question was run twice. In one hybrid run, Nano displayed correct values but failed to explain why the full order payment exceeded Cedar's allocation. GPT-5.4 identified the missing order-versus-item distinction. Nano's final answer explicitly distinguished the entire order payment from Cedar's allocation gross and net payout, addressing that substantive omission. No new evidence was needed. The other draft was accepted; a correction is not guaranteed.
 
-[Recorded seller follow-up correction](http://localhost:3000/project/marketplace-support/traces/f5572a0bb76ce4e4d0308f62d2ecb08c).
+[Recorded one-question seller correction](http://localhost:3000/project/marketplace-support/traces/d33e6c4b1d6dd6e6bae2602b3d214671).
 
-[Recorded return correction](http://localhost:3000/project/marketplace-support/traces/e4f50865dc8ad540661f4670538d7d24).
+[Accepted repeat of the same seller question](http://localhost:3000/project/marketplace-support/traces/485b93fe673155b73e182372f5e28002).
 
-The isolated seller rehearsal included both a Cedar & Co. seller and a Cedar Desk product. A current workspace without that name collision may resolve the first question immediately. The learner goal remains the seller-versus-order scope distinction; do not claim the same initial mistake or ambiguity must recur.
+[Recorded correction on the UI-created instructor scenario](http://localhost:3000/project/marketplace-support/traces/ef30c8655cdaa281a4043e28fdf20da9).
+
+The earlier two-turn seller/name-collision rehearsal is historical context only. It is not required by this simplified learner exercise.
 
 ## Role handoffs and interpretation
 

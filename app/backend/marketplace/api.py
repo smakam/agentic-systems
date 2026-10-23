@@ -242,6 +242,23 @@ def agent_design_demo_options(user=Depends(identity)):
     from .agent_design_demo import enabled, MODELS
     return {'enabled': enabled(), 'models': MODELS if enabled() else {}}
 
+@app.post('/api/agent-design-demo/prepare-scenario')
+def agent_design_prepare_scenario(user=Depends(identity),db=Depends(db_session)):
+    role(user,'support','operator')
+    from .agent_design_scenario import prepare
+    from .security_demo import is_test
+    if not is_test(): raise HTTPException(404,'Scenario preparation is available only in Test')
+    try:
+        value=prepare(db,user.id)
+        db.commit()
+        return value
+    except ValueError as exc:
+        db.rollback();raise HTTPException(400,str(exc))
+    except OperationalError:
+        db.rollback();raise HTTPException(409,'Scenario preparation is busy; retry shortly')
+    except Exception:
+        db.rollback();raise HTTPException(503,'Scenario preparation failed; retry to recover or reuse it')
+
 class GatewayModelChange(BaseModel):
     model_config={'extra':'forbid'}
     choice:Literal['gpt54','nano','gpt5']
