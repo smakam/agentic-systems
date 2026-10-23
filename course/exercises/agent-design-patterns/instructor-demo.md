@@ -36,23 +36,43 @@ All roles use the OpenAI Agents SDK. The generator and correction roles can use 
 6. Find **Revision requested** and **Evidence sufficient**. In the saved rehearsal the reviewer accepted the draft, so no correction stage ran. A fresh run can differ; record what happened rather than assuming acceptance.
 7. Open **Workflow trace**. Follow the Langfuse instructions below.
 
-## Case B — inspect review feedback and optional correction
+## Case B — explain a return after the seller was paid
 
-1. Click **New conversation**; reselect **Hybrid · generate, review, correct**. Use **Generator: GPT-5 Nano**, **Reviewer: GPT-5.4**.
-2. Enter exactly: **For order-1, which items can have their seller payout released at the current demo clock? Separate policy eligibility from current payout status.**
-3. Click **Investigate** and wait. Read the generator draft before treating the final answer as validated.
-4. Inspect the reviewer’s issues, `needs_revision`, `sufficient_evidence` and correction instructions. Identify which evidence supports each criticism; the reviewer can also be wrong.
-5. If revision was requested, inspect **Correct draft**: it receives the generated conversation/evidence plus reviewer feedback, treated as a hypothesis. It can retrieve more evidence using the same read-only tools and generator model. There is at most one correction attempt and no second review.
-6. Compare the draft with the final answer. Separate a completed workflow from answer completeness or correctness. In the saved rehearsal, review flagged missing delivery evidence; correction replaced unsupported eligibility claims with uncertainty but did not retrieve the missing shipment records. That is useful for debugging, not a fully resolved answer.
-7. If this run accepts its draft, use the recorded correction example below. Do not keep rerunning until you get a desired branch.
+This is the main correction example. A fresh rehearsal on 23 October 2026 showed Nano repeating the return status without explaining its cause; GPT-5.4 identified the missing post-payout rule, and Nano added the supported reason. A fresh run may already answer correctly or produce different feedback. Do not rerun until a desired mistake appears.
 
-Recorded accept trace: [Open the saved accept-path trace](http://localhost:3000/project/marketplace-support/traces/571a0e717d74151b9f170e9306908b21).
+### Prepare the business scenario once
 
-[Open the saved correction-path trace](http://localhost:3000/project/marketplace-support/traces/21bc4727443dc318182405bcd99f6cf5). The stage summaries are saved in [verification/live-workflow-rehearsal.json](verification/live-workflow-rehearsal.json). Open its `trace_url`. It is explicitly a recorded example, not the learner’s live result.
+Use a new order in **Test workspace**. This setup deliberately creates simulated business events and advances the shared Test demo clock; it is not a support-agent action. Keep existing investigations and records; do not reset the workspace.
+
+1. As **buyer**, purchase one Desk Lamp. Note the new order ID.
+2. In **Orders & fulfillment**, use an authorized operator/seller account to dispatch and deliver that item's shipment.
+3. As **operator**, open **Seller settlement** and use **Advance demo clock 24h**. Confirm delivery occurred at least 24 hours before the new clock.
+4. For the new order's item, choose **Release payout** and confirm its status is **completed**. Do not use Simulate failure.
+5. Switch to **buyer** and request a return for that delivered item. Confirm the return is **manual_review**. The completed payout must precede the return request.
+6. Return to **Support workspace** as support. Use the actual new order ID in the question below; historical experiment order IDs are not guaranteed to exist here.
+
+### Run and inspect
+
+1. Select **Generator only**, **Generator: GPT-5 Nano**, in a fresh conversation.
+2. Ask: **Why is the return for <prepared order ID> in manual review? Did the seller reject it?** Replace the placeholder with the new order ID.
+3. Inspect whether the answer explains the cause rather than merely repeating the status. Keep this baseline; do not assume it must be wrong.
+4. Select **Hybrid · generate, review, correct**, **Generator: GPT-5 Nano**, **Reviewer: GPT-5.4**. Repeat exactly the same question in the fresh conversation created by the setting change.
+5. Inspect **Generate draft**, **Review draft**, **Workflow decision**, and any **Correct draft**. The hybrid generates a new draft; compare its own draft with its final answer to identify a correction. Comparing separate generator-only and hybrid runs does not isolate reviewer effects.
+6. In the verified rehearsal, the draft said the return was in manual review but omitted why. Review pointed to the completed payout before the return and the policy that post-payout returns require manual review because automatic recovery is not implemented. The correction added that explanation and stated that no seller rejection was recorded.
+7. Verify the final explanation against payout and return records, event chronology, and the policy note. Neither an accepted draft nor a completed correction independently proves correctness.
+8. If the fresh draft is already complete, explain the accept path and show the recorded successful correction below rather than manufacturing an error.
+
+[Recorded successful return correction](http://localhost:3000/project/marketplace-support/traces/e4f50865dc8ad540661f4670538d7d24).
+
+[Rehearsal setup, before/after summary and limits](../../authoring/chapter-17-agent-design/success-rehearsal.md).
+
+### Optional limitation example
+
+The earlier order-1 question, **For order-1, which items can have their seller payout released at the current demo clock? Separate policy eligibility from current payout status**, exposed missing delivery evidence. Review withdrew unsupported eligibility claims, but correction did not retrieve the missing records. Keep this only as an explicitly incomplete correction, not the main success demonstration.
 
 ## Case C — optional controlled model change
 
-1. Select **Generator only**, **Generator: GPT-5 Nano**, and repeat the Case B question in a fresh conversation. Document its answer and evidence.
+1. Select **Generator only**, **Generator: GPT-5 Nano**, and repeat the prepared return question in a fresh conversation. Document its answer and evidence.
 2. Select **Hybrid · generate, review, correct**, keeping **Generator: GPT-5 Nano**. Choose **Reviewer: GPT-5 Nano** and repeat the same question.
 3. Change only **Reviewer** to **GPT-5.4** and repeat in the fresh conversation created by that change.
 4. Inspect role inputs, feedback and any correction. Changing reviewer settings also generates a fresh draft, so these live runs are not a matched-draft reviewer ablation. Explain the interactions; do not infer a quality ranking from one run.

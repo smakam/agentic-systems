@@ -1,45 +1,42 @@
 # Agent Design Patterns — reference answers
 
-These are reference interpretations, not fixed text or mandatory branch outcomes. Model generation and review can vary; check current business data and the evidence in each run.
+These are interpretations of evidence and verified examples, not mandatory outputs. Fresh drafts and review decisions can vary. No submission is required.
 
-## Settings and expected role structure
+## Instructor example: return after completed payout
 
-- A1: one generator role, selected Nano model, read-only tool loop; no reviewer or correction.
-- A2: Nano generator → Nano reviewer → application decision → optional Nano correction.
-- A3: Nano generator → GPT-5.4 reviewer → application decision → optional Nano correction.
-- Optional Part B checks context handoff, not a new reviewer-quality comparison. It keeps Nano generator and GPT-5.4 reviewer through two questions in one conversation. The second question may use retained context, but current evidence must match the snapshot.
-- “Off” returns to normal support. “Generator only” changes the fixed demo generator model without adding review.
+The prepared order's seller payout was completed before the return request. The return enters manual_review because post-payout returns require manual review and automatic recovery is not implemented. Manual review does not establish that the seller rejected it.
 
-The generator passes its draft and original evidence to review, alongside the question/snapshot and relevant prior conversation context. The reviewer returns `needs_revision`, `issues`, `correction_instructions` and `sufficient_evidence`. Application code accepts the draft or makes at most one correction attempt. The correction receives the generated conversation and feedback, treated as a hypothesis, and uses the generator model. It can call read-only tools. The reviewer is an SDK Agent configured for one structured call with no tools and no golden answer.
+In the fresh 23 October 2026 rehearsal, Nano initially repeated the status without its cause. GPT-5.4 identified the missing reason using the existing payout/return evidence and policy note; Nano added the post-payout explanation and the absence of recorded rejection. Correction made no new tool calls because the relevant evidence was already available. This is a successful correction of the missing explanation, not an assertion that every possible defect was eliminated.
 
-## Business facts to check in the seeded workspace
+## Learner example: seller lookup
 
-For order-2, buyer payment is captured, Ceramic Mug Set quantity is two, shipment is pending and seller payout is held. Buyer payment received does not mean the seller was paid. The payout policy requires delivery confirmation and the stated hold, subject to the applicable return rules. A supported answer should cite both current records and applicable policy; catalog definitions alone do not prove a policy rule or current delivery status.
+Use the current evidence to resolve Cedar to the seller, retaining the prior conversation context. In the seeded order-1:
 
-For order-1, the seeded items are two Canvas Weekenders and two Desk Lamps. The recorded seller payout attempt for the first item failed, while the other item’s payout is held. A failed transfer is a recorded attempt outcome, not proof of policy ineligibility. Check the event history for the attempt and shipment/delivery records plus the applicable policy for any release-eligibility claim. Do not substitute a current payout row for a chronological account.
+- The full buyer payment is 759,600 paise (INR 7,596.00). It covers the entire order.
+- Cedar & Co.'s item has quantity 2 at 249,900 paise per unit: gross 499,800 paise (INR 4,998.00).
+- That seller-item payout is 449,820 paise (INR 4,498.20), recorded as failed; its shipment is delivered.
 
-Changed data can yield different valid facts. Grade evidence use and role interpretation against the current revision, not these seed facts alone.
+The buyer's payment is not Cedar & Co.'s payout. A seller-filtered query does not prove that its returned item is the whole order. Describe the seller's line separately from order-level facts and do not infer unseen other-item details. Check current revisions instead of copying seed values blindly.
 
-## How to interpret observations
+In the fresh rehearsal, Nano listed whole-order payment beside seller-item fields without explaining the different scopes. GPT-5.4 flagged that conflation. Nano's final answer separated the full-order payment from Cedar's line item, shipment and failed payout, addressing the identified issue. The reviewer also requested an explicit order identifier; the substantive correction was the evidence-grain distinction.
 
-- Accepted draft: reviewer returned `needs_revision=false`, code recorded `accept_draft`, and no correction stage was expected. This is not an independent correctness certificate.
-- Correction: `needs_revision=true`, code recorded `correct_once`, and the trace contains **Correct draft**. Compare its claims with the draft and evidence. Correction can preserve uncertainty or still miss facts.
-- Failed stage: name it and inspect the error trace. No successful hybrid completion should be claimed.
-- No difference between A2 and A3: valid observation; it does not prove reviewers are equivalent. Different outputs also do not isolate reviewer capability because fresh generator drafts were created for each run.
+[Recorded seller follow-up correction](http://localhost:3000/project/marketplace-support/traces/f5572a0bb76ce4e4d0308f62d2ecb08c).
 
-## Optional follow-up: what to inspect
+[Recorded return correction](http://localhost:3000/project/marketplace-support/traces/e4f50865dc8ad540661f4670538d7d24).
 
-In the second review input, “that order” should be understandable from the supplied prior context. Look for the earlier order reference, current question, original evidence and relevant conversation context. The lesson is whether each role received enough information; it is not a guarantee that the reviewer reasons correctly. Generator/correction may retrieve evidence, while the reviewer cannot. The one-correction limit still applies. This check is optional and requires no submission.
+The isolated seller rehearsal included both a Cedar & Co. seller and a Cedar Desk product. A current workspace without that name collision may resolve the first question immediately. The learner goal remains the seller-versus-order scope distinction; do not claim the same initial mistake or ambiguity must recur.
 
-## Recorded instructor rehearsal
+## Role handoffs and interpretation
 
-The simple order-2 lookup was accepted by GPT-5.4 review after Nano generation. The complex order-1 eligibility question was flagged for missing delivery evidence and unsupported conclusions. Nano correction made uncertainty explicit but did not retrieve the missing shipment data. The controller and role handoffs worked; the final business answer remained incomplete. These saved examples teach debugging, not a performance ranking.
+The generator passes question, draft, original evidence and relevant prior conversation context to the reviewer. Structured feedback goes to application code. Code accepts the draft or invokes a separate correction agent with that feedback and the generated conversation; correction uses the selected generator model. Generator and correction can use read-only tools. The reviewer makes one structured call without tools or a golden answer. There is no second review.
 
-## Self-review points
+- Accepted draft: no correction is expected; review acceptance is not a correctness certificate.
+- Corrected draft: compare the actual change with source evidence, not merely the “completed” badge.
+- Failed stage: report it as failed, not an accepted or successfully corrected answer.
+- No change: a valid outcome if the draft was already supported. Different fresh drafts prevent a causal model ranking from one comparison.
 
-1. The handoff should include question, snapshot, draft and source evidence, followed by specific structured feedback. Passing only prose loses the evidence contract.
-2. Code owns the branch and bound. Generator/correction have read-only tools; the reviewer has none. One role can contain several model calls, so generation count is not agent count.
-3. A cited claim must match its evidence and time/scope. Missing facts should be retrieved or clearly stated as unknown; feedback is not authority.
-4. Describe observed changes and limits. Avoid “hybrid is always better”, “the reviewer approved so it is correct”, or treating one live repetition as a controlled benchmark.
+## Limitations retained for teaching
 
-See [verification](../verification.md) for what was actually checked. The historical eighteen-case reviewer ablation and seller-delegation study are separate evidence from this live lab.
+The earlier order-1 eligibility example remained incomplete: review caught missing shipment evidence, but correction only acknowledged uncertainty. The 23-hour fresh rehearsal already calculated timing correctly; review removed unsupported monitoring/automatic-release promises rather than fixing elapsed time. Neither is presented as the main successful correction.
+
+See the [rehearsal summary](../../../authoring/chapter-17-agent-design/success-rehearsal.md) for setup and observations. The eighteen-case historical study is separate from these fresh live-path rehearsals.

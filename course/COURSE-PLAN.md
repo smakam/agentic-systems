@@ -239,7 +239,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 **Learning objective:** Choose workflow, single-agent or hybrid control, then justify additional roles through independent work, distinct evidence/capability or system boundaries.
 
-**Demo and learner practice:** Teach workflow patterns before multi-agent roles, concrete examples, four linked use cases and A2A across systems. Present the untested serial records/policy split separately from the measured seller-worker and reviewer studies. Demo a hybrid multi-agent workflow: generation, evidence/context handoff, structured review, code-controlled branch and one optional correction. Learners repeat the demo with another question and compare Nano alone, Nano review and GPT-5.4 review. An optional follow-up checks context handoff to the reviewer.
+**Demo and learner practice:** Teach workflow patterns before multi-agent roles, concrete examples, four linked use cases and A2A across systems. Present the untested serial records/policy split separately from the measured seller-worker and reviewer studies. Demo a hybrid multi-agent workflow: generation, evidence/context handoff, structured review, code-controlled branch and one optional correction. The instructor uses a verified return-after-payout explanation correction. Learners use a seller follow-up to distinguish whole-order payment from seller-item payout and inspect context handoffs within that sequence; reviewer-model comparisons are optional.
 
 **Workspace:** Test workspace http://127.0.0.1:5179/, market_test; Support with OpenAI Agents SDK and Agent design demo controls. Routing and memory off. Follow Generate draft, Review draft, Workflow decision and optional Correct draft in local Langfuse.
 
