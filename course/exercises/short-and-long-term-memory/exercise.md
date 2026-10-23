@@ -70,7 +70,7 @@ Repeat C1–C4 separately for each provider.
 
 Deleting a record does not erase old chat history. Restating a preference in a later Mem0 conversation can extract it again; inspect remaining entries and extraction jobs before deciding that forgetting failed.
 
-## Part D: historical checkpoint and procedural guidance
+## Part D: episodic checkpoints and procedural checklists
 
 **Memory-type clarification:** A saved historical investigation checkpoint is **episodic memory**: it records where a past investigation stopped so a later conversation can resume it. A reusable investigation checklist is **procedural memory**: it describes how to carry out the task.
 
