@@ -72,6 +72,8 @@ Deleting a record does not erase old chat history. Restating a preference in a l
 
 ## Part D: historical checkpoint and procedural guidance
 
+**Memory-type clarification:** A saved historical investigation checkpoint is **episodic memory**: it records where a past investigation stopped so a later conversation can resume it. A reusable investigation checklist is **procedural memory**: it describes how to carry out the task.
+
 Select **Internal memory**, memory reads on. Enable writes only for each save.
 
 1. Save **“Remember a learner checkpoint: we previously investigated order-2. Next time, recheck its current payout records rather than assuming the earlier status.”** Inspect the episodic kind and source.
