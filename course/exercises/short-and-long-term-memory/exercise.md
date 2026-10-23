@@ -10,7 +10,16 @@ Keep **Model routing → Normal support model**, **Agent design → Off · norma
 
 Use **Refresh memory status** for the latest result and **Memory extraction trace** to inspect the background operation. Record the visible label: **Memory save queued**, **Saving memories in the background**, **Memory save complete**, **Memory save failed**, or **No new memories to save**. Queued and provider-pending share a UI label; the extraction trace supplies the more precise phase.
 
-Mem0 must be configured by the course operator. If it is marked unavailable, complete the Internal cases and document the external setup limitation. Do not use a provider error as evidence that no memory exists.
+### Mem0 API-key setup (before the Mem0 cases)
+
+Internal memory needs no Mem0 account or key. To run the hosted Mem0 cases in your own installation:
+
+1. Sign in to [Mem0 Platform and create a dashboard API key](https://docs.mem0.ai/platform/quickstart). Check your account quota and billing before running the lab.
+2. In the repository's `app` directory, open the existing private, gitignored `.env` file in your editor. Add `MEM0_API_KEY=your-own-key`, replacing the placeholder with your dashboard key. Keep the key out of chat, screenshots, frontend code and committed files.
+3. When no investigation is running, apply the configuration from `app` with `./scripts/start.sh`. No separate host Mem0 SDK installation is required; the backend calls the hosted service.
+4. Refresh the Test workspace, open Support with **OpenAI Agents SDK**, and confirm **Mem0** is available in the memory-provider selector. An available selector confirms configuration, not successful authentication or extraction; verify those during the Mem0 cases below.
+
+For a shared course workspace, the course operator configures the backend key. If Mem0 is unavailable, complete the Internal cases and record the setup limitation. Do not interpret a provider error as proof that no memory exists. See [local setup: Mem0 configuration](../../../app/LOCAL-SETUP.md#optional-mem0-setup-for-chapter-18) for the complete setup and verification sequence.
 
 **Preference retrieval and precedence:** both provider paths instruct the agent to look for relevant saved preferences before answering a business question. The model controls whether and how it calls search, so inspect the actual trace rather than assuming a call. A retrieved relevant format preference takes precedence over the default answer layout; an explicit instruction in the current question takes precedence over the saved preference. Current business evidence still governs factual claims.
 
