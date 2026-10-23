@@ -64,10 +64,6 @@ The UI-created scenario was also verified end to end: its hybrid draft omitted t
 
 [Rehearsal setup, before/after summary and limits](../../authoring/chapter-17-agent-design/success-rehearsal.md).
 
-### Optional limitation example
-
-The earlier order-1 question, **For order-1, which items can have their seller payout released at the current demo clock? Separate policy eligibility from current payout status**, exposed missing delivery evidence. Review withdrew unsupported eligibility claims, but correction did not retrieve the missing records. Keep this only as an explicitly incomplete correction, not the main success demonstration.
-
 ## Read the workflow in Langfuse
 
 1. Use the answer’s **Workflow trace** link, rather than trying to identify a run by model name alone.
