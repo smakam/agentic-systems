@@ -4,7 +4,7 @@
 
 **Reviewer-facing outline:** [Course outline for feedback](https://docs.google.com/document/d/1UFUyWdsYq-mIXusY0pakXXvWOXQOmBry/edit).
 
-**Owner:** Sreenivas Makam. Chapters 1–21 contain the current reviewed lesson decisions. Each platform lesson states its verified behavior and remaining preparation limits. Implementation history belongs in [MILESTONE-LOG.md](../MILESTONE-LOG.md); application requirements belong in [SPECIFICATION.md](../SPECIFICATION.md).
+**Owner:** Sreenivas Makam. Chapters 1–21 contain the current reviewed lesson decisions; Chapter 22 is a new production-readiness review draft. Each platform lesson states its verified behavior and remaining preparation limits. Implementation history belongs in [MILESTONE-LOG.md](../MILESTONE-LOG.md); application requirements belong in [SPECIFICATION.md](../SPECIFICATION.md).
 
 ## Positioning
 
@@ -50,7 +50,7 @@ Sreenivas owns all video work. Non-video preparation is in draft review; account
 
 ## Chapter map
 
-Six sections and twenty-one chapters. Chapters may contain several short lectures.
+Six sections and twenty-two chapters. Chapters may contain several short lectures.
 
 | Section | Chapters | Focus |
 |---|---|---|
@@ -59,7 +59,7 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 | C | 6–12 | Core Components |
 | D | 13–15 | Observability, Evaluation and Security |
 | E | 16–18 | Advanced Agent Topics |
-| F | 19–21 | Agentic Platforms |
+| F | 19–22 | Agent Platforms and Production Readiness |
 
 ## A. Course Introduction
 
@@ -269,13 +269,13 @@ Six sections and twenty-one chapters. Chapters may contain several short lecture
 
 ---
 
-## F. Agentic Platforms
+## F. Agent Platforms and Production Readiness
 
 Use familiar support tasks to compare component ownership, capabilities, costs, engineering effort and control. The standalone Google and Lyzr Basics agents use the same fictional order source through different native mechanisms. Their optional cloud integrations use business MCP/data boundaries. Disclose model, prompt, context, tool, fixture and hosting differences before comparing outcomes.
 
 **Orientation:** Recap the SDK, Google and Lyzr approaches, then compare cloud providers, model-provider platforms, framework-associated platforms and integrated builders. Map their capabilities onto models, execution frameworks, managed runtime/services, builders and governance. These categories overlap; model choice, deployment choice and governance over existing agents are separate decisions.
 
-**Teaching material:** The combined Chapter 21: Choosing an Agent Platform deck and speaker notes hold platform landscape/customer fit, component ownership and decision criteria. Historical implementation evidence remains in [MILESTONE-LOG.md](../MILESTONE-LOG.md); platform-specific setup remains in the relevant chapter materials.
+**Teaching material:** Chapter 21: Choosing an Agent Platform holds platform landscape/customer fit, component ownership and decision criteria. Chapter 22: Production Readiness for Agent Systems closes the section with an end-to-end readiness review. Historical implementation evidence remains in [MILESTONE-LOG.md](../MILESTONE-LOG.md); platform-specific setup remains in the relevant chapter materials.
 
 ### 19. Google Gemini Enterprise Agent Platform
 
@@ -298,7 +298,7 @@ Use familiar support tasks to compare component ownership, capabilities, costs, 
 
 ### 21. Choosing an Agent Platform
 
-**Reviewed closing lesson:** A 13-slide synthesis of the approaches used in the course, current platform capabilities and a practical selection method. This is a documentation-based comparison and decision exercise, without another deployment lab.
+**Reviewed platform-selection lesson:** A 13-slide synthesis of the approaches used in the course, current platform capabilities and a practical selection method. This is a documentation-based comparison and decision exercise, without another deployment lab.
 
 - **Learning objective:** Match application needs to platform capabilities, component ownership, operating responsibility and cost. Distinguish an agent framework from an integrated agent platform and a provider-managed harness.
 - **Provider types and fit:** Cloud platforms (Google Agent Platform, AWS Bedrock AgentCore, Microsoft Foundry Agent Service); model-provider platforms (OpenAI Agents API, Claude Managed Agents); framework-associated platforms (LangGraph/LangSmith Deployment, CrewAI); integrated builders (Lyzr Agent Studio, Dify). Prior cloud/model/framework commitments and reduced assembly needs guide a shortlist; private/self-hosted choices depend on the actual product edition.
@@ -306,15 +306,25 @@ Use familiar support tasks to compare component ownership, capabilities, costs, 
 - **Integration and costs:** Use a stable application contract with provider-specific runtime adapters; reuse MCP at the business-tool boundary while retaining backend permissions. Compare inference, execution, persistence, tools/networking, observability/evaluation, subscriptions/licenses and explicit team costs for development, integration, maintenance and on-call support.
 - **Selection process:** State the task, acceptable failures and hard constraints; shortlist two options; compare responsibilities, data paths and total cost; run the same useful trial; decide and record unknowns. A separate conditional flowchart maps those requirements and prior-stack preferences to provider types and named product candidates.
 - **Learner exercise:** Write a short decision using requirements, a two-option component-ownership comparison and a recommendation supported by sources, tradeoffs and remaining validation. The [learner worksheet](exercises/choosing-an-agent-platform/exercise.md) and [separate reference answers](exercises/choosing-an-agent-platform/solutions/answers.md) are in the exercise package; speaker notes retain the instructor walkthrough. No new cloud account or deployment is required.
-- **Closing:** A concise Recap, with the optional action to apply the decision method to the learner's own agent. There is no following chapter.
+- **Closing:** A concise Recap, with the optional action to apply the decision method to the learner's own agent. Introduce Chapter 22: Production Readiness for Agent Systems.
 - **Evidence boundary:** SDK/Google/Lyzr results are bounded integration evidence; the other offerings use dated official documentation. Recheck account/region/deployment options and commercial terms. Different models, prompts, contexts, tools, fixtures and memory policies prevent a universal winner claim.
 - **Materials:** [Chapter 21 deck](https://docs.google.com/presentation/d/17AXM8BjDRNuc53p1NGmcE9Mh8lK7cMfF/edit) · [Speaker notes](https://drive.google.com/file/d/1Jbn7KL5nADFuwEbXiMqPhlfZqcT1pTC_/view) · [HTML review](https://drive.google.com/file/d/1ebBuCxTN_8j5pXhOikqODQebKyM3jmxc/view). Historical platform experiments remain in [MILESTONE-LOG.md](../MILESTONE-LOG.md).
+
+### 22. Production Readiness for Agent Systems
+
+**Learning objective:** Assess whether a complete agent service is ready to release and operate, using explicit responsibilities, controls and evidence rather than a successful demonstration alone.
+
+**Core topics:** Organize production readiness around prepare, release and operate. Cover authoritative and fresh data, quality, governed access, lineage, business ontology and data contracts; identity, tenant isolation, least privilege, action approval and human handoff; idempotency, durable execution state and reconciliation after uncertain outcomes. Explain versioned code/prompts/models/tools/configuration, CI evaluation gates, staging, gradual rollout, dependency compatibility and tested rollback. Measure cost per successful task across models, retries, tools, retrieval, memory, infrastructure and operating overhead; set run/tenant/service budgets, alerts and enforced responses. Cover queues, concurrency, autoscaling, provider quotas, database/tool bottlenecks, backpressure and quality/latency/cost under realistic load. Finish with operational ownership, incident response, privacy/retention, capability disablement and an evidence-based release, limited-pilot or hold decision.
+
+**Teaching approach:** A conceptual closing chapter using the proposed transition from a read-only marketplace support investigator to a refund-capable service. Earlier observability, evaluation, security, runtime and platform lessons supply the building blocks. The refund-action scenario illustrates production design requirements; it is not an implemented lab capability or a claim of production certification. No hands-on lab, deployment, exercise package or submission is required. The readiness checklist is a presenter-led synthesis.
+
+**Materials:** [Chapter 22 slides](https://docs.google.com/presentation/d/1P0IW1Ltw3o0_1duHyDv4jQ4bnF8cddac-w4ucCTTmec/edit) · [HTML review](https://drive.google.com/file/d/15uuM_a1GA_YW-fofIMdLdphBmRYF4UL5/view) · [Speaker notes](https://drive.google.com/file/d/1tSLX9n4pHjoXeJVw3-qH5sWNgPjbNpyv/view) · [Chapter folder](https://drive.google.com/drive/folders/1MPyU64xnSKhNxvs500bS_WMQXHlfcUqA). Sources and evidence boundaries are retained in the speaker notes; provider-specific limits and supported features require current verification.
 
 ---
 
 ## Delivery and release checks
 
-The required release retains all six sections and twenty-one chapters, including multi-agent design and memory. Google and Lyzr are the hands-on platform tracks; the closing lesson uses documentation, course evidence and a platform-decision exercise. Additional AWS/Claude/Microsoft/OpenAI managed-runtime deployment labs are outside this release.
+The required release retains all six sections and twenty-two chapters, including multi-agent design, memory and production readiness. Google and Lyzr are the hands-on platform tracks; Chapter 21 uses documentation, course evidence and a platform-decision exercise, while Chapter 22 is a conceptual readiness synthesis without a hands-on lab. Additional AWS/Claude/Microsoft/OpenAI managed-runtime deployment labs are outside this release.
 
 Before recording and release, rehearse the written setup on a clean machine, verify current model availability and lab costs, and provide saved evidence for learners limiting paid calls. Record and edit chapter lectures after their materials and learner paths are reviewed. Record the welcome last; agree the separate promotional video’s content before recording it. Managed-platform lessons need dated sources and current setup checks.
 
