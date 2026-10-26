@@ -1,6 +1,6 @@
 # Inside AI Agent Systems: From Components to Platforms
 
-**Subtitle:** Understand, build and evaluate AI agents through hands-on experiments, and choose the right platform for your needs.
+**Subtitle:** Understand, build and evaluate AI agents through hands-on experiments, explore key production considerations, and choose the right platform for your needs.
 
 **Reviewer-facing outline:** [Course outline for feedback](https://docs.google.com/document/d/1UFUyWdsYq-mIXusY0pakXXvWOXQOmBry/edit).
 
