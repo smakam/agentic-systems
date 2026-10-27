@@ -17,17 +17,7 @@ Complete [setup-guide.md](../../setup/google-agent-platform/setup-guide.md) firs
 
 ## Optional practice: Marketplace support agent
 
-Follow the linked full cloud setup below for your own resources, then:
-
-1. Open your chat application connected to your hosted ADK deployment and business MCP backend. [Marketplace agent code](../../../app/google/marketplace_google/agent.py).
-2. Choose a confirmed order in your backend. Ask for products, payment and payout status, then a follow-up policy/why question that matches its actual state.
-3. Inspect business and policy tool results, final evidence, session continuity, native trace and logs. Explain what the separate backend provides that the Basics fixture does not.
-
-## Optional full cloud integration
-
-The remainder is an adventurous extension. It connects a cloud chat application and business backend/data to the separate Google-hosted agent. It is not required to understand the standalone Basics lesson.
-
-## Environment and starting point
+### Setup and starting point
 
 Use your **own Google Cloud project and separately identified lab resources** for provisioning. Complete [app/CLOUD-SETUP.md](../../../app/CLOUD-SETUP.md) first: your cloud chat/backend, business MCP and database must already work. Then follow [Google Platform Plan](../../GOOGLE-PLATFORM-PLAN.md) steps 1–6: configure your marketplace ADK agent and MCP secret, create or update your own compatible runtime, verify it in Playground, connect the cloud chat backend, and verify end to end. The standalone Basics agent has no business MCP tools and is not the deployment to update. These guides contain the commands; this exercise does not duplicate their deployment sequence.
 
@@ -35,18 +25,16 @@ The current instructor deployment has verified cloud acceptance. The cloud setup
 
 Do not update the instructor's Marketplace Support ADK Lab or Support Agent Basics deployment. A `--backend cloud` update intentionally changes the target of a managed agent; choosing Google runtime in the marketplace UI does not switch that deployed target.
 
-## What to do
+### Practice
 
-1. Verify your already completed Cloud Setup: the cloud marketplace UI/backend, authenticated business MCP endpoint and database/policy store must be working. Record their locations; do not redeploy the stack for this exercise.
-2. Follow [Google Platform Plan](../../GOOGLE-PLATFORM-PLAN.md) to create your own marketplace ADK deployment or update an existing compatible deployment you own. Bind its runtime identity to your cloud MCP secret and endpoint. Keep model endpoint, runtime/session region and access permissions explicit.
-3. Confirm the selected deployed agent's URL/secret profile in deployment metadata. Record the resource names without secret values.
-4. Open your marketplace's Support interface, select **Google hosted runtime**, and start a fresh conversation. Ask **“Show the items and quantities for order-2.”** Check the answer against the tool evidence from your own fixture.
-5. In the same conversation ask **“What is their total quantity?”** Inspect the preserved order context and any fresh tool calls. Then try the follow-up in a new conversation and record whether it asks which order you mean.
-6. Inspect the native Google session, tool events and trace for that run. If your cloud stack has Langfuse enabled, compare the application boundary observation with native platform-internal events. The presence of one does not prove the other is configured.
+1. Open your marketplace Support interface and select **Google ADK**. Use your own hosted Marketplace agent connected to the business MCP backend. [Marketplace agent code](../../../app/google/marketplace_google/agent.py).
+2. Start a fresh conversation and ask **“What is the status of order-1?”**, substituting a confirmed order ID from your backend if needed. Compare the answer with the actual tool evidence.
+3. In the same conversation ask **“What is the payout status for this order?”** Inspect the retained order context and supporting evidence.
+4. Open the corresponding Marketplace agent session in your Google console. Inspect the native model/tool trace and runtime logs. If Langfuse is configured, optionally compare the application trace with Google's internal execution trace.
 
-If you only observe the instructor's full-stack demonstration, label your submission **observation only** rather than claiming you deployed the system.
+If you observe the instructor rather than deploying your own system, label your observations **observation only**.
 
-## What to document
+### What to document
 
 | Observation | What to inspect and record |
 |---|---|
