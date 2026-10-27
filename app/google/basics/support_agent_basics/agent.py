@@ -6,6 +6,7 @@ from google.adk.agents import Agent
 from google.adk.models import Gemini
 from google.adk.tools.preload_memory_tool import PreloadMemoryTool
 from .tools import lookup_order
+from .preference_memory import remember_preference
 
 APP_NAME = 'support_agent_basics'
 
@@ -21,7 +22,7 @@ def build_agent():
                      client_kwargs={'enterprise':True,'location':os.environ.get('GOOGLE_MODEL_LOCATION','us')}),
         description='Standalone support lesson with fictional packaged order data',
         instruction=Path(__file__).with_name('instructions.txt').read_text(),
-        tools=[lookup_order,OptionalMemory()])
+        tools=[lookup_order,remember_preference,OptionalMemory()])
 
 def build_app():
     # Managed Sessions/Memory Bank are selected by AdkApp after deployment.

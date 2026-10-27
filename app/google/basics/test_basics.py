@@ -47,7 +47,7 @@ class BasicsTests(unittest.TestCase):
         self.assertTrue((package/'orders.json').is_file());self.assertTrue((package/'instructions.txt').is_file())
         source=(package/'agent.py').read_text()
         self.assertNotIn('McpToolset',source);self.assertNotIn('marketplace_google',source)
-        self.assertIn('tools=[lookup_order,OptionalMemory()]',source)
+        self.assertIn('tools=[lookup_order,remember_preference,OptionalMemory()]',source)
     def test_creation_refuses_existing_basics_manifest(self):
         with patch.object(deploy.MANIFEST.__class__,'exists',return_value=True):
             with self.assertRaises(SystemExit):deploy.main()
@@ -116,3 +116,73 @@ class VerificationPredicatesTests(unittest.TestCase):
         self.assertTrue(check_case('same_session_followup',result))
         result['retained_lookup_evidence']['session']='other'
         self.assertFalse(check_case('same_session_followup',result))
+
+class PreferenceSaveTests(unittest.IsolatedAsyncioTestCase):
+    def context(self, text, error=None):
+        from types import SimpleNamespace
+        from unittest.mock import AsyncMock
+        from google.genai import types
+        return SimpleNamespace(user_content=types.Content(role='user',parts=[types.Part(text=text)]),
+                               add_events_to_memory=AsyncMock(side_effect=error))
+
+    async def test_explicit_request_sends_only_requested_preference(self):
+        from support_agent_basics.preference_memory import remember_preference
+        ctx=self.context('Please remember: I prefer answers in a compact table. Also what is order-demo-1?')
+        result=await remember_preference('I prefer answers in a compact table.',ctx)
+        self.assertEqual(result['status'],'generation_requested')
+        events=ctx.add_events_to_memory.call_args.kwargs['events']
+        self.assertEqual(len(events),1)
+        self.assertEqual(events[0].author,'user')
+        self.assertEqual(events[0].content.parts[0].text,'I prefer answers in a compact table.')
+        self.assertNotIn('order-demo-1',str(events))
+
+    async def test_no_save_without_current_explicit_authorization(self):
+        from support_agent_basics.preference_memory import remember_preference
+        for message in ['I prefer answers in a compact table.','Do not remember: I prefer answers in a compact table.',
+                        'What is the payout status for order-demo-1?']:
+            ctx=self.context(message)
+            result=await remember_preference('I prefer answers in a compact table.',ctx)
+            self.assertFalse(result['generation_requested']);ctx.add_events_to_memory.assert_not_called()
+
+    async def test_cannot_invent_preference_or_save_business_status(self):
+        from support_agent_basics.preference_memory import remember_preference
+        for message,preference in [('Remember my format.','I prefer detailed tables.'),
+                                   ('Remember that order-demo-1 is held.','order-demo-1 is held')]:
+            ctx=self.context(message);result=await remember_preference(preference,ctx)
+            self.assertFalse(result['generation_requested']);ctx.add_events_to_memory.assert_not_called()
+
+    async def test_disabled_and_provider_failure_are_not_success(self):
+        from support_agent_basics.preference_memory import remember_preference
+        ctx=self.context('Remember: I prefer brief answers.')
+        with patch.dict('os.environ',{'GOOGLE_MEMORY_ENABLED':'false'}):
+            result=await remember_preference('I prefer brief answers.',ctx)
+        self.assertFalse(result['generation_requested']);ctx.add_events_to_memory.assert_not_called()
+        ctx=self.context('Remember: I prefer brief answers.',RuntimeError('private provider detail'))
+        result=await remember_preference('I prefer brief answers.',ctx)
+        self.assertEqual(result['status'],'generation_unconfirmed');self.assertNotIn('private',str(result))
+
+    async def test_real_adk_context_scopes_memory_to_trusted_user(self):
+        from types import SimpleNamespace
+        from unittest.mock import AsyncMock
+        from google.adk.tools import ToolContext
+        from google.adk.sessions import Session
+        from google.genai import types
+        from support_agent_basics.preference_memory import remember_preference
+        service=SimpleNamespace(add_events_to_memory=AsyncMock())
+        session=Session(id='owned-session',app_name='support_agent_basics',user_id='trusted-user')
+        invocation=SimpleNamespace(session=session,memory_service=service,
+            user_content=types.Content(role='user',parts=[types.Part(text='Remember: I prefer brief answers.')]))
+        ctx=ToolContext(invocation)
+        result=await remember_preference('I prefer brief answers.',ctx)
+        self.assertTrue(result['generation_requested'])
+        call=service.add_events_to_memory.call_args.kwargs
+        self.assertEqual((call['user_id'],call['app_name'],call['session_id']),
+                         ('trusted-user','support_agent_basics','owned-session'))
+
+    def test_agent_exposes_context_only_save_tool(self):
+        from google.adk.tools import FunctionTool
+        from support_agent_basics.agent import build_agent
+        agent=build_agent()
+        tool=next(t for t in agent.tools if getattr(t,'__name__','')=='remember_preference')
+        declaration=FunctionTool(func=tool)._get_declaration()
+        self.assertEqual(set(declaration.parameters_json_schema['properties']),{'preference'})
