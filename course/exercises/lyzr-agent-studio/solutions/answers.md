@@ -31,4 +31,4 @@ Use three cost categories: model inference paid to the model provider under curr
 
 Google Cloud operates the deployed application infrastructure and database services; Lyzr runs the hosted agent. You retain source quality, business authorization, identity and integration responsibilities. Record what you actually observed and any limits; the fresh-project learner setup has not been rehearsed end to end. Cleanup applies only to your own resources.
 
-Use the [Basics setup guide](../../../setup/lyzr-agent-platform/setup-guide.md), [Lyzr cloud integration guide](../../../LYZR-PLATFORM-PLAN.md), and [instructor walkthrough](../instructor-demo.md) for the detailed steps. Native memory reference experiments are separate from this exercise.
+Use the [Basics setup guide](../../../setup/lyzr-agent-platform/setup-guide.md), [Lyzr cloud integration guide](../../../LYZR-PLATFORM-PLAN.md) for the detailed steps. The presenter walkthrough remains in the chapter speaker notes.

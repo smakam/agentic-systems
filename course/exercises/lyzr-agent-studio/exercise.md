@@ -2,7 +2,7 @@
 
 ## Core practice: Basics in Playground
 
-Complete the [Basics setup guide](../../setup/lyzr-agent-platform/setup-guide.md), or observe the instructor and label your observations accordingly. The supplied fictional orders become an indexed Knowledge Base attached to your **Support Agent Basics** agent. Role, goal, instructions and model are part of creating that agent; native memory and guardrails are optional features configured separately. Follow the [instructor walkthrough](instructor-demo.md) for the UI path.
+Complete the [Basics setup guide](../../setup/lyzr-agent-platform/setup-guide.md), or observe the instructor and label your observations accordingly. The supplied fictional orders become an indexed Knowledge Base attached to your **Support Agent Basics** agent. Role, goal, instructions and model are part of creating that agent; native memory and guardrails are optional features configured separately. The setup guide provides the UI steps; the practice questions follow below.
 
 1. Start a new Playground chat and ask **“What is the status of order-demo-2?”** Compare the returned payment, shipment and payout facts with the retrieved source.
 2. Ask **“What is the payout status for this order?”** in the same chat. Inspect retained order identity and the evidence used.
@@ -32,4 +32,4 @@ Record the application, hosted agent, MCP and database locations; your questions
 
 ## Cleanup and reference
 
-Follow the linked guides to remove only resources you created. Preserve instructor/shared agents, connections and business data. Review [reference answers](solutions/answers.md). Optional native cross-session memory experiments remain a separate reference in the instructor guide, not a requirement for this practice.
+Follow the linked guides to remove only resources you created. Preserve instructor/shared agents, connections and business data. Review [reference answers](solutions/answers.md). Optional native memory reference material stays in the chapter speaker notes, outside this practice.
