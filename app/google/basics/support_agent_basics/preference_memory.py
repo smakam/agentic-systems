@@ -36,7 +36,7 @@ async def remember_preference(preference: str, tool_context: ToolContext) -> dic
     event = Event(author='user', content=types.Content(
         role='user', parts=[types.Part(text=preference.strip())]))
     try:
-        await tool_context.add_events_to_memory(events=[event])
+        await tool_context.add_events_to_memory(events=[event], custom_metadata={'wait_for_completion': False})
     except Exception:
         # Do not expose provider messages, credentials or uncertain success as a save.
         return {'status': 'generation_unconfirmed', 'generation_requested': False,

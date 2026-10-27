@@ -186,3 +186,19 @@ class PreferenceSaveTests(unittest.IsolatedAsyncioTestCase):
         tool=next(t for t in agent.tools if getattr(t,'__name__','')=='remember_preference')
         declaration=FunctionTool(func=tool)._get_declaration()
         self.assertEqual(set(declaration.parameters_json_schema['properties']),{'preference'})
+
+class BasicsUpdateTests(unittest.TestCase):
+    def test_update_preserves_runtime_identity_environment_and_limits(self):
+        from types import SimpleNamespace as Obj
+        from update import update_config
+        resource=Obj(display_name='Support Agent Basics',spec=Obj(
+            service_account='existing@example.invalid',package_spec=Obj(
+                pickle_object_gcs_uri='gs://existing-bucket/agent/agent.pkl',python_version='3.12'),
+            deployment_spec=Obj(secret_env=[],env=[Obj(name='GOOGLE_MEMORY_ENABLED',value='true'),
+                Obj(name='GOOGLE_AGENT_MODEL',value='existing-model')],min_instances=0,max_instances=1)))
+        config=update_config(resource)
+        self.assertEqual(config['service_account'],'existing@example.invalid')
+        self.assertEqual(config['staging_bucket'],'gs://existing-bucket')
+        self.assertEqual(config['env_vars']['GOOGLE_AGENT_MODEL'],'existing-model')
+        resource.display_name='Marketplace Support ADK Lab'
+        with self.assertRaises(ValueError):update_config(resource)
