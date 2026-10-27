@@ -4,6 +4,12 @@ This guide creates a **separate Google-managed agent** using the course's fictio
 
 The instructor deployment has been created and its Playground lookup, follow-up, missing-record behavior and native traces checked. Memory generation and scoped stored-preference search have also passed. Fresh-session preference preload and answer use were subsequently verified in a completed native trace after the CLI retry timed out. The sequence below is not a claim that a fresh learner project has already been rehearsed end to end.
 
+## Deployment phases
+
+- **Cloud environment setup (steps 1–3):** select the project and authorize Cloud Shell, set environment variables, then enable APIs and confirm permissions.
+- **Code and deployment (steps 4–6):** install the supplied code, review the agent and simulated order-data backend, then deploy the packaged agent.
+- **Verify in Playground (step 7):** ask an order question, follow up on payout status, and inspect the native trace.
+
 ## Prerequisites — prepare once
 
 - A Google Cloud project with billing enabled and access to the configured model. Use Cloud Shell, authorize its project access, and have Python 3.12 available.
