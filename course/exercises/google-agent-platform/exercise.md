@@ -19,7 +19,14 @@ Complete [setup-guide.md](../../setup/google-agent-platform/setup-guide.md) firs
 
 ### Setup and starting point
 
-Use your **own Google Cloud project and separately identified lab resources** for provisioning. Complete [app/CLOUD-SETUP.md](../../../app/CLOUD-SETUP.md) first: your cloud chat/backend, business MCP and database must already work. Then follow [Google Platform Plan](../../GOOGLE-PLATFORM-PLAN.md) steps 1–6: configure your marketplace ADK agent and MCP secret, create or update your own compatible runtime, verify it in Playground, connect the cloud chat backend, and verify end to end. The standalone Basics agent has no business MCP tools and is not the deployment to update. These guides contain the commands; this exercise does not duplicate their deployment sequence.
+Choose where to run the **Marketplace chat application (frontend and application backend)**:
+
+- **Cloud-hosted application:** use [Cloud application setup](../../../app/CLOUD-SETUP.md), then connect it using the [Google Platform Plan](../../GOOGLE-PLATFORM-PLAN.md).
+- **Locally hosted application:** use [Local application setup](../../../app/LOCAL-SETUP.md) and [runtime configuration](../../../app/RUNTIME-SELECTOR.md#configuration). Configure the local application backend with your hosted Marketplace ADK runtime and the required Google authentication and query permission.
+
+For this practice, **the ADK agent runs on Google's managed runtime and its business MCP backend and database run in Google Cloud**, regardless of where the chat application runs. A local chat application does not move the hosted agent or change its MCP target. Confirm that **Google ADK** is available in the runtime selector and verify the agent's cloud business endpoint before continuing. Missing or disabled runtime options require checking that application's deployed version and backend configuration.
+
+Use your **own Google Cloud project and separately identified lab resources** for provisioning. For the cloud-hosted application path, complete [app/CLOUD-SETUP.md](../../../app/CLOUD-SETUP.md) first: your cloud chat/backend, business MCP and database must already work. For a local application, the business MCP and database still need their cloud setup; configure the local caller using the runtime guide above. Then follow [Google Platform Plan](../../GOOGLE-PLATFORM-PLAN.md) steps 1–6: configure your marketplace ADK agent and MCP secret, create or update your own compatible runtime, verify it in Playground, connect your chosen local or cloud chat backend, and verify end to end. The standalone Basics agent has no business MCP tools and is not the deployment to update. These guides contain the commands; this exercise does not duplicate their deployment sequence.
 
 The current instructor deployment has verified cloud acceptance. The cloud setup sequence has not yet been rehearsed from scratch in a fresh learner project. Treat that as a stated preparation limit and record any adaptation you make. Costs depend on enabled resources, model calls and usage; consult current billing categories. Keep credentials in private environment/Secret Manager configuration and out of screenshots, prompts and submitted work.
 
@@ -27,7 +34,7 @@ Do not update the instructor's Marketplace Support ADK Lab or Support Agent Basi
 
 ### Practice
 
-1. Open your marketplace Support interface and select **Google ADK**. Use your own hosted Marketplace agent connected to the business MCP backend. [Marketplace agent code](../../../app/google/marketplace_google/agent.py).
+1. Open your chosen local or cloud-hosted marketplace Support interface and select **Google ADK**. Use your own hosted Marketplace agent connected to the business MCP backend. [Marketplace agent code](../../../app/google/marketplace_google/agent.py).
 2. Start a fresh conversation and ask **“What is the status of order-1?”**, substituting a confirmed order ID from your backend if needed. Compare the answer with the actual tool evidence.
 3. In the same conversation ask **“What is the payout status for this order?”** Inspect the retained order context and supporting evidence.
 4. Open the corresponding Marketplace agent session in your Google console. Inspect the native model/tool trace and runtime logs. If Langfuse is configured, optionally compare the application trace with Google's internal execution trace.
