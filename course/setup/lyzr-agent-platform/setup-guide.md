@@ -27,8 +27,8 @@ This TXT comes from the same three-order fictional JSON used by Google Basics. E
 4. Open the supplied [agent-instructions.txt](../../../app/lyzr/basics/agent-instructions.txt), copy its contents and paste them into Instructions.
 5. Attach only **Support_Agent_Basics_Orders**. Do not attach old marketplace MCP tools, browser tools, manager agents or unrelated knowledge.
 6. Save/Create. Read back the name, model, instructions and KB attachment.
-7. Enable native Cognis for session continuity and keep **Cross Session OFF** for the core demo. The first API follow-up failed without session memory; a fresh two-turn run passed after enabling it. Cross-session preferences are a separate optional experiment: use the exact ON settings, synthetic owner/session checks and restoration steps in [instructor-demo.md, Part D](instructor-demo.md#d-optional-native-cross-session-memory-experiment). The bounded API experiment passed; the core default remains OFF.
-8. Open Playground and follow [instructor-demo.md](instructor-demo.md). Inspect native Activity/Traces and actual knowledge retrieval.
+7. Enable native Cognis for session continuity and keep **Cross Session OFF** for the core demo. The first API follow-up failed without session memory; a fresh two-turn run passed after enabling it. Cross-session preferences are a separate optional experiment: use the exact ON settings, synthetic owner/session checks and restoration steps in [instructor-demo.md, Part D](../../exercises/lyzr-agent-studio/instructor-demo.md#optional-native-memory-reference). The bounded API experiment passed; the core default remains OFF.
+8. Open Playground and follow [instructor-demo.md](../../exercises/lyzr-agent-studio/instructor-demo.md). Inspect native Activity/Traces and actual knowledge retrieval.
 
 ## Cleanup and evidence
 
@@ -38,4 +38,4 @@ Official references: [Studio Builder](https://docs.lyzr.ai/enterprise/agent-stud
 
 ## Optional cloud extension
 
-The full cloud architecture and integration steps are in [LYZR-PLATFORM-PLAN.md](../../LYZR-PLATFORM-PLAN.md) and [the optional exercise](exercise.md). They are separate from this core TXT → native KB → Basics agent → Playground setup and require completed Cloud Setup.
+The full cloud architecture and integration steps are in [LYZR-PLATFORM-PLAN.md](../../LYZR-PLATFORM-PLAN.md) and [the optional exercise](../../exercises/lyzr-agent-studio/exercise.md). They are separate from this core TXT → native KB → Basics agent → Playground setup and require completed Cloud Setup.

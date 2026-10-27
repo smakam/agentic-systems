@@ -2,7 +2,7 @@
 
 **Complete [app/CLOUD-SETUP.md](../app/CLOUD-SETUP.md) first.** Use your own working cloud marketplace chat/backend, authenticated business MCP service and database/policy store. This guide connects that existing stack to a Lyzr-hosted marketplace agent; it does not repeat infrastructure provisioning.
 
-The required Chapter20 lesson is the separate [Support Agent Basics setup](exercises/lyzr-agent-studio/setup-guide.md), using the supplied fictional TXT and native KB in Playground. Its agent has no business MCP tools and must remain unchanged. Create your own separate marketplace-integration agent and connection; preserve the instructor’s deployed agents and all shared resources.
+The required Chapter20 lesson is the separate [Support Agent Basics setup](setup/lyzr-agent-platform/setup-guide.md), using the supplied fictional TXT and native KB in Playground. Its agent has no business MCP tools and must remain unchanged. Create your own separate marketplace-integration agent and connection; preserve the instructor’s deployed agents and all shared resources.
 
 ## Which components run where
 

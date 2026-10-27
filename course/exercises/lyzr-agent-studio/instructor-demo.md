@@ -2,7 +2,7 @@
 
 ## 1. Basics in Lyzr Playground
 
-Complete the [Basics setup guide](setup-guide.md) first. Use the separate **Support Agent Basics** agent with its fictional-order Knowledge Base attached. It is a Lyzr-hosted agent, even though this path requires no cloud marketplace deployment. Leave Marketplace MCP tools unattached.
+Complete the [Basics setup guide](../../setup/lyzr-agent-platform/setup-guide.md) first. Use the separate **Support Agent Basics** agent with its fictional-order Knowledge Base attached. It is a Lyzr-hosted agent, even though this path requires no cloud marketplace deployment. Leave Marketplace MCP tools unattached.
 
 1. Open **Support Agent Basics → Playground**, then start a new chat.
 2. Ask **“What is the status of order-demo-1?”** Check the answer against the retrieved fictional source: payment received, shipment not dispatched, payout held. The agent should distinguish those fields rather than invent an overall status absent from the source.
