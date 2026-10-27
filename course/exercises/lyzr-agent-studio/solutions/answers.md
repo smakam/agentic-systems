@@ -1,45 +1,34 @@
-# Lyzr Agent Studio — reference answers
+# Lyzr Agent Platform — reference answers
 
-These are evidence checkpoints, not promised fresh model outputs. The core lab uses native Lyzr KB retrieval; the optional exercise connects a separate marketplace agent to your GCP backend.
+These checkpoints help interpret your own run; model outputs can vary.
 
-## Native Basics
+## Core: Basics in Playground
 
-| Question | Fixture boundary |
+The hosted Basics agent uses native Knowledge Base retrieval from the supplied fictional order file. Google Basics uses a Python lookup function over the same source; here Lyzr retrieves indexed chunks. The agent must ground order claims in the retrieved record.
+
+| Order | Fictional source facts |
 |---|---|
-| Products and quantities in order-demo-1 | Ceramic Mug Set × 2 |
-| Same-chat payout follow-up | Held, for order-demo-1 |
-| Payout for order-demo-2 | Released |
-| Payment for order-demo-3 | Refunded |
-| Payment for order-demo-999 | Absent from the complete fictional catalogue; do not invent status |
-| Ambiguous fresh-chat follow-up | Request the order identity; do not silently inherit another session |
-| Release eligibility | Not established: there is no eligibility policy/live clock in this fixture |
+| order-demo-1 | 2 Ceramic Mug Sets; payment received; shipment not dispatched; payout held |
+| order-demo-2 | 1 Canvas Weekender; payment received; shipment delivered; payout released |
+| order-demo-3 | 1 Desk Lamp; cancelled; payment refunded; shipment cancelled; payout not applicable |
+| order-demo-999 | No record in the supplied complete fictional catalogue |
 
-The KB's source comes from the same fictional JSON as Google Basics. Google executes a native Python lookup function; Lyzr retrieves indexed source records. Compare the actual grounding path, not the two platforms' answer quality from a handful of runs.
+A same-chat payout follow-up can use the retained order identity. A new chat should not be credited with continuity merely because it guessed an order. A held payout does not establish eligibility or a hold reason: this fixture supplies no eligibility policy or live clock. Inspect the actual source chunk and distinguish missing source evidence from a confirmed missing record.
 
-## Optional integration
+## Optional: full cloud Marketplace integration
 
-The browser calls the GCP web backend; it calls the authenticated Lyzr inference API. The hosted agent calls the GCP MCP endpoint with a separate credential. MCP supplies scoped read-only business evidence from the cloud database/policy target. The runtime selector chooses the hosted agent; it does not move its KB, tools or data target.
+The path is **marketplace chat application and backend in Google Cloud → Lyzr-hosted agent → authenticated MCP service in Google Cloud → Cloud SQL business records and policy evidence**. No Google ADK deployment is used for this path. The shared cloud guide prepares the application infrastructure; the Lyzr guide connects its hosted agent. Cloud SQL must be running for business reads.
 
-Inspect begin/end investigation and source-bearing read tools. An answer alone does not prove the cloud target: record configuration and a matching native tool result. Application Langfuse may expose the hosted-call boundary while Lyzr native traces expose internal model/tool execution.
+The marketplace application selects the configured hosted agent; it does not change that agent’s MCP endpoint. The backend uses a Lyzr inference credential, while the agent’s MCP connection uses a separate business-service credential. A listed tool or discovered schema proves neither successful runtime authentication nor a correct answer. Inspect a matching authenticated tool result and native trace.
 
-Keep session continuity separate from cross-session Cognis memory. Verify memory formation, stored record, fresh-session retrieval and answer use independently. Missing native visibility is a recorded limitation, not a reason to substitute local memory semantics.
+For order status and the payout follow-up, use your own current records. Separate buyer payment, seller payout status and policy eligibility. A policy explanation requires relevant business and policy evidence. The workspace Internal/Mem0 options do not configure native Lyzr memory.
 
-## Operational interpretation
+## Monitoring, cost and ownership
 
-Hosted Studio removes some runtime/build plumbing; developers retain tool authorization, source quality, identity and integration responsibilities. Private/VPC/on-premise options require the appropriate enterprise deployment arrangement; model providers and network/telemetry routes still determine where data goes. ADK/API access is not evidence of fully local inference.
+Activity and traces expose execution, source retrieval, tool arguments/results and failures. Analytics shows operational usage, latency and credits; evaluation assesses answer quality. Application Langfuse can show a different boundary from Lyzr’s internal trace.
 
-Model/context tokens, indexing/retrieval, enabled tools/features and plan usage drive costs; optional GCP compute/database/network/telemetry adds separate charges. Account billing and contract terms govern actual rates. Native safety/evaluation features are capabilities, not proof every policy is enabled or every answer is correct.
+Use three cost categories: model inference paid to the model provider under current public Lyzr pricing; customer-operated infrastructure/runtime paid to the infrastructure provider; and platform capabilities paid to Lyzr under the plan. Hosted infrastructure may be bundled; external tools and memory can add charges. Check [current pricing](https://www.lyzr.ai/pricing/) and contract terms instead of combining old credit schedules with new plans.
 
-## Acceptance and cleanup
+Google Cloud operates the deployed application infrastructure and database services; Lyzr runs the hosted agent. You retain source quality, business authorization, identity and integration responsibilities. Record what you actually observed and any limits; the fresh-project learner setup has not been rehearsed end to end. Cleanup applies only to your own resources.
 
-Record failed and unverified checks alongside successful ones. Preserve instructor/shared resources and remove only your own optional integration resources. The main course lesson does not require this optional deployment to pass.
-
-## Bounded rehearsal evidence
-
-The prepared Basics agent passed API products/quantity for order-demo-1, released payout for order-demo-2, missing order-demo-999 and a fresh same-session follow-up returning held. Cognis was explicitly enabled with Cross Session OFF after the initial follow-up without session memory requested an ID. Returned `module_outputs.documents` contain source text, metadata and relevance scores; the scores do not grade correctness. Native UI lookup, same-chat follow-up and missing-ID checks also passed. Activity exposed kb_documents_retrieved with the actual orders-knowledge.txt source chunk. The bounded optional cross-session API experiment also passed, as described below. See `app/lyzr/basics/verification.json`.
-
-## Optional native cross-session reference
-
-With Cognis Cross Session ON and explicit preference-retention instructions, a fresh synthetic owner began with zero records. A conversation preference automatically produced a native record containing cobalt-sparrow and the three headings, matching the original user text and owner/agent/source-session references. Fresh same-owner recall reproduced the preference; a fresh order-demo-2 answer stated released with the saved headings and KB evidence. A different synthetic owner had zero records and no verified preference. Four model calls were used; no direct memory-add call seeded the result.
-
-This verifies a bounded native API path, not every Playground UI surface or universal isolation/deletion behavior. Restore the core default Cross Session OFF after the experiment. See app/lyzr/basics/cross-session-verification.json.
+Use the [Basics setup guide](../setup-guide.md), [Lyzr cloud integration guide](../../../LYZR-PLATFORM-PLAN.md), and [instructor walkthrough](../instructor-demo.md) for the detailed steps. Native memory reference experiments are separate from this exercise.

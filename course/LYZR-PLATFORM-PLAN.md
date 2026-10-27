@@ -4,6 +4,19 @@
 
 The required Chapter20 lesson is the separate [Support Agent Basics setup](exercises/lyzr-agent-studio/setup-guide.md), using the supplied fictional TXT and native KB in Playground. Its agent has no business MCP tools and must remain unchanged. Create your own separate marketplace-integration agent and connection; preserve the instructor’s deployed agents and all shared resources.
 
+## Which components run where
+
+| Component | Runs on | Setup reference |
+|---|---|---|
+| Marketplace browser frontend and application backend | Google Cloud Run web service | [Shared cloud application setup](../app/CLOUD-SETUP.md) |
+| Authenticated business MCP service | Google Cloud Run backend service | Shared cloud application setup |
+| Business records, policy store and application state | Google Cloud SQL (PostgreSQL) | Shared cloud application setup |
+| Supporting image registry, secrets, network and configured retrieval/gateway services | Your Google Cloud project | Shared cloud application setup |
+| Marketplace agent instructions, model selection, tool attachment and agent execution | Lyzr platform | Steps 1–3 below |
+| Application-to-Lyzr inference connection | Google Cloud application backend calling Lyzr | Steps 4–5 below |
+
+**This path does not deploy a Google ADK agent or use Google's managed Agent Runtime.** The shared cloud guide includes an OpenAI Agents SDK baseline and supporting services. Reuse that application infrastructure, then configure the Lyzr runtime connection using this guide; selecting Lyzr routes the agent investigation to Lyzr. Google Cloud is the application/data host, not the agent host in this configuration. The cloud MCP service and Cloud SQL must be available. No laptop tunnel is required.
+
 ## Before you start
 
 Confirm your own GCP project, cloud marketplace URL, stable HTTPS MCP endpoint ending in `/mcp`, trusted MCP credential and working business/policy data. Confirm your authorized Lyzr account, model connection and credits. A laptop tunnel and instructor agent ID are not values for your cloud setup. Keep inference and MCP credentials private and distinct.

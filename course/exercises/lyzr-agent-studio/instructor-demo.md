@@ -1,30 +1,35 @@
-# Instructor demo: a standalone Lyzr support agent
+# Instructor demo: Basics and Marketplace support agents on Lyzr
 
-## Workspace and preparation
+## 1. Basics in Lyzr Playground
 
-Use **Lyzr Studio → Support Agent Basics → Playground**. Complete [setup-guide.md](setup-guide.md) once before the demonstration. Confirm the supplied orders-knowledge.txt was uploaded into the separate Knowledge Base, indexed and attached to this agent. Uploading it into chat is not KB setup. This lab does not use marketplace chat, SQL, MCP, a tunnel or the existing Marketplace Support agent. The [prepared Basics agent](https://studio.lyzr.ai/create-new-agent/6acf95f3272a149412fd9e7c?tab=playground) passed bounded API lookup, missing-ID and same-session follow-up checks. Native Cognis is enabled with Cross Session OFF. Native Playground lookup, same-chat follow-up and missing-ID checks passed, with actual KB source chunks visible in Activity; label observed results and failures accurately.
+Complete the [Basics setup guide](setup-guide.md) first. Use the separate **Support Agent Basics** agent with its fictional-order Knowledge Base attached. It is a Lyzr-hosted agent, even though this path requires no cloud marketplace deployment. Leave Marketplace MCP tools unattached.
 
-## A. Knowledge retrieval and native execution
+1. Open **Support Agent Basics → Playground**, then start a new chat.
+2. Ask **“What is the status of order-demo-1?”** Check the answer against the retrieved fictional source: payment received, shipment not dispatched, payout held. The agent should distinguish those fields rather than invent an overall status absent from the source.
+3. In the same chat ask **“What is the payout status for this order?”** Check the retained order identity and the held payout in the source.
+4. Open **Activity / Traces**. Inspect the actual Knowledge Base chunk from `orders-knowledge.txt`, its dataset/as-of information, model input/output, latency and usage where available. Retrieval relevance is not an answer-correctness score.
+5. If useful, ask about **order-demo-999** in a new chat to show the missing-record boundary. No record should be invented; distinguish a failed retrieval from a successfully established absence.
 
-1. Open the prepared **Support Agent Basics** agent and select **Playground**. Confirm the configured model is **OpenAI gpt-5.4-mini**, the attached KB is **Support_Agent_Basics_Orders**, and native **Cognis is ON / Cross Session is OFF**. Click **New Chat**. Ask **“What products and quantities are in order-demo-1?”**
-2. Expected fixture facts: **Ceramic Mug Set, quantity 2**. Inspect the retrieved source record and dataset/as-of marker.
-3. Open **Activity** for this response. Expand **kb_documents_retrieved** and inspect the source **storage/orders-knowledge.txt**, retrieved chunk text and its dataset/as-of marker. Confirm the source contains order-demo-1 and quantity 2. Inspect model input/output and latency where available. A KB search is not a Python function-tool call; its relevance score is not a correctness grade.
-4. Record the configured and reported model, session identity, source records, latency and usage when available. Missing cost is not zero.
+The current core configuration uses native Cognis with Cross Session OFF for session continuity. That is distinct from cross-session memory. Memory is not required to demonstrate this question → retrieval → response path.
 
-## B. Same-session context versus a new chat
+## 2. Full cloud Marketplace integration
 
-1. In the same chat ask **“What is its payout status?”** Expected: **held**, for order-demo-1.
-2. Inspect retained order context and fresh retrieval if it occurs.
-3. Optional boundary check: click **New Chat** and ask only **“What is its payout status?”** Observe whether it requests an order ID. Do not call a guessed order memory recall.
+Prepare the application using [Cloud application setup](../../../app/CLOUD-SETUP.md), then follow [Lyzr integration setup](../../LYZR-PLATFORM-PLAN.md). Google Cloud hosts the marketplace frontend/application backend, authenticated business MCP service, and Cloud SQL business/policy data. **Lyzr hosts the agent. No Google ADK agent deployment is required.** The shared cloud guide includes an SDK baseline; selecting Lyzr routes this investigation to Lyzr’s hosted agent instead. Existing working infrastructure should be reused rather than provisioned again.
 
-## C. Missing records and evidence limits
+Before the demo, confirm Cloud SQL is running, the cloud web/backend and MCP services are healthy, and the separate Lyzr Marketplace agent has the cloud MCP connection attached. A tool appearing in a registry or being attached does not prove successful runtime access. Verify its endpoint and an authenticated read. A laptop tunnel is a different configuration and should not be used for this cloud walkthrough.
 
-1. Click **New Chat** again and ask **“What is the payment status of order-demo-999?”**
-2. Expected boundary: the complete fictional catalogue contains only order-demo-1, -2 and -3. No payment status should be invented for -999.
-3. Distinguish an absent fixture record from failed KB retrieval. If sources are missing, the answer should state the retrieval limit.
-4. Optional evidence-limit check, not a passed core rehearsal: ask **“Is order-demo-1 eligible for payout release now?”** The fixture supplies payout status, not eligibility policy or a live clock; inspect whether the answer respects that limit.
+1. Open the **cloud marketplace application → Support**, select **Lyzr**, and start a fresh conversation.
+2. Ask **“What is the status of order-1?”**, using a confirmed current order ID if your fixture differs.
+3. Follow with **“What is the payout status for this order?”** Compare the answer with current business-tool evidence. Buyer payment and seller payout are separate facts.
+4. Open the **Marketplace agent’s native Lyzr trace** for the matching run. Show the investigation, MCP tool arguments/results, final response and evidence. Confirm the business tool calls use the cloud connection.
+5. Inspect available execution latency and usage. If Langfuse is configured, it can show the application boundary; Lyzr’s native trace shows the hosted internal execution. Logs and traces are not proof of answer quality by themselves.
 
-## D. Optional native cross-session memory experiment
+The application backend holds the Lyzr inference credential. The MCP connection holds a different credential for the business backend. Keep secrets out of prompts, recordings and frontend code. Preserve instructor/shared resources when learners provision their own.
+
+## Optional native memory reference
+
+The following is a separate reference experiment, not a required step of either walkthrough.
+
 
 The core demo keeps **Cognis ON / Cross Session OFF**. This optional experiment temporarily turns Cross Session ON for a separate Basics agent **you own**, then restores its original setting. It uses four model calls and synthetic preferences only. Do not target the instructor's agent. The current Studio UI may show an enabled Memory card without exposing Cross Session configuration or owner-scoped record inspection; the parameterized runner is the verified API path.
 
