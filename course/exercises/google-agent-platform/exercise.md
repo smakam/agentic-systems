@@ -1,6 +1,6 @@
 # Practice: deploy a standalone agent, with an optional cloud integration
 
-The standalone practice uses **Support Agent Basics** in Google Playground. Deploy it with the chapter setup guide, or observe the instructor and label your work observation only. Record the native lookup, same-session follow-up, session/trace and memory behavior. The full cloud chat/MCP/database integration below is an **adventurous optional extension**, not a requirement for the core chapter.
+The standalone practice uses **Support Agent Basics** in Google Playground. Deploy it with the chapter setup guide, or observe the instructor and label your work observation only. Record the native lookup, same-session follow-up, sessions, traces and logs. The full cloud chat/MCP/database integration below is an **adventurous optional extension**, not a requirement for the core chapter.
 
 ## Standalone Basics deployment
 
@@ -8,23 +8,20 @@ Use the chapter’s [setup-guide.md](setup-guide.md) to create your separately n
 
 ## Core practice: Basic support agent
 
-Complete [setup-guide.md](setup-guide.md) first, then use [instructor-demo.md](instructor-demo.md). The setup guide validates deployment; the steps here are what to explore afterward. [Basic agent code](../../../app/google/basics/support_agent_basics/agent.py) and [instructor deployment for authorized observation](https://console.cloud.google.com/agent-platform/runtimes/locations/us-central1/agent-engines/2782635506360385536/playground?project=customer-support-agent-510915).
+Complete [setup-guide.md](setup-guide.md) first, then use [instructor-demo.md](instructor-demo.md). The setup guide validates deployment; the steps here are what to explore afterward. [Basic agent code](../../../app/google/basics/support_agent_basics/agent.py).
 
 1. In a fresh session ask **“What products and quantities are in order-demo-2?”** Compare the answer with the actual native lookup result and packaged fixture.
 2. Ask **“What is its payout status?”** in the same session. Inspect retained context; a new tool call is not required if the earlier fixture evidence is already available.
 3. In a new session ask about **order-demo-999**. Inspect the not-found result and check that no order status is invented.
 4. Open the completed session/trace. Follow model input → tool arguments → result → answer. Then inspect available runtime logs/monitoring and distinguish them from quality evaluation.
-5. On a deployment with the revised save tool, ask **“Remember: I prefer brief answers in bullet points.”** Inspect `remember_preference` and its generation result. Confirm the preference is stored for the same native user, then start a fresh session and ask an order question without repeating it. Inspect memory preload as well as answer format. Generation requested is not storage or recall proof. The new tool's live verification is pending; older revisions require the documented CLI fallback.
-6. Give a contrary current formatting instruction and confirm it overrides memory. Record provider errors or unavailable evidence honestly.
 
 ## Optional practice: Marketplace support agent
 
 Follow the linked full cloud setup below for your own resources, then:
 
-1. Open your chat application connected to your hosted ADK deployment and business MCP backend. [Marketplace agent code](../../../app/google/marketplace_google/agent.py); [instructor deployment for authorized observation](https://console.cloud.google.com/agent-platform/runtimes/locations/us-central1/agent-engines/1966208540318105600/playground?project=customer-support-agent-510915).
+1. Open your chat application connected to your hosted ADK deployment and business MCP backend. [Marketplace agent code](../../../app/google/marketplace_google/agent.py).
 2. Choose a confirmed order in your backend. Ask for products, payment and payout status, then a follow-up policy/why question that matches its actual state.
 3. Inspect business and policy tool results, final evidence, session continuity, native trace and logs. Explain what the separate backend provides that the Basics fixture does not.
-4. Inspect this deployment's own memory configuration and verified save/recall path if enabled. Do not assume the Basics preference-save tool is installed here, or that the marketplace identity is the same as the Playground identity.
 
 ## Optional full cloud integration
 
@@ -46,7 +43,6 @@ Do not update the instructor's Marketplace Support ADK Lab or Support Agent Basi
 4. Open your marketplace's Support interface, select **Google hosted runtime**, and start a fresh conversation. Ask **“Show the items and quantities for order-2.”** Check the answer against the tool evidence from your own fixture.
 5. In the same conversation ask **“What is their total quantity?”** Inspect the preserved order context and any fresh tool calls. Then try the follow-up in a new conversation and record whether it asks which order you mean.
 6. Inspect the native Google session, tool events and trace for that run. If your cloud stack has Langfuse enabled, compare the application boundary observation with native platform-internal events. The presence of one does not prove the other is configured.
-7. Optionally inspect the native memory steps in [instructor-demo.md](instructor-demo.md), which runs on the separate Basics deployment. Keep its `order-demo-*` fixtures separate from marketplace `order-*` records. Use the **same actual client user ID** for saving and recall within the deployment you test. Record the trigger, stored result and retrieval separately; do not infer long-term memory from an answer that could come from the current transcript.
 
 If you only observe the instructor's full-stack demonstration, label your submission **observation only** rather than claiming you deployed the system.
 
@@ -59,7 +55,6 @@ If you only observe the instructor's full-stack demonstration, label your submis
 | Session continuity | Same-chat follow-up versus fresh-chat behavior |
 | Identity and access | Trusted client user ID, runtime identity and scoped endpoint/secret references; no values |
 | Observability | Native session/trace link; optional application-boundary trace link |
-| Memory, if tested | Save/generation trigger, stored content, new-session retrieval and identity |
 | Cost categories | Enabled runtime/model/state/retrieval/telemetry/evaluation components; no invented spend |
 | Limits | Failed checks, untested steps and adjustments made |
 
