@@ -6,6 +6,12 @@ These are interpretation guides, not fixed transcripts or a claim that a learner
 
 Support Agent Basics is the separate small agent with packaged fictional JSON and a native lookup function. Its core Playground demonstration does not require MCP or the marketplace stack. Marketplace Support ADK Lab is the existing full integration: the cloud agent invokes authenticated business MCP backed by business records and policy retrieval. The two deployments serve different teaching purposes.
 
+## Basics practice and the new explicit save path
+
+Basics uses native Python function tools and packaged fictional order JSON, not MCP. The revised `remember_preference` tool sends only a presentation preference explicitly supplied in the current user message to Google Memory Bank, scoped by the ADK context. Its `generation_requested` result is not evidence that extraction has completed. Confirm a stored record and memory preload in a fresh session under the same native user; answer layout alone is insufficient. Current formatting instructions override saved preferences. The new tool's live deployment verification is pending; the prior documented memory results used the separate CLI save path.
+
+The instructor covers both architectures. Core learner practice is Basics: questions, lookup evidence, session/fresh-session contrast, native trace, memory and logs. Full Marketplace provisioning is optional: the chat backend invokes the hosted agent, which calls authenticated business MCP for database and policy evidence. Test its own memory controls rather than assuming it shares the new Basics save tool.
+
 ## Architecture and responsibilities
 
 ADK is an open-source framework, analogous in role to OpenAI Agents SDK. It defines instructions, tools and agent execution. The managed Google runtime hosts the application; Sessions, Memory Bank and telemetry are separate services. ADK can run in another suitable environment and can use external models through supported integrations. Deployment flexibility also means owning appropriate operations, dependency management and model/tool access. Selected managed services can be mixed with ADK; it is not an all-or-nothing choice.

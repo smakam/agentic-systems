@@ -36,3 +36,9 @@ python demo.py memory --user NATIVE_USER_ID --question 'preferred answer format'
 Wait for actual memory to appear, then start a fresh native session and ask another known order question. Generation and correct answer use are distinct checks. The CLI defaults to `basics-course-user`; that label is a lab client control, not an authenticated marketplace identity. No model argument can override the framework's memory user. Native memory is enabled by the deployment setting `GOOGLE_MEMORY_ENABLED`; this demo does not present a chat checkbox as a working override.
 
 Inspect Google-native Sessions, Memory Bank, Cloud Trace/Logging/Monitoring. Telemetry is configured in the create script; verify actual traces after deployment. Model/runtime/memory charges depend on the account and calls. No paid inference is needed for the fixture/unit tests.
+
+## Explicit preference saves in Playground
+
+The revised agent exposes a native `remember_preference` tool. Ask “Remember: I prefer answers in a compact table with Finding, Evidence and Next action columns.” Inspect the actual tool call and `generation_requested` result, wait for the stored record, then test a fresh Playground session under the same user. Generation is asynchronous; a requested save is not proof of storage or recall. The tool saves only the supplied preference, not the whole business conversation. Current instructions override retrieved preferences. No MCP is involved.
+
+For an existing **Support Agent Basics** deployment, use `python update.py` from this directory with its own `support-basics-deployment.json`. It verifies the deployment name and preserves the staging bucket, runtime identity, existing environment, Python version and instance limits. It refuses the marketplace deployment. This updates the existing resource instead of bypassing deploy.py's create-only guard. The CLI demo commands remain available for diagnosis and older revisions.

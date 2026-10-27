@@ -6,6 +6,26 @@ The standalone practice uses **Support Agent Basics** in Google Playground. Depl
 
 Use the chapter’s [setup-guide.md](setup-guide.md) to create your separately named **Support Agent Basics** deployment. It contains prerequisites once, editable environment values, installation and the two test/deploy commands. Then follow [instructor-demo.md](instructor-demo.md) for questions and observations in native Playground. If you are observing the instructor rather than deploying, label that clearly. This standalone setup needs no marketplace, MCP middleware, database or tunnel.
 
+## Core practice: Basic support agent
+
+Complete [setup-guide.md](setup-guide.md) first, then use [instructor-demo.md](instructor-demo.md). The setup guide validates deployment; the steps here are what to explore afterward. [Basic agent code](../../../app/google/basics/support_agent_basics/agent.py) and [instructor deployment for authorized observation](https://console.cloud.google.com/agent-platform/runtimes/locations/us-central1/agent-engines/2782635506360385536/playground?project=customer-support-agent-510915).
+
+1. In a fresh session ask **“What products and quantities are in order-demo-2?”** Compare the answer with the actual native lookup result and packaged fixture.
+2. Ask **“What is its payout status?”** in the same session. Inspect retained context; a new tool call is not required if the earlier fixture evidence is already available.
+3. In a new session ask about **order-demo-999**. Inspect the not-found result and check that no order status is invented.
+4. Open the completed session/trace. Follow model input → tool arguments → result → answer. Then inspect available runtime logs/monitoring and distinguish them from quality evaluation.
+5. On a deployment with the revised save tool, ask **“Remember: I prefer brief answers in bullet points.”** Inspect `remember_preference` and its generation result. Confirm the preference is stored for the same native user, then start a fresh session and ask an order question without repeating it. Inspect memory preload as well as answer format. Generation requested is not storage or recall proof. The new tool's live verification is pending; older revisions require the documented CLI fallback.
+6. Give a contrary current formatting instruction and confirm it overrides memory. Record provider errors or unavailable evidence honestly.
+
+## Optional practice: Marketplace support agent
+
+Follow the linked full cloud setup below for your own resources, then:
+
+1. Open your chat application connected to your hosted ADK deployment and business MCP backend. [Marketplace agent code](../../../app/google/marketplace_google/agent.py); [instructor deployment for authorized observation](https://console.cloud.google.com/agent-platform/runtimes/locations/us-central1/agent-engines/1966208540318105600/playground?project=customer-support-agent-510915).
+2. Choose a confirmed order in your backend. Ask for products, payment and payout status, then a follow-up policy/why question that matches its actual state.
+3. Inspect business and policy tool results, final evidence, session continuity, native trace and logs. Explain what the separate backend provides that the Basics fixture does not.
+4. Inspect this deployment's own memory configuration and verified save/recall path if enabled. Do not assume the Basics preference-save tool is installed here, or that the marketplace identity is the same as the Playground identity.
+
 ## Optional full cloud integration
 
 The remainder is an adventurous extension. It connects a cloud chat application and business backend/data to the separate Google-hosted agent. It is not required to understand the standalone Basics lesson.
@@ -47,4 +67,4 @@ Add a diagram of the actual end-to-end path and five short explanations: what AD
 
 ## Cleanup
 
-Follow each guide's cleanup section for **only the resources you created**. Remove your own test sessions/memories if the guide supports it, undeploy the optional lab agent, and tear down your own cloud stack when finished. Verify remaining billable resources in your project. Preserve the instructor deployments and business fixtures. Submit the diagram, observation table and explanations, then compare with [solutions/answers.md](solutions/answers.md).
+Follow each guide's cleanup section for **only the resources you created**. Remove your own test sessions/memories if the guide supports it, undeploy the optional lab agent, and tear down your own cloud stack when finished. Verify remaining billable resources in your project. Preserve the instructor deployments and business fixtures. Review your diagram, observations and explanations for yourself, then compare with [solutions/answers.md](solutions/answers.md).

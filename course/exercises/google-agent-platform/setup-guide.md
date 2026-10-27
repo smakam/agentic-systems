@@ -83,3 +83,7 @@ For the instructor's authorized observation environment, the verified [Support A
 ## Cleanup
 
 Keep the instructor resources intact. When your own lab is no longer needed, remove only its runtime, synthetic session/memory artifacts, dedicated identity and unused staging objects using the current platform controls. Do not delete a shared project, identity or bucket. Confirm remaining billable resources. The course deployment script intentionally contains no deletion operation.
+
+## Updating an existing Basics deployment for Playground saves
+
+New deployments include the explicit native `remember_preference` tool. For an existing deployment, preserve its own `support-basics-deployment.json`, update the supplied Basics code, and run `python update.py` from `app/google/basics`. This helper checks the existing deployment name and preserves its service account, staging bucket, environment, Python version and instance limits. It updates Basics only and refuses Marketplace Support ADK Lab. Do not bypass deploy.py's create-only manifest guard. After the update, follow the instructor guide to inspect the save call, stored preference and fresh-session retrieval; deployment success alone is not memory verification.
