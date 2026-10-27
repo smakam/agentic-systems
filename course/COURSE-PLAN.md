@@ -288,7 +288,7 @@ Use familiar support tasks to compare component ownership, capabilities, costs, 
 
 **Materials:** [Setup guide](setup/google-agent-platform/setup-guide.md) · [Instructor walkthrough](exercises/google-agent-platform/instructor-demo.md) · [Exercise](exercises/google-agent-platform/exercise.md) · [Separate answers](exercises/google-agent-platform/solutions/answers.md) · [Basics code and instructions](../app/google/basics/README.md) · [Optional integration walkthrough](GOOGLE-PLATFORM-PLAN.md).
 
-### 20. Lyzr Agent Studio
+### 20. Lyzr Agent Platform
 
 - **Lesson:** Purpose and customer fit, product stack (Framework, Studio, ADK/REST, Architect, Cognis and separate Opencontroller governance), deployment/model/data boundaries, benefits/tradeoffs and cost drivers. Documented enterprise choices are distinct from the hosted configuration rehearsed here.
 - **Core demo:** A separate **Support Agent Basics** in native Studio/Playground, using the same fictional JSON source as Google Basics converted deterministically to a native TXT Knowledge Base. Inspect retrieval, a same-session follow-up, missing records and native execution evidence; distinguish KB retrieval from Google's Python lookup tool. Native memory inspection is optional and evidence-bounded.
