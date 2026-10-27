@@ -76,7 +76,7 @@ The tests do not require paid model calls. Deployment creates **Support Agent Ba
 2. Start a fresh session and ask **“What products and quantities are in order-demo-1?”** The fictional source has **2 × Ceramic Mug Set**; inspect the `lookup_order` input/result and native trace.
 3. In the same session ask **“What is its payout status?”** The source says **held**, while buyer payment is **received**. Check the retained order context and lookup evidence.
 4. Ask about **order-demo-999** and verify that a missing fixture record is not invented.
-5. Follow [instructor-demo.md](instructor-demo.md) for the walkthrough and separate Memory Bank generation/recall checks. A correct answer or current-session preference is not proof of persisted memory.
+5. Follow [instructor-demo.md](../../exercises/google-agent-platform/instructor-demo.md) for the order-status, payout follow-up and trace walkthrough.
 
 For the instructor's authorized observation environment, the verified [Support Agent Basics Playground](https://console.cloud.google.com/agent-platform/runtimes/locations/us-central1/agent-engines/2782635506360385536/playground?project=customer-support-agent-510915) opens the existing resource. This link does not grant access and is not a resource to modify for learner deployment.
 
