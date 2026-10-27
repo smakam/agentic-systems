@@ -27,7 +27,7 @@ Explain the agent's boundaries:
 
 ## Deployment is separate from this walkthrough
 
-Use [setup-guide.md](setup-guide.md) for prerequisites, environment substitutions, installation, the tests/deploy commands and opening Playground. The instructor walkthrough below starts after deployment; do not redeploy during every question or memory demonstration. The existing full-stack lab remains separate.
+Use [setup-guide.md](../../setup/google-agent-platform/setup-guide.md) for prerequisites, environment substitutions, installation, the tests/deploy commands and opening Playground. The instructor walkthrough below starts after deployment; do not redeploy during every question or memory demonstration. The existing full-stack lab remains separate.
 
 ## A: tool evidence and same-session follow-up
 

@@ -4,11 +4,11 @@ The standalone practice uses **Support Agent Basics** in Google Playground. Depl
 
 ## Standalone Basics deployment
 
-Use the chapter’s [setup-guide.md](setup-guide.md) to create your separately named **Support Agent Basics** deployment. It contains prerequisites once, editable environment values, installation and the two test/deploy commands. Then follow [instructor-demo.md](instructor-demo.md) for questions and observations in native Playground. If you are observing the instructor rather than deploying, label that clearly. This standalone setup needs no marketplace, MCP middleware, database or tunnel.
+Use the chapter’s [setup-guide.md](../../setup/google-agent-platform/setup-guide.md) to create your separately named **Support Agent Basics** deployment. It contains prerequisites once, editable environment values, installation and the two test/deploy commands. Then follow [instructor-demo.md](instructor-demo.md) for questions and observations in native Playground. If you are observing the instructor rather than deploying, label that clearly. This standalone setup needs no marketplace, MCP middleware, database or tunnel.
 
 ## Core practice: Basic support agent
 
-Complete [setup-guide.md](setup-guide.md) first, then use [instructor-demo.md](instructor-demo.md). The setup guide validates deployment; the steps here are what to explore afterward. [Basic agent code](../../../app/google/basics/support_agent_basics/agent.py).
+Complete [setup-guide.md](../../setup/google-agent-platform/setup-guide.md) first, then use [instructor-demo.md](instructor-demo.md). The setup guide validates deployment; the steps here are what to explore afterward. [Basic agent code](../../../app/google/basics/support_agent_basics/agent.py).
 
 1. In a fresh session ask **“What products and quantities are in order-demo-2?”** Compare the answer with the actual native lookup result and packaged fixture.
 2. Ask **“What is its payout status?”** in the same session. Inspect retained context; a new tool call is not required if the earlier fixture evidence is already available.

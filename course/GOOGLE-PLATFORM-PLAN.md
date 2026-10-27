@@ -2,7 +2,7 @@
 
 **Complete [app/CLOUD-SETUP.md](../app/CLOUD-SETUP.md) first.** This extension is for learners who already have their own working cloud marketplace chat/backend, authenticated business MCP service and database/policy store. This guide connects that stack to a Google-hosted marketplace agent; it does not repeat cloud provisioning.
 
-The required Chapter 19 lesson is the separate [Support Agent Basics setup](exercises/google-agent-platform/setup-guide.md), using fictional JSON and native tools in Google Playground. Basics has no business MCP tools: pointing its configuration at an MCP URL does not turn it into the marketplace agent. For this optional extension, deploy the **marketplace ADK code in `app/google`**, or use your own existing compatible marketplace ADK deployment. Preserve both instructor deployments.
+The required Chapter 19 lesson is the separate [Support Agent Basics setup](setup/google-agent-platform/setup-guide.md), using fictional JSON and native tools in Google Playground. Basics has no business MCP tools: pointing its configuration at an MCP URL does not turn it into the marketplace agent. For this optional extension, deploy the **marketplace ADK code in `app/google`**, or use your own existing compatible marketplace ADK deployment. Preserve both instructor deployments.
 
 ## Before you start
 
