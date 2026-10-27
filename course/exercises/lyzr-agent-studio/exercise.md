@@ -11,17 +11,24 @@ Complete the [Basics setup guide](../../setup/lyzr-agent-platform/setup-guide.md
 
 Keep a few notes on the question, retrieved facts, final answer, follow-up behavior and any failed checks. This is practice with the demonstrated flow, not a new platform benchmark.
 
-## Optional practice: full cloud Marketplace integration
+## Optional practice: Marketplace integration
 
 ### Setup and starting point
 
-Use your own resources. First complete [Cloud application setup](../../../app/CLOUD-SETUP.md), then [Lyzr integration setup](../../LYZR-PLATFORM-PLAN.md). **Google Cloud supplies the marketplace frontend/application backend, the authenticated MCP backend, and Cloud SQL business/policy data. The agent runs on Lyzr, not Google ADK.** The shared application setup includes the SDK baseline and supporting services; the Lyzr guide adds the hosted-agent connection. Reuse an existing working stack rather than deploying it again.
+Choose where to run the **Marketplace chat application (frontend and application backend)**:
+
+- **Cloud-hosted application:** follow [Cloud application setup](../../../app/CLOUD-SETUP.md), then [Lyzr integration setup](../../LYZR-PLATFORM-PLAN.md), and open your deployed marketplace URL.
+- **Locally hosted application:** follow [Local application setup](../../../app/LOCAL-SETUP.md) and [runtime configuration](../../../app/RUNTIME-SELECTOR.md#configuration), configure its application backend to invoke your hosted Lyzr Marketplace agent, and open the local marketplace URL supplied by that setup.
+
+For this practice, **the agent runs on Lyzr and its business MCP backend and database run in Google Cloud**, regardless of where the chat application runs. Running the chat application locally does not move the agent or change its configured MCP endpoint. Confirm that the runtime selector offers **Lyzr** and that the hosted agent points to your cloud business backend before continuing. Missing or disabled runtime options require checking that application's deployed version and backend configuration.
+
+Use your own resources. For the cloud-hosted application path, **Google Cloud supplies the marketplace frontend/application backend, the authenticated MCP backend, and Cloud SQL business/policy data. The agent runs on Lyzr, not Google ADK.** The shared application setup includes the SDK baseline and supporting services; the Lyzr guide adds the hosted-agent connection. Reuse an existing working stack rather than deploying it again.
 
 Confirm Cloud SQL is running and the web/MCP services work. Create or use your own separate Marketplace integration agent, connect its cloud business MCP tools, and configure the application backend to invoke it. The inference API key and MCP credential have different destinations. Never use the instructor’s resources as your provisioning target. This path does not depend on a laptop tunnel.
 
 ### Practice
 
-1. Open your cloud marketplace Support interface and select **Lyzr**. Start a fresh conversation.
+1. Open your chosen local or cloud-hosted marketplace Support interface and select **Lyzr**. Start a fresh conversation.
 2. Ask **“What is the status of order-1?”**, substituting a confirmed order ID from your own backend if needed.
 3. Ask **“What is the payout status for this order?”** in the same conversation. Compare the answer with the actual returned business records.
 4. Open the corresponding native Lyzr session/trace. Inspect the MCP connection, investigation and tool results, final response and evidence. Check logs, latency and usage where available. If configured, compare with the application-boundary Langfuse trace.
