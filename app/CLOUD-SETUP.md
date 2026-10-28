@@ -7,7 +7,7 @@ Deploy the full Marketplace and its Google-managed agent using one configuration
 
 The [standalone agent setup](../course/setup/google-agent-platform/setup-guide.md) is a separate exercise with fictional data and native tools. It does not require Marketplace, MCP or Cloud SQL. For the Docker environment, use [Local Setup](LOCAL-SETUP.md).
 
-**Validation status:** the setup wrapper has offline checks; a fresh two-project deployment and live agent acceptance are still pending. Existing course deployments are supporting evidence, not proof that a fresh learner installation succeeds. Use fresh projects for this installer; it does not adopt the instructor's existing deployment.
+**Validation status:** a fresh two-project baseline deployment and live SDK/Google acceptance passed on October 28, 2026 after installer corrections and resumptions. See the [validation record](cloud/SETUP-VALIDATION.md) for checks and limits. This does not certify organization-specific policies or every optional integration. Use fresh projects for this installer; it does not adopt the instructor's existing deployment.
 
 ## 1. Prepare accounts and tools
 
@@ -188,4 +188,4 @@ For teardown, delete only resources you created and account for both projects. T
 
 The [technical deployment reference](cloud/README.md) has deeper infrastructure and credential troubleshooting. The [HTTP MCP acceptance record](cloud/VALIDATION-2026-10-10-SDK-HTTP-MCP.md) documents an existing deployment; it is not a fresh-install certification. Agent identity and staging permissions follow [Google's runtime setup guidance](https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime/setup).
 
-**Pending live rehearsal:** follow this guide in two fresh billing-enabled projects, complete every acceptance check and record the outcome. The wrapper and guide can be reviewed before those project IDs are available.
+**Rehearsal completed:** see the [fresh-project validation record](cloud/SETUP-VALIDATION.md). Complete the acceptance checklist for your own installation as well.

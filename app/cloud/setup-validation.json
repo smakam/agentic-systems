@@ -1,0 +1,90 @@
+{
+  "date": "2026-10-28",
+  "source_revision": "f437475ae224fae3068ce731cf07bb72e3f2be96",
+  "projects": [
+    "marketplace-test-513014",
+    "agent-test-513015"
+  ],
+  "status": "passed_after_corrections",
+  "checks": [
+    "cloud web and database health",
+    "all six demo accounts authenticate",
+    "all cloud documents indexed",
+    "SDK answer matches seeded records and uses HTTP MCP",
+    "SDK conversation follow-up",
+    "SDK policy answer has vector evidence",
+    "cloud feedback persists",
+    "Langfuse Cloud retains SDK model and tool observations",
+    "Google runtime discovered by Marketplace",
+    "Google agent retrieves real Marketplace evidence over MCP",
+    "Google native session retained across follow-up",
+    "Google conversation and runs persist in Marketplace",
+    "saved SDK and Google conversations survive database stop and resume",
+    "saved feedback survives database stop and resume",
+    "live data-backed answer works after database restart",
+    "Google managed agent remains data-backed after database restart",
+    "Google Cloud Trace retains native model and Marketplace business-tool spans"
+  ],
+  "readiness": {
+    "ready": true,
+    "preparation_failed": false,
+    "documents": 20,
+    "indexed": 20,
+    "retrieval": "pgvector",
+    "cross_session_memory": "explicit user-scoped function tools",
+    "agent": "single",
+    "model_alias": "support-model"
+  },
+  "native_observability": {
+    "status": "passed",
+    "trace_ids": [
+      "0d83167773c7b86b94a7f51b9ca27ac0",
+      "13e3bb6cdaca9e3ee4f9591f9a825f6a"
+    ],
+    "span_names": [
+      "call_llm",
+      "execute_tool begin_investigation",
+      "execute_tool end_investigation",
+      "execute_tool get_catalog",
+      "execute_tool get_order_history",
+      "execute_tool query_business_data",
+      "generate_content gemini-3.5-flash",
+      "invoke_agent marketplace_support",
+      "invoke_workflow marketplace_support"
+    ],
+    "session": "7975058449610309632"
+  },
+  "sdk_trace": {
+    "id": "ea0d25b9d3ade4a39b4c09a5c31176e6",
+    "observations": 18,
+    "names": [
+      "Gateway output \u2192 Model input",
+      "generation",
+      "turn",
+      "mcp_tools",
+      "Gateway output \u2192 Model input",
+      "query_business_data",
+      "generation",
+      "turn",
+      "mcp_tools",
+      "get_catalog",
+      "Gateway output \u2192 Model input",
+      "generation",
+      "turn",
+      "Marketplace support",
+      "mcp_tools",
+      "Agent workflow",
+      "Agent workflow",
+      "support-investigation"
+    ]
+  },
+  "persistence": "passed",
+  "completed_runs": 8,
+  "failed_runs": 1,
+  "limits": [
+    "Rehearsal required corrections and resumes; not an uninterrupted first-attempt installation.",
+    "No second brand-new project pair was deployed after these corrections.",
+    "Cloud Shell and organization-managed project policies were not rehearsed.",
+    "Optional Presidio/Lakera integrations and additional platform exercises were outside this baseline."
+  ]
+}
