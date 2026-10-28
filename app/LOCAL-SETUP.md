@@ -21,6 +21,7 @@ The setup chapter demonstrates **Mac**. Follow sections 1–4 for the first run;
 | Python 3 | For `scripts/provision-gateway-keys.py`; no local pip packages are required for startup |
 | Shell | macOS/Linux shell, or WSL2 on Windows; Windows commands below run inside WSL, not PowerShell |
 | Browser | For the marketplace, gateway and traces |
+| Coding agent / AI coding assistant | Optional, good to have for exploring code, understanding functions, troubleshooting setup and drafting small changes |
 | Inference provider account | A funded OpenAI or OpenRouter API key with access to the configured chat and embedding models; a ChatGPT subscription is separate |
 | Internet | Initial image/package downloads, model and embedding calls |
 
@@ -43,6 +44,8 @@ On Mac:
 An earlier idle/light-use observation was about 3.3 GB across the stack with 7.75 GB allocated to Docker. These figures are not hard minimums or peak measurements. Large batches, indexing and Langfuse retention can increase resource use. Inspect actual Docker memory and disk usage if startup is slow or containers restart. ARM/x86 Mac and Windows fresh-install compatibility have not been independently verified for this release.
 
 You do **not** need local Node.js, PostgreSQL, LiteLLM or Langfuse installations. Their runtimes are packaged in the containers. Python 3.12 and Node 22 are pinned in the image builds; a code editor is optional for the first run.
+
+A coding agent can make code exploration and optional extensions more approachable. Ask it to explain the relevant code, propose a small change and suggest how to check it. Review the diff and validate the application behavior before accepting changes. It does not replace understanding the intended result. Do not share API keys or private data with it. Its account and model choice are separate from the configured OpenAI models used by the course application.
 
 Check the tools before continuing:
 
@@ -234,7 +237,7 @@ Internal memory is included in the local setup and does not require a Mem0 accou
    ```
 
    Startup rebuilds/resumes the existing stack, including the Test backend with `compose.memory.yaml`, and preserves existing data. Wait for it to finish, then refresh the Test workspace. Configuring the key does not reset provider memories or change the shared Mem0 project's extraction settings.
-3. Open **http://127.0.0.1:5179/** and sign in as the same seeded account throughout the check. Open **Support**, select **OpenAI Agents SDK**, keep Model routing and Agent design demos off, gateway guardrail off, and Source authority on. Confirm **Memory provider** offers **Internal memory** and an available **Mem0** option. The main marketplace on 5178 and Agent Loop lab on 5181 do not enable this integration. A visible/enabled option checks configuration; the next steps verify actual provider access.
+3. Open **http://127.0.0.1:5179/** and sign in as the same seeded account throughout the check. Open **Support**, select **OpenAI Agents SDK**, keep Model routing and Agent design demos off, gateway guardrail off, and Source authority on. Confirm **Memory provider** offers **Internal memory** and an available **Mem0** option. The main marketplace on 5178 does not enable this integration; use the standard Test workspace. A visible/enabled option checks configuration; the next steps verify actual provider access.
 4. Select **Mem0**, enable **Retrieve saved memories**, and start a fresh conversation. State a synthetic durable preference: **“I prefer payout explanations in a compact table with Finding, Evidence and Next action.”** Do not include real personal or sensitive data. The current answer can use session context; it does not prove a persistent save.
 5. Click **New conversation**. The application checks durable user intent and queues eligible full user/assistant context for background extraction. Observe the prior conversation's status, open **Memory extraction trace**, and wait for a confirmed result. Inspect **Saved memories · Mem0**. A queued/pending operation is not a completed save; `noop` means no eligible new content, and even a completed provider operation may produce zero entries. The alternative idle trigger defaults to 900 seconds of wall-clock inactivity; use New conversation for this check.
 6. In the new conversation, ask **“What is the payout status of order-2?”** Inspect the question's Langfuse trace: **Mem0 memory search**, the actual returned preference, current business tool evidence and the final layout. The expected observation is use of the saved columns without replacing current business facts. A formatted answer alone is not proof of retrieval. The agent chooses whether to call tools, so record missed searches or provider failures honestly.
