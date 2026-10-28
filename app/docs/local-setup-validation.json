@@ -1,0 +1,108 @@
+{
+  "date": "2026-10-28",
+  "status": "passed",
+  "source_revision": "480812eb6f309b6e12089861665d9ab22c1b1aa7",
+  "source_archive_sha256": "c2fb2f8273f18e9c80d38bf0b43e0700536bba1bdd27232c16d5e8804932734b",
+  "environment": {
+    "project": "marketplace-app-511005",
+    "zone": "asia-south1-a",
+    "vm": "course-local-check-20261028",
+    "os": "Ubuntu 24.04.5 LTS",
+    "architecture": "x86_64",
+    "vcpus": 4,
+    "ram_gib": 16,
+    "disk_gb": 60,
+    "docker": "29.9.2",
+    "compose": "5.6.1",
+    "python": "3.12.3"
+  },
+  "checks": [
+    "main API health",
+    "main and test frontends, gateway dashboard and Langfuse HTTP",
+    "all six demo accounts log in to both workspaces",
+    "all documents indexed for vector retrieval",
+    "provider-backed order answer and business evidence",
+    "same-conversation follow-up",
+    "provider-backed policy answer with vector retrieval evidence",
+    "feedback persists and can be changed",
+    "main/test conversation isolation",
+    "Langfuse contains emitted model and tool observations",
+    "stop/start preserves conversations, feedback and indexed documents",
+    "provider-backed question works after stop/start",
+    "Langfuse feedback score retained after restart"
+  ],
+  "indexed_documents": 20,
+  "documents": 20,
+  "runs": [
+    {
+      "id": "run-eb0010758e",
+      "status": "completed",
+      "model": "gpt-5.4-2026-03-05",
+      "tool_transport": "mcp",
+      "mcp_transport": "stdio",
+      "trace_id": "a9ffbfcf11993ccf23c54573bd2b6a3a"
+    },
+    {
+      "id": "run-a392a50cba",
+      "status": "completed",
+      "model": "gpt-5.4-2026-03-05",
+      "tool_transport": "mcp",
+      "mcp_transport": "stdio",
+      "trace_id": "d4bce5df11121de9a98d31642e88442c"
+    },
+    {
+      "id": "run-6383862412",
+      "status": "completed",
+      "model": "gpt-5.4-2026-03-05",
+      "tool_transport": "mcp",
+      "mcp_transport": "stdio",
+      "trace_id": "d8f5a2e373e274a2e50bfd2d690e0e74"
+    },
+    {
+      "id": "run-71742711ef",
+      "status": "completed",
+      "model": "gpt-5.4-2026-03-05",
+      "tool_transport": "mcp",
+      "mcp_transport": "stdio",
+      "trace_id": "89cd210acc7f7b9711f2b2cee6c6120b"
+    }
+  ],
+  "langfuse": {
+    "observation_count": 18,
+    "observation_names": [
+      "Gateway output \u2192 Model input",
+      "generation",
+      "turn",
+      "mcp_tools",
+      "Gateway output \u2192 Model input",
+      "query_business_data",
+      "generation",
+      "turn",
+      "mcp_tools",
+      "get_catalog",
+      "Gateway output \u2192 Model input",
+      "generation",
+      "turn",
+      "Marketplace support",
+      "mcp_tools",
+      "Agent workflow",
+      "Agent workflow",
+      "support-investigation"
+    ],
+    "feedback_score_verified": true
+  },
+  "limits": [
+    "Published source archive used; authenticated GitHub clone not exercised",
+    "HTTP and authenticated API exercised; full browser interaction not independently exercised",
+    "Mac fresh installation, Windows/WSL2 and fresh OpenRouter acceptance not tested"
+  ],
+  "cleanup": {
+    "status": "verified",
+    "temporary_vm_absent": true,
+    "boot_disk_absent": true,
+    "temporary_firewall_rules_deleted": true,
+    "temporary_openai_key_copy_removed_with_disk": true,
+    "existing_cloud_sql_state": "STOPPED",
+    "existing_cloud_sql_activation_policy": "NEVER"
+  }
+}
