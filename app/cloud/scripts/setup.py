@@ -295,7 +295,7 @@ class Setup:
         project = self.agent
         self.gc('services', 'enable', 'aiplatform.googleapis.com', 'iam.googleapis.com',
                 'secretmanager.googleapis.com', 'storage.googleapis.com', 'cloudresourcemanager.googleapis.com',
-                'logging.googleapis.com', 'monitoring.googleapis.com', 'cloudtrace.googleapis.com', project=project)
+                'logging.googleapis.com', 'monitoring.googleapis.com', 'cloudtrace.googleapis.com', 'telemetry.googleapis.com', project=project)
         number = self.gc('projects', 'describe', project, '--format=value(projectNumber)', project=project)
         self.state['agent_number'] = number
         self.generate_service_identity(number)
@@ -430,7 +430,7 @@ def main():
             missing = [name for name in ('gcloud', 'terraform', 'docker', 'python3.12') if not shutil.which(name)]
             if missing:
                 print('Install before deploying: ' + ', '.join(missing))
-            print('Live setup remains unverified until a fresh two-project rehearsal passes.')
+            print('Configuration checks do not prove live behavior. Complete the Cloud Setup acceptance checklist for your installation.')
     except (ValueError, RuntimeError, OSError, KeyError) as error:
         print(f'Setup stopped: {error}', file=sys.stderr)
         return 1

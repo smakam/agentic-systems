@@ -182,6 +182,8 @@ For teardown, delete only resources you created and account for both projects. T
 - **Changed configuration or source:** restore the configuration/source revision that created the checkpoint, or review a deliberate migration separately. Never remove state to bypass the check.
 - **Stale lock:** confirm no installer process is running before removing `setup.lock` from this deployment's private working directory.
 - **Interrupted agent create:** inspect the remote runtimes and saved manifest before recovery; never blindly retry a create.
+- **First hosted request returns 403 immediately after setup:** allow a few minutes for the new cross-project query grant to propagate, then retry. If it persists, inspect the scoped IAM binding; do not grant broad owner access to the application.
+- **Native traces absent:** verify `telemetry.googleapis.com` and `cloudtrace.googleapis.com` are enabled in the agent project and the runtime has `roles/cloudtrace.agent`. Allow ingestion time after a new question.
 - **Runtime/tool failure:** inspect IAM, the runtime's numeric secret version, model availability and the HTTPS MCP URL. The deployer and runtime identity have different responsibilities.
 
 The [technical deployment reference](cloud/README.md) has deeper infrastructure and credential troubleshooting. The [HTTP MCP acceptance record](cloud/VALIDATION-2026-10-10-SDK-HTTP-MCP.md) documents an existing deployment; it is not a fresh-install certification. Agent identity and staging permissions follow [Google's runtime setup guidance](https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime/setup).
