@@ -263,4 +263,6 @@ resource "google_cloud_run_v2_service_iam_member" "mcp_public" {
   role     = "roles/run.invoker"
   member   = "allUsers"
 }
-output "service_urls" { value = merge({ for name, service in google_cloud_run_v2_service.application : name => service.uri }, local.deploy_gateway ? { gateway = google_cloud_run_v2_service.gateway[0].uri } : {}) }
+# Return the advertised project-number endpoints used by the backend Origin
+# allowlist and MCP Host allowlist. Keep the private gateway's actual URI for IAM.
+output "service_urls" { value = merge({ for name, service in google_cloud_run_v2_service.application : name => "https://marketplace-${name}-${data.google_project.current.number}.${var.region}.run.app" }, local.deploy_gateway ? { gateway = google_cloud_run_v2_service.gateway[0].uri } : {}) }

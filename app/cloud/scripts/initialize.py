@@ -56,6 +56,8 @@ def initialize_database(url):
     from marketplace.seed import seed
     from marketplace.cloud_registry import DDL
     schema.init_schema()
+    from marketplace.embedding_cache import CacheBase
+    CacheBase.metadata.create_all(schema.engine)
     with schema.engine.begin() as conn:
         conn.execute(text(DDL))
         conn.execute(text('REVOKE ALL ON SCHEMA public, analytics FROM PUBLIC'))
@@ -71,6 +73,7 @@ def initialize_database(url):
         # Metadata allowlist excludes the migration and MCP registry tables.
         for table in schema.Base.metadata.sorted_tables:
             conn.execute(text(f'GRANT SELECT, INSERT, UPDATE, DELETE ON public."{table.name}" TO market'))
+        conn.execute(text('GRANT SELECT, INSERT, UPDATE, DELETE ON public.document_embedding_cache TO market'))
         conn.execute(text('GRANT SELECT ON public.document_chunks TO agent_reader'))
         conn.execute(text('GRANT SELECT, INSERT, UPDATE, DELETE ON public.mcp_investigations TO mcp_registry'))
     with schema.Session.begin() as session:
