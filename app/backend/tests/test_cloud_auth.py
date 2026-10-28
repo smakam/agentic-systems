@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-import httpx
+import httpx2 as httpx
 from marketplace.cloud_auth import CloudRunAuth
 
 
@@ -25,6 +25,11 @@ class CloudAuthTests(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(forwarded.headers['X-Serverless-Authorization'],'Bearer synthetic-identity-token')
                 await flow.aclose()
         self.assertEqual(len(calls),1)
+
+    async def test_pinned_openai_sdk_accepts_cloud_auth(self):
+        from openai import DefaultAsyncHttpxClient
+        client = DefaultAsyncHttpxClient(auth=CloudRunAuth('https://gateway.example'))
+        await client.aclose()
 
     async def test_metadata_failure_does_not_forward_request(self):
         original=httpx.AsyncClient

@@ -15,6 +15,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 import urllib.request
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -24,6 +25,29 @@ PHASES = ('preflight', 'infrastructure', 'credentials', 'images', 'gateway',
           'agent-package', 'agent-deploy', 'connect', 'health')
 HOSTS = {'https://cloud.langfuse.com', 'https://us.cloud.langfuse.com',
          'https://jp.cloud.langfuse.com', 'https://hipaa.cloud.langfuse.com'}
+
+
+def source_fingerprint():
+    files = sorted((CLOUD / 'terraform').glob('*.tf')) + sorted((CLOUD / 'bootstrap').glob('*.tf'))
+    files += [Path(__file__).resolve(), ROOT / 'app/google/deploy.py', ROOT / 'app/google/requirements.txt']
+    files += sorted(CLOUD.glob('Dockerfile.*'))
+    files += sorted((CLOUD / 'scripts').glob('*.py')) + sorted((CLOUD / 'scripts').glob('*.sh'))
+    # Include actual Docker/package inputs so an application fix cannot reuse
+    # an old image tag or silently change a resumed deployment.
+    for directory in ('app/backend/marketplace', 'app/frontend/src', 'app/data', 'app/google/marketplace_google'):
+        files += [p for p in (ROOT / directory).rglob('*')
+                  if p.is_file() and '__pycache__' not in p.parts and p.suffix != '.pyc']
+    for name in ('app/.dockerignore', 'app/backend/requirements.txt', 'app/frontend/package.json',
+                 'app/frontend/package-lock.json', 'app/frontend/index.html', 'app/frontend/vite.config.js',
+                 'app/infra/litellm.yaml', 'app/infra/lakera-guardrail.fragment.yaml', 'app/infra/gateway_audit.py'):
+        path = ROOT / name
+        if path.exists():
+            files.append(path)
+    digest = hashlib.sha256()
+    for path in sorted(set(files)):
+        label = str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else path.name
+        digest.update(label.encode() + b'\0' + path.read_bytes() + b'\0')
+    return digest.hexdigest()
 
 
 def configuration(path):
@@ -97,12 +121,7 @@ class Setup:
                 'langfuse_host': config['MARKETPLACE_LF_HOST']}}
         if self.state['config'] != config:
             raise ValueError('Configuration differs from this deployment checkpoint. Restore it before resuming.')
-        sources = sorted((CLOUD / 'terraform').glob('*.tf')) + sorted((CLOUD / 'bootstrap').glob('*.tf'))
-        sources += [Path(__file__).resolve(), ROOT / 'app/google/deploy.py', ROOT / 'app/google/requirements.txt']
-        sources += sorted((CLOUD).glob('Dockerfile.*'))
-        sources += sorted((ROOT / 'app/google/marketplace_google').glob('*.py'))
-        sources += sorted((CLOUD / 'scripts').glob('*.py')) + sorted((CLOUD / 'scripts').glob('*.sh'))
-        digest = hashlib.sha256(b''.join(p.read_bytes() for p in sources)).hexdigest()
+        digest = source_fingerprint()
         if self.state.get('source_digest', digest) != digest:
             raise ValueError('Deployment sources changed since setup began. Review the saved state before continuing.')
         self.state['source_digest'] = digest
@@ -251,12 +270,35 @@ class Setup:
         self.apply()
         self.state['urls'] = self.output('service_urls')
 
+    def generate_service_identity(self, number):
+        # Use the official API so an uninstalled gcloud beta component cannot
+        # leave an invisible install prompt inside captured command output.
+        token = self.gc('auth', 'print-access-token')
+        base = 'https://serviceusage.googleapis.com/v1beta1/'
+        request = urllib.request.Request(
+            base + f'projects/{number}/services/aiplatform.googleapis.com:generateServiceIdentity',
+            data=b'', method='POST', headers={'Authorization': 'Bearer ' + token})
+        with urllib.request.urlopen(request, timeout=60) as response:
+            operation = json.load(response)
+        deadline = time.monotonic() + 600
+        while not operation.get('done'):
+            if time.monotonic() > deadline:
+                raise RuntimeError('Agent service identity preparation timed out; inspect Service Usage operations.')
+            time.sleep(2)
+            request = urllib.request.Request(base + operation['name'], headers={'Authorization': 'Bearer ' + token})
+            with urllib.request.urlopen(request, timeout=60) as response:
+                operation = json.load(response)
+        if operation.get('error'):
+            raise RuntimeError('Agent service identity preparation failed; inspect Service Usage operations.')
+
     def agent_foundation(self):
         project = self.agent
         self.gc('services', 'enable', 'aiplatform.googleapis.com', 'iam.googleapis.com',
                 'secretmanager.googleapis.com', 'storage.googleapis.com', 'cloudresourcemanager.googleapis.com',
                 'logging.googleapis.com', 'monitoring.googleapis.com', 'cloudtrace.googleapis.com', project=project)
-        self.gc('beta', 'services', 'identity', 'create', '--service=aiplatform.googleapis.com', project=project)
+        number = self.gc('projects', 'describe', project, '--format=value(projectNumber)', project=project)
+        self.state['agent_number'] = number
+        self.generate_service_identity(number)
         sa = self.c['AGENT_RUNTIME_SERVICE_ACCOUNT']
         accounts = json.loads(self.gc('iam', 'service-accounts', 'list', '--format=json', project=project))
         if not any(a.get('email') == sa for a in accounts):
@@ -269,8 +311,6 @@ class Setup:
         principal = ('serviceAccount:' if deployer.endswith('.gserviceaccount.com') else 'user:') + deployer
         self.gc('iam', 'service-accounts', 'add-iam-policy-binding', sa,
                 f'--member={principal}', '--role=roles/iam.serviceAccountUser', '--condition=None', project=project)
-        number = self.gc('projects', 'describe', project, '--format=value(projectNumber)', project=project)
-        self.state['agent_number'] = number
         bucket = self.c['AGENT_STAGING_BUCKET']
         buckets = json.loads(self.gc('storage', 'buckets', 'list', '--format=json', project=project))
         if not any(b.get('name') == bucket[5:] or b.get('storage_url') == bucket for b in buckets):

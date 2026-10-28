@@ -92,6 +92,17 @@ class InstallerTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.installer()
 
+    def test_application_change_invalidates_the_image_checkpoint(self):
+        directory = self.root / 'app/backend/marketplace'
+        directory.mkdir(parents=True)
+        source = directory / 'cloud_auth.py'
+        source.write_text('# first transport version')
+        installer = self.installer()
+        installer.persist()
+        source.write_text('# corrected transport version')
+        with self.assertRaises(ValueError):
+            self.installer()
+
     def test_uncertain_agent_creation_cannot_be_blindly_replayed(self):
         installer = self.installer()
         installer.state['uncertain_agent_create'] = True
@@ -164,7 +175,7 @@ class InstallerTests(unittest.TestCase):
         class Response:
             def __enter__(self): return self
             def __exit__(self, *args): pass
-            def read(self): return b'{"status":"ok","data":[{"id":"hosted-trace-project"}]}'
+            def read(self): return b'{"status":"ok","done":true,"data":[{"id":"hosted-trace-project"}]}'
         with patch('builtins.input', return_value='course-market-test course-agent-test'), patch.object(setup.shutil, 'which', return_value='/fake/tool'), patch.object(setup.urllib.request, 'urlopen', return_value=Response()), patch.dict(setup.os.environ, {'GOOGLE_RUNTIME_RESOURCE': 'instructor-runtime'}):
             installer.deploy()
         index = lambda token: next(i for i, cmd in enumerate(commands) if token in cmd)

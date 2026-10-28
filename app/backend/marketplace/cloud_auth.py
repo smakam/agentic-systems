@@ -1,7 +1,7 @@
 """Cloud Run IAM authentication alongside the gateway's scoped virtual key."""
 import asyncio
 import time
-import httpx
+import httpx2 as httpx
 
 
 class CloudRunAuth(httpx.Auth):
