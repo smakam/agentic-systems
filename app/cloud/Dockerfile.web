@@ -4,7 +4,8 @@ COPY frontend/package*.json ./
 RUN npm ci
 COPY frontend/ ./
 ARG VITE_LANGFUSE_URL=http://localhost:3000
-RUN VITE_LANGFUSE_URL="$VITE_LANGFUSE_URL" npm run build
+ARG VITE_LANGFUSE_PROJECT_ID=marketplace-support
+RUN VITE_LANGFUSE_URL="$VITE_LANGFUSE_URL" VITE_LANGFUSE_PROJECT_ID="$VITE_LANGFUSE_PROJECT_ID" npm run build
 
 FROM python:3.12.13-slim@sha256:229a2c5bfa27522db7815ea81f9bed70af17ccb9de9fc7ad142b1877b5830d36
 WORKDIR /app

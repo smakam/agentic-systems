@@ -67,6 +67,8 @@ Confirm the two displayed project IDs. Setup then runs the infrastructure, crede
 
 You do **not** need to run Terraform, build images, provision the agent identity or copy MCP credentials manually. Terraform creates Marketplace infrastructure; the wrapper prepares the agent project and calls the Python agent deployer. It grants the agent access only to the Marketplace MCP secret, avoiding a duplicate secret payload. The MCP endpoint is reachable over HTTPS and still requires its application API key; the model gateway remains private.
 
+Setup also discovers your Langfuse project ID from its matching keys and builds the correct cloud trace links; no additional project-ID entry is required.
+
 Setup prints the Marketplace URL and stores a non-secret result in:
 
 ```text

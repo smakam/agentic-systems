@@ -164,7 +164,7 @@ class InstallerTests(unittest.TestCase):
         class Response:
             def __enter__(self): return self
             def __exit__(self, *args): pass
-            def read(self): return b'{"status":"ok"}'
+            def read(self): return b'{"status":"ok","data":[{"id":"hosted-trace-project"}]}'
         with patch('builtins.input', return_value='course-market-test course-agent-test'), patch.object(setup.shutil, 'which', return_value='/fake/tool'), patch.object(setup.urllib.request, 'urlopen', return_value=Response()), patch.dict(setup.os.environ, {'GOOGLE_RUNTIME_RESOURCE': 'instructor-runtime'}):
             installer.deploy()
         index = lambda token: next(i for i, cmd in enumerate(commands) if token in cmd)
@@ -174,6 +174,7 @@ class InstallerTests(unittest.TestCase):
         self.assertEqual(final['google_runtime_project_id'], 'course-agent-test')
         self.assertEqual(final['google_runtime_resource'], 'projects/123456789/locations/us-central1/reasoningEngines/456')
         self.assertTrue(final['application_enabled'])
+        self.assertTrue(any('VITE_LANGFUSE_PROJECT_ID=hosted-trace-project' in command for command in commands))
         self.assertEqual(json.loads((installer.work / 'result.json').read_text())['live_agent_acceptance'], 'pending')
 
     def test_wrong_confirmation_and_concurrent_run_make_no_changes(self):

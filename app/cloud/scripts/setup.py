@@ -6,6 +6,7 @@ Project-specific Terraform copies and checkpoints keep retries from rewinding
 an already deployed application. An uncertain agent create is never replayed.
 """
 import argparse
+import base64
 import hashlib
 import json
 import os
@@ -199,6 +200,17 @@ class Setup:
         if values.get('LANGFUSE_HOST') != self.c['MARKETPLACE_LF_HOST']:
             raise RuntimeError('Langfuse public configuration host does not match setup configuration.')
         self.state['variables']['langfuse_public_key'] = values['LANGFUSE_PUBLIC_KEY']
+        # The local seeded project slug is not the hosted project's ID. Resolve
+        # it with the matching project keys, without adding another learner input.
+        key = self.gc('secrets', 'versions', 'access', 'latest', '--secret=marketplace-web-langfuse-secret')
+        authorization = base64.b64encode((values['LANGFUSE_PUBLIC_KEY'] + ':' + key).encode()).decode()
+        request = urllib.request.Request(values['LANGFUSE_HOST'] + '/api/public/projects',
+                                         headers={'Authorization': 'Basic ' + authorization})
+        with urllib.request.urlopen(request, timeout=30) as response:
+            projects = json.load(response)['data']
+        if len(projects) != 1 or not re.fullmatch(r'[A-Za-z0-9_-]+', projects[0].get('id', '')):
+            raise RuntimeError('Tracing keys must identify one Langfuse project.')
+        self.state['langfuse_project_id'] = projects[0]['id']
 
     def images(self):
         repo = self.output('image_repository')
@@ -207,7 +219,8 @@ class Setup:
             tag = f'{repo}/{image}:setup-{self.state["source_digest"][:12]}'
             command = ['docker', 'build', '--platform', 'linux/amd64', '-f', CLOUD / f'Dockerfile.{image}', '-t', tag]
             if image == 'web':
-                command += ['--build-arg', f'VITE_LANGFUSE_URL={self.c["MARKETPLACE_LF_HOST"]}']
+                command += ['--build-arg', f'VITE_LANGFUSE_URL={self.c["MARKETPLACE_LF_HOST"]}',
+                            '--build-arg', f'VITE_LANGFUSE_PROJECT_ID={self.state["langfuse_project_id"]}']
             self.run([*command, ROOT / 'app'])
             self.run(['docker', 'push', tag])
             self.state['variables'][f'{image}_image'] = tag
