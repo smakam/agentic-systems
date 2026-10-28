@@ -44,3 +44,7 @@ Validated on October 28, 2026 in fresh, billing-enabled projects `marketplace-te
 The [machine-readable receipt](setup-validation.json) records checks and trace/session references. Secrets, private credential files, Terraform state and raw trace payloads are excluded. SDK and Google answers were checked against seeded Marketplace records, with actual HTTP MCP evidence and retained traces. Database stop/resume was verified with saved conversations, feedback and new data-backed questions.
 
 This run used the published wrapper with reviewed maintainer recoveries after failures. It did not repeat the entire corrected installer in a second new project pair. It used macOS deployment tooling; Cloud Shell and organization policy variations were not rehearsed. Optional external guardrails were not enabled. The [Linux local validation](../LINUX-SETUP-VALIDATION.md) is a separate acceptance record.
+
+## Retained test environment
+
+After acceptance, test Cloud SQL was confirmed **STOPPED** with activation policy **NEVER**. Data and both project deployments are retained for review; storage and retained resources can still incur charges. Start the test database before opening the application. The original course database was independently confirmed STOPPED/NEVER.

@@ -86,5 +86,10 @@
     "No second brand-new project pair was deployed after these corrections.",
     "Cloud Shell and organization-managed project policies were not rehearsed.",
     "Optional Presidio/Lakera integrations and additional platform exercises were outside this baseline."
-  ]
+  ],
+  "final_database_state": {
+    "test": "STOPPED/NEVER",
+    "original_course": "STOPPED/NEVER",
+    "retained_resources": "Deployments and stored data retained; residual costs remain possible."
+  }
 }
