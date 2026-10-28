@@ -126,7 +126,7 @@ If startup reports that vector indexing is unavailable, the UI may still load. F
 | Surface | URL | Login |
 |---|---|---|
 | Marketplace | [localhost:5178](http://localhost:5178/) | `operator` or `support`, password `demo-marketplace` |
-| Isolated test marketplace | [127.0.0.1:5179](http://127.0.0.1:5179/) | Same seeded demo accounts/password, with separate data and sessions |
+| Isolated test marketplace | [127.0.0.1:5179](http://127.0.0.1:5179/) | `operator` or `support`, password `demo-marketplace`; separate data and sessions |
 | Local Langfuse | [localhost:3000](http://localhost:3000/) | `operator@example.local`, password `demo-marketplace` |
 | LiteLLM dashboard | [localhost:4000/ui](http://localhost:4000/ui/) | `admin`, password `sk-marketplace-local` (**local demo gateway master key**, not a provider API key) |
 | Backend API docs | [localhost:58000/docs](http://localhost:58000/docs) | Browser/API authentication required for protected operations |
