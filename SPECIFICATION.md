@@ -749,7 +749,7 @@ OWASP concepts for later slides: tool misuse/output validation, delegated author
 
 The user reports validating the manual lantern comparison and agrees to close the bounded Guardrails and Agent Security experiment scope. This records user acceptance, not independent review of a new trace export. No further security build is required for this learning scope; slides, notes, homework and recording packaging remain later work.
 
-Next is the [hosted Google platform walkthrough](course/GOOGLE-PLATFORM-PLAN.md): inspect the existing signed-in account/agent, deploy the marketplace agent, connect remote business MCP tools, ask questions through the available platform surface, exercise native sessions/long-term memory, inspect Google-native monitoring/tracing and capture repeatable setup/results. Account entitlements, model availability and middleware connectivity require inspection; no Google deployment or new benchmark is claimed yet.
+Next is the [hosted Google platform walkthrough](app/CLOUD-SETUP.md): inspect the existing signed-in account/agent, deploy the marketplace agent, connect remote business MCP tools, ask questions through the available platform surface, exercise native sessions/long-term memory, inspect Google-native monitoring/tracing and capture repeatable setup/results. Account entitlements, model availability and middleware connectivity require inspection; no Google deployment or new benchmark is claimed yet.
 
 ### Google ADK lab implementation — October 7, 2026
 
@@ -759,15 +759,15 @@ The user selected ADK on Google managed Agent Runtime, with native Sessions for 
 
 Seven hosted questions passed: same-session recall, fresh-session isolation, long-term preference recall and application to SQL/RAG, retrieval disabled and a different-user control. A separate fresh Playground recall also passed. The original failures were a preference saved under the CLI user instead of the Playground user, plus conflicting prompt instructions that sent personal-memory questions to business search. Generated memory from the Playground user’s own preference session and corrected that prompt routing. Saving remains an explicit lesson-client generation action; preload retrieval is automatic.
 
-Cloud Trace correlation and native Traces → Session view passed for all final test sessions. The recall model input contains the saved preference; the SQL/RAG investigation has six tool calls and no model/tool errors. [Results, sessions, exact questions and repeatable commands](app/google/VALIDATION.md). No wider model benchmark is claimed.
+Cloud Trace correlation and native Traces → Session view passed for all final test sessions. The recall model input contains the saved preference; the SQL/RAG investigation has six tool calls and no model/tool errors. [Results, sessions, exact questions and repeatable commands](app/CLOUD-SETUP.md). No wider model benchmark is claimed.
 
 ## Google guide consolidation — October 8, 2026
 
-Consolidated the Google experiment plan, walkthrough, deployment/memory commands, validation results and dated setup history into [one Google platform guide](course/GOOGLE-PLATFORM-PLAN.md). The former files retain short pointers for existing links. The course outline links to the combined guide; it explicitly distinguishes Playground from Cloud Shell, user IDs and per-question memory-off controls. No new cloud changes or model tests were needed for this documentation update.
+Consolidated the Google experiment plan, walkthrough, deployment/memory commands, validation results and dated setup history into [one Google platform guide](app/CLOUD-SETUP.md). The former files retain short pointers for existing links. The course outline links to the combined guide; it explicitly distinguishes Playground from Cloud Shell, user IDs and per-question memory-off controls. No new cloud changes or model tests were needed for this documentation update.
 
 ## Google manual acceptance — October 8, 2026
 
-The user confirmed completing the manual walkthrough for short-term memory, long-term memory and general business questions on October 8, 2026. This records user acceptance alongside the previously verified hosted tests and trace inspection; it is not a new automated run. The agreed Google experiment scope is closed. Slides, speaker notes, homework and recording preparation remain later work. [Combined guide](course/GOOGLE-PLATFORM-PLAN.md).
+The user confirmed completing the manual walkthrough for short-term memory, long-term memory and general business questions on October 8, 2026. This records user acceptance alongside the previously verified hosted tests and trace inspection; it is not a new automated run. The agreed Google experiment scope is closed. Slides, speaker notes, homework and recording preparation remain later work. [Combined guide](app/CLOUD-SETUP.md).
 
 ## Answer feedback and online evaluation — October 8, 2026
 

@@ -184,7 +184,7 @@ the application binds investigation identity, retains returned evidence and
 closes the investigation. Cloud configuration selects HTTPS; local Compose keeps
 stdio. SDK memory remains a separate user-bound stdio server. The new path passed
 nine isolated protocol/lifecycle tests; cloud revision `marketplace-web-00013-sc6` is ready; live acceptance needs
-approval to start the parked database. See [deployment and runtime paths](DEPLOYMENT-AND-RUNTIME-PATHS.md).
+approval to start the parked database. See [deployment and runtime paths](CLOUD-SETUP.md).
 
 Verification: `scripts/test.sh` runs real MCP protocol tests against `market_test`.
 `scripts/compare-mcp.py` runs four questions per transport (eight paid candidate
@@ -320,7 +320,7 @@ OWASP concepts for later slides: tool misuse/output validation, delegated author
 
 The user reports validating the manual lantern comparison and agrees to close the bounded Guardrails and Agent Security experiment scope. This records user acceptance, not independent review of a new trace export. No further security build is required for this learning scope; slides, notes, homework and recording packaging remain later work.
 
-Next is the [hosted Google platform walkthrough](../course/GOOGLE-PLATFORM-PLAN.md): inspect the existing signed-in account/agent, deploy the marketplace agent, connect remote business MCP tools, ask questions through the available platform surface, exercise native sessions/long-term memory, inspect Google-native monitoring/tracing and capture repeatable setup/results. Account entitlements, model availability and middleware connectivity require inspection; no Google deployment or new benchmark is claimed yet.
+Next is the [hosted Google platform walkthrough](CLOUD-SETUP.md): inspect the existing signed-in account/agent, deploy the marketplace agent, connect remote business MCP tools, ask questions through the available platform surface, exercise native sessions/long-term memory, inspect Google-native monitoring/tracing and capture repeatable setup/results. Account entitlements, model availability and middleware connectivity require inspection; no Google deployment or new benchmark is claimed yet.
 
 ### Google ADK lab implementation — October 7, 2026
 
@@ -328,7 +328,7 @@ The user selected ADK on Google managed Agent Runtime, with native Sessions for 
 
 ### Current Google lab guide — October 8, 2026
 
-The hosted Google lab passed SQL/RAG, short-/long-term memory and native tracing checks. Use the [single Google walkthrough](../course/GOOGLE-PLATFORM-PLAN.md) for architecture, setup, commands, user identities, demos and results. Earlier checkpoints above remain historical.
+The hosted Google lab passed SQL/RAG, short-/long-term memory and native tracing checks. Use the [cloud Marketplace setup](CLOUD-SETUP.md) for architecture, setup, commands, user identities, demos and results. Earlier checkpoints above remain historical.
 
 **Manual acceptance — October 8, 2026:** The user validated general questions and short-/long-term memory. The agreed Google experiment phase is complete; course-production materials remain later work.
 

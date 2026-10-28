@@ -33,4 +33,4 @@ Record the actual application, hosted agent and backend locations; tool argument
 
 A simple diagram should identify what the ADK code defines, what Google hosts, and why the separate business backend is needed. Distinguish observed behavior from documented capabilities. The existing instructor integration has been exercised, but a complete fresh learner-project setup has not been rehearsed independently.
 
-Use the shared [Basics setup guide](../../../setup/google-agent-platform/setup-guide.md), [Marketplace platform guide](../../../GOOGLE-PLATFORM-PLAN.md), and [instructor walkthrough](../instructor-demo.md) for the corresponding steps. Cleanup applies only to resources you created; preserve instructor deployments and business data.
+Use the shared [Basics setup guide](../../../setup/google-agent-platform/setup-guide.md), [Marketplace cloud setup](../../../../app/CLOUD-SETUP.md), and [instructor walkthrough](../instructor-demo.md) for the corresponding steps. Cleanup applies only to resources you created; preserve instructor deployments and business data.

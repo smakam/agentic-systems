@@ -1,6 +1,8 @@
 # Marketplace runtime selector
 
-Start with [Local and cloud deployment with multiple agent runtimes](DEPLOYMENT-AND-RUNTIME-PATHS.md) for the architecture, coordinated backend switch command and local-to-cloud acceptance process. This companion guide covers selector behavior, credentials and detailed validation.
+**Course scope:** local Marketplace uses its local SDK. The full hosted Marketplace path follows [Cloud Setup](CLOUD-SETUP.md) in both cloud projects. Any retained local-caller or tunnel acceptance below is implementation history, not a supported learner setup.
+
+Start with [Local and cloud deployment with multiple agent runtimes](CLOUD-SETUP.md) for the architecture, coordinated backend switch command and local-to-cloud acceptance process. This companion guide covers selector behavior, credentials and detailed validation.
 
 Historical baseline, October 8, 2026, before the coordinated local switch and memory-control change: selector and adapters implemented; local main and test containers updated; cloud selector and Google query grant deployed; hosted adapters pass mocked contract tests. Google question, follow-up, explicit Memory Bank save and fresh-conversation recall pass. Google and Lyzr cloud order questions, same-session follow-ups and fresh-session native memory recall are verified. Local Lyzr credentials are configured in ignored `app/.env`, both local backends restarted, and the local order-2 question and same-session follow-up passed. Local Google ADC is configured; local main question and follow-up passed.
 
@@ -24,7 +26,7 @@ Hosted agents use their configured MCP endpoint. Choosing Google or Lyzr from a 
 
 ## Optional Google marketplace integration
 
-This guide describes the existing verified marketplace integration, not a required setup for every Google lesson. The separate [standalone Chapter 19 Basics lab](../course/exercises/google-agent-platform/setup-guide.md) uses native Playground with packaged fictional data/function tools and has been deployed. It does not contain marketplace MCP tools; use the [optional marketplace integration sequence](../course/GOOGLE-PLATFORM-PLAN.md) to connect a compatible marketplace ADK agent. In the existing integration, the managed agent stays hosted whether its marketplace caller is local or cloud. Local ADC authenticates that caller; the agent's MCP profile independently selects its business endpoint and matching secret. `python deploy.py --backend local|cloud` updates a managed deployment, not a UI runtime choice. Preserve dated acceptance below and read back the actual deployed endpoint before a current demo.
+This guide describes the existing verified marketplace integration, not a required setup for every Google lesson. The separate [standalone Chapter 19 Basics lab](../course/setup/google-agent-platform/setup-guide.md) uses native Playground with packaged fictional data/function tools and has been deployed. It does not contain marketplace MCP tools; use the [optional marketplace integration sequence](CLOUD-SETUP.md) to connect a compatible marketplace ADK agent. In the existing integration, the managed agent stays hosted whether its marketplace caller is local or cloud. Local ADC authenticates that caller; the agent's MCP profile independently selects its business endpoint and matching secret. `python deploy.py --backend local|cloud` updates a managed deployment, not a UI runtime choice. Preserve dated acceptance below and read back the actual deployed endpoint before a current demo.
 
 ## Configuration
 

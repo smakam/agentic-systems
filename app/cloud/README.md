@@ -1,5 +1,8 @@
 # Shared marketplace cloud deployment
 
+**Historical technical reference:** some configurations and observations below include retired laptop-tunnel or mixed local/cloud experiments. They are not supported learner setup instructions. The canonical supported full-cloud path is [Cloud Setup](../CLOUD-SETUP.md); local study uses the local SDK. No existing deployment is changed by this documentation consolidation.
+
+
 Learners: start with the ordered [optional cloud setup guide](../CLOUD-SETUP.md). This file contains deployment references and validation history.
 
 [Access reference: local/cloud URLs, users and credential locations](../.access-reference.md).
@@ -93,7 +96,7 @@ Small shared-core PostgreSQL kept running: planning allowance about US$30–40/m
 ## Remaining follow-up
 
 1. Rehearse the corrected setup scripts in a fresh project; publish the learner repository and validate a clean local installation.
-2. Hosted Google ADK reconnection passed October 8: the existing runtime uses the cloud MCP profile, deployed metadata matches the URL/secret pair, and a fresh cited payout investigation completed. See the [Google walkthrough](../../course/GOOGLE-PLATFORM-PLAN.md#switch-between-local-and-cloud-mcp-backends) for local/cloud switching. Lyzr reconnection remains to verify separately. Shared UI adapters remain a separate feature.
+2. Recheck the hosted Google/Lyzr connection against the full cloud sequence and inspect native traces before recording. Historical acceptance is distinct from a fresh-project rehearsal.
 3. Forced replica/restart persistence checks and a broader Presidio cloud test remain additional acceptance work. The verified HTTP MCP check used separate requests, without forcing an instance change.
 4. Keep database start/stop and cleanup instructions aligned with Terraform. Do not stop PostgreSQL while the owner is testing the app.
 
@@ -119,19 +122,8 @@ Troubleshooting entries should show the symptom, safe check, retry command and e
 
 The cloud gateway scales to zero. A first request after inactivity can spend longer than 40 seconds starting LiteLLM and its dependencies. The model client uses a 120-second timeout when Cloud Run IAM is configured, with the overall investigation still bounded to 150 seconds. `GATEWAY_REQUEST_TIMEOUT_SECONDS` can override the client timeout; local requests retain 40 seconds. This keeps minimum instances at zero rather than adding idle compute. A warm request succeeding does not by itself validate a cold start.
 
-## Runtime selector follow-up — October 8, 2026
+## Course setup boundary
 
-[Marketplace runtime selector](../RUNTIME-SELECTOR.md) documents conversation binding, native memory controls, configuration and remaining live validation. Changing runtime opens a fresh conversation; history preserves the original platform. The selector is deployed locally and in cloud. Google question/follow-up and native cross-session memory save/recall are verified. Google and Lyzr cloud order questions, same-session follow-ups and fresh-session native memory recall are verified. Local Lyzr credentials are configured in ignored `app/.env`, both local backends restarted, and the local order-2 question and same-session follow-up passed. Local Google ADC is configured; local main question and follow-up passed.
+Use [Cloud Setup](../CLOUD-SETUP.md) for the supported two-project Marketplace and Google-managed-agent deployment. It owns the learner setup sequence and project-boundary diagram. The standalone Google Basics and Lyzr Basics guides remain independent chapter activities. Laptop tunnels and mixed local/cloud caller paths are not part of the supported course setup.
 
-
-## Verified marketplace checkpoint — October 8, 2026
-
-The local and cloud reference application paths are working. The shared UI selects OpenAI Agents SDK, Google ADK or Lyzr; switching opens a fresh conversation, and history retains its original runtime/session. Google and Lyzr remain hosted when selected locally, and currently use the local MCP tunnel profile. The SDK uses the selected application's local/cloud database. Endpoint/key profiles are independent of the runtime selector.
-
-Cloud `market` was aligned once to local revision 24, including clock, business history and indexed policies, with a retained rollback snapshot. User accounts, conversations, ratings and personal/native memories remain independent; test/evaluation databases were not copied. Local order summaries and daily counts now use readable business labels and formatting. The user approved the new local output and confirmed the cloud SDK detailed trace in Langfuse. Google/Lyzr wrapper traces record the marketplace question/answer/timing/feedback; internal calls remain in native platform tracing.
-
-Course plan: local SDK for main demonstrations; hosted agents and native platform monitoring in platform chapters. Online evaluation remains Evaluation chapter preparation. Clean-machine/fresh-project learner rehearsals, publication checkpoints, slides, notes, homework and recording preparation remain separate work. See the [architecture and delivery boundaries](../../course/MARKETPLACE-DEPLOYMENT-ARCHITECTURE.md).
-
-## Separate Chapter 12 learner deployment
-
-[Chapter 12](../../course/exercises/runtime-and-hosting/exercise.md) deploys only the stateless agent worker using Dockerfile.hosting-lab. Laptop chat owns history; HTTPS MCP reaches local middleware; the agent calls OpenAI Responses directly. It uses dedicated application keys and an existing learner-provisioned provider secret. This is a compact hosting lab, separate from the full application services described above. The deploy and cleanup helper records exact created resources; do not reuse instructor URLs, which were removed after validation.
+Historical runtime switching, data-alignment and retired hosting-lab notes are retained in Git history. They are not current deployment instructions. A fresh two-project learner installation remains pending validation.

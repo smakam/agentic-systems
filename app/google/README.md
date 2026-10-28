@@ -1,5 +1,7 @@
-# Google ADK marketplace lab
+# Marketplace Google agent package
 
-Consolidated into the [Google platform walkthrough](../../course/GOOGLE-PLATFORM-PLAN.md). Use that one guide for architecture, deployment, Cloud Shell commands, user IDs, memory demos, monitoring/tracing, verified results and setup history.
+This package implements the Marketplace-compatible Google agent with cloud business MCP tools. Deploy and connect it using [Cloud Setup](../CLOUD-SETUP.md), sections 7–8. Its Python helper packages the agent; Marketplace infrastructure and cross-project query permission use the shared Terraform root.
 
-The Python code in this directory implements the lab; the teaching instructions are maintained in the walkthrough.
+The independent [Support Agent Basics package](basics/README.md) and [chapter setup guide](../../course/setup/google-agent-platform/setup-guide.md) use fictional data/native tools and remain separate.
+
+Historical tunnel/backend-switch code is retained for implementation history, not a supported learner setup.
