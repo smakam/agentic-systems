@@ -85,7 +85,7 @@ These commands require gcloud and an authorized deployment identity. Start/stop 
 
 ## Cost boundary
 
-> **Stop Cloud SQL between cloud lab sessions and start it only when you need the cloud application.** For this small lab, Cloud SQL left running is usually the largest continuing infrastructure cost. Stopping preserves data and suspends instance compute charges; storage and retained backups still incur a smaller ongoing charge. Follow the [stop/start instructions](../CLOUD-SETUP.md#7-stop-and-resume-between-labs) and verify the instance reaches **Stopped**.
+> **Stop Cloud SQL between cloud lab sessions and start it only when you need the cloud application.** For this small lab, Cloud SQL left running is usually the largest continuing infrastructure cost. Stopping preserves data and suspends instance compute charges; storage and retained backups still incur a smaller ongoing charge. Follow the [stop/start instructions](../CLOUD-SETUP.md#stop-and-resume-between-labs) and verify the instance reaches **Stopped**.
 
 Small shared-core PostgreSQL kept running: planning allowance about US$30–40/month including modest retained resources, subject to final regional price and capacity checks. Model/API calls are extra. Stopped PostgreSQL still incurs storage/backup charges. Public idle IPv4 can add $0.01/hour, around $7.30/month; the foundation uses private-only IP instead. Small stopped-lab retained resources should be a few dollars monthly, not a guaranteed bill. Langfuse Hobby is free within limits.
 

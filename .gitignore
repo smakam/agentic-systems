@@ -49,3 +49,6 @@
 /app/lyzr/*-proof.json
 /app/lyzr/final-answer.txt
 .opencode
+
+# Per-project cloud installer checkpoints and Terraform working copies
+/app/cloud/.setup/

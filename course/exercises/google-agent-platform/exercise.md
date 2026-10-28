@@ -19,7 +19,7 @@ Complete [setup-guide.md](../../setup/google-agent-platform/setup-guide.md) firs
 
 ### Setup and starting point
 
-Use the **full cloud Marketplace application** for this extension. Complete [Cloud Setup](../../../app/CLOUD-SETUP.md) sections 1–8: deploy the Marketplace project, deploy the Marketplace-compatible Google agent in the agent project, connect the web backend to that runtime, and verify it end to end. The frontend/backend, business MCP service and database stay in Google Cloud; the Google agent runs in its managed runtime. This course path does not use a local caller or laptop tunnel.
+Use the **full cloud Marketplace application** for this extension. Complete [Cloud Setup](../../../app/CLOUD-SETUP.md) steps 1–4: deploy the Marketplace project, deploy the Marketplace-compatible Google agent in the agent project, connect the web backend to that runtime, and verify it end to end. The frontend/backend, business MCP service and database stay in Google Cloud; the Google agent runs in its managed runtime. This course path does not use a local caller or laptop tunnel.
 
 The standalone Basics deployment has no business MCP tools and is not the deployment to update. Selecting Google in chat calls a configured runtime; it does not deploy one or repoint its business endpoint. Use your own separately identified resources and preserve instructor deployments. The setup guide contains the commands; this exercise covers behavior and evidence afterward.
 
