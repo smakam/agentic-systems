@@ -68,10 +68,12 @@ chmod 600 .env
 
 ### Get an API account, credit balance and key
 
-You create an API key; you purchase API credits or enable billing on the account that key belongs to.
+Use **OpenAI directly for the default setup**. **OpenRouter is an optional alternative**; you do not need an OpenRouter account or key when using OpenAI directly.
+
+For your selected provider, create an API key and purchase API credits or enable billing on the account that key belongs to.
 
 - **OpenAI:** [sign up or sign in to the OpenAI API platform](https://platform.openai.com/), configure a payment method and add credit through [API billing](https://platform.openai.com/settings/organization/billing/overview), then create a key in [API keys](https://platform.openai.com/api-keys). Use the course’s configured OpenAI models; account/model access may vary. A ChatGPT subscription does not fund API requests. See the [official API quickstart](https://developers.openai.com/api/docs/quickstart).
-- **OpenRouter:** [sign up or sign in](https://openrouter.ai/), add funds through [Credits](https://openrouter.ai/settings/credits), then create a key in [API keys](https://openrouter.ai/settings/keys). The balance pays for requests to supported models across OpenRouter’s providers, subject to access, routing and pricing. The course still uses its configured models; it does not provide an arbitrary-model selector. See [OpenRouter account and credit guidance](https://openrouter.ai/support).
+- **OpenRouter (optional alternative):** [sign up or sign in](https://openrouter.ai/), add funds through [Credits](https://openrouter.ai/settings/credits), then create a key in [API keys](https://openrouter.ai/settings/keys). The balance pays for requests to supported models across OpenRouter’s providers, subject to access, routing and pricing. The course still uses its configured models; it does not provide an arbitrary-model selector. See [OpenRouter account and credit guidance](https://openrouter.ai/support).
 
 **Budget guidance:** USD **10–20 as an initial API-credit planning allowance**, not a measured or guaranteed cost for completing every chapter. Usage depends on repetitions, models, embeddings and evaluation runs. Credit-purchase fees/taxes and optional hosted-platform charges may be additional. A complete course-wide cost estimate has not been measured. Later platform labs are optional; eligible Google Cloud/AWS newcomers and Lyzr free-plan users may receive limited credits, with differing expiry and service restrictions: [Google Cloud](https://cloud.google.com/signup-faqs), [AWS](https://aws.amazon.com/free/), [Lyzr](https://docs.lyzr.ai/agent-lab/plans). Check each lesson and current terms before creating paid resources.
 
