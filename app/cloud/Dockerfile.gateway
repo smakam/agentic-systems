@@ -3,6 +3,7 @@ COPY infra/litellm.yaml /app/config.yaml
 COPY infra/lakera-guardrail.fragment.yaml /app/lakera.fragment.yaml
 RUN cat /app/lakera.fragment.yaml >> /app/config.yaml
 COPY infra/gateway_audit.py /app/gateway_audit.py
+COPY cloud/scripts/start-gateway.py /app/start-gateway.py
 ENV PORT=8080
 ENTRYPOINT []
-CMD ["sh", "-c", "exec litellm --config /app/config.yaml --port ${PORT}"]
+CMD ["python", "/app/start-gateway.py"]
