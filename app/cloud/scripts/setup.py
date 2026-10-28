@@ -319,10 +319,23 @@ class Setup:
         self.gc('storage', 'buckets', 'add-iam-policy-binding', bucket, f'--member=serviceAccount:{sa}', '--role=roles/storage.objectViewer', project=project)
         self.gc('storage', 'buckets', 'add-iam-policy-binding', bucket,
                 f'--member={principal}', '--role=roles/storage.admin', project=project)
-        secret = f'projects/{self.project}/secrets/marketplace-mcp-api-key'
-        self.gc('secrets', 'add-iam-policy-binding', secret, f'--member=serviceAccount:{sa}',
-                '--role=roles/secretmanager.secretAccessor', '--condition=None')
-        version = json.loads(self.gc('secrets', 'versions', 'describe', 'latest', '--secret=marketplace-mcp-api-key', '--format=json'))
+        # Injected secrets must belong to the runtime's project. Copy the
+        # generated MCP credential privately, never through argv or TF state.
+        name = self.c['AGENT_MCP_SECRET_NAME']
+        secrets = json.loads(self.gc('secrets', 'list', '--format=json', project=project))
+        if not any(item.get('name', '').endswith('/secrets/' + name) for item in secrets):
+            self.gc('secrets', 'create', name, '--replication-policy=automatic', project=project)
+        credential = self.gc('secrets', 'versions', 'access', 'latest', '--secret=marketplace-mcp-api-key')
+        versions = json.loads(self.gc('secrets', 'versions', 'list', '--secret=' + name,
+                                     '--filter=state:ENABLED', '--format=json', project=project))
+        current = self.gc('secrets', 'versions', 'access', 'latest', '--secret=' + name, project=project) if versions else None
+        if current != credential:
+            self.run(['gcloud', 'secrets', 'versions', 'add', name, '--data-file=-', '--project=' + project],
+                     input=credential, capture=True)
+        self.gc('secrets', 'add-iam-policy-binding', name, f'--member=serviceAccount:{sa}',
+                '--role=roles/secretmanager.secretAccessor', '--condition=None', project=project)
+        version = json.loads(self.gc('secrets', 'versions', 'describe', 'latest', '--secret=' + name,
+                                    '--format=json', project=project))
         self.state['mcp_secret_version'] = version['name'].split('/')[-1]
         self.persist()
 
@@ -347,7 +360,7 @@ class Setup:
             if (not data.get('resource_name', '').startswith(expected)
                     or data.get('mcp_url') != self.state['urls']['mcp'] + '/mcp'
                     or data.get('project') != self.agent
-                    or data.get('mcp_secret') != f'projects/{self.project}/secrets/marketplace-mcp-api-key'
+                    or data.get('mcp_secret') != f'projects/{self.agent}/secrets/{self.c["AGENT_MCP_SECRET_NAME"]}'
                     or data.get('mcp_secret_version') != self.state['mcp_secret_version']):
                 raise RuntimeError('Agent manifest does not match the intended project and MCP endpoint.')
             self.state['runtime'] = data['resource_name']
@@ -358,7 +371,7 @@ class Setup:
                     'GOOGLE_CLOUD_LOCATION': self.c['AGENT_GCP_REGION'],
                     'GOOGLE_STAGING_BUCKET': self.c['AGENT_STAGING_BUCKET'],
                     'GOOGLE_RUNTIME_SERVICE_ACCOUNT': self.c['AGENT_RUNTIME_SERVICE_ACCOUNT'],
-                    'GOOGLE_MCP_SECRET': f'projects/{self.project}/secrets/marketplace-mcp-api-key',
+                    'GOOGLE_MCP_SECRET': f'projects/{self.agent}/secrets/{self.c["AGENT_MCP_SECRET_NAME"]}',
                     'GOOGLE_MCP_SECRET_VERSION': self.state['mcp_secret_version'],
                     'REMOTE_MCP_URL': self.state['urls']['mcp'] + '/mcp'})
         self.state['uncertain_agent_create'] = True

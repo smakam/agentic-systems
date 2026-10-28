@@ -65,7 +65,7 @@ python3 app/cloud/scripts/setup.py --deploy
 
 Confirm the two displayed project IDs. Setup then runs the infrastructure, credential, image, database, application and agent steps in order. Supply the demo password, OpenAI key and matching Langfuse keys when requested. Keep the terminal open; infrastructure provisioning and agent deployment can take time.
 
-You do **not** need to run Terraform, build images, provision the agent identity or copy MCP credentials manually. Terraform creates Marketplace infrastructure; the wrapper prepares the agent project and calls the Python agent deployer. It grants the agent access only to the Marketplace MCP secret, avoiding a duplicate secret payload. The MCP endpoint is reachable over HTTPS and still requires its application API key; the model gateway remains private. Built-in guardrail hooks remain available. Optional Presidio/Lakera hooks load only when their sidecars or provider key are configured; the baseline does not provision Presidio sidecars.
+You do **not** need to run Terraform, build images, provision the agent identity or copy MCP credentials manually. Terraform creates Marketplace infrastructure; the wrapper prepares the agent project and calls the Python agent deployer. It privately copies the generated MCP credential into an agent-project secret and grants the custom runtime identity access to that secret. Google requires injected runtime secrets to be in the agent project; no secret values enter Terraform state or command arguments. The MCP endpoint is reachable over HTTPS and still requires its application API key; the model gateway remains private. Built-in guardrail hooks remain available. Optional Presidio/Lakera hooks load only when their sidecars or provider key are configured; the baseline does not provision Presidio sidecars.
 
 Setup also discovers your Langfuse project ID from its matching keys and builds the correct cloud trace links; no additional project-ID entry is required.
 
@@ -150,7 +150,7 @@ The SDK runtime stays inside the Marketplace backend. Selecting Google routes ex
 3. Configures database roles, scoped secrets and regional Langfuse export.
 4. Builds/pushes the web and gateway images, deploys the private gateway and runs the preserving database initialization job.
 5. Provisions scoped gateway keys and deploys Marketplace web/API and authenticated HTTP MCP.
-6. Enables agent-project APIs, prepares its runtime identity/private bucket and grants access to the single MCP secret.
+6. Enables agent-project APIs, prepares its runtime identity/private bucket and provisions the agent-project MCP secret and scoped runtime access.
 7. Installs/tests the agent package and deploys the Marketplace-compatible managed agent.
 8. Grants the Marketplace backend runtime-query access, configures the managed runtime and checks web health.
 

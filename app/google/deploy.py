@@ -19,6 +19,12 @@ def main():
         select_backend(args.backend, os.environ)
     project = os.environ['GOOGLE_CLOUD_PROJECT']
     location = os.environ['GOOGLE_CLOUD_LOCATION']
+    secret = os.environ['GOOGLE_MCP_SECRET']
+    if '/' in secret:
+        prefix = f'projects/{project}/secrets/'
+        if not secret.startswith(prefix) or '/' in secret[len(prefix):]:
+            raise ValueError('Injected MCP secret must belong to the agent project')
+        secret = secret[len(prefix):]
     client = agentplatform.Client(project=project, location=location)
     config = {
         'display_name': 'Marketplace Support ADK Lab',
@@ -36,7 +42,7 @@ def main():
             'REMOTE_MCP_URL': os.environ['REMOTE_MCP_URL'],
             'BACKEND_PROFILE_CONFIG_VERSION': 'runtime-url-v1',
             'GOOGLE_MEMORY_ENABLED': os.environ.get('GOOGLE_MEMORY_ENABLED', 'true'),
-            'REMOTE_MCP_API_KEY': {'secret': os.environ['GOOGLE_MCP_SECRET'],
+            'REMOTE_MCP_API_KEY': {'secret': secret,
                                    'version': os.environ.get('GOOGLE_MCP_SECRET_VERSION', '1')},
             'GOOGLE_AGENT_MODEL': os.environ.get('GOOGLE_AGENT_MODEL', 'gemini-3.5-flash'),
             'GOOGLE_MODEL_LOCATION': os.environ.get('GOOGLE_MODEL_LOCATION', 'us'),

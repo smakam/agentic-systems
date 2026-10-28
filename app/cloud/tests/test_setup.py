@@ -120,7 +120,7 @@ class InstallerTests(unittest.TestCase):
         setup.save(target, {'resource_name': 'projects/123456789/locations/us-central1/reasoningEngines/456',
                             'project': 'course-agent-test', 'location': 'us-central1',
                             'mcp_url': 'https://mcp.example.run.app/mcp',
-                            'mcp_secret': 'projects/course-market-test/secrets/marketplace-mcp-api-key',
+                            'mcp_secret': 'projects/course-agent-test/secrets/marketplace-business-mcp',
                             'mcp_secret_version': '1'})
         installer.agent_deploy()
         self.assertEqual(installer.state['runtime'].split('/')[-1], '456')
@@ -159,7 +159,7 @@ class InstallerTests(unittest.TestCase):
                 elif 'config' in args:
                     output = 'learner@example.com'
                 elif 'versions' in args and 'describe' in args:
-                    output = '{"name":"projects/course-market-test/secrets/marketplace-mcp-api-key/versions/1"}'
+                    output = '{"name":"projects/course-agent-test/secrets/marketplace-business-mcp/versions/1"}'
             if any(str(a).endswith('configure-langfuse.sh') for a in args):
                 (Path(kwargs['cwd']) / 'langfuse-public.env').write_text('LANGFUSE_HOST=https://cloud.langfuse.com\nLANGFUSE_PUBLIC_KEY=pk-lf-test\n')
             if args[-1] == 'deploy.py':
