@@ -326,7 +326,7 @@ class Setup:
         if not any(item.get('name', '').endswith('/secrets/' + name) for item in secrets):
             self.gc('secrets', 'create', name, '--replication-policy=automatic', project=project)
         credential = self.gc('secrets', 'versions', 'access', 'latest', '--secret=marketplace-mcp-api-key')
-        versions = json.loads(self.gc('secrets', 'versions', 'list', '--secret=' + name,
+        versions = json.loads(self.gc('secrets', 'versions', 'list', name,
                                      '--filter=state:ENABLED', '--format=json', project=project))
         current = self.gc('secrets', 'versions', 'access', 'latest', '--secret=' + name, project=project) if versions else None
         if current != credential:
