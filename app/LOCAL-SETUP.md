@@ -16,8 +16,8 @@ The setup chapter demonstrates **Mac**. Follow sections 1–4 for the first run;
 
 | Requirement | What you need |
 |---|---|
-| Git | To download the course checkpoint |
-| Docker Desktop | Running, with Docker Compose **2.24.4 or newer**; the test workspace uses Compose override tags |
+| [Git](https://git-scm.com/install/) | To download the course checkpoint; choose your operating system on the official installation page |
+| [Docker Desktop](https://docs.docker.com/desktop/) | Install for your operating system and keep it running, with Docker Compose **2.24.4 or newer**; the test workspace uses Compose override tags |
 | Python 3 | For `scripts/provision-gateway-keys.py`; no local pip packages are required for startup |
 | Shell | macOS/Linux shell, or WSL2 on Windows; Windows commands below run inside WSL, not PowerShell |
 | Browser | For the marketplace, gateway and traces |
@@ -26,7 +26,7 @@ The setup chapter demonstrates **Mac**. Follow sections 1–4 for the first run;
 
 On Mac:
 
-1. Install Git, or use the Git supplied by Apple's Command Line Tools. If `git --version` opens an installation prompt, complete that installation before proceeding.
+1. [Install Git](https://git-scm.com/install/), or use the Git supplied by Apple's Command Line Tools. If `git --version` opens an installation prompt, complete that installation before proceeding.
 2. Install and launch [Docker Desktop for Mac](https://docs.docker.com/desktop/setup/install/mac-install/), choosing the installer for Apple silicon or Intel to match your machine. Wait until Docker is running.
 3. Install Python 3 if `python3 --version` is unavailable. The startup helper uses Python's standard library, so no virtual environment or local package installation is needed for the initial walkthrough.
 4. Open **Terminal**. Run every command in this guide there, from the stated directory. Keep Docker Desktop running while using the course stack.
