@@ -147,7 +147,16 @@ class Setup:
         self.tf(directory, 'apply', '-input=false', 'setup.tfplan')
 
     def output(self, key):
-        return json.loads(self.tf('terraform', 'output', '-json', key, capture=True))
+        value = json.loads(self.tf('terraform', 'output', '-json', key, capture=True))
+        if key == 'service_urls' and any(not url for url in value.values()):
+            # A failed create followed by a successful in-place revision can
+            # leave a computed URI empty in the provider's saved outputs.
+            # Refresh-only reconciles state; it does not change cloud resources.
+            self.tf('terraform', 'apply', '-refresh-only', '-auto-approve', '-input=false')
+            value = json.loads(self.tf('terraform', 'output', '-json', key, capture=True))
+            if any(not url for url in value.values()):
+                raise RuntimeError('A deployed service URL is unavailable; inspect readiness before provisioning keys.')
+        return value
 
     def preflight(self):
         for executable in ('gcloud', 'terraform', 'docker', 'python3.12'):

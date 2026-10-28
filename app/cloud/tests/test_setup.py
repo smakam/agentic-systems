@@ -177,6 +177,26 @@ class InstallerTests(unittest.TestCase):
         self.assertTrue(any('VITE_LANGFUSE_PROJECT_ID=hosted-trace-project' in command for command in commands))
         self.assertEqual(json.loads((installer.work / 'result.json').read_text())['live_agent_acceptance'], 'pending')
 
+    def test_empty_deployed_url_is_reconciled_without_resource_changes(self):
+        calls = []
+        def runner(args, **kwargs):
+            calls.append(args)
+            refreshed = any('-refresh-only' in cmd for cmd in calls)
+            output = json.dumps({'gateway': 'https://gateway.example.run.app' if refreshed else ''})
+            return subprocess.CompletedProcess(args, 0, stdout=output, stderr='')
+        installer = self.installer(runner)
+        self.assertEqual(installer.output('service_urls')['gateway'], 'https://gateway.example.run.app')
+        mutations = [cmd for cmd in calls if 'apply' in cmd]
+        self.assertEqual(len(mutations), 1)
+        self.assertIn('-refresh-only', mutations[0])
+
+    def test_missing_url_after_refresh_stops_before_key_provisioning(self):
+        def runner(args, **kwargs):
+            return subprocess.CompletedProcess(args, 0, stdout='{"gateway":""}', stderr='')
+        installer = self.installer(runner)
+        with self.assertRaises(RuntimeError):
+            installer.output('service_urls')
+
     def test_wrong_confirmation_and_concurrent_run_make_no_changes(self):
         installer = self.installer()
         with patch('builtins.input', return_value='wrong project'), self.assertRaises(RuntimeError):
