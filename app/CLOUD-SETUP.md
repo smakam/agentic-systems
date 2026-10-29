@@ -1,6 +1,6 @@
 # Google Cloud setup
 
-Deploy the full Marketplace and its Google-managed agent using one configuration file and one setup command. This is an optional course lab, separate from your local Docker environment. It uses **two billing-enabled Google Cloud projects**:
+Deploy the full Marketplace with two selectable agent runtimes using one configuration file and one setup command. The **OpenAI Agents SDK agent** runs inside the Marketplace backend; the **Google-managed agent** runs in the separate agent project. In Marketplace, use **Agent runtime** to choose **OpenAI Agents SDK** or **Google hosted runtime**. Switching starts a new conversation; existing conversations retain their selected runtime. This is an optional course lab, separate from your local Docker environment. It uses **two billing-enabled Google Cloud projects**:
 
 - **Marketplace project:** browser application, backend and SDK runtime, HTTP MCP tools, private model gateway, PostgreSQL, secrets and deployment storage.
 - **Agent project:** Google-managed Marketplace agent, Gemini access, native sessions, memory and telemetry.
