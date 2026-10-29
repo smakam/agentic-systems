@@ -160,6 +160,21 @@ These are implementation phases inside the single setup command, rather than add
 
 </details>
 
+## Approximate daily cloud cost
+
+Planning estimate checked October 29, 2026 for the small course baseline: one shared-core `db-g1-small` PostgreSQL instance with 10 GiB SSD, private IP, three request-billed Cloud Run services with minimum instances zero, and a Google agent with minimum instances zero. These estimates cover both projects together; creating two projects does not mean two database instances.
+
+| Usage pattern | Infrastructure planning allowance (USD) |
+|---|---|
+| Database left running for 24 hours; little or no application traffic | About **$1–1.50 per day** (roughly $30–45 per 30 days) |
+| Database stopped; no application requests; retained small lab resources | Allow about **$0.10–0.30 per day** (roughly $3–9 per 30 days) |
+
+These are rounded budgeting allowances, **not measured bills, quotations or spending caps**. The public Cloud SQL table's default-region shared-core rate is $0.035/hour: 24 hours is $0.84 in database compute before storage and other resources. The actual deployment region can have different rates. Retained SQL storage/backups, container images, staging/state objects and active secret versions account for ongoing costs after stopping. Repeated image builds or extra secret versions can increase them.
+
+**Add usage costs separately:** OpenAI/OpenRouter and Gemini model calls, active Cloud Run/managed-agent compute, session/memory usage, logs/traces, network transfer, build jobs, optional paid services and taxes. The table assumes no substantial active traffic and does not predict the cost of completing all exercises. Free-tier allowances, trial credits and account-wide usage can reduce or change the bill. Check **Billing → Reports** for both projects and create a billing budget alert; an alert is not a hard spending limit.
+
+Sources: [Cloud SQL pricing](https://cloud.google.com/sql/pricing), [Cloud Run pricing](https://cloud.google.com/run/pricing), [managed agent pricing](https://cloud.google.com/products/gemini-enterprise-agent-platform/pricing), [Secret Manager pricing](https://cloud.google.com/secret-manager/pricing), and [Cloud Storage pricing](https://cloud.google.com/storage/pricing). Select the relevant region and recheck rates before provisioning.
+
 ## Stop Cloud SQL when not in use
 
 After a lab, stop the Marketplace Cloud SQL instance if nobody else is using this deployment. This pauses the database while preserving its data; do not disable the Cloud SQL API or delete the instance. The app needs the database running for login, records and agent tools.
