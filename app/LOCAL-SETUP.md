@@ -9,7 +9,7 @@ The setup chapter demonstrates **Mac**. Follow sections 1–4 for the first run;
 | Path | Coverage today |
 |---|---|
 | Mac walkthrough | Existing development environment exercised; clean installation pending |
-| Linux | Clean Google VM installation/health passed; live inference/RAG acceptance pending |
+| Linux | Fresh Ubuntu installation, live inference/RAG, traces, feedback and stop/resume persistence passed |
 | Windows with WSL2 | Adaptation notes only; not tested |
 
 ## 1. Install the prerequisites on Mac

@@ -1,6 +1,6 @@
 # Shared marketplace cloud deployment
 
-**Fresh-project baseline validation:** [October 28 two-project setup and live acceptance](SETUP-VALIDATION.md). The dated observations below remain historical.
+**Latest validation:** [October 29 uninterrupted clean reinstall and live acceptance](SETUP-VALIDATION.md). Test SQL is parked; the original course database is running at the instructor's request. The dated observations below remain historical.
 
 **Historical technical reference:** some configurations and observations below include retired laptop-tunnel or mixed local/cloud experiments. They are not supported learner setup instructions. The canonical supported full-cloud path is [Cloud Setup](../CLOUD-SETUP.md); local study uses the local SDK. No existing deployment is changed by this documentation consolidation.
 

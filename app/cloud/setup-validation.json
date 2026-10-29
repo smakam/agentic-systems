@@ -1,11 +1,44 @@
 {
-  "date": "2026-10-28",
-  "source_revision": "f437475ae224fae3068ce731cf07bb72e3f2be96",
+  "date": "2026-10-29",
+  "source_revision": "62d88654edab35a567a1240ba27ac37ab1aee9b9",
   "projects": [
     "marketplace-test-513014",
     "agent-test-513015"
   ],
-  "status": "passed_after_corrections",
+  "status": "passed_uninterrupted_clean_reinstall",
+  "installation": {
+    "source_commit": "62d88654edab35a567a1240ba27ac37ab1aee9b9",
+    "exit_code": 0,
+    "invocations": 1,
+    "phases": [
+      "preflight",
+      "infrastructure",
+      "credentials",
+      "images",
+      "gateway",
+      "initialize",
+      "gateway-keys",
+      "application",
+      "agent-foundation",
+      "agent-package",
+      "agent-deploy",
+      "connect",
+      "health"
+    ],
+    "normal_prompts_answered": [
+      "deployment targets",
+      "credential target",
+      "demo password",
+      "password confirmation",
+      "authorized OpenAI key",
+      "optional Lakera left unconfigured",
+      "Langfuse project public key",
+      "Langfuse project secret key"
+    ],
+    "elapsed_seconds": 959,
+    "manual_checkpoint_skips": false,
+    "source_changes_during_run": false
+  },
   "checks": [
     "cloud web and database health",
     "all six demo accounts authenticate",
@@ -19,11 +52,11 @@
     "Google agent retrieves real Marketplace evidence over MCP",
     "Google native session retained across follow-up",
     "Google conversation and runs persist in Marketplace",
+    "Google Cloud Trace retains native model and Marketplace business-tool spans",
     "saved SDK and Google conversations survive database stop and resume",
     "saved feedback survives database stop and resume",
     "live data-backed answer works after database restart",
-    "Google managed agent remains data-backed after database restart",
-    "Google Cloud Trace retains native model and Marketplace business-tool spans"
+    "Google managed agent remains data-backed after database restart"
   ],
   "readiness": {
     "ready": true,
@@ -37,9 +70,10 @@
   },
   "native_observability": {
     "status": "passed",
+    "runtime": "projects/799502412720/locations/us-central1/reasoningEngines/8780763905971453952",
     "trace_ids": [
-      "0d83167773c7b86b94a7f51b9ca27ac0",
-      "13e3bb6cdaca9e3ee4f9591f9a825f6a"
+      "368acc56cd9938263193a7002a7d4481",
+      "a95eb63a0b21c98291373ef3c0cb3927"
     ],
     "span_names": [
       "call_llm",
@@ -52,26 +86,26 @@
       "invoke_agent marketplace_support",
       "invoke_workflow marketplace_support"
     ],
-    "session": "7975058449610309632"
+    "session": "1236437555994427392"
   },
   "sdk_trace": {
-    "id": "ea0d25b9d3ade4a39b4c09a5c31176e6",
+    "id": "f7a7046354961d4f920091252e826e5e",
     "observations": 18,
     "names": [
       "Gateway output \u2192 Model input",
-      "generation",
       "turn",
+      "generation",
       "mcp_tools",
-      "Gateway output \u2192 Model input",
       "query_business_data",
+      "Gateway output \u2192 Model input",
       "generation",
       "turn",
       "mcp_tools",
       "get_catalog",
       "Gateway output \u2192 Model input",
       "generation",
-      "turn",
       "Marketplace support",
+      "turn",
       "mcp_tools",
       "Agent workflow",
       "Agent workflow",
@@ -79,17 +113,22 @@
     ]
   },
   "persistence": "passed",
-  "completed_runs": 8,
-  "failed_runs": 1,
+  "completed_runs": 7,
+  "failed_runs": 0,
   "limits": [
-    "Rehearsal required corrections and resumes; not an uninterrupted first-attempt installation.",
-    "No second brand-new project pair was deployed after these corrections.",
-    "Cloud Shell and organization-managed project policies were not rehearsed.",
-    "Optional Presidio/Lakera integrations and additional platform exercises were outside this baseline."
+    "Clean reinstall used the same two test projects after course resources and checkpoints were removed; enabled APIs, Google-managed service identities and the default project network remained.",
+    "Deployment tooling ran on macOS; Cloud Shell, Windows and organization-managed project policies were not rehearsed.",
+    "Optional external Presidio/Lakera integrations and additional platform exercises were outside this baseline.",
+    "Application APIs and frontend HTTP availability were checked; this repeat did not include independent browser interaction."
   ],
   "final_database_state": {
     "test": "STOPPED/NEVER",
-    "original_course": "STOPPED/NEVER",
-    "retained_resources": "Deployments and stored data retained; residual costs remain possible."
+    "original_course": "RUNNABLE/ALWAYS",
+    "retained_resources": "Test deployments and stored data retained; residual costs remain possible."
+  },
+  "validation_runner_note": "Read-only Cloud Trace verifier was corrected to follow continuation tokens, including empty pages; installer and application source were unchanged.",
+  "prior_rehearsal": {
+    "date": "2026-10-28",
+    "status": "passed_after_corrections_and_resumptions"
   }
 }

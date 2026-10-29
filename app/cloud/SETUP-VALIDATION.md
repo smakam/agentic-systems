@@ -1,8 +1,14 @@
 # Two-project cloud setup validation
 
-Validated on October 28, 2026 in fresh, billing-enabled projects `marketplace-test-513014` (asia-south1) and `agent-test-513015` (us-central1).
+**Result: the corrected installer passed a clean reinstall on October 29, 2026 in one uninterrupted invocation.** Both SDK and Google agents then passed live acceptance and database restart checks. Use the [Cloud Setup guide](../CLOUD-SETUP.md) for learner instructions.
 
-**Result: the baseline deployment and live acceptance passed after corrections and resumptions.** This was a fresh-project rehearsal, not a claim that the original installer passed unchanged on its first attempt. The original course deployment was not modified. Use the [Cloud Setup guide](../CLOUD-SETUP.md) for learner instructions.
+## Clean reinstall
+
+The course resources were removed from `marketplace-test-513014` (asia-south1) and `agent-test-513015` (us-central1), keeping their project IDs and billing. Before setup, API inventories confirmed no Cloud Run services, Cloud SQL instances, secrets, Artifact Registry repositories or managed agents remained. A fresh GitHub clone at revision `62d88654edab35a567a1240ba27ac37ab1aee9b9` was used without old setup checkpoints.
+
+The published `python3 app/cloud/scripts/setup.py --deploy` command completed all **13 phases in one invocation**, taking approximately 16 minutes. Normal configuration and credential prompts were answered; no code edits, checkpoint skips, manual deployment repairs or installer restarts were needed. Live acceptance was a separate step, as the guide requires. The first Google question allowed the documented IAM propagation interval.
+
+The first rehearsal on October 28 used fresh projects and passed after corrections and resumptions. Those fixes were published before this clean repeat; this result does not rewrite the first attempt as an unchanged success.
 
 ## Verified behavior
 
@@ -18,13 +24,13 @@ Validated on October 28, 2026 in fresh, billing-enabled projects `marketplace-te
 - Google agent retrieves real Marketplace evidence over MCP.
 - Google native session retained across follow-up.
 - Google conversation and runs persist in Marketplace.
+- Google Cloud Trace retains native model and Marketplace business-tool spans.
 - saved SDK and Google conversations survive database stop and resume.
 - saved feedback survives database stop and resume.
 - live data-backed answer works after database restart.
 - Google managed agent remains data-backed after database restart.
-- Google Cloud Trace retains native model and Marketplace business-tool spans.
 
-## Corrections made during the rehearsal
+## Corrections from the first rehearsal
 
 | Gap found | Published correction |
 |---|---|
@@ -41,10 +47,12 @@ Validated on October 28, 2026 in fresh, billing-enabled projects `marketplace-te
 
 ## Evidence and limits
 
-The [machine-readable receipt](setup-validation.json) records checks and trace/session references. Secrets, private credential files, Terraform state and raw trace payloads are excluded. SDK and Google answers were checked against seeded Marketplace records, with actual HTTP MCP evidence and retained traces. Database stop/resume was verified with saved conversations, feedback and new data-backed questions.
+The [machine-readable receipt](setup-validation.json) records the source revision, installer phases and retained trace/session references. Secrets, private credential files, Terraform state and raw trace payloads are excluded. Answers were compared with seeded Marketplace facts and actual HTTP MCP evidence. Native Google model/tool spans and the managed session were read back from Google APIs. The read-only trace verifier was corrected to follow pagination, including empty pages with continuation tokens; this required no installer or application change. Saved conversations and feedback survived Cloud SQL stop/resume; new data-backed SDK and Google questions also passed afterward.
 
-This run used the published wrapper with reviewed maintainer recoveries after failures. It did not repeat the entire corrected installer in a second new project pair. It used macOS deployment tooling; Cloud Shell and organization policy variations were not rehearsed. Optional external guardrails were not enabled. The [Linux local validation](../LINUX-SETUP-VALIDATION.md) is a separate acceptance record.
+This was a clean reinstall in reused projects, not another brand-new project pair: enabled APIs, Google-managed service identities and the default project network remained. Deployment tooling ran on macOS. Cloud Shell, Windows and organization policy variants were not rehearsed; optional external guardrails were not enabled. Application APIs and frontend HTTP availability were checked; independent browser interaction was not part of this repeat. The [Linux local validation](../LINUX-SETUP-VALIDATION.md) is a separate acceptance record.
 
-## Retained test environment
+## Final environment state
 
-After acceptance, test Cloud SQL was confirmed **STOPPED** with activation policy **NEVER**. Data and both project deployments are retained for review; storage and retained resources can still incur charges. Start the test database before opening the application. The original course database was independently confirmed STOPPED/NEVER.
+After acceptance, test Cloud SQL was confirmed **STOPPED/NEVER**. Test data and both deployments remain for review; storage and other retained resources can still incur charges. Start the test database before using that application.
+
+The original course deployment was excluded from test teardown. Its Cloud SQL is **RUNNABLE/ALWAYS**, started at the instructor's request, and its web health is healthy. The existing local Docker application was also restored after Docker Desktop's upgrade, preserving its data.

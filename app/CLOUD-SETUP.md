@@ -7,7 +7,7 @@ Deploy the full Marketplace and its Google-managed agent using one configuration
 
 The [standalone agent setup](../course/setup/google-agent-platform/setup-guide.md) is a separate exercise with fictional data and native tools. It does not require Marketplace, MCP or Cloud SQL. For the Docker environment, use [Local Setup](LOCAL-SETUP.md).
 
-**Validation status:** a fresh two-project baseline deployment and live SDK/Google acceptance passed on October 28, 2026 after installer corrections and resumptions. See the [validation record](cloud/SETUP-VALIDATION.md) for checks and limits. This does not certify organization-specific policies or every optional integration. Use fresh projects for this installer; it does not adopt the instructor's existing deployment.
+**Validation status:** the corrected installer passed one uninterrupted clean reinstall and live SDK/Google acceptance on October 29, 2026, including trace delivery and database restart persistence. The two test projects were reused after course resources were removed; the first fresh-project run required corrections. See the [validation record](cloud/SETUP-VALIDATION.md) for evidence and limits. Use fresh projects for this installer; it does not adopt the instructor's existing deployment.
 
 ## 1. Prepare accounts and tools
 
