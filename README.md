@@ -1,5 +1,7 @@
 # Agentic Systems: Marketplace Support Lab
 
+[Local setup](app/LOCAL-SETUP.md) · [Cloud setup](app/CLOUD-SETUP.md) · [Exercises](course/exercises/README.md) · [Contributing](CONTRIBUTING.md) · [MIT license](LICENSE)
+
 A runnable reference application for exploring how AI agents work inside a business system. Use a synthetic marketplace to follow a question from the chat interface through the model, agent loop and tools to a final answer backed by business records and policies.
 
 You can use this repository independently of the **Inside AI Agent Systems: From Components to Platforms** course. The setup guides, sample data, walkthroughs, exercises and reference answers are included. Start with a working baseline, change one capability, repeat the same scenario and compare what happened.
@@ -122,6 +124,10 @@ If startup or an answer fails, begin with [Troubleshooting](app/LOCAL-SETUP.md#9
 
 ## Extend and contribute
 
-Use your own fork and a focused branch. Add a useful agentic capability or configurable experiment, explain the intended behavior, validate it and open a pull request. The instructor/maintainer reviews changes before merge; merging does not automatically deploy services or update anyone's existing checkout. See the [contribution guide](course/CONTRIBUTING.md).
+Use your own fork and a focused branch. Add a useful agentic capability or configurable experiment, explain the intended behavior, validate it and open a pull request. The instructor/maintainer reviews changes before merge; merging does not automatically deploy services or update anyone's existing checkout. See [Contributing](CONTRIBUTING.md) for the workflow and worked example.
 
 This is a teaching and experimentation lab using synthetic data. Scores are sample-specific observations, not general model rankings or production-readiness claims. Existing Mac use, fresh Ubuntu checks and bounded cloud rehearsals do not establish validation of every clean installation, operating system, provider or account. `main` can change; record the commit you use when reporting results. No versioned release is pinned yet.
+
+## License
+
+This repository's original software and accompanying documentation are available under the [MIT License](LICENSE). You may use, modify and redistribute them, including commercially, while retaining the copyright and license notice. Third-party dependencies and services retain their own licenses and terms; the repository license does not provide API credits or rights to separately distributed course recordings.
