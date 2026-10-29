@@ -96,6 +96,8 @@ The installer's HTTP health check is only the first check. Complete this accepta
 | Native observability | Check the deployed agent's native session and trace in the agent project. Allow time for ingestion; a deployment listing alone is not proof that tools work. |
 | Persistence | Stop and resume the database as described below, then confirm login, saved conversations and another data-backed question work. |
 
+After verification or a lab session, follow [Stop Cloud SQL when not in use](#stop-cloud-sql-when-not-in-use).
+
 Record pass/fail, the source revision, both project IDs, selected regions, result/trace references and any correction needed in the guide. Keep secrets out of screenshots and reports. A completed answer alone does not verify correct retrieval, tool authentication or trace export. If any check fails, do not label the entire setup as passed.
 
 <details>
@@ -158,19 +160,34 @@ These are implementation phases inside the single setup command, rather than add
 
 </details>
 
-## Stop and resume between labs
+## Stop Cloud SQL when not in use
 
-Load the non-secret configuration when using the existing database control helper:
+After a lab, stop the Marketplace Cloud SQL instance if nobody else is using this deployment. This pauses the database while preserving its data; do not disable the Cloud SQL API or delete the instance. The app needs the database running for login, records and agent tools.
+
+From the repository root, load your non-secret configuration and stop the database:
 
 ```sh
 . ./app/cloud/.env
 app/cloud/scripts/database.sh status
 app/cloud/scripts/database.sh stop
-# Before the next session:
-app/cloud/scripts/database.sh start
+app/cloud/scripts/database.sh status
 ```
 
+Check that the status reports **STOPPED** with activation policy **NEVER**.
+
+### Resume before the next lab
+
+```sh
+. ./app/cloud/.env
+app/cloud/scripts/database.sh start
+app/cloud/scripts/database.sh status
+```
+
+Wait for **RUNNABLE** with activation policy **ALWAYS**, then reopen the Marketplace and check login.
+
 Confirm the Cloud SQL console shows **Stopped** after stopping. Before using the app again, start the database and wait for readiness. Stopping preserves data; it is not deletion or a reset. Do not rerun the installer simply to start the database. An incomplete install can start it again when its pending Terraform apply runs, so finish setup before using stop/resume for routine labs.
+
+Stopping Cloud SQL does not remove retained storage, backups or the other cloud resources. Review the remaining charges in both projects.
 
 For teardown, delete only resources you created and account for both projects. Terraform protects the database and Cloud Run services against accidental deletion. Review any deliberate teardown and check remaining storage, backups, agent deployments and charges.
 
