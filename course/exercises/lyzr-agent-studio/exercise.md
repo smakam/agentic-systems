@@ -17,7 +17,7 @@ Keep a few notes on the question, retrieved facts, final answer, follow-up behav
 
 Choose where to run the **Marketplace chat application (frontend and application backend)**:
 
-- **Cloud-hosted application:** follow [Cloud application setup](../../../app/CLOUD-SETUP.md), then [Lyzr integration setup](../../LYZR-PLATFORM-PLAN.md), and open your deployed marketplace URL.
+- **Cloud-hosted application:** follow [Cloud application setup](../../../app/CLOUD-SETUP.md), then [Lyzr integration setup](../../setup/lyzr-agent-platform/cloud-integration.md), and open your deployed marketplace URL.
 - **Locally hosted application:** follow [Local application setup](../../../app/LOCAL-SETUP.md) and [runtime configuration](../../../app/RUNTIME-SELECTOR.md#configuration), configure its application backend to invoke your hosted Lyzr Marketplace agent, and open the local marketplace URL supplied by that setup.
 
 For this practice, **the agent runs on Lyzr and its business MCP backend and database run in Google Cloud**, regardless of where the chat application runs. Running the chat application locally does not move the agent or change its configured MCP endpoint. Confirm that the runtime selector offers **Lyzr** and that the hosted agent points to your cloud business backend before continuing. Missing or disabled runtime options require checking that application's deployed version and backend configuration.

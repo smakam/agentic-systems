@@ -20,9 +20,9 @@ Project: `/Users/srmakam/mycode/agentic-systems`.
 
 ## Evidence and limits
 
-[API run receipts](results/relocation-e2e-2026-10-08/runs.json),
-[Langfuse readback](results/relocation-e2e-2026-10-08/telemetry.json),
-and [browser screenshot](results/relocation-e2e-2026-10-08/browser.png).
+API run receipts (historical instructor evidence; retained separately),
+Langfuse readback (historical instructor evidence; retained separately),
+and browser screenshot (historical instructor evidence; retained separately).
 
 These checks use the existing local revision-24 business snapshot. Test questions and ratings remain in conversation history; temporary personal test memories were removed. No business transactions were performed. This is a relocation smoke/acceptance run, not an exhaustive regression suite. Native Google/Lyzr long-term memory was not retested in this run; SDK memory was. Hosted agents' internal traces remain in their own platforms.
 

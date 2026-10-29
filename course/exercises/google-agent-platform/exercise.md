@@ -23,7 +23,7 @@ Use the **full cloud Marketplace application** for this extension. Complete [Clo
 
 The standalone Basics deployment has no business MCP tools and is not the deployment to update. Selecting Google in chat calls a configured runtime; it does not deploy one or repoint its business endpoint. Use your own separately identified resources and preserve instructor deployments. The setup guide contains the commands; this exercise covers behavior and evidence afterward.
 
-The current instructor deployment has verified cloud acceptance. The cloud setup sequence has not yet been rehearsed from scratch in a fresh learner project. Treat that as a stated preparation limit and record any adaptation you make. Costs depend on enabled resources, model calls and usage; consult current billing categories. Keep credentials in private environment/Secret Manager configuration and out of screenshots, prompts and submitted work.
+The instructor completed one uninterrupted clean reinstall on 29 October 2026 after removing course resources in two existing test projects. Enabled APIs and default networking were retained; this does not verify a brand-new account, every operating system or every provider path. Record any adaptation you make. Costs depend on enabled resources, model calls and usage; consult current billing categories. Keep credentials in private environment/Secret Manager configuration and out of screenshots, prompts and submitted work.
 
 Do not update the instructor's Marketplace Support ADK Lab or Support Agent Basics deployment. A `--backend cloud` update intentionally changes the target of a managed agent; choosing Google runtime in the marketplace UI does not switch that deployed target.
 

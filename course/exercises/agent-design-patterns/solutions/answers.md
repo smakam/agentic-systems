@@ -41,4 +41,4 @@ The generator passes question, draft, original evidence and relevant prior conve
 
 The earlier order-1 eligibility example remained incomplete: review caught missing shipment evidence, but correction only acknowledged uncertainty. The 23-hour fresh rehearsal already calculated timing correctly; review removed unsupported monitoring/automatic-release promises rather than fixing elapsed time. Neither is presented as the main successful correction.
 
-See the [rehearsal summary](../../../authoring/chapter-17-agent-design/success-rehearsal.md) for setup and observations. The eighteen-case historical study is separate from these fresh live-path rehearsals.
+See the rehearsal summary (historical instructor evidence; retained separately) for setup and observations. The eighteen-case historical study is separate from these fresh live-path rehearsals.

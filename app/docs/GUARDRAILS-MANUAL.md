@@ -8,7 +8,7 @@ These are opt-in gateway/API tests using synthetic data and the evaluation virtu
 
 - Built-in filters: configured and tested; email masking/key blocking, explicit injection and false-positive/miss controls.
 - Presidio: configured locally and tested; .invalid email gap preserved, example.com input/tool/output masked, phone masked, test card blocked.
-- Lakera v2: activated and verified with five synthetic requests. Explicit override/paraphrase blocked; harmless quotation falsely blocked; legitimate policy and forged exception allowed. [Measured results](../results/guardrails-manual-2026-10-07/LAKERA-REPORT.md).
+- Lakera v2: activated and verified with five synthetic requests. Explicit override/paraphrase blocked; harmless quotation falsely blocked; legitimate policy and forged exception allowed. Measured results (historical instructor evidence; retained separately).
 
 ## Lakera setup
 
@@ -65,6 +65,6 @@ docker compose up -d --no-deps gateway
 
 This restores the canonical default config mount; it does not delete the built-in or Presidio configurations. To stop optional Presidio services when not testing, use the stop command in the Presidio report. No shared volumes or business database are deleted.
 
-References: [LiteLLM Lakera integration](https://docs.litellm.ai/docs/proxy/guardrails/lakera_ai), [Lakera quickstart](https://docs.lakera.ai/docs/quickstart), [project modes/default policy](https://docs.lakera.ai/docs/projects). Existing measured reports: [built-in](../results/gateway-guardrails-2026-10-07/REPORT.md), [Presidio](../results/presidio-guardrails-2026-10-07/REPORT.md).
+References: [LiteLLM Lakera integration](https://docs.litellm.ai/docs/proxy/guardrails/lakera_ai), [Lakera quickstart](https://docs.lakera.ai/docs/quickstart), [project modes/default policy](https://docs.lakera.ai/docs/projects). Existing measured reports: built-in (historical instructor evidence; retained separately), Presidio (historical instructor evidence; retained separately).
 
 [Support-agent chapter demo catalog](SECURITY-CHAPTER-DEMO.md): copy/paste queries, poisoned-document conditions, expected observations and remaining UI preparation.

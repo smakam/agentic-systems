@@ -31,7 +31,7 @@ Editable sources: [current implementation](memory-architecture.mmd), [provider e
 
 ## Verified transport and behavior
 
-Reviewed the [local MCP migration report](../../app/results/memory-local-mcp-2026-10-03/REPORT.md) and real stdio regression tests: 81 tests passed in the related implementation thread, including CRUD/recall for all three memory types, permissions/isolation/version/provenance, agent wiring and initialization/disconnection failures. The [post-migration GPT-5.4 run](../../app/results/memory-repeatable-20261003T112031250654Z/REPORT.md) completed all 19 questions with six required retrievals and ten memory-off checks passing, assistant-reviewed answer passes and zero source-resolution failures. Estimated uncached model cost $0.99; single-run evidence, not a reliability guarantee. Short-term session storage and prompt v10 remain unchanged.
+Reviewed the local MCP migration report (historical instructor evidence; retained separately) and real stdio regression tests: 81 tests passed in the related implementation thread, including CRUD/recall for all three memory types, permissions/isolation/version/provenance, agent wiring and initialization/disconnection failures. The post-migration GPT-5.4 run (historical instructor evidence; retained separately) completed all 19 questions with six required retrievals and ten memory-off checks passing, assistant-reviewed answer passes and zero source-resolution failures. Estimated uncached model cost $0.99; single-run evidence, not a reliability guarantee. Short-term session storage and prompt v10 remain unchanged.
 
 ## Optional Mem0 implementation — supplied MCP tools
 

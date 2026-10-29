@@ -39,11 +39,11 @@ The initial review incorrectly called shortened raw evidence IDs broken links. T
 
 ## Evidence and hands-on material
 
-- [Initial CRUD/isolation lab](../results/memory-v4-2026-10-02/REPORT.md) and [walkthrough](../eval/memory-v1/README.md).
-- [Application fixes and GPT-5.4 stale/checklist checks](../results/memory-use-gpt54-v2-2026-10-02/REPORT.md).
-- [Actual-order implicit checklist diagnostic and sidebar retention](../results/memory-auto-checklist-v10-2026-10-03/REPORT.md).
-- [Eight-scenario / 19-question report](../results/memory-repeatable-20261003T093153094486Z/REPORT.md), [per-question review](../results/memory-repeatable-20261003T093153094486Z/review.json), and [source-resolution checks](../results/memory-repeatable-20261003T093153094486Z/citation-checks.json). Estimated uncached model cost $1.02.
-- [Two-question policy-conflict citation rerun](../results/memory-repeatable-20261003T094355178246Z/REPORT.md). Estimated uncached model cost $0.31. Estimates exclude embeddings and are not invoices.
+- Initial CRUD/isolation lab (historical instructor evidence; retained separately) and [walkthrough](../eval/memory-v1/README.md).
+- Application fixes and GPT-5.4 stale/checklist checks (historical instructor evidence; retained separately).
+- Actual-order implicit checklist diagnostic and sidebar retention (historical instructor evidence; retained separately).
+- Eight-scenario / 19-question report (historical instructor evidence; retained separately), per-question review (historical instructor evidence; retained separately), and source-resolution checks (historical instructor evidence; retained separately). Estimated uncached model cost $1.02.
+- Two-question policy-conflict citation rerun (historical instructor evidence; retained separately). Estimated uncached model cost $0.31. Estimates exclude embeddings and are not invoices.
 - [Prompt/history walkthrough](PROMPT-AND-CATALOG.md) and [memory diagrams / optional Mem0 architecture](../../course/diagrams/MEMORY-ARCHITECTURE.md).
 
 ## Optional future enhancements
@@ -52,19 +52,19 @@ Automatic extraction/background saving; consolidation/conflict handling and expi
 
 ## Local MCP transport update — October 3, 2026
 
-[Verified change](../results/memory-local-mcp-2026-10-03/REPORT.md): all agent memory calls use local stdio MCP; existing permission/provenance/isolation/version behavior retained. 81 regressions passed without paid model calls. Main and test backends deployed. Earlier live-answer results above predate this transport change.
+Verified change (historical instructor evidence; retained separately): all agent memory calls use local stdio MCP; existing permission/provenance/isolation/version behavior retained. 81 regressions passed without paid model calls. Main and test backends deployed. Earlier live-answer results above predate this transport change.
 
 ## Live regression after local MCP change
 
-[October 3 rerun](../results/memory-repeatable-20261003T112031250654Z/REPORT.md): all 19 GPT-5.4 answers passed assistant review; six required retrievals, ten memory-off controls and all source-resolution checks passed. Estimated uncached model cost $0.99, excluding embeddings. This supersedes the lack of paid rerun stated in the transport report. Fixtures preseed memory; chat-save quality is covered separately from these live-use tests.
+October 3 rerun (historical instructor evidence; retained separately): all 19 GPT-5.4 answers passed assistant review; six required retrievals, ten memory-off controls and all source-resolution checks passed. Estimated uncached model cost $0.99, excluding embeddings. This supersedes the lack of paid rerun stated in the transport report. Fixtures preseed memory; chat-save quality is covered separately from these live-use tests.
 
 ## Native platform comparison
 
-[Lyzr Cognis report](../lyzr/cognis-memory-2026-10-03/REPORT.md): Cross Session ON; short-term and bounded cross-session recall/control/override/history tests passed. Autonomous checklist use omitted shipment retrieval, so that investigation check failed; explicit follow-up succeeded. Native provider permission/provenance/CRUD/isolation parity is unverified.
+Lyzr Cognis report (historical instructor evidence; retained separately): Cross Session ON; short-term and bounded cross-session recall/control/override/history tests passed. Autonomous checklist use omitted shipment retrieval, so that investigation check failed; explicit follow-up succeeded. Native provider permission/provenance/CRUD/isolation parity is unverified.
 
 
 ### Memory MCP review and provider-portability architecture — October 3, 2026
 
-Reviewed code and the related “Prepare for Lizer CTO discussion” implementation/regression evidence. Agent memory now uses local stdio MCP; PostgreSQL MemoryStore still enforces ownership, explicit mutation permission, provenance and optimistic version checks. Business MCP and short-term conversation history remain independent; remote HTTP MCP exposes only business/lifecycle tools. [Review](../results/memory-local-mcp-2026-10-03/REVIEW.md), [81-regression migration evidence](../results/memory-local-mcp-2026-10-03/REPORT.md), and [19-question post-migration GPT-5.4 report](../results/memory-repeatable-20261003T112031250654Z/REPORT.md): all expected answer/operation/source checks passed, cost about $0.99. This documentation review reused existing evidence and made no paid calls or database resets.
+Reviewed the implementation and regression evidence. Agent memory now uses local stdio MCP; PostgreSQL MemoryStore still enforces ownership, explicit mutation permission, provenance and optimistic version checks. Business MCP and short-term conversation history remain independent; remote HTTP MCP exposes only business/lifecycle tools. Review (historical instructor evidence; retained separately), 81-regression migration evidence (historical instructor evidence; retained separately), and 19-question post-migration GPT-5.4 report (historical instructor evidence; retained separately): all expected answer/operation/source checks passed, cost about $0.99. This documentation review reused existing evidence and made no paid calls or database resets.
 
 Updated [memory architecture and provider-extension diagrams](../../course/diagrams/MEMORY-ARCHITECTURE.md) and specification overview. **MCP makes operations accessible across runtimes; an adapter interface makes storage replaceable.** The interface and external adapters are planned; current MCP code directly creates PostgreSQL MemoryStore. Future providers must preserve or explicitly adapt permission/isolation, extraction/save fidelity, provenance, update/delete and freshness behavior. Native Lyzr Cognis is a separate test track, not already wired behind our memory MCP. No remote personal-memory endpoint or multi-provider switching is claimed implemented. Existing manual/held-out memory pending work remains; provider adapters/parity testing are optional enhancements.

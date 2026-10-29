@@ -26,7 +26,7 @@ Compare semantic quality first, then total latency, cost, model/tool calls, cach
 
 - [Fixture/oracle](../../scripts/payout-orchestration-fixture.py)
 - [Runner](../../scripts/payout-orchestration.py)
-- [Results directory](../../results/payout-orchestration-v2-2026-10-01/)
+- Results directory (historical instructor evidence; retained separately)
 
 From `app`: `docker compose run --rm --no-deps -v "$PWD/scripts:/scripts:ro" -e PYTHONPATH=/app -e ORCHESTRATION_TRIALS=3 eval-runner python /scripts/payout-orchestration.py`. Add `-e ORCHESTRATION_DRY=1` for fixture validation without inference. The runner resumes saved trials and archives its source; changing source requires a new experiment directory.
 

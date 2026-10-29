@@ -19,14 +19,14 @@ Reuse is intentional: report review/correction spend separately from historical 
 ## Artifacts
 
 - [Runner](../../scripts/reviewer-workflow.py)
-- [Saved baseline](../../results/core18-history-v3-2026-10-01/REPORT.md)
-- [Results](../../results/reviewer-workflow-v2-2026-10-01/)
+- Saved baseline (historical instructor evidence; retained separately)
+- Results (historical instructor evidence; retained separately)
 
 Reproduce from app with `docker compose run --rm --no-deps -v "$PWD/scripts:/scripts:ro" -e PYTHONPATH=/app eval-runner python /results/reviewer-workflow-v2-2026-10-01/reviewer-workflow.py`. Completed cases resume; changing runner source requires a new output path. This is an evaluator–optimizer workflow with model-controlled investigation inside its stages. It is not autonomous seller delegation or an independent paid grading experiment.
 
 ## Completed evidence-packet correction
 
-V1 excluded catalog definitions; the reviewer questioned a valid unit conversion and missed a catalog rule. V2 supplies the full original evidence with identical prompts. Both runs are preserved. [Final report](../../results/reviewer-workflow-v2-2026-10-01/REPORT.md): nano 3 correct / 3 partial / 2 incorrect; workflow 5 / 3 / 0; GPT-5.4 baseline 7 / 1 / 0 on these eight diagnostic cases. No fresh end-to-end baseline rerun.
+V1 excluded catalog definitions; the reviewer questioned a valid unit conversion and missed a catalog rule. V2 supplies the full original evidence with identical prompts. Both runs are preserved. Final report (historical instructor evidence; retained separately): nano 3 correct / 3 partial / 2 incorrect; workflow 5 / 3 / 0; GPT-5.4 baseline 7 / 1 / 0 on these eight diagnostic cases. No fresh end-to-end baseline rerun.
 
 
 ## Accepted milestone and publishing takeaway
@@ -46,9 +46,9 @@ Eight-case Nano review requested no corrections; final answers stayed 3 correct 
 
 Expand both variants to the full eighteen-case suite, reusing the eight completed rows per variant. Cases 27 and 28 preserve original prior conversation; review/correct only the final turn. Case 28 reproduces its prescribed purchase mutation before matching final evidence revision. Earlier turns are frozen; this is not a freshly generated conversational trajectory. Both earlier first-turn nano answers were correct under the saved grades. Independently grade the resulting conversation against the same accepted gold, keeping correct/partial/incorrect separate from reviewer approval.
 
-Runner: [core18 replay](../../scripts/reviewer-workflow-core18.py). Outputs: [Nano reviewer](../../results/reviewer-nano-core18-2026-10-01/) and [GPT-5.4 reviewer](../../results/reviewer-54-core18-2026-10-01/). Preserve original eight-case reports as historical; eighteen-case reports supersede their coverage conclusions. Compare assembled full-generation-plus-review/correction estimates as well as incremental costs. Fresh end-to-end repeat trials remain future validation.
+Runner: [core18 replay](../../scripts/reviewer-workflow-core18.py). Outputs: Nano reviewer (historical instructor evidence; retained separately) and GPT-5.4 reviewer (historical instructor evidence; retained separately). Preserve original eight-case reports as historical; eighteen-case reports supersede their coverage conclusions. Compare assembled full-generation-plus-review/correction estimates as well as incremental costs. Fresh end-to-end repeat trials remain future validation.
 
 
-**Core18 complete:** [Current ablation report](../../results/reviewer-ablation-core18-2026-10-01/REPORT.md) and [comparison](../../results/reviewer-ablation-core18-2026-10-01/comparison.html). Nano alone and Nano-review workflow: 11/4/3; stronger-review workflow: 14/4/0; GPT-5.4 alone: 17/1/0. Counts are correct/partial/incorrect. All 36 executions completed; all eighteen review inputs matched between variants. This supersedes the original eight-case coverage headline; historical artifacts remain unchanged.
+**Core18 complete:** Current ablation report (historical instructor evidence; retained separately) and comparison (historical instructor evidence; retained separately). Nano alone and Nano-review workflow: 11/4/3; stronger-review workflow: 14/4/0; GPT-5.4 alone: 17/1/0. Counts are correct/partial/incorrect. All 36 executions completed; all eighteen review inputs matched between variants. This supersedes the original eight-case coverage headline; historical artifacts remain unchanged.
 
 For a fresh full-suite rerun, mount `scripts` as above and run `/scripts/reviewer-workflow-core18.py` with `REVIEWER_ALIAS=eval-nano` or `eval-54` and a new `REVIEWER_OUT=/results/<new-run-directory>` environment value. Existing completed directories resume without redoing cases; changing runner source requires a new directory. A new directory without seeded reused rows runs all eighteen reviews.

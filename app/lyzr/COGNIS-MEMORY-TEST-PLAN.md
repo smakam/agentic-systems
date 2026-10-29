@@ -1,6 +1,6 @@
 # Native Cognis memory comparison
 
-Executed bounded cases 1–5 and 7; [results](cognis-memory-2026-10-03/REPORT.md). Cases 6/8 remain pending because reliable provider record inspection/reset and a second verified identity are unavailable. Keep gpt-5.4-mini, the stable ngrok business endpoint and business evidence rules fixed. OpenAI regression runs first. Lyzr setup differs: native automatic extraction versus explicit application memory CRUD. Do not claim provider parity from one successful recall.
+Executed bounded cases 1–5 and 7; results (historical instructor evidence; retained separately). Cases 6/8 remain pending because reliable provider record inspection/reset and a second verified identity are unavailable. Keep gpt-5.4-mini, the stable ngrok business endpoint and business evidence rules fixed. OpenAI regression runs first. Lyzr setup differs: native automatic extraction versus explicit application memory CRUD. Do not claim provider parity from one successful recall.
 
 ## Configuration
 

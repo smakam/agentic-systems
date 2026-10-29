@@ -306,8 +306,8 @@ Do not change history retention simultaneously when attributing effects.
 
 Older evaluation/routing reports remain valid historical results for their archived
 code. Catalog v2 is a new candidate baseline. It does not inherit prior correctness
-scores. See [initial catalog-v2 validation](../results/catalog-v2-2026-10-01/REPORT.md) and the
-[current paired prompt/history regression](../results/core18-history-v3-2026-10-01/REPORT.md).
+scores. See initial catalog-v2 validation (historical instructor evidence; retained separately) and the
+current paired prompt/history regression (historical instructor evidence; retained separately).
 
 ## Reuse policy and limitations
 
@@ -323,7 +323,7 @@ a controlled comparison. This is conversation history, not cross-session memory.
 
 ## Observed behavior with this exact prompt/history version
 
-The [October 1 regression and captured inputs](../results/core18-history-v3-2026-10-01/REPORT.md)
+The October 1 regression and captured inputs (historical instructor evidence; retained separately)
 distinguish intended behavior above from what the models actually did:
 
 | Scenario | GPT-5.4 | Nano |
@@ -340,9 +340,9 @@ data in context does not guarantee correct reasoning or citation formatting.
 
 Inspect the actual SDK inputs here:
 
-- [GPT-5.4 balance and clock sequence](../results/core18-history-v3-reuse-eval-54-2026-10-01/model-inputs.jsonl)
-- [Nano balance and clock sequence, including failed attempt](../results/core18-history-v3-reuse-eval-nano-2026-10-01/model-inputs.jsonl)
-- [Nano quantity sequence](../results/core18-history-v3-quantity-reuse-eval-nano-2026-10-01/model-inputs.jsonl)
+- GPT-5.4 balance and clock sequence (historical instructor evidence; retained separately)
+- Nano balance and clock sequence, including failed attempt (historical instructor evidence; retained separately)
+- Nano quantity sequence (historical instructor evidence; retained separately)
 
 Each JSONL entry captures static `instructions` and ordered `input_items` at an SDK
 model-call boundary. These are SDK captures, not a byte-for-byte capture of the
@@ -365,17 +365,17 @@ When enabled, normal investigations expose four local stdio MCP memory tools alo
 
 Retrieved memory records enter the model as function results and may be retained within ordinary session history. They are historical personal context, not current SQL/RAG evidence. The prompt instructs current facts/policies to be fetched when needed; this is not deterministic enforcement of business reasoning. Memory-off removes memory tools and instructs the model not to use prior long-term memory outputs; it does not erase already-visible chat messages. New-conversation tests separate long-term retrieval from history.
 
-The memory-enabled and memory-management instruction/tool prefixes differ from the prior baseline, so earlier cache/cost measurements are not automatically current. No cache improvement claim is made. [Lab walkthrough](../eval/memory-v1/README.md) and [verification report](../results/memory-v4-2026-10-02/REPORT.md).
+The memory-enabled and memory-management instruction/tool prefixes differ from the prior baseline, so earlier cache/cost measurements are not automatically current. No cache improvement claim is made. [Lab walkthrough](../eval/memory-v1/README.md) and verification report (historical instructor evidence; retained separately).
 
 ### Memory tool-scope repair — October 2, 2026
 
 Negated mutations such as “Do not change my saved preference” do not authorize writes. Mixed product/order questions retain marketplace business tools even when they mention a saved preference. The direct save tool accepts only `kind` (semantic/episodic/procedural enum), `title` and `content`; backend code attaches the current run and authenticated conversation provenance. The backend store still validates any explicit source supplied through its internal interface. No model-specific answer workaround or shipment/policy data injection was added. The base model remains responsible for querying complete evidence.
 
-74 regression tests passed after these application changes. The follow-up GPT-5.4 memory-use run uses the same questions as the earlier Nano diagnostic, on isolated `market_test`, with new results preserved separately. See [follow-up results](../results/memory-use-gpt54-v2-2026-10-02/REPORT.md).
+74 regression tests passed after these application changes. The follow-up GPT-5.4 memory-use run uses the same questions as the earlier Nano diagnostic, on isolated `market_test`, with new results preserved separately. See follow-up results (historical instructor evidence; retained separately).
 
 ### Automatic checklist retrieval and sidebar state retention — October 3, 2026
 
-Prompt v10 explicitly instructs investigations to search relevant saved checklists/checkpoints before business analysis, without the user having to name the checklist. The original refunded-order question retrieved the checklist and answered correctly with GPT-5.4; Nano still skipped memory and omitted the full-refund explanation. Retrieval remains model-driven, not guaranteed, and the UI default stays Nano. Support remains mounted while hidden on other sidebar pages: selected conversation, displayed answers and unsent draft survived browser navigation to settlement and back. Reload/login restore remains distinct. 12 frontend checks passed; frontend/backend built and deployed. [Verification and traces](../results/memory-auto-checklist-v10-2026-10-03/REPORT.md).
+Prompt v10 explicitly instructs investigations to search relevant saved checklists/checkpoints before business analysis, without the user having to name the checklist. The original refunded-order question retrieved the checklist and answered correctly with GPT-5.4; Nano still skipped memory and omitted the full-refund explanation. Retrieval remains model-driven, not guaranteed, and the UI default stays Nano. Support remains mounted while hidden on other sidebar pages: selected conversation, displayed answers and unsent draft survived browser navigation to settlement and back. Reload/login restore remains distinct. 12 frontend checks passed; frontend/backend built and deployed. Verification and traces (historical instructor evidence; retained separately).
 
 
 Current conclusions and pending short-/long-term work: [memory status — October 3, 2026](MEMORY-STATUS.md). The bounded lab is complete; full catalogue coverage and production readiness are not claimed.
@@ -383,6 +383,6 @@ Current conclusions and pending short-/long-term work: [memory status — Octobe
 
 ### Memory MCP review and provider-portability architecture — October 3, 2026
 
-Reviewed code and the related “Prepare for Lizer CTO discussion” implementation/regression evidence. Agent memory now uses local stdio MCP; PostgreSQL MemoryStore still enforces ownership, explicit mutation permission, provenance and optimistic version checks. Business MCP and short-term conversation history remain independent; remote HTTP MCP exposes only business/lifecycle tools. [Review](../results/memory-local-mcp-2026-10-03/REVIEW.md), [81-regression migration evidence](../results/memory-local-mcp-2026-10-03/REPORT.md), and [19-question post-migration GPT-5.4 report](../results/memory-repeatable-20261003T112031250654Z/REPORT.md): all expected answer/operation/source checks passed, cost about $0.99. This documentation review reused existing evidence and made no paid calls or database resets.
+Reviewed code and the related “Prepare for Lizer CTO discussion” implementation/regression evidence. Agent memory now uses local stdio MCP; PostgreSQL MemoryStore still enforces ownership, explicit mutation permission, provenance and optimistic version checks. Business MCP and short-term conversation history remain independent; remote HTTP MCP exposes only business/lifecycle tools. Review (historical instructor evidence; retained separately), 81-regression migration evidence (historical instructor evidence; retained separately), and 19-question post-migration GPT-5.4 report (historical instructor evidence; retained separately): all expected answer/operation/source checks passed, cost about $0.99. This documentation review reused existing evidence and made no paid calls or database resets.
 
 Updated [memory architecture and provider-extension diagrams](../../course/diagrams/MEMORY-ARCHITECTURE.md) and specification overview. **MCP makes operations accessible across runtimes; an adapter interface makes storage replaceable.** The interface and external adapters are planned; current MCP code directly creates PostgreSQL MemoryStore. Future providers must preserve or explicitly adapt permission/isolation, extraction/save fidelity, provenance, update/delete and freshness behavior. Native Lyzr Cognis is a separate test track, not already wired behind our memory MCP. No remote personal-memory endpoint or multi-provider switching is claimed implemented. Existing manual/held-out memory pending work remains; provider adapters/parity testing are optional enhancements.

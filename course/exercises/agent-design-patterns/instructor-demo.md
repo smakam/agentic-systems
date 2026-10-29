@@ -62,7 +62,7 @@ This is the main correction example. A fresh rehearsal on 23 October 2026 showed
 
 The UI-created scenario was also verified end to end: its hybrid draft omitted the post-payout cause and misinterpreted a scenario-audit event; review identified those issues, and correction added the completed-payout-before-return explanation with policy and timeline support. The separate Nano-only run mistook the order ID for a return ID and returned an empty lookup; this is another reason to compare the hybrid run's own draft and final answer rather than attribute differences between fresh runs solely to review.
 
-[Rehearsal setup, before/after summary and limits](../../authoring/chapter-17-agent-design/success-rehearsal.md).
+Rehearsal setup, before/after summary and limits (historical instructor evidence; retained separately).
 
 ## Read the workflow in Langfuse
 

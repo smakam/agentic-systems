@@ -72,4 +72,4 @@ Save the result before repeating—the container result file is overwritten on t
 docker compose -f compose.yaml -f compose.memory.yaml exec -T memory-backend cat /tmp/security-boundaries.json > /tmp/security-boundaries-my-run.json
 ```
 
-[Verified earlier results](../results/security-boundaries-2026-10-07/REPORT.md) · [Script](../scripts/security-boundaries.py) · [OWASP lesson map](OWASP-SECURITY-MAP.md)
+Verified earlier results (historical instructor evidence; retained separately) · [Script](../scripts/security-boundaries.py) · [OWASP lesson map](OWASP-SECURITY-MAP.md)

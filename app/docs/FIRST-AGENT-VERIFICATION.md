@@ -12,7 +12,7 @@ Use a newly seeded workspace for the stated business expectations. An existing w
 5. Open the answer's trace in local Langfuse, project **Support experiments**. One question execution is one trace; generations and tool calls are observations within it. Follow model input → tool result → subsequent generation → final answer. Tool selection is model-dependent, so every question need not follow an identical sequence.
 6. Give a completed answer thumbs-down, reload/reopen the conversation, and check the vote persists. Its trace should show `user_feedback = False`; thumbs-up is `True`. PostgreSQL is authoritative; score export to Langfuse is best effort. Scores analytics summarize **rated** answers, not correctness.
 
-The conversation must belong to the signed-in user to rate it. If an answer is incorrect, preserve the trace and evidence; don't change the fixture merely to make it pass. Saved [regression answers](../results/core18-history-v3-2026-10-01/REPORT.md) can be inspected without paying to rerun a benchmark.
+The conversation must belong to the signed-in user to rate it. If an answer is incorrect, preserve the trace and evidence; don't change the fixture merely to make it pass. Saved regression answers (historical instructor evidence; retained separately) can be inspected without paying to rerun a benchmark.
 
 Long-term-memory exercises belong to the later memory chapter; they are not required for setup completion. See the [memory catalogue](../eval/memory-v2/README.md) when reaching that lesson.
 

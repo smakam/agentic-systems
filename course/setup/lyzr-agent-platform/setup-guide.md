@@ -38,4 +38,4 @@ Official references: [Studio Builder](https://docs.lyzr.ai/enterprise/agent-stud
 
 ## Optional cloud extension
 
-The full cloud architecture and integration steps are in [LYZR-PLATFORM-PLAN.md](../../LYZR-PLATFORM-PLAN.md) and [the optional exercise](../../exercises/lyzr-agent-studio/exercise.md). They are separate from this core TXT → native KB → Basics agent → Playground setup and require completed Cloud Setup.
+The full cloud architecture and integration steps are in [LYZR-PLATFORM-PLAN.md](cloud-integration.md) and [the optional exercise](../../exercises/lyzr-agent-studio/exercise.md). They are separate from this core TXT → native KB → Basics agent → Playground setup and require completed Cloud Setup.
