@@ -1,17 +1,30 @@
 # Contributing to the Marketplace application
 
-Optional extension for learners of Inside AI Agent Systems: From Components to Platforms.
+Extend the agentic system with useful, configurable **Workspace options** so the whole learning community can run new experiments and compare behavior. The instructor reviews proposed contributions before deciding whether to merge them. Participation is optional.
+
+## Intended contribution scope
+
+Focus on agentic capabilities and experiment options. Representative proposals include:
+
+- **Guardrails:** add a selectable guardrail policy or provider and compare blocked/allowed behavior.
+- **Model routing:** add a routing policy and compare quality, latency and cost on the same tasks.
+- **Retrieval:** add a retrieval or reranking strategy and compare the returned evidence and answer quality.
+- **Memory:** add a memory backend or retention strategy and compare what is stored, recalled and forgotten.
+
+These are possible contributions, not features already supplied by this guide. Explain the capability, expose its configuration clearly, and implement the relevant backend or runtime behavior as well as its Workspace option. Include a comparison with the existing behavior and validation evidence. General Marketplace UI redesigns and unrelated commerce features are outside this contribution exercise.
+
+The small Question starter walkthrough below teaches the branch, validation and pull-request mechanics. It is a UI-only example, not itself a new agentic capability. Use that workflow when proposing an agentic-system option from the scope above.
 
 ## The contribution sequence
 
-1. Open the [course repository](https://github.com/smakam/agentic-systems). Sign in with the GitHub account that has access. While the repository is private, access and permission to fork are prerequisites. These instructions do not change repository visibility or grant access.
+1. Open the [course repository](https://github.com/smakam/agentic-systems). Sign in with your GitHub account. Reading or cloning a public repository does not grant write access; use your own fork to propose changes.
 2. Select **Fork** to create a copy under your account. Clone **your fork**, then create a small feature branch. Learners do not need write access to the instructor's main branch.
 3. Make one focused change. Explain the intended behavior, check the result locally, and include relevant evidence. A coding agent can help draft changes, but you review the diff and validate the behavior.
 4. Commit and push the branch to **your fork**.
 5. On the original repository, select **Pull requests → New pull request → compare across forks**. Set base repository to **smakam/agentic-systems**, base branch to **main**, head repository to **your fork**, and compare branch to **your feature branch**. Check that the diff contains only your intended change, then create the pull request.
 6. The instructor reviews the proposal, may request changes, and decides whether to merge it. A pull request does not automatically enter the course application. No response time or acceptance is guaranteed.
 
-If Fork is unavailable, ask about repository access or contribution policy through course Q&A. Do not change visibility or request access by posting credentials. If you already have explicit collaborator write access, the instructor may instead ask you to push a feature branch in the shared repository and open a pull request from it.
+A fork is the normal contribution path for learners without write access to the course repository. If the instructor has explicitly granted you collaborator write access, you can instead push a feature branch in the shared repository and open a pull request from it. Use course Q&A if you need help with the workflow.
 
 ### Example commands
 
@@ -133,6 +146,15 @@ In the description include:
 - **Costs:** identify any model calls or cloud resources used during testing.
 
 Exclude secrets, private user data, databases, generated frontend bundles, dependency directories, and unrelated files. The instructor promotes accepted changes by reviewing and merging the pull request.
+
+### 5. After review and merge
+
+1. **Review:** the instructor checks the proposed behavior and validation, may request changes, and decides whether to accept it. Make requested changes on the same branch in your fork and push again; the existing pull request updates.
+2. **Approval and merge:** approval records that the proposal is acceptable; it does not by itself merge the code. When ready, the instructor merges the pull request into the course repository’s **main** branch. The change then becomes part of the shared course source, rather than remaining only in your feature branch.
+3. **Community access:** other learners can obtain the accepted improvement from the course repository. A merge does not automatically update anyone’s existing clone or running application, and it does not automatically deploy a cloud service.
+4. **Update your copy:** in your fork on GitHub, use **Sync fork → Update branch** to bring its main branch up to date when GitHub can do so without conflicts. Save or commit local work before switching branches. Pull the updated main branch into your local clone, then follow the [Local Setup guide](../app/LOCAL-SETUP.md) to rebuild or restart the affected services and verify the new behavior. Ask in course Q&A if synchronization reports conflicts.
+
+The contribution path is: **your fork’s feature branch → pull request → instructor review → merge into course main → learners update and validate their copies**. Acceptance and deployment remain separate decisions.
 
 ## References
 
