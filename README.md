@@ -6,6 +6,12 @@ A runnable reference application for exploring how AI agents work inside a busin
 
 You can use this repository independently of the **Inside AI Agent Systems: From Components to Platforms** course. The setup guides, sample data, walkthroughs, exercises and reference answers are included. Start with a working baseline, change one capability, repeat the same scenario and compare what happened.
 
+## Companion Udemy course
+
+**[Inside AI Agent Systems: From Components to Platforms](https://www.udemy.com/course/inside-ai-agent-systems-from-components-to-platforms/?referralCode=47C95A5262ECC0C54C36)** provides a structured path through agent components, hands-on Marketplace experiments, tracing, evaluation, security, advanced capabilities and platform choices.
+
+Understand, build and evaluate AI agents through hands-on experiments, explore key production considerations, and choose an agentic platform that fits your needs. **[View the course and free preview lessons](https://www.udemy.com/course/inside-ai-agent-systems-from-components-to-platforms/?referralCode=47C95A5262ECC0C54C36).**
+
 ## What you can do
 
 The marketplace simulates buyers, sellers, orders, shipments, payments, returns and seller payouts. Its support agent investigates questions such as:
