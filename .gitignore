@@ -23,6 +23,7 @@
 **/.google-auth/
 **/.remote-mcp/
 **/.remote-mcp.env
+**/.user-mcp/
 **/.backend-switch/
 **/compose.google.local.yaml
 **/.terraform/
