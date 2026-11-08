@@ -67,3 +67,5 @@
 .investigation-history-list p{padding:8px;font-size:12px}
 
 .login-divider{text-align:center;margin:12px 0}.keycloak-login{width:100%}
+
+.payout-toggle{display:flex;align-items:center;gap:12px;font-weight:600;margin:18px 0}.payout-toggle input{width:20px;height:20px;accent-color:#234f3e}.payout-activity{display:flex;gap:32px;flex-wrap:wrap}.payout-activity strong{font-size:14px}.payout-admin .panel{max-width:850px}.payout-result{border-top:1px solid #e0e5dc;margin-top:18px;padding-top:8px}
