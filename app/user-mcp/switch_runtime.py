@@ -54,6 +54,9 @@ def main():
         command.extend(['-f', str(overlay)])
         run(command + ['build', 'backend', 'frontend'], cwd=previous['directory'])
     run(command + ['up', '-d', '--no-deps', *SERVICES], cwd=previous['directory'])
+    # Nginx resolves backend names at startup. Recreated backends can receive
+    # different addresses even when an unchanged frontend image stays running.
+    run(command + ['restart', 'frontend', 'memory-frontend'], cwd=previous['directory'])
     print('Marketplace main and Test application services now use ' + args.checkout + ' runtime configuration.')
 
 
