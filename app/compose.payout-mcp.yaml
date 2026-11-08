@@ -1,0 +1,28 @@
+# Add to compose.user-mcp.yaml. Scheduler remains off unless explicitly started.
+services:
+  payouts:
+    image: marketplace-lab-backend
+    restart: unless-stopped
+    command: [python, -m, marketplace.payout_mcp]
+    environment:
+      DATABASE_URL: postgresql+psycopg://market:market-local@postgres:5432/market_test
+      PAYOUT_MCP_RESOURCE_URL: http://127.0.0.1:58503/payouts/mcp
+      PAYOUT_MCP_ISSUER_URL: ${USER_MCP_BASE_URL}/identity/realms/marketplace
+      PAYOUT_MCP_JWKS_URL: http://identity:8080/identity/realms/marketplace/protocol/openid-connect/certs
+      PAYOUT_SERVICE_POLICY: /config/payout-policy.json
+    volumes:
+      - ./backend/marketplace:/app/marketplace:ro
+      - ./.user-mcp/payout-policy.json:/config/payout-policy.json:ro
+    networks: [default, marketplace-data]
+    ports: ["127.0.0.1:58503:8003"]
+  payout-worker:
+    image: marketplace-lab-backend
+    profiles: [payout-scheduler]
+    restart: unless-stopped
+    entrypoint: [python, -m, marketplace.payout_worker]
+    command: [--interval, "${PAYOUT_INTERVAL_SECONDS:-60}"]
+    volumes:
+      - ./backend/marketplace:/app/marketplace:ro
+      - ./.user-mcp/payout-worker.json:/config/payout-worker.json:ro
+      - ./.user-mcp/payout-runs:/state
+    networks: [default]

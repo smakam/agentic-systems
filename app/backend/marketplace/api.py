@@ -88,6 +88,8 @@ def create_login_session(db,user,response):
 
 from .oidc_login import create_router as oidc_router
 app.include_router(oidc_router(db_session,create_login_session))
+from .payout_automation import create_router as payout_automation_router
+app.include_router(payout_automation_router(identity, db_session))
 
 @app.get('/api/me')
 def me(request:Request,user=Depends(identity),db=Depends(db_session)):

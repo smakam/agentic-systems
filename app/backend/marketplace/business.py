@@ -125,14 +125,20 @@ def _apply(db, actor, state, action, data):
         return {'id':refund.id,'status':outcome}
     if action == 'payout':
         require(actor.role == 'operator','Only operator can simulate a payout')
-        payout=db.get(Payout,data.get('id')); require(payout is not None,'Payout not found')
-        require(payout.status in ('held','failed'), 'Payout already completed')
-        allocation=db.get(Allocation,payout.allocation_id)
-        shipment=db.scalar(select(Shipment).where(Shipment.item_id == allocation.item_id))
-        require(shipment.status == 'delivered' and state.clock >= shipment.delivered_at + timedelta(hours=24), 'Delivery and 24-hour hold required')
-        active=db.scalar(select(func.count()).select_from(Return).where(Return.item_id==allocation.item_id, Return.status.in_(['requested','approved','received'])))
-        require(active == 0,'An active return blocks payout')
-        outcome=data.get('outcome','completed'); require(outcome in ('completed','failed'),'Invalid outcome')
-        payout.status=outcome
-        return {'id':payout.id,'status':outcome,'amount':payout.amount}
+        from .payout_automation import enabled as automation_enabled
+        require(not automation_enabled(db), 'Automatic payout is enabled; the worker controls payout release')
+        return apply_simulated_payout(db, state, data)
     raise BusinessError('Unknown command')
+
+def apply_simulated_payout(db, state, data):
+    """Shared settlement rules; callers must authorize and lock state first."""
+    payout=db.get(Payout,data.get('id')); require(payout is not None,'Payout not found')
+    require(payout.status in ('held','failed'), 'Payout already completed')
+    allocation=db.get(Allocation,payout.allocation_id)
+    shipment=db.scalar(select(Shipment).where(Shipment.item_id == allocation.item_id))
+    require(shipment.status == 'delivered' and state.clock >= shipment.delivered_at + timedelta(hours=24), 'Delivery and 24-hour hold required')
+    active=db.scalar(select(func.count()).select_from(Return).where(Return.item_id==allocation.item_id, Return.status.in_(['requested','approved','received'])))
+    require(active == 0,'An active return blocks payout')
+    outcome=data.get('outcome','completed'); require(outcome in ('completed','failed'),'Invalid outcome')
+    payout.status=outcome
+    return {'id':payout.id,'status':outcome,'amount':payout.amount}
