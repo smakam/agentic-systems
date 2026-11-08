@@ -111,6 +111,7 @@ def create_app(*, verifier=None, order_access=None):
 
     host = urlsplit(resource).netloc
     return server.streamable_http_app(
+        streamable_http_path=urlsplit(resource).path or '/mcp',
         json_response=True,
         stateless_http=True,
         max_request_body_size=16384,

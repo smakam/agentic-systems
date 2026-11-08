@@ -17,7 +17,7 @@ from marketplace.user_orders import OrderAccess
 from test_integration import reset
 
 ISSUER = 'https://identity.example.test/realms/marketplace'
-RESOURCE = 'https://orders.example.test/mcp'
+RESOURCE = 'https://orders.example.test/orders/mcp'
 
 
 @pytest.fixture
@@ -62,7 +62,7 @@ def rpc(client, token, method, params=None):
     headers = {'accept': 'application/json, text/event-stream'}
     if token:
         headers['authorization'] = 'Bearer ' + token
-    return client.post('/mcp', headers=headers, json={
+    return client.post('/orders/mcp', headers=headers, json={
         'jsonrpc': '2.0', 'id': 1, 'method': method, 'params': params or {},
     })
 
@@ -80,7 +80,7 @@ def test_discovery_challenge_and_tool_surface(connection):
     denied = rpc(client, None, 'tools/list')
     assert denied.status_code == 401
     assert 'resource_metadata=' in denied.headers['www-authenticate']
-    metadata = client.get('/.well-known/oauth-protected-resource/mcp').json()
+    metadata = client.get('/.well-known/oauth-protected-resource/orders/mcp').json()
     assert metadata['authorization_servers'] == [ISSUER]
     assert metadata['resource'] == RESOURCE
     assert 'orders:read' in metadata['scopes_supported']
@@ -112,7 +112,7 @@ def test_forged_signature_and_missing_scope(connection):
     forged = jwt.encode(claims, other, algorithm='RS256')
     assert rpc(client, forged, 'tools/list').status_code == 401
     assert rpc(client, mint(scope='profile'), 'tools/list').status_code == 403
-    assert client.post('/mcp', headers={'x-api-key': 'old-support-key'}, json={}).status_code == 401
+    assert client.post('/orders/mcp', headers={'x-api-key': 'old-support-key'}, json={}).status_code == 401
 
 
 @pytest.mark.parametrize('user,orders,items', [

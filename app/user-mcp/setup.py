@@ -42,12 +42,18 @@ def main():
         }
         settings_path.write_text(json.dumps(settings, indent=2) + '\n')
         settings_path.chmod(0o600)
-    resource = base + '/mcp'
+    resource = base + '/orders/mcp'
     issuer = base + '/identity/realms/marketplace'
-    subjects = {
-        str(uuid.uuid5(uuid.NAMESPACE_URL, issuer + '/' + account)): account
-        for account in ('buyer', 'buyer2', 'seller', 'seller2')
-    }
+    links_file = STATE / 'identity-links.json'
+    if links_file.exists():
+        subjects = json.loads(links_file.read_text())['subjects']
+    else:
+        subjects = {
+            str(uuid.uuid5(uuid.NAMESPACE_URL, issuer + '/' + account)): account
+            for account in ('buyer', 'buyer2', 'seller', 'seller2')
+        }
+    if set(subjects.values()) != {'buyer', 'buyer2', 'seller', 'seller2'}:
+        parser.error('Expected explicit links for the four demo accounts')
     clients = []
     for client_id, public, redirects in (
         ('marketplace-chatgpt', False, [args.chatgpt_callback]),
@@ -151,6 +157,12 @@ def main():
         proxy_set_header X-Forwarded-For $remote_addr;
     }
     location /identity/ { return 404; }
+    location /mcp {
+        proxy_pass http://marketplace-lab-remote-mcp-1:8001;
+        proxy_set_header Host $host;
+        proxy_buffering off;
+        proxy_read_timeout 90s;
+    }
     location / {
         proxy_pass http://orders:8002;
         proxy_set_header Host $host;

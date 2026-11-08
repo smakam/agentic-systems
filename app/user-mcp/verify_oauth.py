@@ -48,7 +48,7 @@ def login(client, metadata, settings, username):
         'redirect_uri': callback,
         'response_type': 'code',
         'scope': 'openid orders:read',
-        'resource': settings['base_url'] + '/mcp',
+        'resource': settings['base_url'] + '/orders/mcp',
         'state': state,
         'code_challenge': challenge,
         'code_challenge_method': 'S256',
@@ -68,7 +68,7 @@ def login(client, metadata, settings, username):
                     'redirect_uri': callback,
                     'code': code,
                     'code_verifier': verifier,
-                    'resource': settings['base_url'] + '/mcp',
+                    'resource': settings['base_url'] + '/orders/mcp',
                 }
                 token_response = client.post(metadata['token_endpoint'], data=token_request)
                 assert token_response.status_code == 200, 'Authorization-code exchange failed'
@@ -97,7 +97,7 @@ def login(client, metadata, settings, username):
 
 
 def rpc(client, base, token, method, params=None):
-    response = client.post(base + '/mcp', headers={
+    response = client.post(base + '/orders/mcp', headers={
         'Authorization': 'Bearer ' + token,
         'Accept': 'application/json, text/event-stream',
     }, json={'jsonrpc': '2.0', 'id': 1, 'method': method, 'params': params or {}})
@@ -119,11 +119,11 @@ def main():
     records = {}
     for account in ('buyer', 'buyer2', 'seller', 'seller2'):
         with httpx.Client(timeout=30, follow_redirects=False) as client:
-            challenge = client.post(base + '/mcp', json={})
+            challenge = client.post(base + '/orders/mcp', json={})
             assert challenge.status_code == 401
             assert 'resource_metadata=' in challenge.headers['www-authenticate']
-            protected = client.get(base + '/.well-known/oauth-protected-resource/mcp').json()
-            assert protected['resource'] == base + '/mcp'
+            protected = client.get(base + '/.well-known/oauth-protected-resource/orders/mcp').json()
+            assert protected['resource'] == base + '/orders/mcp'
             issuer = protected['authorization_servers'][0]
             metadata = client.get(issuer + '/.well-known/openid-configuration').json()
             assert metadata['issuer'] == issuer
@@ -150,7 +150,7 @@ def main():
                 'grant_type': 'refresh_token',
                 'client_id': 'marketplace-local-test',
                 'refresh_token': tokens['refresh_token'],
-                'resource': base + '/mcp',
+                'resource': base + '/orders/mcp',
             })
             assert refreshed.status_code == 200, 'Token refresh failed'
             identity_after_refresh = tool(client, base, refreshed.json()['access_token'], 'get_my_profile')
