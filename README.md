@@ -6,6 +6,26 @@ A runnable reference application for exploring how AI agents work inside a busin
 
 You can use this repository independently of the **Inside AI Agent Systems: From Components to Platforms** course. The setup guides, sample data, walkthroughs, exercises and reference answers are included. Start with a working baseline, change one capability, repeat the same scenario and compare what happened.
 
+## Companion Udemy course
+
+**[Inside AI Agent Systems: From Components to Platforms](https://www.udemy.com/course/inside-ai-agent-systems-from-components-to-platforms/?referralCode=47C95A5262ECC0C54C36)** provides a structured path through agent components, hands-on Marketplace experiments, tracing, evaluation, security, advanced capabilities and platform choices.
+
+Understand, build and evaluate AI agents through hands-on experiments, explore key production considerations, and choose an agentic platform that fits your needs. **[View the course and free preview lessons](https://www.udemy.com/course/inside-ai-agent-systems-from-components-to-platforms/?referralCode=47C95A5262ECC0C54C36).**
+
+## Branches and experiment status
+
+Use `main` for the course application and standard setup guides. The experiment branches below are separate lines of work; publishing a branch does not merge its changes into the course baseline.
+
+| Branch | Purpose | Status |
+|---|---|---|
+| [`main`](https://github.com/smakam/agentic-systems/tree/main) | Course-aligned marketplace application, exercises, and normal local/cloud setup. | Baseline for learners; experiments enter through a reviewed merge after validation. |
+| [Responsible AI pilot evidence](https://github.com/smakam/agentic-systems/tree/codex/responsible-ai-pilot-evidence) | Responsible AI evaluation cases and bounded pilot results across direct model checks, AgentDojo, and the marketplace assistant. | Experimental evidence/documentation branch; it is not a complete AI governance platform. |
+| [MCP authentication and service identity](https://github.com/smakam/agentic-systems/tree/codex/user-scoped-mcp) | Compare the existing shared-key support connection with buyer/seller OAuth access and a separately authorized simulated payout service. Adds local Keycloak, scoped order tools, dual web login, and operator-controlled automatic Test payouts. | Experimental application branch. Relevant automated suite: 94 passed, plus local OAuth and scheduled-payout checks. Broader installation, security, and client validation remain necessary before merging. |
+
+The MCP experiment preserves the support endpoint, filters buyer/seller reads in the backend, and uses a separate service identity for simulated payouts. Payout automation is Test-only and defaults off; the worker is deterministic and does not use an LLM or a real payment provider. Private credentials and generated identity/tunnel configuration are excluded from Git.
+
+The older `codex/course-setup-and-learner-labs` branch was merged into the baseline; it is not a third active experiment. Keep experimental runtime/database setup separate from normal learner setup, and record the branch and commit used when reporting results.
+
 ## What you can do
 
 The marketplace simulates buyers, sellers, orders, shipments, payments, returns and seller payouts. Its support agent investigates questions such as:
