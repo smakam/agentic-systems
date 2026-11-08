@@ -48,6 +48,14 @@ def main():
             }
             if kind == 'backend':
                 config['volumes'] = [str(APP / 'backend/marketplace') + ':/app/marketplace:ro']
+                port = 5178 if name == 'backend' else 5179
+                oidc_config = STATE / f'ui-login-{port}.json'
+                if oidc_config.exists():
+                    config['volumes'].extend([str(oidc_config) + ':/config/oidc.json:ro',
+                                              str(STATE / 'ui-identity-links.json') + ':/config/ui-identity-links.json:ro'])
+                    config['environment'] = {'MARKETPLACE_OIDC_CONFIG': '/config/oidc.json'}
+                # OAuth callback query strings contain single-use authorization codes.
+                config['command'] = ['uvicorn', 'marketplace.api:app', '--host', '0.0.0.0', '--port', '8000', '--no-access-log']
             branch_services[name] = config
         overlay = STATE / 'branch-runtime.yaml'
         overlay.write_text(json.dumps({'services': branch_services}, indent=2) + '\n')

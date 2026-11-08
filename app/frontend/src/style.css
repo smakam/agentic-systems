@@ -65,3 +65,5 @@
 .investigation-history-list>[aria-selected="true"]{background:#eaf0e6}
 .investigation-history-list>[role="option"]:focus{outline:2px solid #55764f;outline-offset:-2px;background:#eaf0e6}
 .investigation-history-list p{padding:8px;font-size:12px}
+
+.login-divider{text-align:center;margin:12px 0}.keycloak-login{width:100%}

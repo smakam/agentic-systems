@@ -78,10 +78,17 @@ def login(data:Credentials,request:Request,response:Response,db=Depends(db_sessi
         if not user: raise VerificationError('Invalid credentials')
         PasswordHasher().verify(user.password_hash,data.password)
     except VerificationError: raise HTTPException(401,'Invalid username or password')
+    return create_login_session(db,user,response)
+
+def create_login_session(db,user,response):
     token=secrets.token_urlsafe(32); csrf=secrets.token_urlsafe(24)
     db.add(Login(token_hash=hashlib.sha256(token.encode()).hexdigest(),user_id=user.id,csrf=csrf,expires=datetime.now(timezone.utc)+timedelta(hours=12))); db.commit()
     response.set_cookie('market_session',token,httponly=True,samesite='strict',max_age=43200,secure=os.getenv('SECURE_COOKIES')=='true')
     return {'user':user_json(user),'csrf':csrf}
+
+from .oidc_login import create_router as oidc_router
+app.include_router(oidc_router(db_session,create_login_session))
+
 @app.get('/api/me')
 def me(request:Request,user=Depends(identity),db=Depends(db_session)):
     login=db.get(Login,hashlib.sha256(request.cookies['market_session'].encode()).hexdigest())
