@@ -144,6 +144,10 @@ def main():
     client_max_body_size 64k;
     access_log off;
     location /identity/realms/marketplace/ {
+        # Reconnect responses can include a large Location header and SSO cookies.
+        proxy_buffer_size 32k;
+        proxy_buffers 8 32k;
+        proxy_busy_buffers_size 64k;
         proxy_pass http://identity:8080;
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-Proto https;

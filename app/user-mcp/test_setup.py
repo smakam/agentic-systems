@@ -47,6 +47,15 @@ class IdentitySetupTests(unittest.TestCase):
             with self.subTest(user=user['username']):
                 self.assertIn('offline_access', user['realmRoles'])
 
+    def test_identity_proxy_accepts_large_reauthorization_headers(self):
+        proxy = (self.setup_module.STATE / 'proxy.conf').read_text()
+        identity = proxy.split('location /identity/realms/marketplace/ {', 1)[1].split('}', 1)[0]
+        self.assertIn('proxy_buffer_size 32k;', identity)
+        self.assertIn('proxy_buffers 8 32k;', identity)
+        self.assertIn('proxy_busy_buffers_size 64k;', identity)
+        support = proxy.split('location /mcp {', 1)[1].split('}', 1)[0]
+        self.assertNotIn('proxy_buffer_size', support)
+
     def test_rerunning_setup_preserves_existing_identities_and_credentials(self):
         before = {u['username']: (u['id'], u['credentials']) for u in self.realm['users']}
         self.generate()
