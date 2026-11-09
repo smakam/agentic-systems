@@ -12,19 +12,21 @@ You can use this repository independently of the **Inside AI Agent Systems: From
 
 Understand, build and evaluate AI agents through hands-on experiments, explore key production considerations, and choose an agentic platform that fits your needs. **[View the course and free preview lessons](https://www.udemy.com/course/inside-ai-agent-systems-from-components-to-platforms/?referralCode=47C95A5262ECC0C54C36).**
 
-## Branches and experiment status
+## Application and experiment status
 
-Use `main` for the course application and standard setup guides. The experiment branches below are separate lines of work; publishing a branch does not merge its changes into the course baseline.
+Use [`main`](https://github.com/smakam/agentic-systems/tree/main) for the course application and setup guides. It includes the shared-key support MCP endpoint, buyer/seller OAuth access, optional Keycloak web sign-in alongside username/password login, and service-authenticated simulated payouts.
 
-| Branch | Purpose | Status |
-|---|---|---|
-| [`main`](https://github.com/smakam/agentic-systems/tree/main) | Course-aligned marketplace application, exercises, and normal local/cloud setup. | Baseline for learners; experiments enter through a reviewed merge after validation. |
-| [Responsible AI pilot evidence](https://github.com/smakam/agentic-systems/tree/codex/responsible-ai-pilot-evidence) | Responsible AI evaluation cases and bounded pilot results across direct model checks, AgentDojo, and the marketplace assistant. | Experimental evidence/documentation branch; it is not a complete AI governance platform. |
-| [MCP authentication and service identity](https://github.com/smakam/agentic-systems/tree/codex/user-scoped-mcp) | Compare the existing shared-key support connection with buyer/seller OAuth access and a separately authorized simulated payout service. Adds local Keycloak, scoped order tools, dual web login, and operator-controlled automatic Test payouts across all sellers. | Experimental application branch. Relevant automated suite: 98 passed, plus local OAuth and scheduled-payout checks. Broader installation, security, and client validation remain necessary before merging. |
+The [Responsible AI pilot evidence branch](https://github.com/smakam/agentic-systems/tree/codex/responsible-ai-pilot-evidence) remains a separate evidence/documentation experiment covering direct model checks, AgentDojo, and the marketplace assistant. It is not a complete AI governance platform.
 
-The MCP experiment preserves the support endpoint, filters buyer/seller reads in the backend, and uses a separate service identity for simulated payouts. Payout automation is Test-only and defaults off; the worker is deterministic and does not use an LLM or a real payment provider. Private credentials and generated identity/tunnel configuration are excluded from Git.
+### MCP authentication and automatic payouts
 
-The older `codex/course-setup-and-learner-labs` branch was merged into the baseline; it is not a third active experiment. Keep experimental runtime/database setup separate from normal learner setup, and record the branch and commit used when reporting results.
+The support endpoint retains its shared-key integration. The order endpoint applies the signed-in buyer's or seller's permissions in the backend. The payout endpoint accepts a separately registered service identity and applies the same payout rules across all sellers.
+
+**Automatic payouts are disabled by default and available only in the simulated Test workspace.** An operator can enable them in Admin after delivery and the required hold. The backend rechecks eligibility, amount and run limits, and duplicate-payment protection. The worker does not use a real payment provider.
+
+Keycloak, the public HTTPS route, and the service worker are optional local components; normal startup does not provision or enable them. The provisioning entry points are [`app/user-mcp/setup.py`](app/user-mcp/setup.py), [`configure_ui_login.py`](app/user-mcp/configure_ui_login.py), and [`configure_payout.py`](app/user-mcp/configure_payout.py). Generated identity links, client secrets, tunnel settings, and worker credentials stay in ignored private files.
+
+The MCP authentication additions are part of `main`; a separate feature-branch checkout is no longer required. Record the commit and workspace used when reporting results.
 
 ## What you can do
 

@@ -73,6 +73,7 @@ def main():
             'webOrigins': [],
             'fullScopeAllowed': False,
             'defaultClientScopes': ['orders:read'],
+            'optionalClientScopes': ['offline_access'] if client_id == 'marketplace-chatgpt' else [],
             'attributes': {'pkce.code.challenge.method': 'S256'},
         }
         if not public:
@@ -119,6 +120,8 @@ def main():
             'lastName': 'Demo',
             'email': account + '@example.test',
             'emailVerified': True,
+            # ChatGPT requests offline refresh for its existing read-only order connection.
+            'realmRoles': ['offline_access'],
             'credentials': [{'type': 'password', 'value': settings['user_password'], 'temporary': False}],
         } for subject, account in subjects.items()],
     }

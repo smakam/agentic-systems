@@ -95,8 +95,8 @@ def test_interrupted_mcp_run_reports_failure_and_next_run_recovers(monkeypatch):
     with Session.begin() as db:
         db.add(Conversation(id='mcp-disconnect',owner_id='support',title='Test',items=[]))
     original=agent.open_mcp
-    def dying_server():
-        server=original()
+    def dying_server(*args,**kwargs):
+        server=original(*args,**kwargs)
         server.params.args=['-c',
             'import os; from marketplace import mcp_server; '
             'mcp_server.ReadContext.catalog=lambda self: os._exit(17); mcp_server.main()']
