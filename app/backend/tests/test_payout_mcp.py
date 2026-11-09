@@ -11,7 +11,7 @@ import pytest
 from cryptography.hazmat.primitives.asymmetric import rsa
 from starlette.testclient import TestClient
 from sqlalchemy import select, func
-from marketplace.db import Session, Payout, Shipment, State, Event, Command, Return, Allocation, Item
+from marketplace.db import User, Session, Payout, Shipment, State, Event, Command, Return, Allocation, Item
 from marketplace.api import app
 from marketplace.business import BusinessError, execute
 from marketplace.user_mcp_auth import KeycloakTokenVerifier, VerifiedPrincipal
@@ -33,7 +33,7 @@ def setup(monkeypatch, tmp_path):
     monkeypatch.setenv('PAYOUT_MCP_RESOURCE_URL', RESOURCE)
     monkeypatch.setenv('PAYOUT_MCP_ISSUER_URL', ISSUER)
     policy = {'issuer': ISSUER, 'client_id': CLIENT, 'subject': SUBJECT, 'simulation_only': True,
-        'seller_ids': ['seller-1'], 'max_payout_paise': 1000000, 'max_run_paise': 2000000, 'max_run_count': 10}
+        'seller_scope': 'all', 'max_payout_paise': 1000000, 'max_run_paise': 2000000, 'max_run_count': 10}
     path = tmp_path / 'policy.json'
     path.write_text(json.dumps(policy))
     access = PayoutAccess(path)
@@ -76,8 +76,10 @@ def test_default_disabled_scope_and_candidates(setup):
     with Session.begin() as db:
         db.get(PayoutAutomation, 1).enabled = True
     candidates = result(rpc(setup, 'list_eligible_payouts'))['candidates']
-    assert {p['payout_id'] for p in candidates} == {'payout-1'}
-    assert all(p['seller_id'] == 'seller-1' for p in candidates)
+    assert {p['payout_id'] for p in candidates} == {'payout-1', 'payout-2'}
+    assert {p['seller_id'] for p in candidates} == {'seller-1', 'seller-2'}
+    with Session() as db:
+        assert db.get(PayoutAutomation, 1).service_policy['seller_scope'] == 'all'
 
 
 @pytest.mark.parametrize('claims', [
@@ -117,7 +119,7 @@ def test_idempotency_audit_and_concurrent_release(setup):
         release(setup, key='different-payout-key')
 
 
-@pytest.mark.parametrize('case', ['hold', 'return', 'seller', 'amount', 'disabled', 'zero'])
+@pytest.mark.parametrize('case', ['hold', 'return', 'amount', 'disabled', 'zero'])
 def test_backend_rechecks_after_candidate_read(setup, case):
     enable()
     assert setup.access.eligible(PRINCIPAL)['candidates']
@@ -126,8 +128,6 @@ def test_backend_rechecks_after_candidate_read(setup, case):
             db.get(Shipment, 'shipment-1').delivered_at = db.get(State, 1).clock
         elif case == 'return':
             db.add(Return(id='blocking-return', item_id='item-1', quantity=1, status='requested'))
-        elif case == 'seller':
-            db.get(Item, 'item-1').seller_id = 'seller-2'
         elif case == 'amount':
             db.get(Payout, 'payout-1').amount = 1000001
         elif case == 'zero':
@@ -144,7 +144,6 @@ def test_backend_rechecks_after_candidate_read(setup, case):
 def test_run_amount_count_limits_and_retry_key_conflict(setup):
     enable()
     with Session.begin() as db:
-        db.get(Item, 'item-2').seller_id = 'seller-1'
         shipment = db.get(Shipment, 'shipment-2')
         shipment.status = 'delivered'
         shipment.delivered_at = db.get(State, 1).clock - timedelta(hours=48)
@@ -229,10 +228,69 @@ def test_scheduled_summary_excludes_unrelated_debug_denials(setup):
     setup.access.eligible(PRINCIPAL, run_id='scheduled-run-123')
     release(setup, run='scheduled-run-123')
     with pytest.raises(BusinessError):
-        release(setup, payout='payout-2', key='unrelated-debug-denial', run='debug-run-123')
+        release(setup, payout='payout-3', key='unrelated-debug-denial', run='debug-run-123')
     with Session() as db:
         summary = db.get(PayoutAutomation, 1).last_result
         assert summary['run_id'] == 'scheduled-run-123'
         assert summary['completed'] == ['payout-1'] and summary['denied'] == []
         history = db.scalar(select(Event).where(Event.kind == 'service_payout_run'))
         assert history.details['completed'] == ['payout-1']
+
+
+@pytest.mark.parametrize('seller_scope', [None, '', 'seller-1', ['seller-1']])
+def test_invalid_seller_coverage_policy_is_rejected(setup, seller_scope):
+    setup.policy['seller_scope'] = seller_scope
+    setup.path.write_text(json.dumps(setup.policy))
+    with pytest.raises(BusinessError, match='Invalid service policy'):
+        setup.access.eligible(PRINCIPAL)
+
+
+def test_worker_releases_eligible_orders_for_all_sellers_after_hold(setup):
+    enable()
+    def command(actor, action, data, key):
+        with Session.begin() as db:
+            return execute(db, db.get(User, actor), key, action, data)
+
+    order = command('buyer', 'purchase', {'items': [
+        {'listing_id': f'listing-{n}', 'quantity': 1} for n in (1, 2, 3)]}, 'all-seller-purchase')
+    with Session() as db:
+        items = db.scalars(select(Item).where(Item.order_id == order['id'])).all()
+        assert {item.seller_id for item in items} == {'seller-1', 'seller-2', 'seller-3'}
+        shipments = [(item.seller_id, db.scalar(select(Shipment.id).where(Shipment.item_id == item.id)))
+                     for item in items]
+        payouts = set(db.scalars(select(Payout.id).join(Allocation).join(Item)
+                                .where(Item.order_id == order['id'])).all())
+    for seller, shipment in shipments:
+        actor = {'seller-1': 'seller', 'seller-2': 'seller2'}.get(seller, 'operator')
+        command(actor, 'dispatch', {'id': shipment}, 'dispatch-' + shipment)
+        command(actor, 'deliver', {'id': shipment}, 'deliver-' + shipment)
+    assert not payouts.intersection(p['payout_id'] for p in setup.access.eligible(PRINCIPAL)['candidates'])
+    for payout in payouts:
+        with pytest.raises(BusinessError, match='hold'):
+            release(setup, payout=payout, key='held-' + payout)
+    command('operator', 'advance_clock', {'hours': 24}, 'all-seller-advance-clock')
+    assert payouts <= {p['payout_id'] for p in setup.access.eligible(PRINCIPAL)['candidates']}
+
+    def handle(request):
+        if request.url.path == '/token':
+            return httpx.Response(200, json={'access_token': setup.mint()})
+        response = setup.client.post('/payouts/mcp', headers={
+            'Authorization': request.headers['Authorization'], 'Content-Type': 'application/json',
+            'Accept': 'application/json, text/event-stream'}, content=request.content)
+        return httpx.Response(response.status_code, json=response.json())
+
+    config = {'token_url': 'http://local/token', 'mcp_url': 'http://local/payouts/mcp',
+              'client_id': CLIENT, 'client_secret': 'test', 'max_run_count': 10, 'max_run_paise': 2000000}
+    with httpx.Client(transport=httpx.MockTransport(handle)) as client:
+        first, second = run_once(config, client), run_once(config, client)
+    assert payouts <= set(first['completed'])
+    assert not first['denied']
+    assert second['completed'] == [] and second['amount_paise'] == 0
+    with Session() as db:
+        assert all(db.get(Payout, payout).status == 'completed' for payout in payouts)
+    for payout in payouts:
+        retried = release(setup, payout=payout, key='simulated-payout:' + payout, run='retry-run-123')
+        assert retried['id'] == payout and retried['run_id'] == first['run_id']
+    with Session() as db:
+        events = db.scalars(select(Event).where(Event.kind == 'service_payout_release')).all()
+        assert len(events) == len(first['completed'])

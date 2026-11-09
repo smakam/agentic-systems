@@ -61,9 +61,11 @@ def main():
     save('payout-credentials.json', credentials)
     policy_file = STATE / 'payout-policy.json'
     policy = json.loads(policy_file.read_text()) if policy_file.exists() else {
-        'simulation_only': True, 'seller_ids': ['seller-1'], 'max_payout_paise': 1000000,
+        'simulation_only': True, 'seller_scope': 'all', 'max_payout_paise': 1000000,
         'max_run_paise': 2000000, 'max_run_count': 10}
-    policy.update(issuer=issuer, client_id=credentials['client_id'], subject=subject)
+    # Payout automation applies to every marketplace seller; eligibility and budgets still gate each release.
+    policy.pop('seller_ids', None)
+    policy.update(seller_scope='all', issuer=issuer, client_id=credentials['client_id'], subject=subject)
     save('payout-policy.json', policy)
     save('payout-worker.json', {**credentials, 'simulation_only': True, 'workspace': 'Test',
         'token_url': 'http://identity:8080/identity/realms/marketplace/protocol/openid-connect/token',

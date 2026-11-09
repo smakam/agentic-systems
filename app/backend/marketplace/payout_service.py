@@ -20,7 +20,7 @@ class PayoutAccess:
         require(principal.issuer == policy['issuer'] and principal.client_id == policy['client_id']
                 and principal.subject == policy['subject'], 'Payout service identity required')
         require(scope in principal.scopes, 'Required payout permission missing')
-        require(policy.get('seller_ids') and all(type(policy[k]) is int and policy[k] > 0
+        require(policy.get('seller_scope') == 'all' and all(type(policy[k]) is int and policy[k] > 0
                 for k in ('max_payout_paise', 'max_run_paise', 'max_run_count')), 'Invalid service policy')
         return policy
 
@@ -39,7 +39,7 @@ class PayoutAccess:
             if automation is None:
                 automation = PayoutAutomation(id=1, enabled=False)
                 db.add(automation)
-            automation.service_policy = {k: policy[k] for k in ('simulation_only', 'seller_ids',
+            automation.service_policy = {k: policy[k] for k in ('simulation_only', 'seller_scope',
                 'max_payout_paise', 'max_run_paise', 'max_run_count')}
             automation.service_policy['max_payouts_per_run'] = policy['max_run_count']
             automation.heartbeat_at = datetime.now(timezone.utc)
@@ -48,7 +48,7 @@ class PayoutAccess:
                         'as_of': state.clock.isoformat()}
             rows = db.execute(select(Payout, Allocation, Item, Shipment).join(Allocation, Payout.allocation_id == Allocation.id)
                 .join(Item, Allocation.item_id == Item.id).join(Shipment, Shipment.item_id == Item.id)
-                .where(Item.seller_id.in_(policy['seller_ids']), Payout.status.in_(['held', 'failed']),
+                .where(Payout.status.in_(['held', 'failed']),
                        Payout.amount > 0, Payout.amount <= policy['max_payout_paise'],
                        Shipment.status == 'delivered', Shipment.delivered_at <= state.clock - timedelta(hours=24))
                 .order_by(Payout.id)).all()
@@ -85,9 +85,6 @@ class PayoutAccess:
                 require(automation_enabled(db), 'Automatic payout is disabled')
                 payout = db.get(Payout, payout_id)
                 require(payout is not None, 'Payout unavailable for this service')
-                allocation = db.get(Allocation, payout.allocation_id)
-                item = db.get(Item, allocation.item_id)
-                require(item.seller_id in policy['seller_ids'], 'Payout unavailable for this service')
                 require(0 < payout.amount <= policy['max_payout_paise'], 'Payout exceeds service amount limit')
                 key = actor + ':' + idempotency_key
                 fingerprint = hashlib.sha256(json.dumps(['simulated-payout', payout_id]).encode()).hexdigest()

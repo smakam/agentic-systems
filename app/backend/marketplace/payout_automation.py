@@ -39,7 +39,7 @@ def status(db):
         'last_result': row.last_result if row else None,
         'recent_runs': [event.details for event in recent],
         'policy': (row.service_policy if row and row.service_policy else
-                   {'simulation_only': True, 'seller_ids': ['seller-1'], 'max_payout_paise': 1000000,
+                   {'simulation_only': True, 'seller_scope': 'all', 'max_payout_paise': 1000000,
                     'max_run_paise': 2000000, 'max_run_count': 10, 'max_payouts_per_run': 10})}
 
 
