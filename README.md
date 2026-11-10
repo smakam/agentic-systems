@@ -30,6 +30,12 @@ The MCP authentication additions are part of `main`; a separate feature-branch c
 
 ## What you can do
 
+### Optional A2A support and delivery lab
+
+This branch adds browser-to-support A2A access and a separate simulated delivery agent. Choose Standard API, A2A Support, or A2A Support + Delivery in Support workspace; inspect the actual Agent Card, task results and read-only evidence. Sellers can enroll shipments at dispatch, change a simulated delivery scenario, and manually simulate delivery through the delivery service. Existing unlinked shipments retain their local behavior.
+
+See the [setup and walkthrough](app/docs/A2A-MARKETPLACE.md) and [executed validation](app/docs/A2A-VALIDATION.md). These additions are on the review branch and have not been merged into `main` or deployed to the existing workspaces.
+
 The marketplace simulates buyers, sellers, orders, shipments, payments, returns and seller payouts. Its support agent investigates questions such as:
 
 - What is the payout policy?

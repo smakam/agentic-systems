@@ -19,7 +19,7 @@ def own_item(db, actor, item):
 def emit(db, state, entity, kind, details):
     db.add(Event(id=uid('evt'), entity_id=entity, kind=kind, occurred_at=state.clock, recorded_at=datetime.now(timezone.utc), revision=state.revision, details=details))
 
-def execute(db, actor, key, action, data):
+def execute(db, actor, key, action, data, *, delivery_result=None):
     require(8 <= len(key) <= 120, 'An idempotency key of 8–120 characters is required')
     state = db.execute(select(State).where(State.id == 1).with_for_update()).scalar_one()
     command_id = f'{actor.id}:{key}'
@@ -29,14 +29,14 @@ def execute(db, actor, key, action, data):
         require(previous.fingerprint == fingerprint, 'Idempotency key already used for a different request')
         return previous.result
     state.revision += 1
-    result = _apply(db, actor, state, action, data)
+    result = _apply(db, actor, state, action, data, delivery_result=delivery_result)
     db.flush()
     result.update(revision=state.revision, as_of=state.clock.isoformat())
     db.add(Command(id=command_id, actor_id=actor.id, fingerprint=fingerprint, result=result))
     emit(db, state, result.get('id', 'marketplace'), action, {'actor':actor.id, **data})
     return result
 
-def _apply(db, actor, state, action, data):
+def _apply(db, actor, state, action, data, *, delivery_result=None):
     if action == 'purchase':
         require(actor.role == 'buyer', 'Only buyers can purchase')
         lines = data.get('items', [])
@@ -73,8 +73,35 @@ def _apply(db, actor, state, action, data):
         item = db.get(Item, shipment.item_id); own_item(db, actor, item)
         expected, target = ('pending','dispatched') if action == 'dispatch' else ('dispatched','delivered')
         require(shipment.status == expected, f'Shipment must be {expected}')
+        link = db.get(ShipmentDeliveryLink, shipment.id)
+        if link is not None or (action == 'dispatch' and data.get('delivery_mode') == 'a2a'):
+            # This parameter is supplied only by the shipping orchestrator, not
+            # copied from command data. Direct business callers cannot bypass
+            # the delivery service for an enrolled shipment.
+            require(link is not None and isinstance(delivery_result, dict), 'Linked shipment must use the delivery service')
+            require(delivery_result.get('reference') == link.reference and
+                    delivery_result.get('marketplace_shipment_id') == shipment.id,
+                    'Delivery receipt does not match this shipment')
+            allowed = ('in_transit', 'exception') if action == 'dispatch' else ('delivered',)
+            require(delivery_result.get('status') in allowed, 'Delivery service has not confirmed this transition')
         shipment.status = target
         if action == 'deliver': shipment.delivered_at = state.clock
+        return {'id':shipment.id}
+    if action == 'delivery_fixture':
+        shipment = db.get(Shipment,data.get('id'))
+        require(shipment is not None,'Shipment not found')
+        own_item(db,actor,db.get(Item,shipment.item_id))
+        require(shipment.status == 'dispatched','Shipment must be dispatched')
+        link = db.get(ShipmentDeliveryLink,shipment.id)
+        require(link is not None,'Only linked shipments have delivery-service fixtures')
+        fixture = data.get('delivery_fixture')
+        require(fixture in ('normal','exception'),'Choose normal or exception delivery fixture')
+        require(isinstance(delivery_result,dict) and delivery_result.get('reference') == link.reference and
+                delivery_result.get('marketplace_shipment_id') == shipment.id and
+                delivery_result.get('fixture') == fixture and
+                delivery_result.get('status') == ('in_transit' if fixture == 'normal' else 'exception'),
+                'Delivery service has not confirmed the fixture change')
+        link.fixture = fixture
         return {'id':shipment.id}
     if action == 'advance_clock':
         require(actor.role == 'operator', 'Only operator can advance the clock')

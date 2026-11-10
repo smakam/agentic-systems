@@ -1,0 +1,36 @@
+# Optional lab; adds a simulated carrier without replacing the existing API.
+# Run with the baseline compose.yaml; see docs/A2A-MARKETPLACE.md.
+services:
+  backend:
+    environment:
+      DELIVERY_A2A_URL: http://delivery:8004
+      DELIVERY_READ_TOKEN: ${DELIVERY_READ_TOKEN:?Set a distinct random read token}
+      DELIVERY_WRITE_TOKEN: ${DELIVERY_WRITE_TOKEN:?Set a distinct random write token}
+    depends_on:
+      delivery: {condition: service_healthy}
+  delivery:
+    build: ./backend
+    command: [uvicorn, marketplace.delivery_service:app, --host, 0.0.0.0, --port, "8004"]
+    environment:
+      DELIVERY_DATABASE_PATH: /delivery-state/shipments.sqlite3
+      DELIVERY_READ_TOKEN: ${DELIVERY_READ_TOKEN:?Set a distinct random read token}
+      DELIVERY_WRITE_TOKEN: ${DELIVERY_WRITE_TOKEN:?Set a distinct random write token}
+      DELIVERY_A2A_URL: http://delivery:8004
+      LITELLM_URL: http://gateway:4000/v1
+      LITELLM_API_KEY: ${SUPPORT_GATEWAY_KEY:-}
+      DELIVERY_MODEL_ALIAS: ${DELIVERY_MODEL_ALIAS:-support-model}
+      AGENT_INPUT_RATE: "2.5"
+      AGENT_OUTPUT_RATE: "15.0"
+      DELIVERY_MAX_SECONDS: "60"
+      DELIVERY_MAX_TURNS: "5"
+      DELIVERY_MAX_ESTIMATED_COST_USD: "0.10"
+    volumes: [delivery-state:/delivery-state]
+    depends_on:
+      gateway: {condition: service_started}
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8004/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+volumes:
+  delivery-state:

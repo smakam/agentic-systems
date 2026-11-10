@@ -13,6 +13,8 @@ from sqlalchemy import select,text,func
 from .db import *
 from .seed import seed
 from .business import execute,BusinessError,uid
+from .delivery_client import DeliveryUnavailable
+from .support_a2a import conversation_fields, add_conversation_binding
 
 @asynccontextmanager
 async def lifespan(app):
@@ -124,20 +126,31 @@ def market(user=Depends(identity),db=Depends(db_session)):
     allocations=rows(Allocation,select(Allocation).where(Allocation.item_id.in_(item_ids)))
     alloc_ids=[x['id'] for x in allocations]
     returns=rows(Return,select(Return).where(Return.item_id.in_(item_ids)))
+    from .delivery_shipping import link_json
+    shipment_data=rows(Shipment,select(Shipment).where(Shipment.item_id.in_(item_ids)))
+    for shipment in shipment_data:
+        shipment['delivery_service']=link_json(db,shipment['id'])
     # Buyers do not see seller settlement amounts; sellers do not see sibling payments.
     internal=user.role in ('operator','support','seller')
     balances=db.execute(text('SELECT * FROM analytics.seller_balances'+(' WHERE seller_id=:seller' if user.role=='seller' else '')),{'seller':user.seller_id}).mappings().all() if internal else []
-    return {'state':jsonable_encoder(db.get(State,1)),'sellers':rows(Seller,sellers),'products':rows(Product,products),'listings':rows(Listing,listings),'orders':order_data,'items':item_data,'shipments':rows(Shipment,select(Shipment).where(Shipment.item_id.in_(item_ids))),'returns':returns,'refunds':rows(Refund,select(Refund).where(Refund.return_id.in_([x['id'] for x in returns]))),'allocations':allocations if internal else [],'payouts':rows(Payout,select(Payout).where(Payout.allocation_id.in_(alloc_ids))) if internal else [],'balances':[dict(x) for x in balances],'events':rows(Event) if user.role in ('operator','support') else []}
+    return {'state':jsonable_encoder(db.get(State,1)),'sellers':rows(Seller,sellers),'products':rows(Product,products),'listings':rows(Listing,listings),'orders':order_data,'items':item_data,'shipments':shipment_data,'returns':returns,'refunds':rows(Refund,select(Refund).where(Refund.return_id.in_([x['id'] for x in returns]))),'allocations':allocations if internal else [],'payouts':rows(Payout,select(Payout).where(Payout.allocation_id.in_(alloc_ids))) if internal else [],'balances':[dict(x) for x in balances],'events':rows(Event) if user.role in ('operator','support') else []}
 class Action(BaseModel):
     action:str
     data:dict=Field(default_factory=dict)
     idempotency_key:str
 @app.post('/api/commands')
-def command(body:Action,user=Depends(identity),db=Depends(db_session)):
+async def command(body:Action,user=Depends(identity),db=Depends(db_session)):
     try:
-        result=execute(db,user,body.idempotency_key,body.action,body.data); db.commit(); return result
+        if body.action in ('dispatch','deliver','delivery_fixture'):
+            from .delivery_shipping import execute_shipping_command
+            result=await execute_shipping_command(db,user,body.idempotency_key,body.action,body.data)
+        else:
+            result=await asyncio.to_thread(execute,db,user,body.idempotency_key,body.action,body.data)
+        await asyncio.to_thread(db.commit); return result
     except BusinessError as e:
         db.rollback(); raise HTTPException(409,str(e))
+    except DeliveryUnavailable:
+        db.rollback(); raise HTTPException(503,'Simulated delivery service is unavailable. No marketplace shipping transition was committed; retry the same request.')
 @app.get('/api/conversations')
 def conversations(user=Depends(identity),db=Depends(db_session)):
     role(user,'support','operator')
@@ -145,11 +158,12 @@ def conversations(user=Depends(identity),db=Depends(db_session)):
     statement = (select(Conversation).outerjoin(latest,latest.c.conversation_id==Conversation.id)
                  .where(Conversation.owner_id==user.id)
                  .order_by(latest.c.activity_at.desc().nulls_last(),Conversation.id).limit(50))
-    return [{'id':c.id,'title':c.title,'runtime':runtime_binding(c)['runtime'],'memory_provider':memory_provider_for(db,c.id)} for c in db.scalars(statement).all()]
+    return [{'id':c.id,'title':c.title,'runtime':runtime_binding(c)['runtime'],'memory_provider':memory_provider_for(db,c.id),**conversation_fields(db,c.id)} for c in db.scalars(statement).all()]
 from .mem0_provider import provider_for as memory_provider_for
 from .platform_runtime import binding as runtime_binding, configured as runtime_configured, initial_items, options as runtime_options, validate_controls, hosted_answer
 
 class NewConversation(BaseModel):
+    mode:Literal['standard','a2a_support','a2a_delivery']='standard'
     runtime:Literal['sdk','lyzr','google']='sdk'
     memory_provider:Literal['internal','mem0']='internal'
     model_config={'extra':'forbid'}
@@ -167,11 +181,16 @@ def create_conversation(body:NewConversation=Body(default=NewConversation()),use
     try: require_provider(body.memory_provider)
     except ProviderError as exc: raise HTTPException(403,str(exc))
     if body.memory_provider=='mem0' and body.runtime!='sdk': raise HTTPException(400,'Mem0 requires the local SDK runtime')
+    if body.mode!='standard':
+        from .hosting_client import enabled as remote_hosting_enabled
+        if body.runtime!='sdk' or remote_hosting_enabled(): raise HTTPException(400,'A2A support requires the local SDK runtime')
     cid=uid('chat')
     c=Conversation(id=cid,owner_id=user.id,title='New investigation',items=initial_items(body.runtime,user.id,cid))
     db.add(c); db.flush()
-    db.add(MemoryConversation(conversation_id=cid,provider=body.memory_provider)); db.commit()
-    return {'id':c.id,'title':c.title,'runtime':body.runtime,'memory_provider':body.memory_provider}
+    db.add(MemoryConversation(conversation_id=cid,provider=body.memory_provider))
+    add_conversation_binding(db,cid,body.mode)
+    db.commit()
+    return {'id':c.id,'title':c.title,'runtime':body.runtime,'memory_provider':body.memory_provider,**conversation_fields(db,cid)}
 def owned(db,user,cid):
     role(user,'support','operator'); conv=db.get(Conversation,cid)
     if not conv or conv.owner_id!=user.id: raise HTTPException(404,'Conversation not found')
@@ -317,11 +336,21 @@ def loop_lab_options(user=Depends(identity)):
     return {'enabled':enabled(),'modes':list(MODES) if enabled() else []}
 @app.post('/api/conversations/{cid}/ask')
 async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session)):
+    return await run_support_question(cid,body,user,db,transport='standard')
+
+async def run_support_question(cid,body,user,db,*,transport='standard'):
+    conv=owned(db,user,cid)
+    mode=conversation_fields(db,cid)['mode']
+    if (mode=='standard') != (transport=='standard'):
+        raise HTTPException(400,'Use the transport selected when this conversation was started')
     if body.cache_enabled:
         from .gateway_demo import enabled as cache_available
         if not cache_available():raise HTTPException(403,'Response caching is available only in the configured Test workspace')
     conv=owned(db,user,cid)
     runtime=runtime_binding(conv)['runtime']
+    if transport=='a2a':
+        from .hosting_client import enabled as a2a_remote_hosting
+        if runtime!='sdk' or a2a_remote_hosting(): raise HTTPException(400,'A2A support requires the local SDK runtime')
     if body.cache_enabled and runtime!='sdk':raise HTTPException(400,'Response caching requires the Test SDK runtime')
     if body.session_history_mode!='off':
         from .hosting_client import enabled as remote_hosting_enabled
@@ -457,11 +486,20 @@ async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session
                 lab_config={**(lab_config or {}),'session_history_mode':body.session_history_mode,'history_compaction':compaction}
             if body.settings_reset:lab_config={**(lab_config or {}),'session_history_reset':True}
             key_context = for_key(os.environ['EVAL_GATEWAY_KEY']) if (route_config or design_config) else for_role(user.role)
+            from .delivery_client import configured as delivery_configured
+            from .delivery_support import has_delivery_links
+            if mode=='a2a_delivery' or delivery_configured() or has_delivery_links():
+                # Enrollment is a shipment association, not a conversation toggle.
+                # Existing links still need remote evidence if defaults change.
+                lab_config={**(lab_config or {}),'delivery_enabled':True}
             with key_context, capture_calls():
                 return await answer(cid,body.question,evaluation_config=lab_config,memory_provider=body.memory_provider,memory_enabled=body.memory_enabled,memory_write=body.memory_write,guardrail=body.guardrail,source_authority=body.source_authority,marker_mode=body.marker_mode,suppress_catalog=body.suppress_catalog,suppress_documents=body.suppress_documents)
         finally:
             if corpus_locked: lock.execute(text('SELECT pg_advisory_unlock_shared(hashtext(:key))'),{'key':LOCK})
             lock.execute(text('SELECT pg_advisory_unlock(hashtext(:cid))'),{'cid':cid})
+from .support_a2a import create_router as support_a2a_router
+app.include_router(support_a2a_router(identity,db_session,role,run_support_question,Question))
+
 class CompactHistoryRequest(BaseModel):
     model_config={'extra':'forbid'}
 
