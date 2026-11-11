@@ -246,6 +246,11 @@ def test_support_helper_rejects_wrong_or_unverified_remote_findings(remote,monke
 
 def test_concurrent_shipping_and_nonshipping_api_commands_finish(remote,monkeypatch):
     from marketplace.api import app
+    from marketplace import index,api,gateway_demo
+    async def noop():pass
+    monkeypatch.setattr(index,'index',noop)
+    monkeypatch.setattr(api,'fixture_status',lambda:{'variant':'clean'})
+    monkeypatch.setattr(gateway_demo,'enabled',lambda:False)
     sid,_=purchased()
     original=delivery_shipping.delivery_request
     async def delayed(*args,**kwargs):
@@ -260,9 +265,10 @@ def test_concurrent_shipping_and_nonshipping_api_commands_finish(remote,monkeypa
                 client.headers['x-csrf-token']=login.json()['csrf']
             async def dispatch(key):
                 return await seller.post('/api/commands',json={'action':'dispatch','data':{'id':sid,'delivery_mode':'a2a'},'idempotency_key':key})
-            one,two,clock=await asyncio.wait_for(asyncio.gather(dispatch('concurrent-book-one'),dispatch('concurrent-book-two'),operator.post('/api/commands',json={'action':'advance_clock','data':{'hours':1},'idempotency_key':'parallel-clock-change'})),timeout=10)
+            one,two,clock,reset=await asyncio.wait_for(asyncio.gather(dispatch('concurrent-book-one'),dispatch('concurrent-book-two'),operator.post('/api/commands',json={'action':'advance_clock','data':{'hours':1},'idempotency_key':'parallel-clock-change'}),operator.post('/api/workspace-options/reset',json={})),timeout=10)
             assert sorted([one.status_code,two.status_code])==[200,409]
             assert clock.status_code==200,clock.text
+            assert reset.status_code==200,reset.text
     asyncio.run(run())
     with Session() as db:
         assert db.get(Shipment,sid).status=='dispatched'
@@ -283,3 +289,12 @@ def test_purchase_intent_survives_workspace_changes_and_ignores_seller_override(
     with Session() as db:
         assert db.get(ShipmentDeliveryLink,local) is None
         assert db.get(ShipmentDeliveryIntent,sid).fixture=='exception'
+
+
+def test_direct_dispatch_cannot_bypass_purchase_enrollment():
+    sid,_=purchased()
+    with Session.begin() as db:
+        with pytest.raises(BusinessError,match='delivery service'):
+            execute(db,db.get(User,'seller'),'bypass-enrolled-shipment','dispatch',{'id':sid})
+        db.rollback()
+    with Session() as db:assert db.get(Shipment,sid).status=='pending'

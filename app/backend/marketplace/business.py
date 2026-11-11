@@ -80,7 +80,8 @@ def _apply(db, actor, state, action, data, *, delivery_result=None):
         expected, target = ('pending','dispatched') if action == 'dispatch' else ('dispatched','delivered')
         require(shipment.status == expected, f'Shipment must be {expected}')
         link = db.get(ShipmentDeliveryLink, shipment.id)
-        if link is not None:
+        intent = db.get(ShipmentDeliveryIntent, shipment.id)
+        if link is not None or (action=='dispatch' and intent is not None and intent.mode=='a2a'):
             # This parameter is supplied only by the shipping orchestrator, not
             # copied from command data. Direct business callers cannot bypass
             # the delivery service for an enrolled shipment.

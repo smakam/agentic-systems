@@ -1,5 +1,22 @@
 # A2A implementation validation
 
+## Test workspace refinement, 11 November 2026
+
+The separate review branch now runs on the existing test UI at port 5179 with market_test. Production container IDs/start times and main were preserved. Original test containers are retained stopped for rollback; no database was reset during deployment.
+
+- Full backend suite: **356 passed, 10 optional skipped, 20 subtests passed**.
+- Frontend: **43 passed**; production build passed. Both Docker images built; the test-only Compose overlay passed configuration validation.
+- Browser checks: centralized settings; one/two on-demand cards with raw details and correct endpoint; purchase and ordinary seller dispatch; persistence across accounts; reset defaults; explicit history-only guard for conversations from another mode.
+- Nine live API comparisons were independently checked against Langfuse observations. Standard API has its own request span. Marketplace A2A has an actual protocol span. Detailed multi-agent tracking links outbound and inbound delivery spans to the remote model/tool loop in the same trace. Marketplace modes and basic-status questions made no delivery call.
+- Remote records verified: normal in_transit with status tool; exception with status plus problem-detail tools; then delivered after ordinary seller action. A live follow-up created a new task in the same context.
+- Controlled service outage: dispatch returned 503 and left marketplace pending; recovery retry succeeded. Automated checks cover concurrent shipping/reset, saved intent, direct-dispatch bypass prevention and no remote calls enabled merely by configured credentials.
+- Standards review found enrollment guard and reset gaps; both fixed. Its follow-up caught a reset lock wait on the event loop; fixed with worker execution and a concurrent test. Requirements review found silent context loss across modes; fixed with explicit read-only history and New conversation. Both reviewers cleared the fixes.
+
+The full sequence was exercised through a combination of browser actions and live API calls, not exclusively browser clicks. Initial live attempts exposed an incorrect Langfuse hostname and an unauthorized delivery model alias; these were corrected before the successful rerun. This is a local simulation, not a real-carrier or model-quality benchmark. User retest and approval remain pending.
+
+See [the repeatable demo sequence](A2A-DEMO-WALKTHROUGH.md) for expected outcomes, ready records and trace links.
+
+
 Validated on 10 November 2026 against base commit `49fcf34`, on `codex/marketplace-a2a-support-delivery`. The original checkout and its two running workspaces were preserved. No merge or production deployment was performed.
 
 ## Automated checks

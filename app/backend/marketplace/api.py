@@ -772,6 +772,15 @@ async def rag_demo_ask(experiment:rag_policy_demo.Experiment,body:RagDemoQuestio
     except rag_policy_demo.DemoError as exc: raise HTTPException(409,str(exc))
     except Exception: raise HTTPException(503,'Demo question failed; check model and embedding access, then retry.')
 
+def reset_a2a_defaults():
+    # Shipping may hold this row while awaiting remote delivery. Never wait for
+    # that synchronous database lock on the ASGI event loop.
+    with Session.begin() as db:
+        db.execute(select(State).where(State.id==1).with_for_update()).scalar_one()
+        setting=db.get(A2AWorkspace,1)
+        if setting:
+            setting.mode='standard'; setting.fixture='normal'
+
 @app.post('/api/workspace-options/reset')
 async def reset_workspace_options(user=Depends(identity)):
     role(user,'support','operator')
@@ -790,6 +799,8 @@ async def reset_workspace_options(user=Depends(identity)):
             # Experiments are off after reset; unused demo indexes are not created.
             from .index import index as prepare_documents
             await prepare_documents()
+            if is_test():
+                await asyncio.to_thread(reset_a2a_defaults)
         return {'reset':True,'message':'Settings reset. Start a new conversation for a clean comparison.'}
     except HTTPException:raise
     except Exception:raise HTTPException(503,'Defaults could not be fully restored. Retry reset; the current conversation is preserved.')

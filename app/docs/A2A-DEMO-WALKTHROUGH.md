@@ -1,6 +1,6 @@
 # A2A experiment: shared demonstration and test sequence
 
-11 November 2026 · Target workflow for the agreed review-branch changes.
+11 November 2026 · Verified review-branch workflow; user retest remains open.
 
 **Validation status: implemented on the separate review branch and exercised on 11 November 2026.** Browser checks covered workspace controls, both Agent Cards, account switching, purchase and ordinary seller dispatch. Live API checks covered the status/tracking comparisons, normal and exception records, delivery completion, follow-up tasks and outage/retry; Langfuse observations were read back independently. The entire sequence was not performed exclusively through browser clicks. Use the test workspace at http://127.0.0.1:5179. Preserve the production workspace and main branch.
 
@@ -54,6 +54,9 @@ Teaching point: the marketplace resolves the shipment; the remote delivery agent
 16. In a controlled maintainer test, temporarily make the delivery service unavailable and dispatch a newly purchased multi-agent shipment. Expect a visible error and no marketplace transition to dispatched. Restore the service and retry; expect one linked booking and a successful dispatch. Do not take down a shared service during someone else's walkthrough.
 17. Confirm an unavailable delivery investigation is reported as unavailable, rather than replaced with invented fresh status. Confirm failures are visible in protocol traces/logs and credentials are absent.
 
+18. Select Multi-agent A2A / Depot exception, then Reset to defaults. Expect Standard API / Normal transit as the saved defaults; previously created shipment intents and links remain intact.
+19. Open conversation history from a different mode. Expect a clear history-only notice and disabled composer. Select New conversation to ask in the current mode; same-mode follow-ups retain their context.
+
 ## Execution record
 
 | Check | Implementer result and evidence | User result |
@@ -70,3 +73,19 @@ Teaching point: the marketplace resolves the shipment; the remote delivery agent
 | Outage, retry and trace failure evidence | Live dispatch 503 left pending; recovery retry succeeded; protocol failure unit checks | Pending |
 
 Populate actual trace links, order references and observed results after execution. Keep failures and skipped checks explicit. Complete this review on the separate branch before requesting a merge to main.
+
+## Records ready for user review
+
+These are synthetic records created by validation, not the original seed dataset. The workspace is left in Multi-agent A2A / Depot exception.
+
+- Normal, dispatched order: `ord-822c6e0523`; shipment `ship-1d3e5e4206`.
+- Depot-exception, dispatched order: `ord-a74298dea1`; shipment `ship-67dc6cc89b`.
+- The earlier exception comparison order `ord-5b4d76fce6` was marked delivered during validation. Use the fresh exception order above to inspect a current depot exception.
+
+Verified Langfuse comparisons:
+
+- [Standard API, local order](http://127.0.0.1:3000/project/marketplace-support/traces/0f43d5cf2aa9e7778a5cf1253faff2d9).
+- [Marketplace A2A, same local order](http://127.0.0.1:3000/project/marketplace-support/traces/b8b97aab58f7124b7268865d87541210).
+- [Marketplace-only detailed tracking](http://127.0.0.1:3000/project/marketplace-support/traces/3d79c10110ba1f99ed9a12efaf9d3961).
+- [Multi-agent mode, basic status without delegation](http://127.0.0.1:3000/project/marketplace-support/traces/c738045db3ad9c45c07f5b45730f287f).
+- [Multi-agent mode, depot tracking with delegation](http://127.0.0.1:3000/project/marketplace-support/traces/e433767356c143f5f6b887dca7b58c5e).

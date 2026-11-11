@@ -272,3 +272,14 @@ def test_remote_configuration_does_not_enable_delivery_in_marketplace_modes(monk
                 assert c.post('/api/conversations/'+conv['id']+'/ask',json={'question':'track delivery'}).status_code==200
             else: assert send(c,conv,'track delivery').json()['result']['task']['status']['state']=='TASK_STATE_COMPLETED'
         assert [(call['kwargs'].get('evaluation_config') or {}).get('delivery_enabled',False) for call in calls]==[False,False,True]
+
+
+def test_reset_restores_workspace_defaults_without_erasing_shipment_intents(monkeypatch):
+    from marketplace.db import A2AWorkspace
+    monkeypatch.setattr(api,'fixture_status',lambda:{'variant':'clean'})
+    with TestClient(api.app) as c:
+        signed_in(c)
+        assert c.post('/api/a2a/workspace',json={'mode':'a2a_delivery','fixture':'exception'}).status_code==200
+        assert c.post('/api/workspace-options/reset',json={}).status_code==200
+        assert c.get('/api/a2a/workspace').json()=={'enabled':True,'mode':'standard','fixture':'normal'}
+        with Session() as db:assert db.get(A2AWorkspace,1).mode=='standard'
