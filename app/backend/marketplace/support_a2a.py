@@ -138,7 +138,7 @@ def agent_card(base_url):
             description='Answer order, shipment, return, refund and payout questions using read-only business records and policy evidence.',
             tags=['marketplace','support','read-only'], examples=['What is the status of order-2?']),
             AgentSkill(id='delivery-investigation', name='Investigate linked delivery shipments',
-            description='Delegate linked shipment questions to the simulated delivery service and return its recorded evidence. Shipment links remain authoritative across demo modes. Does not dispatch or deliver shipments.',
+            description='Delegate linked shipment questions to the simulated delivery service and return its recorded evidence. Available only in Multi-agent A2A mode for detailed tracking or delivery-problem questions; basic order status uses marketplace records. Does not dispatch or deliver shipments.',
             tags=['delivery','simulation','read-only'])])
 
 
@@ -165,7 +165,11 @@ class SupportExecutor(AgentExecutor):
             options['question'] = context.get_user_input()
             body = self.question_model.model_validate(options)
             try:
-                result = await self.run_question(cid, body, user, db, transport='a2a')
+                from .protocol_tracing import protocol_span
+                with protocol_span('A2A marketplace request',{'transport':'a2a','endpoint':PREFIX,'operation':'SendMessage','protocol_version':'1.0',
+                        'task_id':context.task_id,'context_id':context.context_id,'mode':binding.mode,'conversation_id':cid}) as span:
+                    result = await self.run_question(cid, body, user, db, transport='a2a')
+                    if span: span.update(output={'run_id':result.get('id'),'status':result.get('status')},level='ERROR' if result.get('status')=='failed' else 'DEFAULT')
                 state = TaskState.TASK_STATE_COMPLETED if result['status'] == 'completed' else TaskState.TASK_STATE_FAILED
                 text = result['answer']
                 run_id = result['id']

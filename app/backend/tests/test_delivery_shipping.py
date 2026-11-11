@@ -7,7 +7,7 @@ import pytest
 from sqlalchemy import select,text
 from marketplace import delivery_shipping, delivery_support
 from marketplace.business import execute,BusinessError
-from marketplace.db import Base,engine,Session,init_schema,User,State,Shipment,ShipmentDeliveryLink,Item,Allocation,Payout
+from marketplace.db import Base,engine,Session,init_schema,User,State,Shipment,ShipmentDeliveryLink,A2AWorkspace,ShipmentDeliveryIntent,Item,Allocation,Payout
 from marketplace.seed import seed
 from marketplace.delivery_client import delivery_request,DeliveryUnavailable
 from marketplace.delivery_service import create_app
@@ -46,8 +46,9 @@ def cmd(actor,action,data,key='delivery-test-key'):
         return asyncio.run(delivery_shipping.execute_shipping_command(db,db.get(User,actor),key,action,data))
 
 
-def purchased():
-    order=cmd('buyer','purchase',{'items':[{'listing_id':'listing-1','quantity':1}]},'buy-delivery-fixture')['id']
+def purchased(mode='a2a_delivery',fixture='normal'):
+    with Session.begin() as db:db.merge(A2AWorkspace(id=1,mode=mode,fixture=fixture))
+    order=cmd('buyer','purchase',{'items':[{'listing_id':'listing-1','quantity':1}]},'buy-'+__import__('uuid').uuid4().hex)['id']
     with Session() as db:
         item=db.scalar(select(Item).where(Item.order_id==order))
         return db.scalar(select(Shipment).where(Shipment.item_id==item.id)).id,item.id
@@ -87,7 +88,7 @@ def test_enrollment_dispatch_delivery_holds_returns_and_duplicate_commands(remot
 
 
 def test_legacy_shipments_do_not_require_delivery_service(monkeypatch):
-    sid,_=purchased()
+    sid,_=purchased('standard')
     async def never(*a,**kw):raise AssertionError('Legacy shipment must stay local')
     monkeypatch.setattr(delivery_shipping,'delivery_request',never)
     cmd('seller','dispatch',{'id':sid},'legacy-dispatch')
@@ -120,7 +121,7 @@ def test_post_dispatch_fixture_control_validates_owner_link_and_lifecycle(remote
 def test_wrong_owner_bad_fixture_and_invalid_transition_make_no_remote_write(remote):
     _,calls=remote
     sid,_=purchased()
-    for actor,data in [('buyer',{'id':sid,'delivery_mode':'a2a'}),('seller2',{'id':sid,'delivery_mode':'a2a'}),('support',{'id':sid,'delivery_mode':'a2a'}),('seller',{'id':sid,'delivery_mode':'a2a','delivery_fixture':'invalid'})]:
+    for actor,data in [('buyer',{'id':sid,'delivery_mode':'a2a'}),('seller2',{'id':sid,'delivery_mode':'a2a'}),('support',{'id':sid,'delivery_mode':'a2a'})]:
         with pytest.raises(BusinessError):cmd(actor,'dispatch',data)
     with pytest.raises(BusinessError):cmd('seller','deliver',{'id':sid})
     assert not calls
@@ -180,7 +181,7 @@ def test_support_helper_routes_linked_remote_and_unlinked_local_and_retains_fail
     from agents import RunContextWrapper
     from agents.tool_context import ToolContext
     store,_=remote
-    sid,_=purchased()
+    sid,_=purchased(fixture='exception')
     with Session() as db:clock=db.get(State,1).clock
     ctx=SimpleNamespace(snapshot={'clock':clock,'revision':1},doc_hash='test',evidence={})
     tool=delivery_support.build_delivery_tool(ctx)
@@ -217,7 +218,7 @@ def test_support_helper_rejects_wrong_or_unverified_remote_findings(remote,monke
     from agents.tool_context import ToolContext
     import json
     store,_=remote
-    sid,_=purchased()
+    sid,_=purchased(fixture='exception')
     cmd('seller','dispatch',{'id':sid,'delivery_mode':'a2a'},'unverified-read-booking')
     with Session() as db:clock=db.get(State,1).clock
     ctx=SimpleNamespace(snapshot={'clock':clock,'revision':1},doc_hash='test',evidence={})
@@ -266,3 +267,19 @@ def test_concurrent_shipping_and_nonshipping_api_commands_finish(remote,monkeypa
     with Session() as db:
         assert db.get(Shipment,sid).status=='dispatched'
         assert db.scalar(select(ShipmentDeliveryLink).where(ShipmentDeliveryLink.shipment_id==sid)) is not None
+
+
+def test_purchase_intent_survives_workspace_changes_and_ignores_seller_override(remote):
+    store,calls=remote
+    sid,_=purchased(fixture='exception')
+    with Session.begin() as db:db.get(A2AWorkspace,1).mode='standard'
+    result=cmd('seller','dispatch',{'id':sid,'delivery_mode':'local','delivery_fixture':'normal'},'saved-intent-dispatch')
+    assert calls[0][1]['fixture']=='exception'
+    assert store.status(result['delivery_service']['reference'],'2030-01-01T00:00:00+00:00')['status']=='exception'
+    local,_=purchased('standard')
+    with Session.begin() as db:db.get(A2AWorkspace,1).mode='a2a_delivery'
+    cmd('seller','dispatch',{'id':local,'delivery_mode':'a2a'},'local-intent-dispatch')
+    assert len(calls)==1
+    with Session() as db:
+        assert db.get(ShipmentDeliveryLink,local) is None
+        assert db.get(ShipmentDeliveryIntent,sid).fixture=='exception'

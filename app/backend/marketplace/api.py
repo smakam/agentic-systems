@@ -138,6 +138,46 @@ class Action(BaseModel):
     action:str
     data:dict=Field(default_factory=dict)
     idempotency_key:str
+
+class A2AOptions(BaseModel):
+    mode:Literal['standard','a2a_support','a2a_delivery']='standard'
+    fixture:Literal['normal','exception']='normal'
+
+@app.get('/api/a2a/workspace')
+def a2a_workspace(user=Depends(identity),db=Depends(db_session)):
+    role(user,'support','operator')
+    if not is_test(): return {'enabled':False,'mode':'standard','fixture':'normal'}
+    setting=db.get(A2AWorkspace,1)
+    return {'enabled':True,'mode':setting.mode if setting else 'standard','fixture':setting.fixture if setting else 'normal'}
+
+@app.post('/api/a2a/workspace')
+def update_a2a_workspace(body:A2AOptions,user=Depends(identity),db=Depends(db_session)):
+    role(user,'support','operator')
+    if not is_test(): raise HTTPException(403,'A2A workspace options require the Test workspace')
+    # Serialize setting changes with purchases so enrollment has one defined value.
+    db.execute(select(State).where(State.id==1).with_for_update()).scalar_one()
+    setting=db.get(A2AWorkspace,1)
+    if setting is None: setting=A2AWorkspace(id=1); db.add(setting)
+    setting.mode=body.mode; setting.fixture=body.fixture
+    db.commit()
+    return {'enabled':True,**body.model_dump()}
+
+@app.get('/api/a2a/delivery/.well-known/agent-card.json')
+async def delivery_agent_card(user=Depends(identity)):
+    role(user,'support','operator')
+    if not is_test(): raise HTTPException(403,'Delivery Agent Card requires the Test workspace')
+    import httpx
+    url=os.getenv('DELIVERY_A2A_URL','').rstrip('/')
+    if not url: raise HTTPException(503,'Delivery service is not configured')
+    try:
+        async with httpx.AsyncClient(follow_redirects=False) as client:
+            response=await client.get(url+'/.well-known/agent-card.json',timeout=5)
+            response.raise_for_status()
+            card=response.json()
+            if not isinstance(card,dict) or not isinstance(card.get('skills'),list): raise ValueError()
+            return card
+    except (httpx.HTTPError,ValueError):
+        raise HTTPException(503,'Delivery Agent Card is unavailable') from None
 @app.post('/api/commands')
 async def command(body:Action,user=Depends(identity),db=Depends(db_session)):
     try:
@@ -336,7 +376,11 @@ def loop_lab_options(user=Depends(identity)):
     return {'enabled':enabled(),'modes':list(MODES) if enabled() else []}
 @app.post('/api/conversations/{cid}/ask')
 async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session)):
-    return await run_support_question(cid,body,user,db,transport='standard')
+    from .protocol_tracing import protocol_span
+    with protocol_span('Standard API request',{'transport':'standard','endpoint':'/api/conversations/{cid}/ask','conversation_id':cid}) as span:
+        result=await run_support_question(cid,body,user,db,transport='standard')
+        if span: span.update(output={'run_id':result.get('id'),'status':result.get('status')},level='ERROR' if result.get('status')=='failed' else 'DEFAULT')
+        return result
 
 async def run_support_question(cid,body,user,db,*,transport='standard'):
     conv=owned(db,user,cid)
@@ -486,11 +530,7 @@ async def run_support_question(cid,body,user,db,*,transport='standard'):
                 lab_config={**(lab_config or {}),'session_history_mode':body.session_history_mode,'history_compaction':compaction}
             if body.settings_reset:lab_config={**(lab_config or {}),'session_history_reset':True}
             key_context = for_key(os.environ['EVAL_GATEWAY_KEY']) if (route_config or design_config) else for_role(user.role)
-            from .delivery_client import configured as delivery_configured
-            from .delivery_support import has_delivery_links
-            if mode=='a2a_delivery' or delivery_configured() or has_delivery_links():
-                # Enrollment is a shipment association, not a conversation toggle.
-                # Existing links still need remote evidence if defaults change.
+            if mode=='a2a_delivery':
                 lab_config={**(lab_config or {}),'delivery_enabled':True}
             with key_context, capture_calls():
                 return await answer(cid,body.question,evaluation_config=lab_config,memory_provider=body.memory_provider,memory_enabled=body.memory_enabled,memory_write=body.memory_write,guardrail=body.guardrail,source_authority=body.source_authority,marker_mode=body.marker_mode,suppress_catalog=body.suppress_catalog,suppress_documents=body.suppress_documents)

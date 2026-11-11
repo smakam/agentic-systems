@@ -242,3 +242,33 @@ def test_conversation_lock_rejects_overlap_before_second_run(monkeypatch):
                 assert calls==['What is the status of order-2?']
             finally: release.set()
             assert first.result().json()['result']['task']['status']['state']=='TASK_STATE_COMPLETED'
+
+
+def test_workspace_options_persist_across_accounts_and_are_test_only(monkeypatch):
+    with TestClient(api.app) as c:
+        signed_in(c)
+        assert c.get('/api/a2a/workspace').json()=={'enabled':True,'mode':'standard','fixture':'normal'}
+        chosen={'mode':'a2a_delivery','fixture':'exception'}
+        assert c.post('/api/a2a/workspace',json=chosen).status_code==200
+        signed_in(c,'buyer')
+        assert c.post('/api/a2a/workspace',json={'mode':'standard'}).status_code==403
+        signed_in(c,'operator')
+        assert c.get('/api/a2a/workspace').json()=={'enabled':True,**chosen}
+        assert c.post('/api/a2a/workspace',json={'mode':'invalid'}).status_code==422
+        monkeypatch.setattr(api,'is_test',lambda:False)
+        assert c.get('/api/a2a/workspace').json()['enabled'] is False
+        assert c.post('/api/a2a/workspace',json=chosen).status_code==403
+
+
+def test_remote_configuration_does_not_enable_delivery_in_marketplace_modes(monkeypatch):
+    calls=fake_answer(monkeypatch)
+    monkeypatch.setenv('DELIVERY_A2A_URL','http://configured.example')
+    monkeypatch.setenv('DELIVERY_READ_TOKEN','private-test-token')
+    with TestClient(api.app) as c:
+        signed_in(c)
+        for mode in ('standard','a2a_support','a2a_delivery'):
+            conv=conversation(c,mode)
+            if mode=='standard':
+                assert c.post('/api/conversations/'+conv['id']+'/ask',json={'question':'track delivery'}).status_code==200
+            else: assert send(c,conv,'track delivery').json()['result']['task']['status']['state']=='TASK_STATE_COMPLETED'
+        assert [(call['kwargs'].get('evaluation_config') or {}).get('delivery_enabled',False) for call in calls]==[False,False,True]

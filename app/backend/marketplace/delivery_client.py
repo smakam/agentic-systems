@@ -23,13 +23,19 @@ async def delivery_request(operation, payload, *, write=False, http_client=None)
                    'parts':[{'data':{**payload, 'operation':operation}}]},
         'configuration':{'returnImmediately':False}}}
     async def send(client):
+        from .protocol_tracing import protocol_span
+        with protocol_span('A2A delivery outbound',{'transport':'a2a','operation':'SendMessage','delivery_operation':operation,'protocol_version':'1.0','request_id':request['id']}) as span:
+            return await exchange(client,span)
+    async def exchange(client,span):
         try:
-            response = await client.post(url, json=request, headers={'Authorization':'Bearer '+token, 'A2A-Version':'1.0'}, timeout=timeout)
+            from .protocol_tracing import outgoing_headers
+            response = await client.post(url, json=request, headers={'Authorization':'Bearer '+token, 'A2A-Version':'1.0',**outgoing_headers()}, timeout=timeout)
             response.raise_for_status()
             body = response.json()
             if body.get('jsonrpc') != '2.0' or body.get('id') != request['id']:
                 raise DeliveryUnavailable('Delivery service response did not match this request')
             task = body.get('result', {}).get('task', {})
+            if span: span.update(output={'task_id':task.get('id'),'context_id':task.get('contextId'),'state':task.get('status',{}).get('state'),'http_status':response.status_code})
             if body.get('error') or task.get('status', {}).get('state') != 'TASK_STATE_COMPLETED':
                 raise DeliveryUnavailable('Delivery service did not complete the request; marketplace state was not advanced')
             for artifact in task.get('artifacts', []):

@@ -9,7 +9,7 @@ import json
 import asyncio
 from sqlalchemy import select
 from .business import BusinessError, execute, own_item, require
-from .db import Command, Item, Shipment, ShipmentDeliveryLink, State
+from .db import Command, Item, Shipment, ShipmentDeliveryLink, ShipmentDeliveryIntent, State
 from .delivery_client import DeliveryUnavailable, delivery_request
 from .delivery_store import aware_time, DeliveryRecordError
 
@@ -68,7 +68,8 @@ def _execute_shipping_command(db, actor, key, action, data):
     own_item(db, actor, db.get(Item, shipment.item_id))
     expected = 'pending' if action == 'dispatch' else 'dispatched'
     require(shipment.status == expected, f'Shipment must be {expected}')
-    mode = data.get('delivery_mode', 'local')
+    intent = db.get(ShipmentDeliveryIntent, shipment.id)
+    mode = intent.mode if intent else 'local'
     require(mode in ('local', 'a2a'), 'Choose local or A2A delivery')
     link = db.get(ShipmentDeliveryLink, shipment.id)
     if action == 'delivery_fixture':
@@ -85,7 +86,7 @@ def _execute_shipping_command(db, actor, key, action, data):
     if link is None and (action != 'dispatch' or mode == 'local'):
         return execute(db, actor, key, action, data)
     if action == 'dispatch':
-        fixture = data.get('delivery_fixture', 'normal')
+        fixture = intent.fixture if intent else link.fixture
         require(fixture in ('normal', 'exception'), 'Choose normal or exception delivery fixture')
         receipt = asyncio.run(delivery_request('book', {'shipment_id':shipment.id, 'fixture':fixture, 'clock':state.clock.isoformat()}, write=True))
         _validate_receipt(receipt,shipment.id,state.clock,('in_transit',) if fixture=='normal' else ('exception',),fixture=fixture)

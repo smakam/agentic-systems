@@ -1,7 +1,7 @@
 export const supportModes=[
  {id:'standard',label:'Standard API'},
- {id:'a2a_support',label:'A2A Support'},
- {id:'a2a_delivery',label:'A2A Support + Delivery'},
+ {id:'a2a_support',label:'Marketplace A2A'},
+ {id:'a2a_delivery',label:'Multi-agent A2A'},
 ];
 
 export function isA2AMode(mode){return mode==='a2a_support'||mode==='a2a_delivery';}

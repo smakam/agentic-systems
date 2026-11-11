@@ -16,44 +16,48 @@ Use this branch and the existing [local setup](../LOCAL-SETUP.md). Add two diffe
 ```dotenv
 DELIVERY_READ_TOKEN=<random read credential>
 DELIVERY_WRITE_TOKEN=<different random write credential>
-DELIVERY_MODEL_ALIAS=support-model
+DELIVERY_MODEL_ALIAS=support-model-test
 ```
 
 Keep these values out of Git, screenshots and the browser. The delivery service rejects missing or equal credentials. The read credential can investigate; only the write credential can book, change a scenario or mark delivery. The support browser continues using its existing marketplace session and CSRF token.
 
-From `app/`, start the branch's backend and frontend with the optional service:
+From `app/`, start the branch in the existing Test workspace on `http://127.0.0.1:5179`:
 
 ```sh
-docker compose -f compose.yaml -f compose.a2a.yaml up -d --build backend frontend delivery
+docker compose -f compose.yaml -f compose.memory.yaml -f compose.a2a-test.yaml up -d --build memory-backend memory-frontend delivery
 ```
 
-This is a local branch setup command, not an instruction to deploy or merge it. Stop other processes that occupy the baseline ports before using the standard stack. The optional delivery service has no published host port and is reachable from the marketplace backend on the Compose network. Its SQLite records live in the separate `delivery-state` volume. The marketplace schema adds separate association and A2A metadata tables; existing shipment columns and old orders do not need a blanket migration.
+This is a local branch setup command, not an instruction to deploy or merge it. This command targets the Test services; do not rebuild the production backend/frontend for this experiment. Preserve any existing identity or cloud-runtime overlays required by your installation. The optional delivery service has no published host port and is reachable from the marketplace backend on the Compose network. Its SQLite records live in the separate `delivery-state` volume. The marketplace schema adds separate association and A2A metadata tables; existing shipment columns and old orders do not need a blanket migration.
 
 For host development, run Python from `app/backend` so the existing MCP subprocesses can import `marketplace`. Set `DATABASE_URL`, `READ_DATABASE_URL`, `DATA_DIR`, existing gateway credentials, `DELIVERY_A2A_URL` and the two delivery credentials. The Vite proxy target can be set with `MARKETPLACE_API_PROXY`. Do not point automated reset tests at an interactive database.
+
+The repeatable sequence and execution record are in [A2A demo walkthrough](A2A-DEMO-WALKTHROUGH.md).
 
 ## Browser walkthrough
 
 ### 1. Standard API and A2A Support
 
 - Sign in as support or operator and open **Support workspace**.
-- Select **Standard API**, ask an order question and inspect the normal run evidence.
-- Select **A2A Support**. Changing the mode starts a fresh conversation.
+- Open **Workspace options → A2A**. Select **Standard API**, ask an order question and inspect the Standard API request span in Langfuse.
+- Select **Marketplace A2A**. Changing the mode starts a fresh conversation.
 - Inspect the fetched **actual Agent Card**: business skills, JSON-RPC interface, protocol version, capabilities and security declarations. Expand the raw JSON if useful. A failed card request is shown as an error, not replaced with invented metadata.
 - Ask another order question. The browser itself posts an A2A `SendMessage`; it does not call a Python demonstration client.
 - Ask a follow-up. Each accepted question invokes a new SDK run and creates a **new completed Task**, using the **same A2A context, owned marketplace conversation and stored session history**. Failed questions produce failed tasks. A completed task cannot reopen.
 
 The card is served at `/api/a2a/support/.well-known/agent-card.json` and JSON-RPC at `/api/a2a/support`. POST requests explicitly enforce the existing session, CSRF and support/operator checks before SDK dispatch. Task retrieval checks the owning conversation. The browser sends `A2A-Version: 1.0`. Replaying the same message ID and payload returns its stored task instead of charging for another run; changing the payload under that ID is rejected.
 
-### 2. A2A Support + Delivery
+### 2. Multi-agent A2A
 
-- As a buyer, purchase an item. It initially has the existing local `pending` shipment.
-- As that item's seller (or operator), open **Orders & fulfillment** and select **A2A delivery** for new dispatches. Choose normal transit or the depot exception, then **Dispatch**.
-- The authenticated marketplace backend verifies the seller, shipment state and command key before requesting a booking from the delivery service. It saves the external reference and applies the existing `pending → dispatched` business transition only after a valid receipt.
-- While dispatched, use **Apply delivery scenario** to switch the linked simulation between normal transit and an exception. The exception records a specific depot scanner failure and missing departure scan. It is not a fabricated explanation.
-- Return to support, choose **A2A Support + Delivery**, and ask about the order or shipment. Support locates the shipment and calls a read-only client-helper tool. That helper resolves the persisted association and delegates through A2A. The delivery agent calls status first and reads recorded problem details when an exception, lateness or explanation needs them.
-- Back in the seller UI, **Simulate delivery** updates the delivery service first and then applies the marketplace's existing delivered transition and demo-clock `delivered_at`. Return and 24-hour payout-hold rules continue using that timestamp.
+- In **Workspace options → A2A**, select **Multi-agent A2A** and **Normal transit** or **Depot exception** before purchasing. Settings are saved in the test database and survive account switching.
+- **View Agent Card** fetches the marketplace card and, in multi-agent mode, the delivery card on demand. Each viewer shows description, endpoints, skills, capabilities and expandable raw JSON.
+- Switch to buyer and purchase an item. Each new shipment captures its delivery enrollment and fixture at purchase. Later option changes do not rewrite it. Existing shipments without an intent stay local.
+- Switch to the item's seller (or operator) and use ordinary **Dispatch**. The backend follows the saved intent, books remotely when enrolled, saves the reference, and transitions to dispatched after validating the receipt. Seller route and fixture selectors are removed.
+- For the same linked shipment, ask **“What is my order status?”** in each mode. Basic status uses marketplace records: pending, dispatched or delivered.
+- Ask **“Track my delivery and give me the details.”** In Standard API and Marketplace A2A, support reports the marketplace status and explains that detailed tracking is unavailable; it makes no delivery-agent call. In Multi-agent A2A, support can delegate for a linked shipment. The remote agent checks status and conditionally checks problem details. Delegation follows the meaning of the question, not a required trigger phrase.
+- Langfuse shows **A2A marketplace request → support investigation → delivery outbound → delivery inbound → delivery task → remote model/tools**. Trace context is propagated across the authenticated HTTP boundary. Standard API has its own request span. Metadata records protocol operation, task/context, outcome and timing without credentials. No separate request/response viewer is needed.
+- Use ordinary **Simulate delivery** for a linked shipment. This updates the delivery service, then synchronizes the marketplace transition and demo-clock delivered timestamp. Switching support modes does not discard the saved association needed for seller lifecycle synchronization.
 
-The three demo modes guide the walkthrough. **Support transport and shipment enrollment are distinct.** Choosing a support mode does not rewrite old shipments or change a seller's enrollment control. Existing links remain authoritative even after defaults or conversation modes change. An unlinked shipment continues using local marketplace status and legacy delivery controls. A linked shipment continues using its delivery service. Saved link metadata is labeled as such; it is not presented as a fresh remote observation.
+Keep order status and remote tracking distinct. A delivery exception does not automatically mean overdue. Normal transit and a depot exception are controlled simulation fixtures, not real carrier data. Simple status retrieval could also be implemented as a deterministic workflow; this lab demonstrates a separately exposed agent and its evidence boundary.
 
 ## Failure and retry behavior
 

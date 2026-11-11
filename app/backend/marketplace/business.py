@@ -58,7 +58,13 @@ def _apply(db, actor, state, action, data, *, delivery_result=None):
             allocation = Allocation(id=uid('alloc'), item_id=item.id, payment_id=payment.id, gross=gross, fee=gross//10, refunded=0, policy='settlement-v1')
             db.add(allocation); db.flush()
             db.add(Payout(id=uid('payout'), allocation_id=allocation.id, amount=gross-gross//10, status='held'))
-            db.add(Shipment(id=uid('ship'), item_id=item.id, quantity=qty, status='pending'))
+            shipment = Shipment(id=uid('ship'), item_id=item.id, quantity=qty, status='pending')
+            db.add(shipment); db.flush()
+            from .security_demo import is_test
+            setting = db.get(A2AWorkspace, 1) if is_test() else None
+            db.add(ShipmentDeliveryIntent(shipment_id=shipment.id,
+                mode='a2a' if setting and setting.mode=='a2a_delivery' else 'local',
+                fixture=setting.fixture if setting else 'normal'))
             payment.amount += gross
         return {'id':order.id, 'amount':payment.amount}
     if action == 'stock':
@@ -74,7 +80,7 @@ def _apply(db, actor, state, action, data, *, delivery_result=None):
         expected, target = ('pending','dispatched') if action == 'dispatch' else ('dispatched','delivered')
         require(shipment.status == expected, f'Shipment must be {expected}')
         link = db.get(ShipmentDeliveryLink, shipment.id)
-        if link is not None or (action == 'dispatch' and data.get('delivery_mode') == 'a2a'):
+        if link is not None:
             # This parameter is supplied only by the shipping orchestrator, not
             # copied from command data. Direct business callers cannot bypass
             # the delivery service for an enrolled shipment.

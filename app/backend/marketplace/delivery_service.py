@@ -100,13 +100,23 @@ class DeliveryAuth(BaseHTTPMiddleware):
                         return JSONResponse({'detail':'Only blocking delivery requests are supported'},status_code=400)
             except (ValueError,TypeError,AttributeError,KeyError):
                 return JSONResponse({'detail':'Use one delivery operation data part'},status_code=400)
-        return await call_next(request)
+        from .protocol_tracing import protocol_span, incoming_trace
+        with protocol_span('A2A delivery inbound',{'transport':'a2a','operation':method if request.method=='POST' and request.url.path=='/' else request.method,'protocol_version':'1.0'},
+                trace_context=incoming_trace(request.headers.get('traceparent'))) as span:
+            response=await call_next(request)
+            if span: span.update(output={'http_status':response.status_code},level='ERROR' if response.status_code>=400 else 'DEFAULT')
+            return response
 
 
 class DeliveryExecutor(AgentExecutor):
     def __init__(self, store): self.store = store
 
     async def execute(self, context, event_queue):
+        from .protocol_tracing import protocol_span
+        with protocol_span('Delivery A2A task',{'task_id':context.task_id,'context_id':context.context_id}) as span:
+            return await self._execute(context,event_queue,span)
+
+    async def _execute(self, context, event_queue, span):
         updater = TaskUpdater(event_queue, context.task_id, context.context_id)
         await event_queue.enqueue_event(Task(id=context.task_id,context_id=context.context_id,
                                   status=TaskStatus(state=TaskState.TASK_STATE_WORKING)))
@@ -127,7 +137,9 @@ class DeliveryExecutor(AgentExecutor):
                 raise DeliveryRecordError('Unknown delivery operation')
             await updater.add_artifact([ParseDict({'data':result},Part())],name='Delivery result')
             await updater.complete()
+            if span: span.update(output={'state':'completed','operation':operation})
         except Exception as exc:
+            if span: span.update(output={'state':'failed'},level='ERROR',status_message='Delivery task failed')
             # Failure is a terminal failed Task, never a completed canned answer.
             message = str(exc) if isinstance(exc,DeliveryRecordError) else 'Delivery investigation failed; no verified conclusion is available'
             await updater.failed(Message(role=Role.ROLE_AGENT, parts=[Part(text=message)]))

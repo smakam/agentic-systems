@@ -87,7 +87,7 @@ test('dispatch enrollment and support transport are independent choices',()=>{
  assert.deepEqual(dispatchData('ship-1','local','exception'),{id:'ship-1',delivery_mode:'local'});
  assert.deepEqual(dispatchData('ship-1'),{id:'ship-1',delivery_mode:'local'});
  assert.equal(isA2AMode('a2a_delivery'),true);assert.equal(isA2AMode('standard'),false);
- assert.equal(supportModeLabel('a2a_delivery'),'A2A Support + Delivery');
+ assert.equal(supportModeLabel('a2a_delivery'),'Multi-agent A2A');
 });
 
 test('existing delivery associations route the manual control regardless of new-dispatch defaults',()=>{

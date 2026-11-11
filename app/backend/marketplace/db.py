@@ -71,6 +71,21 @@ class Shipment(Base):
     status: Mapped[str]
     delivered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
+class A2AWorkspace(Base):
+    __tablename__ = 'a2a_workspace'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    mode: Mapped[str] = mapped_column(default='standard')
+    fixture: Mapped[str] = mapped_column(default='normal')
+    __table_args__ = (CheckConstraint("mode IN ('standard','a2a_support','a2a_delivery')"), CheckConstraint("fixture IN ('normal','exception')"))
+
+class ShipmentDeliveryIntent(Base):
+    """Purchase-time choice; changing workspace options never rewrites it."""
+    __tablename__ = 'shipment_delivery_intents'
+    shipment_id: Mapped[str] = mapped_column(ForeignKey('shipments.id'), primary_key=True)
+    mode: Mapped[str]
+    fixture: Mapped[str]
+    __table_args__ = (CheckConstraint("mode IN ('local','a2a')"), CheckConstraint("fixture IN ('normal','exception')"))
+
 class ShipmentDeliveryLink(Base):
     """Enrollment belongs to a shipment, independent of later UI defaults.
 
