@@ -7,7 +7,7 @@
 ## Preparation
 
 1. Verify that the test workspace is running the review branch and uses the intended isolated test database. Record the branch revision, database name, demo clock and Langfuse project. Stop if the database is production or unknown.
-2. Sign in as support/operator. Open Workspace options → A2A. Confirm the three modes and start with Standard API.
+2. Sign in as support/operator. Open Workspace options → A2A. Reset to defaults at the top to use the ordinary API. Expand the A2A arrow to see its two experiments: Marketplace A2A and Multi-agent A2A.
 3. Open Langfuse beside the application. Use a recent time window. Record each question's run/trace link so older traces cannot be mistaken for the current call. Record order and shipment identifiers as you create them.
 
 Use ordinary buyer and seller accounts throughout. Keep other testers from changing the shared workspace settings during the sequence. The setting is captured when an order creates its shipments; select the intended mode/scenario **before purchase**. A later setting change does not enroll an existing local shipment or rewrite an existing remote shipment's scenario.
@@ -16,7 +16,7 @@ Use ordinary buyer and seller accounts throughout. Keep other testers from chang
 
 4. In Standard API, switch to buyer and purchase one item. Record its order and shipment. Switch to the seller who owns that item and use ordinary Dispatch. It should follow the local marketplace path.
 5. Switch back to support. Verify Standard API is still selected. Start a fresh conversation and ask: “What is the shipment status of order <recorded order>?” Save the answer and trace link. Expect a Standard API request span containing the support investigation, with no delivery-agent call for this local shipment.
-6. Select Marketplace A2A and open View Agent Card. Expect the marketplace support card, its endpoint, description, skills and capabilities. Expand Details to inspect the raw card, then close the viewer.
+6. Expand A2A, select Marketplace A2A and open View Agent Card in its pop-up. Expect the marketplace support card, its endpoint, description, skills and capabilities. Expand Details to inspect the raw card, then close the viewer.
 7. Start a fresh Marketplace A2A conversation and ask the same question about the **same local order**. Expect the same factual shipment state; exact wording and model tool choices may differ. In Langfuse, expect an A2A request span with SendMessage, protocol version, task/context identifiers and outcome, enclosing the support investigation. There should be no delivery-agent call for this local shipment.
 8. In that conversation ask: “Has it been delivered yet?” Expect a new A2A task within the same context, with conversation history available. Inspect task/context metadata rather than inferring continuity from answer wording alone.
 
@@ -50,11 +50,11 @@ Teaching point: the marketplace resolves the shipment; the remote delivery agent
 
 ## Persistence and failure checks
 
-15. Change the workspace to Standard API. In a fresh conversation, ask about the previously linked exception shipment (before step 14 delivery completion, if demonstrating the exception contrast), or the still-dispatched normal shipment. Expect marketplace-only evidence, such as dispatched, and **no delivery-agent call** in Langfuse. Repeat in Marketplace A2A: the inbound request uses A2A, but there must still be no outbound delivery call. Switch back to Multi-agent A2A and start a fresh conversation; remote findings become available again without deleting or recreating the saved shipment link. New purchases in Standard API remain local. Also verify old remote findings are not presented as current evidence after switching modes.
+15. Use Reset to defaults to return to the ordinary API. In a fresh conversation, ask about the previously linked exception shipment (before step 14 delivery completion, if demonstrating the exception contrast), or the still-dispatched normal shipment. Expect marketplace-only evidence, such as dispatched, and **no delivery-agent call** in Langfuse. Repeat in Marketplace A2A: the inbound request uses A2A, but there must still be no outbound delivery call. Switch back to Multi-agent A2A and start a fresh conversation; remote findings become available again without deleting or recreating the saved shipment link. New purchases in Standard API remain local. Also verify old remote findings are not presented as current evidence after switching modes.
 16. In a controlled maintainer test, temporarily make the delivery service unavailable and dispatch a newly purchased multi-agent shipment. Expect a visible error and no marketplace transition to dispatched. Restore the service and retry; expect one linked booking and a successful dispatch. Do not take down a shared service during someone else's walkthrough.
 17. Confirm an unavailable delivery investigation is reported as unavailable, rather than replaced with invented fresh status. Confirm failures are visible in protocol traces/logs and credentials are absent.
 
-18. Select Multi-agent A2A / Depot exception, then Reset to defaults. Expect Standard API / Normal transit as the saved defaults; previously created shipment intents and links remain intact.
+18. Select Multi-agent A2A / Depot exception, then Reset to defaults. Expect A2A off with no experiment selected and Normal transit saved as the scenario default; previously created shipment intents and links remain intact.
 19. Open conversation history from a different mode. Expect a clear history-only notice and disabled composer. Select New conversation to ask in the current mode; same-mode follow-ups retain their context.
 
 ## Execution record

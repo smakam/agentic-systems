@@ -38,8 +38,8 @@ The repeatable sequence and execution record are in [A2A demo walkthrough](A2A-D
 ### 1. Standard API and A2A Support
 
 - Sign in as support or operator and open **Support workspace**.
-- Open **Workspace options → A2A**. Select **Standard API**, ask an order question and inspect the Standard API request span in Langfuse.
-- Select **Marketplace A2A**. Changing the mode starts a fresh conversation.
+- Use **Reset to defaults** at the top of Workspace options for the ordinary API, then ask an order question and inspect the Standard API request span in Langfuse.
+- Expand **Workspace options → A2A** and select **Marketplace A2A**. Changing the mode starts a fresh conversation.
 - Inspect the fetched **actual Agent Card**: business skills, JSON-RPC interface, protocol version, capabilities and security declarations. Expand the raw JSON if useful. A failed card request is shown as an error, not replaced with invented metadata.
 - Ask another order question. The browser itself posts an A2A `SendMessage`; it does not call a Python demonstration client.
 - Ask a follow-up. Each accepted question invokes a new SDK run and creates a **new completed Task**, using the **same A2A context, owned marketplace conversation and stored session history**. Failed questions produce failed tasks. A completed task cannot reopen.
@@ -49,7 +49,7 @@ The card is served at `/api/a2a/support/.well-known/agent-card.json` and JSON-RP
 ### 2. Multi-agent A2A
 
 - In **Workspace options → A2A**, select **Multi-agent A2A** and **Normal transit** or **Depot exception** before purchasing. Settings are saved in the test database and survive account switching.
-- **View Agent Card** fetches the marketplace card and, in multi-agent mode, the delivery card on demand. Each viewer shows description, endpoints, skills, capabilities and expandable raw JSON.
+- **View Agent Card** fetches the marketplace card and, in multi-agent mode, the delivery card on demand. The pop-up viewer shows description, endpoints, skills, capabilities and expandable raw JSON; Close or Escape dismisses it.
 - Switch to buyer and purchase an item. Each new shipment captures its delivery enrollment and fixture at purchase. Later option changes do not rewrite it. Existing shipments without an intent stay local.
 - Switch to the item's seller (or operator) and use ordinary **Dispatch**. The backend follows the saved intent, books remotely when enrolled, saves the reference, and transitions to dispatched after validating the receipt. Seller route and fixture selectors are removed.
 - For the same linked shipment, ask **“What is my order status?”** in each mode. Basic status uses marketplace records: pending, dispatched or delivered.
