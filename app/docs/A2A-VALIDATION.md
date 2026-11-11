@@ -2,7 +2,7 @@
 
 ## Test workspace refinement, 11 November 2026
 
-Follow-up UI refinement: Reset is above the collapsed A2A section; only Marketplace A2A and Multi-agent A2A are selectable experiments. Agent Cards open in a native modal. All 43 frontend tests and the production build passed again; browser checks verified one/two cards, Close/Escape, focus restoration and reset to the unselected/off state.
+Follow-up UI refinement: Reset is above the collapsed A2A section; only Marketplace A2A and Multi-agent A2A are selectable experiments. Agent Cards open in a native modal. All 43 frontend tests and the production build passed again; browser checks verified one/two cards, Close/Escape, focus restoration and reset to the unselected/off state with the A2A section collapsed.
 
 The separate review branch now runs on the existing test UI at port 5179 with market_test. Production container IDs/start times and main were preserved. Original test containers are retained stopped for rollback; no database was reset during deployment.
 

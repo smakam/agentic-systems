@@ -54,7 +54,7 @@ Teaching point: the marketplace resolves the shipment; the remote delivery agent
 16. In a controlled maintainer test, temporarily make the delivery service unavailable and dispatch a newly purchased multi-agent shipment. Expect a visible error and no marketplace transition to dispatched. Restore the service and retry; expect one linked booking and a successful dispatch. Do not take down a shared service during someone else's walkthrough.
 17. Confirm an unavailable delivery investigation is reported as unavailable, rather than replaced with invented fresh status. Confirm failures are visible in protocol traces/logs and credentials are absent.
 
-18. Select Multi-agent A2A / Depot exception, then Reset to defaults. Expect A2A off with no experiment selected and Normal transit saved as the scenario default; previously created shipment intents and links remain intact.
+18. Select Multi-agent A2A / Depot exception, then Reset to defaults. Expect A2A collapsed and off, with no experiment selected and Normal transit saved as the scenario default; previously created shipment intents and links remain intact.
 19. Open conversation history from a different mode. Expect a clear history-only notice and disabled composer. Select New conversation to ask in the current mode; same-mode follow-ups retain their context.
 
 ## Execution record
@@ -76,7 +76,7 @@ Populate actual trace links, order references and observed results after executi
 
 ## Records ready for user review
 
-These are synthetic records created by validation, not the original seed dataset. The workspace is left in Multi-agent A2A / Depot exception.
+These are synthetic records created by validation, not the original seed dataset. After the UI reset check, the workspace is left at the ordinary API default with A2A collapsed. Select Multi-agent A2A to retrieve remote tracking for the existing linked records below.
 
 - Normal, dispatched order: `ord-822c6e0523`; shipment `ship-1d3e5e4206`.
 - Depot-exception, dispatched order: `ord-a74298dea1`; shipment `ship-67dc6cc89b`.
