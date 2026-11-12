@@ -92,3 +92,39 @@
 .a2ui-source strong{color:#805a16}.a2ui-table-scroll{overflow:auto;max-width:100%}.a2ui-record table{border-collapse:collapse;width:100%;font-size:.85rem}.a2ui-record th,.a2ui-record td{padding:.55rem;text-align:left;vertical-align:top;border-bottom:1px solid #dde7e2;white-space:pre-wrap;min-width:6rem;max-width:26rem;overflow-wrap:anywhere}.a2ui-record th{background:#f2f7f4}
 .a2ui-timeline{margin:0;padding-left:1.25rem;border-left:2px solid #aacbc0;list-style:decimal}.a2ui-timeline li{padding:0 0 1rem .35rem}.a2ui-timeline li::marker{color:#155f60}
 @media(max-width:600px){.a2ui-record{padding:.7rem}.a2ui-record dl>div{grid-template-columns:1fr;gap:.15rem}.a2ui-answer{max-width:100%;overflow:hidden}}
+
+/* Keep agent-provided actions visibly interactive, including borderless variants. */
+.a2ui-answer .a2ui-button{background:#234f3e!important;color:#fff!important;border:2px solid #234f3e!important;border-radius:8px;padding:12px 18px;min-height:44px;margin:12px 0;font-weight:700;box-shadow:0 2px 5px #234f3e20;cursor:pointer}
+.a2ui-answer .a2ui-button:hover{background:#183c2d!important;border-color:#183c2d!important;color:#fff!important}
+.a2ui-answer .a2ui-button:focus-visible{outline:3px solid #93b99f;outline-offset:3px}
+.a2ui-answer .a2ui-button .a2ui-text{color:inherit!important;font-weight:inherit}
+.a2ui-answer .a2ui-button p{margin:0;line-height:1.4}
+
+/* Fieldwork theme for client-rendered A2UI marketplace widgets. */
+.a2ui-record{padding:0;overflow:hidden;border-color:#bed0c1;box-shadow:0 5px 18px #294b3810;background:#fcfdfb}
+.a2ui-widget-header{display:block;margin:0;padding:20px 22px;background:linear-gradient(115deg,#e7efdf,#f5f8f0);border-bottom:1px solid #d6e2cf}
+.a2ui-widget-brand{display:flex;align-items:center;gap:9px;color:#244f3a;font-size:10px;letter-spacing:2px;font-weight:800;margin-bottom:15px}
+.a2ui-widget-brand>span:first-child{font-size:29px;line-height:1;letter-spacing:0}
+.a2ui-widget-brand small{font-size:9px;letter-spacing:1.2px;color:#647b61;margin-top:2px}
+.a2ui-widget-header h3{font-size:23px;letter-spacing:-.6px;margin:0;color:#234f3e}
+.a2ui-statuses{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.a2ui-status{display:flex;flex-direction:column;gap:3px;padding:7px 12px;background:#fff;border:1px solid #c4d4bb;border-radius:8px;font-size:11px}
+.a2ui-status>span{color:#6d7c65;font-size:9px;text-transform:uppercase;letter-spacing:.5px}
+.a2ui-status strong{color:#234f3e;font-size:12px}
+.a2ui-record .a2ui-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 22px;padding:10px 22px 18px}
+.a2ui-record .a2ui-facts>div{display:block;padding:13px 0;border-bottom:1px solid #e4ebdf;min-width:0}
+.a2ui-record .a2ui-facts dt{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:#7b8974;margin-bottom:4px}
+.a2ui-record .a2ui-facts dd{font-size:15px;font-weight:600;color:#294338}
+.a2ui-record .a2ui-source{margin:0;padding:12px 22px;background:#f0f4eb;border-top:1px solid #dce6d5;color:#6b7c64;display:block;letter-spacing:0;font-size:10px}
+.a2ui-source details{margin:5px 0 0}.a2ui-source details>span{display:block}.a2ui-source strong{display:block;margin-top:7px}
+.a2ui-record .a2ui-timeline{list-style:none;border:0;margin:0;padding:22px}
+.a2ui-timeline li{position:relative;padding:0 0 20px 27px;border-left:2px solid #c4d6bc;margin-left:6px}
+.a2ui-timeline li:last-child{padding-bottom:0;border-left-color:transparent}
+.a2ui-event-dot{position:absolute;left:-7px;top:4px;width:12px;height:12px;border-radius:50%;background:#315e43;border:3px solid #e3efdb;box-shadow:0 0 0 1px #8bac7d}
+.a2ui-event-card{background:white;border:1px solid #dce6d5;border-radius:9px;padding:14px 17px}
+.a2ui-event-card time{font-size:10px;color:#73846a;letter-spacing:.4px}
+.a2ui-event-card h4{font-size:15px;color:#234f3e;margin:5px 0 8px}
+.a2ui-event-detail{font-size:12px;color:#66765f;overflow-wrap:anywhere;margin:0}
+.a2ui-event-card details{margin:10px 0 0;font-size:11px}
+.a2ui-record .a2ui-table-scroll{padding:12px}
+@media(max-width:600px){.a2ui-widget-header{padding:16px}.a2ui-record .a2ui-facts{grid-template-columns:1fr;padding:4px 16px 14px}.a2ui-record .a2ui-timeline{padding:16px}.a2ui-widget-header h3{font-size:20px}.a2ui-record .a2ui-source{padding:12px 16px}}

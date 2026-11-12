@@ -43,7 +43,7 @@ export default function A2UIAnswer({ui,onAction,disabled,evidence,onEvidence,chi
    <p className="eyebrow">AGENT-COMPOSED VIEW</p>
    {ui.status==='completed'?<DisplayBoundary><Surface messages={ui.messages} onAction={onAction} evidence={evidence} onEvidence={onEvidence}/></DisplayBoundary>:<p role="status">{ui.message||'The generated view is unavailable. Use the text answer below.'}</p>}
   </section>
-  <details open><summary>Text answer and sources</summary>{children}</details>
+  <details open={ui.status!=='completed'}><summary>Text answer and sources</summary>{children}</details>
   <details className="a2ui-inspector"><summary>Inspect UI composition</summary>
    <p>Components: {ui.components?.join(', ')}. Order history navigation only. Layout uses a separate model call after the support investigation.</p>
    {ui.requests&&<p>UI composition: {ui.requests} call · {ui.input_tokens} input tokens · {ui.output_tokens} output tokens · {ui.elapsed_seconds}s. These are separate from the support totals below.</p>}
