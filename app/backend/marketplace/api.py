@@ -54,13 +54,12 @@ async def lifespan(app):
             try: await task
             except asyncio.CancelledError: pass
 app=FastAPI(title='Marketplace Lab',lifespan=lifespan)
-SESSION_COOKIE=os.getenv('MARKETPLACE_SESSION_COOKIE','market_session')
 
 def db_session():
     with Session() as db: yield db
 
 def identity(request:Request,db=Depends(db_session)):
-    cookie=request.cookies.get(SESSION_COOKIE,'')
+    cookie=request.cookies.get('market_session','')
     login=db.get(Login,hashlib.sha256(cookie.encode()).hexdigest())
     if not login or login.expires<datetime.now(timezone.utc): raise HTTPException(401,'Sign in required')
     if request.method not in ('GET','HEAD') and not secrets.compare_digest(request.headers.get('x-csrf-token',''),login.csrf): raise HTTPException(403,'Invalid CSRF token')
@@ -86,7 +85,7 @@ def login(data:Credentials,request:Request,response:Response,db=Depends(db_sessi
 def create_login_session(db,user,response):
     token=secrets.token_urlsafe(32); csrf=secrets.token_urlsafe(24)
     db.add(Login(token_hash=hashlib.sha256(token.encode()).hexdigest(),user_id=user.id,csrf=csrf,expires=datetime.now(timezone.utc)+timedelta(hours=12))); db.commit()
-    response.set_cookie(SESSION_COOKIE,token,httponly=True,samesite='strict',max_age=43200,secure=os.getenv('SECURE_COOKIES')=='true')
+    response.set_cookie('market_session',token,httponly=True,samesite='strict',max_age=43200,secure=os.getenv('SECURE_COOKIES')=='true')
     return {'user':user_json(user),'csrf':csrf}
 
 from .oidc_login import create_router as oidc_router
@@ -96,11 +95,11 @@ app.include_router(payout_automation_router(identity, db_session))
 
 @app.get('/api/me')
 def me(request:Request,user=Depends(identity),db=Depends(db_session)):
-    login=db.get(Login,hashlib.sha256(request.cookies[SESSION_COOKIE].encode()).hexdigest())
+    login=db.get(Login,hashlib.sha256(request.cookies['market_session'].encode()).hexdigest())
     return {'user':user_json(user),'csrf':login.csrf}
 @app.post('/api/logout')
 def logout(request:Request,response:Response,user=Depends(identity),db=Depends(db_session)):
-    db.delete(db.get(Login,hashlib.sha256(request.cookies[SESSION_COOKIE].encode()).hexdigest())); db.commit(); response.delete_cookie(SESSION_COOKIE); return {'ok':True}
+    db.delete(db.get(Login,hashlib.sha256(request.cookies['market_session'].encode()).hexdigest())); db.commit(); response.delete_cookie('market_session'); return {'ok':True}
 @app.get('/api/health')
 def health(db=Depends(db_session)):
     db.execute(text('SELECT 1')); return {'status':'ok','service':'marketplace'}

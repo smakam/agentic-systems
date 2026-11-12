@@ -1,8 +1,9 @@
-"""Display-only, model-composed A2UI surfaces over existing support evidence.
+"""Read-only, model-composed A2UI surfaces over existing support evidence.
 
 The model chooses composition, not business facts: every displayed string is a
-binding to application-supplied data. No actions, URLs or executable UI exist in
-this experiment's catalog. Each answer is an independent rendering session.
+binding to application-supplied data. Only allowlisted order-history navigation
+is permitted; no business mutations, URLs or executable UI are accepted. Each
+answer is an independent rendering session.
 """
 import asyncio
 from contextlib import nullcontext
@@ -14,7 +15,7 @@ import time
 CATALOG_ID = 'urn:marketplace:a2ui:display:1'
 BASIC_COMPONENTS = ['Column', 'Row', 'Card', 'Text', 'Divider', 'Button']
 COMPONENTS = BASIC_COMPONENTS + ['OrderSummary', 'EventTimeline', 'RecordTable']
-INSTRUCTIONS = """Compose a useful display-only interface for this support answer.
+INSTRUCTIONS = """Compose a useful read-only interface for this support answer.
 Choose components and their arrangement based on the question and available
 bindings. Use Column as root; prefer vertical composition to wide Rows.
 OrderSummary($/records/rN) shows one key/value business record.
@@ -248,7 +249,7 @@ async def compose(question, answer, evidence, api, model, lf=None):
             messages = [{'role': 'system', 'content': prompt},
                         {'role': 'user', 'content': json.dumps({'question': question, 'available_bindings': manifest}, ensure_ascii=False)}]
             if span:
-                span.update(model=model, input=messages, metadata={'catalog': CATALOG_ID, 'display_only': True})
+                span.update(model=model, input=messages, metadata={'catalog': CATALOG_ID, 'read_only': True, 'history_navigation': True})
             requests = 1
             response = await asyncio.wait_for(api.chat.completions.create(
                 model=model, messages=messages, max_completion_tokens=2500), timeout=40)

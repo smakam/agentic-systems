@@ -1,6 +1,6 @@
 # A2UI marketplace experiment
 
-Status: implementation specification, 12 November 2026. Implementation and verification results will be recorded below; this document does not imply the preview is deployed.
+Status: implemented and locally verified, 12 November 2026. The common Test preview is running on port 5179. See the Test incident below for the separate data-recovery limitation.
 
 ## Purpose
 
@@ -75,6 +75,18 @@ The presentation call has its own Langfuse observation, latency and usage. Total
 
 ## Implementation results
 
-The independent prototype verified a real-model RecordTable and an optional history button that returned an EventTimeline. Text fallback also survived invalid layouts and renderer errors. Integration into the common A2A review branch and final regression checks are in progress.
+The independent prototype verified a real-model RecordTable and an optional history button that returned an EventTimeline. Text fallback also survived invalid layouts and renderer errors. The code is integrated into the common A2A review branch. The combined suite passes 367 backend tests (10 optional skips) and 56 frontend tests; the production build passes. Browser checks in the common Test preview on port 5179 verified both Agent Cards, a completed A2A support request, an A2UI OrderSummary with working source links, and the order-history action returning an EventTimeline. The business revision and order count stayed unchanged across the read-only flow. Reset was also checked after namespacing the A2A/A2UI/RAG component keys; it now leaves one settings panel per experiment. Narrow layouts were checked at 390 pixels without page overflow.
 
 Test incident: a reset-capable OIDC regression was mistakenly run against the shared Test database. Its marketplace orders and support history were reset. The pre-reset browser retained 24 order panels, 93 business event details, and 25 settlement panels; this evidence was saved separately in the research workspace. It is not a full database backup, and full history recovery is not claimed. All subsequent destructive tests use the separate disposable regression database; production was not targeted.
+
+## Running the experiments
+
+Open the existing Test workspace at http://127.0.0.1:5179. Both experiments are on the common review branch; no branch switch is required. To try A2UI, use Reset to defaults to turn A2A off, expand A2UI, enable Agent-composed answers and start a new conversation. Ask for the status of order-1 or order-2, then use Show order history if the model offers it. The model may choose a summary for one record or a table for multiple item rows.
+
+To run A2A, select the desired experiment under A2A; the A2UI toggle turns off for that mode. Existing A2A Agent Cards and delivery scenarios remain available. This first implementation compares the approaches independently rather than composing A2UI inside A2A responses.
+
+Run backend regressions with `python3 app/scripts/test-a2ui-preview.py`. This launcher uses the dedicated database container on its separate Docker bridge network and dummy model credentials. Never run the reset-capable backend suite inside the shared Test backend. Frontend checks use `node --test src/*.test.js` and `npm run build` from the frontend directory.
+
+The local preview update script takes a current Test database dump, disables startup initialization, retains previous containers for rollback and verifies business-state counts and production container identities before and after the update. That deployment backup was taken after the earlier test reset; it is not a recovery of pre-reset history.
+
+Package notes: the pinned React SDK currently brings a Markdown peer-range warning and npm reports four high-severity advisories in its Zod 3 dependency chain. The prototype uses a bounded, validated catalog and passed actual browser rendering; this does not establish production readiness or an upstream vulnerability fix.
