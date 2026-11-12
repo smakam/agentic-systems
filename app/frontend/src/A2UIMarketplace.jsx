@@ -23,7 +23,9 @@ function OrderSummary({props:{record}}){
  return <section className="a2ui-record a2ui-order" aria-label="Order summary"><Header kind="ORDER SUMMARY" title={order?`Order ${order.value.replace(/^order-/, '')}`:'Order details'}><div className="a2ui-statuses">{statuses.map((f,i)=><div className="a2ui-status" key={i}><span>{fieldLabel(f.label)}</span><strong>{label(f.value)}</strong></div>)}</div></Header><dl className="a2ui-facts">{fields.map((field,index)=><div key={index}><dt>{fieldLabel(field.label)}</dt><dd>{shownValue(field.label,field.value)}</dd></div>)}</dl><Source value={record}/></section>;
 }
 function RecordTable({props:{dataset}}){
- return <section className="a2ui-record" aria-label="Record table"><Header kind="RECORDS" title={`${dataset.rows.length} source records`}/><div className="a2ui-table-scroll" tabIndex={0} role="region" aria-label="Scrollable marketplace records"><table><thead><tr>{dataset.headers.map((h,i)=><th key={i} scope="col">{fieldLabel(h)}</th>)}</tr></thead><tbody>{dataset.rows.map((r,i)=><tr key={i}>{r.map((v,j)=><td key={j}>{shownValue(dataset.headers[j],v)}</td>)}</tr>)}</tbody></table></div><Source value={dataset}/></section>;
+ const headers=dataset.headers;
+ const title=headers.includes('product name')&&headers.includes('shipment status')?'Items and delivery':headers.includes('payout status')&&headers.includes('refund status')?'Returns, refunds and seller payouts':dataset.title;
+ return <section className="a2ui-record" aria-label="Record table"><Header kind="RECORDS" title={title}><p className="a2ui-widget-count">{dataset.rows.length} source {dataset.rows.length===1?'record':'records'}</p></Header><div className="a2ui-table-scroll" tabIndex={0} role="region" aria-label="Scrollable marketplace records"><table><thead><tr>{dataset.headers.map((h,i)=><th key={i} scope="col">{fieldLabel(h)}</th>)}</tr></thead><tbody>{dataset.rows.map((r,i)=><tr key={i}>{r.map((v,j)=><td key={j}>{shownValue(dataset.headers[j],v)}</td>)}</tr>)}</tbody></table></div><Source value={dataset}/></section>;
 }
 function EventTimeline({props:{dataset}}){
  const kind=dataset.headers.indexOf('kind');
