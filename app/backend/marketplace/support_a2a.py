@@ -208,8 +208,9 @@ def create_router(identity, db_session, role, run_question, question_model):
     dispatcher = JsonRpcDispatcher(handler, context_builder=_BrowserContext())
 
     @router.get(PREFIX + '/.well-known/agent-card.json')
-    def card(request: Request, user=Depends(identity)):
-        role(user, 'support', 'operator')
+    def card(request: Request):
+        # Public service metadata describes how to authenticate work requests;
+        # fetching it never executes an investigation or grants data access.
         # Include false capabilities, so the UI can show the actual supported set.
         return MessageToDict(agent_card(str(request.base_url)), always_print_fields_with_no_presence=True)
 

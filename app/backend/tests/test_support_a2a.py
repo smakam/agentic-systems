@@ -70,11 +70,15 @@ def fake_answer(monkeypatch, status='completed'):
     return calls
 
 
-def test_card_requires_session_and_support_role_and_reports_real_interfaces():
+def test_card_is_public_but_work_requests_require_session_and_support_role(monkeypatch):
+    calls=fake_answer(monkeypatch)
     with TestClient(api.app) as c:
-        assert c.get(PREFIX+'/.well-known/agent-card.json').status_code==401
+        assert c.get(PREFIX+'/.well-known/agent-card.json').status_code==200
+        assert c.post(PREFIX,json={'jsonrpc':'2.0','id':'anonymous','method':'SendMessage','params':{}}).status_code==401
+        assert c.post(PREFIX,json={'jsonrpc':'2.0','id':'anonymous-task','method':'GetTask','params':{'id':'unknown'}}).status_code==401
         signed_in(c,'buyer')
-        assert c.get(PREFIX+'/.well-known/agent-card.json').status_code==403
+        assert c.get(PREFIX+'/.well-known/agent-card.json').status_code==200
+        assert c.post(PREFIX,json={'jsonrpc':'2.0','id':'buyer','method':'SendMessage','params':{}}).status_code==403
         signed_in(c)
         r=c.get(PREFIX+'/.well-known/agent-card.json')
         assert r.status_code==200
@@ -86,6 +90,9 @@ def test_card_requires_session_and_support_role_and_reports_real_interfaces():
         assert card['securitySchemes']['marketplaceSession']['apiKeySecurityScheme']['location']=='cookie'
         assert card['securitySchemes']['csrf']['apiKeySecurityScheme']['name']=='X-CSRF-Token'
         assert 'market_session' in r.text and 'password_hash' not in r.text
+        assert c.cookies.get('market_session') not in r.text
+        assert c.headers['x-csrf-token'] not in r.text
+        assert not calls
 
 
 def test_each_followup_gets_new_completed_task_with_owned_context_and_stored_history(monkeypatch):

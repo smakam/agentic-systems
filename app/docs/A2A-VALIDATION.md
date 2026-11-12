@@ -1,5 +1,7 @@
 # A2A implementation validation
 
+Public-card refinement, 12 November 2026: the marketplace card is anonymously readable metadata. SendMessage and GetTask remain authenticated, role-scoped and owner-scoped. The 16 focused support-A2A/conversation checks passed, including anonymous and buyer read access, rejected work requests and absence of session/CSRF values from the card.
+
 ## Test workspace refinement, 11 November 2026
 
 Follow-up UI refinement: Reset is above the collapsed A2A section; only Marketplace A2A and Multi-agent A2A are selectable experiments. Agent Cards open in a native modal. All 43 frontend tests and the production build passed again; browser checks verified one/two cards, Close/Escape, focus restoration and reset to the unselected/off state with the A2A section collapsed.

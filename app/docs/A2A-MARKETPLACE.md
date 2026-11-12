@@ -44,7 +44,7 @@ The repeatable sequence and execution record are in [A2A demo walkthrough](A2A-D
 - Ask another order question. The browser itself posts an A2A `SendMessage`; it does not call a Python demonstration client.
 - Ask a follow-up. Each accepted question invokes a new SDK run and creates a **new completed Task**, using the **same A2A context, owned marketplace conversation and stored session history**. Failed questions produce failed tasks. A completed task cannot reopen.
 
-The card is served at `/api/a2a/support/.well-known/agent-card.json` and JSON-RPC at `/api/a2a/support`. POST requests explicitly enforce the existing session, CSRF and support/operator checks before SDK dispatch. Task retrieval checks the owning conversation. The browser sends `A2A-Version: 1.0`. Replaying the same message ID and payload returns its stored task instead of charging for another run; changing the payload under that ID is rejected.
+The Agent Card is public metadata and can be fetched without a login at `/api/a2a/support/.well-known/agent-card.json` and JSON-RPC at `/api/a2a/support`. POST requests explicitly enforce the existing session, CSRF and support/operator checks before SDK dispatch. Task retrieval checks the owning conversation. The browser sends `A2A-Version: 1.0`. Replaying the same message ID and payload returns its stored task instead of charging for another run; changing the payload under that ID is rejected.
 
 ### 2. Multi-agent A2A
 
