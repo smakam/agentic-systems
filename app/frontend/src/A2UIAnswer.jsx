@@ -20,7 +20,13 @@ class DisplayBoundary extends React.Component{
 
 function Surface({messages,onAction,evidence,onEvidence}){
  const handler=useRef(onAction);handler.current=onAction;
- const MarkdownView=useMemo(()=>({markdown})=><ReadOnlyMarkdown markdown={markdown} evidence={evidence} onEvidence={onEvidence}/>,[evidence,onEvidence]);
+ const MarkdownView=useMemo(()=>{
+  const surface=messages?.[0]?.createSurface;
+  const hasWidgets=surface?.components?.some(c=>['OrderSummary','EventTimeline','RecordTable'].includes(c.component));
+  // The complete answer remains in the shared text/source disclosure below.
+  // Avoid rendering it twice when the model also composed evidence widgets.
+  return ({markdown})=>hasWidgets&&markdown===surface.dataModel.answer?null:<ReadOnlyMarkdown markdown={markdown} evidence={evidence} onEvidence={onEvidence}/>;
+ },[messages,evidence,onEvidence]);
  const result=useMemo(()=>{
   const processor=new MessageProcessor([catalog],event=>handler.current?.(historyAction(messages,event)));
   try{
