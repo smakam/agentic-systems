@@ -54,12 +54,13 @@ async def lifespan(app):
             try: await task
             except asyncio.CancelledError: pass
 app=FastAPI(title='Marketplace Lab',lifespan=lifespan)
+SESSION_COOKIE=os.getenv('MARKETPLACE_SESSION_COOKIE','market_session')
 
 def db_session():
     with Session() as db: yield db
 
 def identity(request:Request,db=Depends(db_session)):
-    cookie=request.cookies.get('market_session','')
+    cookie=request.cookies.get(SESSION_COOKIE,'')
     login=db.get(Login,hashlib.sha256(cookie.encode()).hexdigest())
     if not login or login.expires<datetime.now(timezone.utc): raise HTTPException(401,'Sign in required')
     if request.method not in ('GET','HEAD') and not secrets.compare_digest(request.headers.get('x-csrf-token',''),login.csrf): raise HTTPException(403,'Invalid CSRF token')
@@ -85,7 +86,7 @@ def login(data:Credentials,request:Request,response:Response,db=Depends(db_sessi
 def create_login_session(db,user,response):
     token=secrets.token_urlsafe(32); csrf=secrets.token_urlsafe(24)
     db.add(Login(token_hash=hashlib.sha256(token.encode()).hexdigest(),user_id=user.id,csrf=csrf,expires=datetime.now(timezone.utc)+timedelta(hours=12))); db.commit()
-    response.set_cookie('market_session',token,httponly=True,samesite='strict',max_age=43200,secure=os.getenv('SECURE_COOKIES')=='true')
+    response.set_cookie(SESSION_COOKIE,token,httponly=True,samesite='strict',max_age=43200,secure=os.getenv('SECURE_COOKIES')=='true')
     return {'user':user_json(user),'csrf':csrf}
 
 from .oidc_login import create_router as oidc_router
@@ -95,11 +96,11 @@ app.include_router(payout_automation_router(identity, db_session))
 
 @app.get('/api/me')
 def me(request:Request,user=Depends(identity),db=Depends(db_session)):
-    login=db.get(Login,hashlib.sha256(request.cookies['market_session'].encode()).hexdigest())
+    login=db.get(Login,hashlib.sha256(request.cookies[SESSION_COOKIE].encode()).hexdigest())
     return {'user':user_json(user),'csrf':login.csrf}
 @app.post('/api/logout')
 def logout(request:Request,response:Response,user=Depends(identity),db=Depends(db_session)):
-    db.delete(db.get(Login,hashlib.sha256(request.cookies['market_session'].encode()).hexdigest())); db.commit(); response.delete_cookie('market_session'); return {'ok':True}
+    db.delete(db.get(Login,hashlib.sha256(request.cookies[SESSION_COOKIE].encode()).hexdigest())); db.commit(); response.delete_cookie(SESSION_COOKIE); return {'ok':True}
 @app.get('/api/health')
 def health(db=Depends(db_session)):
     db.execute(text('SELECT 1')); return {'status':'ok','service':'marketplace'}
@@ -282,6 +283,11 @@ async def security_fixture(body:FixtureChange,user=Depends(identity)):
     except RuntimeError as exc: raise HTTPException(409,str(exc))
     except Exception: raise HTTPException(503,"Fixture preparation failed; check embedding gateway readiness. Previous fixture retained.")
 
+class A2UIReadAction(BaseModel):
+    model_config={'extra':'forbid'}
+    run_id:str=Field(min_length=1,max_length=100)
+    action_id:str=Field(pattern=r'^a[0-7]$')
+
 class Question(BaseModel):
     model_config={'extra':'forbid'}
     question:str=Field(min_length=1,max_length=4000)
@@ -295,6 +301,8 @@ class Question(BaseModel):
     marker_mode:str="off"
     loop_mode:Literal['normal','tool_error','turn_limit']='normal'
     cache_enabled:bool=False
+    a2ui_enabled:bool=False
+    a2ui_action:A2UIReadAction|None=None
     routing_policy:str='off'
     design_mode:Literal['off','single','review']='off'
     generator_model:Literal['nano','gpt54']='nano'
@@ -303,6 +311,11 @@ class Question(BaseModel):
     rag_top_k:Literal[1,4]=4
     session_history_mode:Literal['off','window2','window6','window8']='off'
     settings_reset:bool=False
+
+@app.get('/api/a2ui-demo')
+def a2ui_demo_options(user=Depends(identity)):
+    role(user,'support','operator')
+    return {'enabled': is_test() and os.getenv('A2UI_DEMO') == 'true'}
 
 @app.get('/api/agent-design-demo')
 def agent_design_demo_options(user=Depends(identity)):
@@ -395,6 +408,25 @@ async def run_support_question(cid,body,user,db,*,transport='standard'):
     if transport=='a2a':
         from .hosting_client import enabled as a2a_remote_hosting
         if runtime!='sdk' or a2a_remote_hosting(): raise HTTPException(400,'A2A support requires the local SDK runtime')
+    if body.a2ui_action:
+        if not body.a2ui_enabled:
+            raise HTTPException(400,'Enable A2UI to use this history button')
+        from .a2ui_demo import history_question
+        try:
+            body.question=history_question(db.get(Run,body.a2ui_action.run_id),cid,body.a2ui_action.action_id)
+        except LookupError as exc:
+            raise HTTPException(404,str(exc)) from None
+        except ValueError as exc:
+            raise HTTPException(400,str(exc)) from None
+    if body.a2ui_enabled:
+        if not is_test() or os.getenv('A2UI_DEMO') != 'true':
+            raise HTTPException(403,'A2UI is available only in its Test preview')
+        if mode!='standard' or transport!='standard':
+            raise HTTPException(400,'Use standard API mode with A2A off for this A2UI experiment')
+        from .hosting_client import enabled as a2ui_remote_hosting
+        if a2ui_remote_hosting(): raise HTTPException(400,'A2UI requires the local SDK runtime')
+        if runtime!='sdk' or body.rag_experiment!='off' or body.design_mode!='off' or body.routing_policy!='off' or body.loop_mode!='normal' or body.memory_enabled or body.memory_write or body.memory_provider!='internal' or body.guardrail!='off' or body.marker_mode!='off' or body.suppress_catalog or body.suppress_documents or not body.source_authority or body.cache_enabled:
+            raise HTTPException(400,'A2UI requires normal SDK support with other experiments off')
     if body.cache_enabled and runtime!='sdk':raise HTTPException(400,'Response caching requires the Test SDK runtime')
     if body.session_history_mode!='off':
         from .hosting_client import enabled as remote_hosting_enabled
@@ -532,6 +564,7 @@ async def run_support_question(cid,body,user,db,*,transport='standard'):
             key_context = for_key(os.environ['EVAL_GATEWAY_KEY']) if (route_config or design_config) else for_role(user.role)
             if mode=='a2a_delivery':
                 lab_config={**(lab_config or {}),'delivery_enabled':True}
+            if body.a2ui_enabled: lab_config={**(lab_config or {}),'a2ui_enabled':True}
             with key_context, capture_calls():
                 return await answer(cid,body.question,evaluation_config=lab_config,memory_provider=body.memory_provider,memory_enabled=body.memory_enabled,memory_write=body.memory_write,guardrail=body.guardrail,source_authority=body.source_authority,marker_mode=body.marker_mode,suppress_catalog=body.suppress_catalog,suppress_documents=body.suppress_documents)
         finally:

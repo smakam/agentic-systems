@@ -2,6 +2,7 @@
 services:
   memory-backend:
     environment:
+      A2UI_DEMO: "true"
       DELIVERY_A2A_URL: http://delivery:8004
       DELIVERY_READ_TOKEN: ${DELIVERY_READ_TOKEN:?Set a distinct random read token}
       DELIVERY_WRITE_TOKEN: ${DELIVERY_WRITE_TOKEN:?Set a distinct random write token}
