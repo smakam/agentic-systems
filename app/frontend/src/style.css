@@ -130,3 +130,8 @@
 @media(max-width:600px){.a2ui-widget-header{padding:16px}.a2ui-record .a2ui-facts{grid-template-columns:1fr;padding:4px 16px 14px}.a2ui-record .a2ui-timeline{padding:16px}.a2ui-widget-header h3{font-size:20px}.a2ui-record .a2ui-source{padding:12px 16px}}
 
 .a2ui-widget-count{font-size:11px;color:#6b7c64;margin:8px 0 0;line-height:1.4}
+
+.a2ui-action-progress{display:flex;align-items:center;gap:9px;color:#315e43;background:#edf4e7;border:1px solid #c5d8ba;border-radius:8px;padding:10px 14px;font-size:12px;margin:8px 0}
+.a2ui-action-spinner{width:15px;height:15px;flex:none;border:2px solid #b4c8aa;border-top-color:#234f3e;border-radius:50%;animation:a2ui-action-spin .8s linear infinite}
+@keyframes a2ui-action-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.a2ui-action-spinner{animation:none}}

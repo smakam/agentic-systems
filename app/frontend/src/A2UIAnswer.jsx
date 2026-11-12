@@ -1,4 +1,4 @@
-import React,{useMemo,useEffect,useRef} from 'react';
+import React,{useMemo,useEffect,useRef,useState} from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {A2uiSurface,MarkdownComponentContext} from '@a2ui/react';
@@ -18,7 +18,7 @@ class DisplayBoundary extends React.Component{
  render(){return this.state.failed?<p role="status">The generated view could not be rendered. Use the text answer below.</p>:this.props.children;}
 }
 
-function Surface({messages,onAction,evidence,onEvidence}){
+function Surface({messages,onAction,evidence,onEvidence,busyAction}){
  const handler=useRef(onAction);handler.current=onAction;
  const MarkdownView=useMemo(()=>{
   const surface=messages?.[0]?.createSurface;
@@ -30,25 +30,35 @@ function Surface({messages,onAction,evidence,onEvidence}){
  const result=useMemo(()=>{
   const processor=new MessageProcessor([catalog],event=>handler.current?.(historyAction(messages,event)));
   try{
-   const errors=processor.processMessagesWithErrors(displayMessages(messages));
+   const displayed=busyAction?structuredClone(messages):messages;
+   if(busyAction&&displayed[0]?.createSurface?.dataModel?.actions?.[busyAction])displayed[0].createSurface.dataModel.actions[busyAction].label='Loading order history…';
+   const errors=processor.processMessagesWithErrors(displayMessages(displayed));
    if(errors.length)throw new Error('Invalid display');
    const surfaces=Array.from(processor.model.surfacesMap.values());
    if(surfaces.length!==1)throw new Error('Display unavailable');
    return {surfaces,processor};
   }catch{processor.dispose();return {error:true};}
- },[messages]);
+ },[messages,busyAction]);
  useEffect(()=>()=>result.processor?.dispose(),[result]);
  if(result.error)return <p role="status">The generated view could not be rendered. Use the text answer below.</p>;
  return <MarkdownComponentContext.Provider value={MarkdownView}>{result.surfaces.map(surface=><A2uiSurface key={surface.id} surface={surface}/>)}</MarkdownComponentContext.Provider>;
 }
 
 export default function A2UIAnswer({ui,onAction,disabled,evidence,onEvidence,children}){
+ const [busyAction,setBusyAction]=useState(null);
+ const sending=useRef(false);
+ async function activate(action){
+  if(sending.current||disabled)return;
+  sending.current=true;setBusyAction(action.actionId);
+  try{await onAction?.(action);}finally{sending.current=false;setBusyAction(null);}
+ }
  if(!ui)return children;
  return <>
-  <section className="a2ui-answer" aria-label="Agent-composed answer" inert={disabled||undefined}>
+  <section className="a2ui-answer" aria-label="Agent-composed answer" aria-busy={busyAction?true:undefined} inert={disabled||Boolean(busyAction)||undefined}>
    <p className="eyebrow">AGENT-COMPOSED VIEW</p>
-   {ui.status==='completed'?<DisplayBoundary><Surface messages={ui.messages} onAction={onAction} evidence={evidence} onEvidence={onEvidence}/></DisplayBoundary>:<p role="status">{ui.message||'The generated view is unavailable. Use the text answer below.'}</p>}
+   {ui.status==='completed'?<DisplayBoundary><Surface messages={ui.messages} onAction={activate} evidence={evidence} onEvidence={onEvidence} busyAction={busyAction}/></DisplayBoundary>:<p role="status">{ui.message||'The generated view is unavailable. Use the text answer below.'}</p>}
   </section>
+  {busyAction&&<p className="a2ui-action-progress" role="status"><span className="a2ui-action-spinner" aria-hidden="true"/>Loading order history and preparing the timeline…</p>}
   <details open={ui.status!=='completed'}><summary>Text answer and sources</summary>{children}</details>
   <details className="a2ui-inspector"><summary>Inspect UI composition</summary>
    <p>Components: {ui.components?.join(', ')}. Order history navigation only. Layout uses a separate model call after the support investigation.</p>
