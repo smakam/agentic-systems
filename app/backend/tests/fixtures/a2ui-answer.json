@@ -1,0 +1,80 @@
+[
+  {
+    "version": "1.0",
+    "createSurface": {
+      "surfaceId": "answer",
+      "catalogId": "urn:marketplace:a2ui:display:1",
+      "components": [
+        {
+          "id": "summary",
+          "component": "OrderSummary",
+          "record": {
+            "@path": "/records/r0"
+          }
+        },
+        {
+          "id": "answer",
+          "component": "Text",
+          "text": {
+            "@path": "/answer"
+          }
+        },
+        {
+          "id": "root",
+          "component": "Column",
+          "children": [
+            "summary",
+            "answer"
+          ]
+        }
+      ],
+      "dataModel": {
+        "answer": "Order is dispatched.",
+        "datasets": {
+          "d0": {
+            "title": "Order status",
+            "headers": [
+              "order id",
+              "status"
+            ],
+            "rows": [
+              [
+                "order-1",
+                "dispatched"
+              ]
+            ],
+            "source": "evidence-test",
+            "scope": "Investigation evidence \u00b7 revision 7 \u00b7 as of 2026-10-03T12:00:00Z",
+            "notice": "",
+            "timeline": false
+          }
+        },
+        "records": {
+          "r0": {
+            "title": "Order status",
+            "source": "evidence-test",
+            "scope": "Investigation evidence \u00b7 revision 7 \u00b7 as of 2026-10-03T12:00:00Z",
+            "notice": "",
+            "fields": [
+              {
+                "label": "order id",
+                "value": "order-1"
+              },
+              {
+                "label": "status",
+                "value": "dispatched"
+              }
+            ]
+          }
+        },
+        "actions": {
+          "a0": {
+            "order_id": "order-1",
+            "label": "Show order history \u00b7 order-1",
+            "name": "show_order_history"
+          }
+        }
+      }
+    }
+  }
+]

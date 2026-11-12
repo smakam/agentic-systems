@@ -69,3 +69,17 @@
 .login-divider{text-align:center;margin:12px 0}.keycloak-login{width:100%}
 
 .payout-toggle{display:flex;align-items:center;gap:12px;font-weight:600;margin:18px 0}.payout-toggle input{width:20px;height:20px;accent-color:#234f3e}.payout-activity{display:flex;gap:32px;flex-wrap:wrap}.payout-activity strong{font-size:14px}.payout-admin .panel{max-width:850px}.payout-result{border-top:1px solid #e0e5dc;margin-top:18px;padding-top:8px}
+
+.a2ui-answer{margin:1rem 0;--a2ui-color-primary:#155f60;--a2ui-color-surface:#f7faf9;--a2ui-color-on-surface:#183c3b;--a2ui-font-family:inherit;overflow-wrap:anywhere}
+.a2ui-answer .a2ui-surface{max-width:100%;min-width:0}
+.a2ui-answer p{white-space:pre-wrap}
+.a2ui-inspector{margin-top:1rem}.a2ui-inspector pre{max-height:25rem;overflow:auto;white-space:pre-wrap}
+
+.a2ui-record{border:1px solid #cfdfda;border-radius:12px;padding:1rem;background:#fff;color:#183c3b;min-width:0;max-width:100%;font-family:inherit}
+.a2ui-record h3{font-size:1rem;margin:0 0 .8rem;overflow-wrap:anywhere}
+.a2ui-record dl{margin:0}.a2ui-record dl>div{display:grid;grid-template-columns:minmax(7rem,1fr) minmax(0,2fr);gap:.75rem;padding:.35rem 0;border-bottom:1px solid #edf2f0}
+.a2ui-record dt{color:#546963;font-size:.85rem}.a2ui-record dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.9rem}
+.a2ui-source{display:flex;flex-direction:column;gap:.25rem;margin-top:.75rem;font-size:.72rem;color:#546963;overflow-wrap:anywhere}
+.a2ui-source strong{color:#805a16}.a2ui-table-scroll{overflow:auto;max-width:100%}.a2ui-record table{border-collapse:collapse;width:100%;font-size:.85rem}.a2ui-record th,.a2ui-record td{padding:.55rem;text-align:left;vertical-align:top;border-bottom:1px solid #dde7e2;white-space:pre-wrap;min-width:6rem;max-width:26rem;overflow-wrap:anywhere}.a2ui-record th{background:#f2f7f4}
+.a2ui-timeline{margin:0;padding-left:1.25rem;border-left:2px solid #aacbc0;list-style:decimal}.a2ui-timeline li{padding:0 0 1rem .35rem}.a2ui-timeline li::marker{color:#155f60}
+@media(max-width:600px){.a2ui-record{padding:.7rem}.a2ui-record dl>div{grid-template-columns:1fr;gap:.15rem}.a2ui-answer{max-width:100%;overflow:hidden}}
