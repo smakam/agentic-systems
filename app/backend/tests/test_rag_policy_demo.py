@@ -92,6 +92,7 @@ def test_reset_restores_existing_demo_defaults_without_touching_conversations(mo
     monkeypatch.setattr(api,'is_test',lambda:True)
     monkeypatch.setattr(api,'fixture_status',lambda:{'variant':'clean'})
     monkeypatch.setattr(gateway_demo,'enabled',lambda:False)
+    monkeypatch.setattr(api,'reset_a2a_defaults',lambda:None)
     prepared=AsyncMock(return_value={'indexed':0});monkeypatch.setattr(index,'index',prepared)
     restored=AsyncMock();monkeypatch.setattr(demo,'index_selected',restored)
     class DB:

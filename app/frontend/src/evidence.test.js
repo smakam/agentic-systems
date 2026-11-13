@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {formatEvidence} from './evidence.js';
+import {deliveryEvidenceView,formatEvidence,sourceLabel} from './evidence.js';
 
 const evidence = {'evidence-ab12': {type:'query',sql:'SELECT * FROM analytics.events'}};
 test('canonical, legacy and bare citations resolve to the same readable source', () => {
@@ -70,4 +70,28 @@ test('RAG citations resolve only the saved passages and order in their own answe
   assert.equal(formatEvidence('[passage-2] [order-record]',runs[2].citationEvidence),'[Source unavailable] [Source unavailable]');
   assert.equal(formatEvidence('[passage-99]',runs[0].citationEvidence),'[Source unavailable]');
   assert.equal(formatEvidence('[Docs](https://example.com/passage-2)',runs[0].citationEvidence),'[Docs](https://example.com/passage-2)');
+});
+
+test('delivery citations distinguish fresh remote findings, local records and an unavailable source',()=>{
+ assert.equal(sourceLabel({type:'delivery',status:'ok',linked:true}),'View delivery findings');
+ assert.equal(sourceLabel({type:'delivery',status:'ok',linked:false}),'View local shipment records');
+ assert.equal(sourceLabel({type:'delivery',status:'error',linked:true}),'View unavailable delivery source');
+ assert.equal(formatEvidence('[evidence:evidence-ab12]',{'evidence-ab12':{type:'delivery',status:'ok',linked:true}}),'[View delivery findings](#evidence-ab12)');
+});
+
+test('delivery inspector renders actual status and conditional detail evidence without inventing promises',()=>{
+ const evidence={type:'delivery',status:'ok',linked:true,shipment_id:'ship-1',result:{reference:'delivery-1',findings:'Parcel held at the depot.',shipment_status:{status:'exception',overdue:true,on_schedule:false,observed_at:'2026-11-10T12:00:00Z'},tool_trace:[{tool:'get_current_shipment_status',result:{status:'exception'}},{tool:'get_delivery_problem_details',result:{reason:'Sorting scanner failed.',tracking_events:[{event:'exception',detail:'Manual rerouting'}]}}]}};
+ const view=deliveryEvidenceView(evidence);
+ assert.equal(view.source,'Simulated delivery service');assert.equal(view.reason,'Sorting scanner failed.');assert.equal(view.problemChecked,true);
+ assert.deepEqual(view.fields,[['Delivery reference','delivery-1'],['Recorded status','exception'],['Overdue','Yes'],['On schedule','No'],['Observed at','2026-11-10T12:00:00Z']]);
+ assert.equal(view.fields.some(([label])=>label==='Expected delivery at'),false);assert.equal(view.trace.length,2);assert.equal(view.events.length,1);
+ const normal=deliveryEvidenceView({...evidence,result:{shipment_status:{status:'in_transit'},tool_trace:[evidence.result.tool_trace[0]]}});
+ assert.equal(normal.problemChecked,false);assert.equal(normal.reason,null);assert.equal(normal.fields.some(([label])=>label==='On schedule'),false,'in-transit alone cannot establish schedule health');
+});
+
+test('unavailable remote evidence cannot display stale status or present local data as remote verification',()=>{
+ const view=deliveryEvidenceView({type:'delivery',linked:true,status:'error',message:'No fresh remote status was verified.',shipment_status:'dispatched',result:{shipment_status:{status:'delivered'},findings:'Stale answer'}});
+ assert.equal(view.error,'No fresh remote status was verified.');assert.deepEqual(view.fields,[]);assert.deepEqual(view.trace,[]);assert.equal(view.findings,undefined);
+ const local=deliveryEvidenceView({type:'delivery',linked:false,status:'ok',shipment_status:'dispatched',source_run_id:'older'});
+ assert.equal(local.source,'Marketplace local records');assert.equal(local.historical,true);assert.deepEqual(local.fields,[['Shipment status','dispatched']]);
 });

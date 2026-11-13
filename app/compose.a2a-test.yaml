@@ -1,0 +1,22 @@
+# Add after compose.yaml and compose.memory.yaml. Enables A2A only in Test.
+services:
+  memory-backend:
+    environment:
+      A2UI_DEMO: "true"
+      DELIVERY_A2A_URL: http://delivery:8004
+      DELIVERY_READ_TOKEN: ${DELIVERY_READ_TOKEN:?Set a distinct random read token}
+      DELIVERY_WRITE_TOKEN: ${DELIVERY_WRITE_TOKEN:?Set a distinct random write token}
+    depends_on:
+      delivery: {condition: service_healthy}
+  delivery:
+    extends:
+      file: compose.a2a.yaml
+      service: delivery
+    environment:
+      LITELLM_API_KEY: ${TEST_SUPPORT_GATEWAY_KEY:-}
+      DELIVERY_MODEL_ALIAS: support-model-test
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-pk-lf-marketplace-local}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-sk-lf-marketplace-local}
+      LANGFUSE_BASE_URL: http://langfuse-web:3000
+volumes:
+  delivery-state:

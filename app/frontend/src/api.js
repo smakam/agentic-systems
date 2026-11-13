@@ -1,8 +1,10 @@
 // Authentication failures on protected requests return the UI to sign-in.
 export async function request(path,body,method,csrf,onSessionExpired){
-  const response=await fetch('/api'+path,{method:method||(body===undefined?'GET':'POST'),headers:{'Content-Type':'application/json','X-CSRF-Token':csrf},body:body===undefined?undefined:JSON.stringify(body)});
+  const response=await fetch('/api'+path,{method:method||(body===undefined?'GET':'POST'),headers:{'Content-Type':'application/json','X-CSRF-Token':csrf,...(path.startsWith('/a2a/')?{'A2A-Version':'1.0'}:{})},body:body===undefined?undefined:JSON.stringify(body)});
   if(response.status===401 && path!=='/login' && path!=='/me')onSessionExpired();
-  const value=await response.json();
+  let value;
+  try{value=await response.json();}
+  catch{const error=new Error(response.ok?'The server returned an unreadable response.':`Server request failed (${response.status}). Please retry.`);error.status=response.status;throw error;}
   if(!response.ok){const error=new Error(typeof value.detail==='string'?value.detail:'Request failed');error.status=response.status;throw error;}
   return value;
 }

@@ -5,7 +5,20 @@ export function sourceLabel(evidence) {
   if (evidence.type === 'catalog') return 'View data definitions';
   if (evidence.type === 'documents') return 'View policy passages';
   if (evidence.type === 'query') return /\bevents\b/i.test(evidence.sql || '') ? 'View event timeline' : 'View database records';
+  if (evidence.type === 'delivery') return evidence.status==='error'?'View unavailable delivery source':evidence.linked?'View delivery findings':'View local shipment records';
   return 'View source';
+}
+
+// Render saved evidence only. Opening the inspector never refreshes a carrier
+// status and cannot turn an unavailable remote observation into a local result.
+export function deliveryEvidenceView(evidence){
+ if(evidence?.type!=='delivery')return null;
+ const base={shipmentId:evidence.shipment_id,source:evidence.linked?'Simulated delivery service':'Marketplace local records',historical:Boolean(evidence.source_run_id)};
+ if(evidence.status!=='ok')return {...base,error:evidence.message||'Delivery evidence is unavailable; no fresh remote status was verified.',fields:[],trace:[]};
+ if(!evidence.linked)return {...base,fields:[['Shipment status',evidence.shipment_status],['Delivered at',evidence.delivered_at]].filter(([,value])=>value!=null),note:evidence.note,trace:[]};
+ const result=evidence.result||{},status=result.shipment_status||{},trace=Array.isArray(result.tool_trace)?result.tool_trace:[],problem=trace.find(t=>t.tool==='get_delivery_problem_details');
+ const fields=[['Delivery reference',result.reference||status.reference],['Recorded status',status.status],['Overdue',typeof status.overdue==='boolean'?(status.overdue?'Yes':'No'):null],['On schedule',typeof status.on_schedule==='boolean'?(status.on_schedule?'Yes':'No'):null],['Expected delivery at',status.expected_delivery_at],['Delivered at',status.delivered_at],['Observed at',status.observed_at],['Simulation as of',status.simulation_as_of]].filter(([,value])=>value!=null);
+ return {...base,fields,findings:result.findings,note:evidence.note,trace,problemChecked:Boolean(problem),reason:problem?(problem.result?.reason||'No specific reason was recorded.'):null,events:problem?.result?.tracking_events||[],modelRequests:result.llm_requests};
 }
 
 // Resolve display citations only; never feed old records into a new model call.

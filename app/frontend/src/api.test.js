@@ -14,6 +14,11 @@ test('successful request preserves data and CSRF header',async()=>{
  try{assert.deepEqual(await request('/market',undefined,undefined,'csrf-test',()=>resets++),{ok:true});assert.equal(resets,0)}finally{global.fetch=original}
 });
 
+test('a proxy outage with an HTML body shows a request failure rather than raw page content',async()=>{
+ const original=global.fetch;global.fetch=async()=>new Response('<html>proxy details</html>',{status:502});
+ try{await assert.rejects(request('/a2a/support',{},undefined,'csrf-test',()=>{}),e=>e.status===502&&e.message==='Server request failed (502). Please retry.');}finally{global.fetch=original}
+});
+
 test('remote memory mutations preserve provider and never invent optimistic versions',()=>{
  assert.equal(memoryResourcePath('remote/id','mem0',undefined),'/memories/remote%2Fid?provider=mem0');
  assert.equal(memoryResourcePath('remote/id','mem0',9),'/memories/remote%2Fid?provider=mem0');

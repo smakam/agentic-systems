@@ -13,6 +13,8 @@ from sqlalchemy import select,text,func
 from .db import *
 from .seed import seed
 from .business import execute,BusinessError,uid
+from .delivery_client import DeliveryUnavailable
+from .support_a2a import conversation_fields, add_conversation_binding
 
 @asynccontextmanager
 async def lifespan(app):
@@ -124,20 +126,71 @@ def market(user=Depends(identity),db=Depends(db_session)):
     allocations=rows(Allocation,select(Allocation).where(Allocation.item_id.in_(item_ids)))
     alloc_ids=[x['id'] for x in allocations]
     returns=rows(Return,select(Return).where(Return.item_id.in_(item_ids)))
+    from .delivery_shipping import link_json
+    shipment_data=rows(Shipment,select(Shipment).where(Shipment.item_id.in_(item_ids)))
+    for shipment in shipment_data:
+        shipment['delivery_service']=link_json(db,shipment['id'])
     # Buyers do not see seller settlement amounts; sellers do not see sibling payments.
     internal=user.role in ('operator','support','seller')
     balances=db.execute(text('SELECT * FROM analytics.seller_balances'+(' WHERE seller_id=:seller' if user.role=='seller' else '')),{'seller':user.seller_id}).mappings().all() if internal else []
-    return {'state':jsonable_encoder(db.get(State,1)),'sellers':rows(Seller,sellers),'products':rows(Product,products),'listings':rows(Listing,listings),'orders':order_data,'items':item_data,'shipments':rows(Shipment,select(Shipment).where(Shipment.item_id.in_(item_ids))),'returns':returns,'refunds':rows(Refund,select(Refund).where(Refund.return_id.in_([x['id'] for x in returns]))),'allocations':allocations if internal else [],'payouts':rows(Payout,select(Payout).where(Payout.allocation_id.in_(alloc_ids))) if internal else [],'balances':[dict(x) for x in balances],'events':rows(Event) if user.role in ('operator','support') else []}
+    return {'state':jsonable_encoder(db.get(State,1)),'sellers':rows(Seller,sellers),'products':rows(Product,products),'listings':rows(Listing,listings),'orders':order_data,'items':item_data,'shipments':shipment_data,'returns':returns,'refunds':rows(Refund,select(Refund).where(Refund.return_id.in_([x['id'] for x in returns]))),'allocations':allocations if internal else [],'payouts':rows(Payout,select(Payout).where(Payout.allocation_id.in_(alloc_ids))) if internal else [],'balances':[dict(x) for x in balances],'events':rows(Event) if user.role in ('operator','support') else []}
 class Action(BaseModel):
     action:str
     data:dict=Field(default_factory=dict)
     idempotency_key:str
-@app.post('/api/commands')
-def command(body:Action,user=Depends(identity),db=Depends(db_session)):
+
+class A2AOptions(BaseModel):
+    mode:Literal['standard','a2a_support','a2a_delivery']='standard'
+    fixture:Literal['normal','exception']='normal'
+
+@app.get('/api/a2a/workspace')
+def a2a_workspace(user=Depends(identity),db=Depends(db_session)):
+    role(user,'support','operator')
+    if not is_test(): return {'enabled':False,'mode':'standard','fixture':'normal'}
+    setting=db.get(A2AWorkspace,1)
+    return {'enabled':True,'mode':setting.mode if setting else 'standard','fixture':setting.fixture if setting else 'normal'}
+
+@app.post('/api/a2a/workspace')
+def update_a2a_workspace(body:A2AOptions,user=Depends(identity),db=Depends(db_session)):
+    role(user,'support','operator')
+    if not is_test(): raise HTTPException(403,'A2A workspace options require the Test workspace')
+    # Serialize setting changes with purchases so enrollment has one defined value.
+    db.execute(select(State).where(State.id==1).with_for_update()).scalar_one()
+    setting=db.get(A2AWorkspace,1)
+    if setting is None: setting=A2AWorkspace(id=1); db.add(setting)
+    setting.mode=body.mode; setting.fixture=body.fixture
+    db.commit()
+    return {'enabled':True,**body.model_dump()}
+
+@app.get('/api/a2a/delivery/.well-known/agent-card.json')
+async def delivery_agent_card(user=Depends(identity)):
+    role(user,'support','operator')
+    if not is_test(): raise HTTPException(403,'Delivery Agent Card requires the Test workspace')
+    import httpx
+    url=os.getenv('DELIVERY_A2A_URL','').rstrip('/')
+    if not url: raise HTTPException(503,'Delivery service is not configured')
     try:
-        result=execute(db,user,body.idempotency_key,body.action,body.data); db.commit(); return result
+        async with httpx.AsyncClient(follow_redirects=False) as client:
+            response=await client.get(url+'/.well-known/agent-card.json',timeout=5)
+            response.raise_for_status()
+            card=response.json()
+            if not isinstance(card,dict) or not isinstance(card.get('skills'),list): raise ValueError()
+            return card
+    except (httpx.HTTPError,ValueError):
+        raise HTTPException(503,'Delivery Agent Card is unavailable') from None
+@app.post('/api/commands')
+async def command(body:Action,user=Depends(identity),db=Depends(db_session)):
+    try:
+        if body.action in ('dispatch','deliver','delivery_fixture'):
+            from .delivery_shipping import execute_shipping_command
+            result=await execute_shipping_command(db,user,body.idempotency_key,body.action,body.data)
+        else:
+            result=await asyncio.to_thread(execute,db,user,body.idempotency_key,body.action,body.data)
+        await asyncio.to_thread(db.commit); return result
     except BusinessError as e:
         db.rollback(); raise HTTPException(409,str(e))
+    except DeliveryUnavailable:
+        db.rollback(); raise HTTPException(503,'Simulated delivery service is unavailable. No marketplace shipping transition was committed; retry the same request.')
 @app.get('/api/conversations')
 def conversations(user=Depends(identity),db=Depends(db_session)):
     role(user,'support','operator')
@@ -145,11 +198,12 @@ def conversations(user=Depends(identity),db=Depends(db_session)):
     statement = (select(Conversation).outerjoin(latest,latest.c.conversation_id==Conversation.id)
                  .where(Conversation.owner_id==user.id)
                  .order_by(latest.c.activity_at.desc().nulls_last(),Conversation.id).limit(50))
-    return [{'id':c.id,'title':c.title,'runtime':runtime_binding(c)['runtime'],'memory_provider':memory_provider_for(db,c.id)} for c in db.scalars(statement).all()]
+    return [{'id':c.id,'title':c.title,'runtime':runtime_binding(c)['runtime'],'memory_provider':memory_provider_for(db,c.id),**conversation_fields(db,c.id)} for c in db.scalars(statement).all()]
 from .mem0_provider import provider_for as memory_provider_for
 from .platform_runtime import binding as runtime_binding, configured as runtime_configured, initial_items, options as runtime_options, validate_controls, hosted_answer
 
 class NewConversation(BaseModel):
+    mode:Literal['standard','a2a_support','a2a_delivery']='standard'
     runtime:Literal['sdk','lyzr','google']='sdk'
     memory_provider:Literal['internal','mem0']='internal'
     model_config={'extra':'forbid'}
@@ -167,11 +221,16 @@ def create_conversation(body:NewConversation=Body(default=NewConversation()),use
     try: require_provider(body.memory_provider)
     except ProviderError as exc: raise HTTPException(403,str(exc))
     if body.memory_provider=='mem0' and body.runtime!='sdk': raise HTTPException(400,'Mem0 requires the local SDK runtime')
+    if body.mode!='standard':
+        from .hosting_client import enabled as remote_hosting_enabled
+        if body.runtime!='sdk' or remote_hosting_enabled(): raise HTTPException(400,'A2A support requires the local SDK runtime')
     cid=uid('chat')
     c=Conversation(id=cid,owner_id=user.id,title='New investigation',items=initial_items(body.runtime,user.id,cid))
     db.add(c); db.flush()
-    db.add(MemoryConversation(conversation_id=cid,provider=body.memory_provider)); db.commit()
-    return {'id':c.id,'title':c.title,'runtime':body.runtime,'memory_provider':body.memory_provider}
+    db.add(MemoryConversation(conversation_id=cid,provider=body.memory_provider))
+    add_conversation_binding(db,cid,body.mode)
+    db.commit()
+    return {'id':c.id,'title':c.title,'runtime':body.runtime,'memory_provider':body.memory_provider,**conversation_fields(db,cid)}
 def owned(db,user,cid):
     role(user,'support','operator'); conv=db.get(Conversation,cid)
     if not conv or conv.owner_id!=user.id: raise HTTPException(404,'Conversation not found')
@@ -223,6 +282,11 @@ async def security_fixture(body:FixtureChange,user=Depends(identity)):
     except RuntimeError as exc: raise HTTPException(409,str(exc))
     except Exception: raise HTTPException(503,"Fixture preparation failed; check embedding gateway readiness. Previous fixture retained.")
 
+class A2UIReadAction(BaseModel):
+    model_config={'extra':'forbid'}
+    run_id:str=Field(min_length=1,max_length=100)
+    action_id:str=Field(pattern=r'^a[0-7]$')
+
 class Question(BaseModel):
     model_config={'extra':'forbid'}
     question:str=Field(min_length=1,max_length=4000)
@@ -236,6 +300,8 @@ class Question(BaseModel):
     marker_mode:str="off"
     loop_mode:Literal['normal','tool_error','turn_limit']='normal'
     cache_enabled:bool=False
+    a2ui_enabled:bool=False
+    a2ui_action:A2UIReadAction|None=None
     routing_policy:str='off'
     design_mode:Literal['off','single','review']='off'
     generator_model:Literal['nano','gpt54']='nano'
@@ -244,6 +310,11 @@ class Question(BaseModel):
     rag_top_k:Literal[1,4]=4
     session_history_mode:Literal['off','window2','window6','window8']='off'
     settings_reset:bool=False
+
+@app.get('/api/a2ui-demo')
+def a2ui_demo_options(user=Depends(identity)):
+    role(user,'support','operator')
+    return {'enabled': is_test() and os.getenv('A2UI_DEMO') == 'true'}
 
 @app.get('/api/agent-design-demo')
 def agent_design_demo_options(user=Depends(identity)):
@@ -317,11 +388,44 @@ def loop_lab_options(user=Depends(identity)):
     return {'enabled':enabled(),'modes':list(MODES) if enabled() else []}
 @app.post('/api/conversations/{cid}/ask')
 async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session)):
+    from .protocol_tracing import protocol_span
+    with protocol_span('Standard API request',{'transport':'standard','endpoint':'/api/conversations/{cid}/ask','conversation_id':cid}) as span:
+        result=await run_support_question(cid,body,user,db,transport='standard')
+        if span: span.update(output={'run_id':result.get('id'),'status':result.get('status')},level='ERROR' if result.get('status')=='failed' else 'DEFAULT')
+        return result
+
+async def run_support_question(cid,body,user,db,*,transport='standard'):
+    conv=owned(db,user,cid)
+    mode=conversation_fields(db,cid)['mode']
+    if (mode=='standard') != (transport=='standard'):
+        raise HTTPException(400,'Use the transport selected when this conversation was started')
     if body.cache_enabled:
         from .gateway_demo import enabled as cache_available
         if not cache_available():raise HTTPException(403,'Response caching is available only in the configured Test workspace')
     conv=owned(db,user,cid)
     runtime=runtime_binding(conv)['runtime']
+    if transport=='a2a':
+        from .hosting_client import enabled as a2a_remote_hosting
+        if runtime!='sdk' or a2a_remote_hosting(): raise HTTPException(400,'A2A support requires the local SDK runtime')
+    if body.a2ui_action:
+        if not body.a2ui_enabled:
+            raise HTTPException(400,'Enable A2UI to use this history button')
+        from .a2ui_demo import history_question
+        try:
+            body.question=history_question(db.get(Run,body.a2ui_action.run_id),cid,body.a2ui_action.action_id)
+        except LookupError as exc:
+            raise HTTPException(404,str(exc)) from None
+        except ValueError as exc:
+            raise HTTPException(400,str(exc)) from None
+    if body.a2ui_enabled:
+        if not is_test() or os.getenv('A2UI_DEMO') != 'true':
+            raise HTTPException(403,'A2UI is available only in its Test preview')
+        if mode!='standard' or transport!='standard':
+            raise HTTPException(400,'Use standard API mode with A2A off for this A2UI experiment')
+        from .hosting_client import enabled as a2ui_remote_hosting
+        if a2ui_remote_hosting(): raise HTTPException(400,'A2UI requires the local SDK runtime')
+        if runtime!='sdk' or body.rag_experiment!='off' or body.design_mode!='off' or body.routing_policy!='off' or body.loop_mode!='normal' or body.memory_enabled or body.memory_write or body.memory_provider!='internal' or body.guardrail!='off' or body.marker_mode!='off' or body.suppress_catalog or body.suppress_documents or not body.source_authority or body.cache_enabled:
+            raise HTTPException(400,'A2UI requires normal SDK support with other experiments off')
     if body.cache_enabled and runtime!='sdk':raise HTTPException(400,'Response caching requires the Test SDK runtime')
     if body.session_history_mode!='off':
         from .hosting_client import enabled as remote_hosting_enabled
@@ -457,11 +561,17 @@ async def ask(cid:str,body:Question,user=Depends(identity),db=Depends(db_session
                 lab_config={**(lab_config or {}),'session_history_mode':body.session_history_mode,'history_compaction':compaction}
             if body.settings_reset:lab_config={**(lab_config or {}),'session_history_reset':True}
             key_context = for_key(os.environ['EVAL_GATEWAY_KEY']) if (route_config or design_config) else for_role(user.role)
+            if mode=='a2a_delivery':
+                lab_config={**(lab_config or {}),'delivery_enabled':True}
+            if body.a2ui_enabled: lab_config={**(lab_config or {}),'a2ui_enabled':True}
             with key_context, capture_calls():
                 return await answer(cid,body.question,evaluation_config=lab_config,memory_provider=body.memory_provider,memory_enabled=body.memory_enabled,memory_write=body.memory_write,guardrail=body.guardrail,source_authority=body.source_authority,marker_mode=body.marker_mode,suppress_catalog=body.suppress_catalog,suppress_documents=body.suppress_documents)
         finally:
             if corpus_locked: lock.execute(text('SELECT pg_advisory_unlock_shared(hashtext(:key))'),{'key':LOCK})
             lock.execute(text('SELECT pg_advisory_unlock(hashtext(:cid))'),{'cid':cid})
+from .support_a2a import create_router as support_a2a_router
+app.include_router(support_a2a_router(identity,db_session,role,run_support_question,Question))
+
 class CompactHistoryRequest(BaseModel):
     model_config={'extra':'forbid'}
 
@@ -694,6 +804,15 @@ async def rag_demo_ask(experiment:rag_policy_demo.Experiment,body:RagDemoQuestio
     except rag_policy_demo.DemoError as exc: raise HTTPException(409,str(exc))
     except Exception: raise HTTPException(503,'Demo question failed; check model and embedding access, then retry.')
 
+def reset_a2a_defaults():
+    # Shipping may hold this row while awaiting remote delivery. Never wait for
+    # that synchronous database lock on the ASGI event loop.
+    with Session.begin() as db:
+        db.execute(select(State).where(State.id==1).with_for_update()).scalar_one()
+        setting=db.get(A2AWorkspace,1)
+        if setting:
+            setting.mode='standard'; setting.fixture='normal'
+
 @app.post('/api/workspace-options/reset')
 async def reset_workspace_options(user=Depends(identity)):
     role(user,'support','operator')
@@ -712,6 +831,8 @@ async def reset_workspace_options(user=Depends(identity)):
             # Experiments are off after reset; unused demo indexes are not created.
             from .index import index as prepare_documents
             await prepare_documents()
+            if is_test():
+                await asyncio.to_thread(reset_a2a_defaults)
         return {'reset':True,'message':'Settings reset. Start a new conversation for a clean comparison.'}
     except HTTPException:raise
     except Exception:raise HTTPException(503,'Defaults could not be fully restored. Retry reset; the current conversation is preserved.')

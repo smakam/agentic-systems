@@ -6,11 +6,12 @@ from sqlalchemy.orm import Session
 import pytest
 from marketplace.api import conversations
 from marketplace.db import Seller,User,Conversation,Run,MemoryConversation
+from marketplace.support_a2a import SupportConversation
 
 @pytest.fixture
 def history():
     engine=create_engine('sqlite://')
-    for model in (Seller,User,Conversation,Run,MemoryConversation):model.__table__.create(engine)
+    for model in (Seller,User,Conversation,Run,MemoryConversation,SupportConversation):model.__table__.create(engine)
     with Session(engine) as db:
         db.add_all([User(id=u,username=u,password_hash='unused-test-hash',role='support') for u in ['owner','other']])
         db.add_all([Conversation(id=cid,owner_id=owner,title=cid,items=[]) for cid,owner in [('newest','owner'),('old','owner'),('empty','owner'),('foreign','other')]])

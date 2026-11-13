@@ -70,6 +70,34 @@ class Shipment(Base):
     quantity: Mapped[int]
     status: Mapped[str]
     delivered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+class A2AWorkspace(Base):
+    __tablename__ = 'a2a_workspace'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    mode: Mapped[str] = mapped_column(default='standard')
+    fixture: Mapped[str] = mapped_column(default='normal')
+    __table_args__ = (CheckConstraint("mode IN ('standard','a2a_support','a2a_delivery')"), CheckConstraint("fixture IN ('normal','exception')"))
+
+class ShipmentDeliveryIntent(Base):
+    """Purchase-time choice; changing workspace options never rewrites it."""
+    __tablename__ = 'shipment_delivery_intents'
+    shipment_id: Mapped[str] = mapped_column(ForeignKey('shipments.id'), primary_key=True)
+    mode: Mapped[str]
+    fixture: Mapped[str]
+    __table_args__ = (CheckConstraint("mode IN ('local','a2a')"), CheckConstraint("fixture IN ('normal','exception')"))
+
+class ShipmentDeliveryLink(Base):
+    """Enrollment belongs to a shipment, independent of later UI defaults.
+
+    The remote service owns tracking state. This row records only association
+    and the selected simulated fixture, never an asserted live carrier status.
+    """
+    __tablename__ = 'shipment_delivery_links'
+    shipment_id: Mapped[str] = mapped_column(ForeignKey('shipments.id'), primary_key=True)
+    reference: Mapped[str] = mapped_column(String, unique=True)
+    fixture: Mapped[str]
+    service: Mapped[str] = mapped_column(default='simulated-a2a')
+    __table_args__ = (CheckConstraint("fixture IN ('normal','exception')"),)
 class Allocation(Base):
     __tablename__ = 'allocations'
     id: Mapped[str] = mapped_column(primary_key=True)
@@ -215,6 +243,9 @@ Session = sessionmaker(engine, expire_on_commit=False)
 BUSINESS_TABLES = [Seller, Product, Listing, Order, Item, Payment, Shipment, Allocation, Payout, Return, Refund, Event, Ticket, Incident]
 
 def init_schema():
+    # Import additive support-A2A metadata even in standalone initialization
+    # jobs that do not import the HTTP API module first.
+    from . import support_a2a
     with engine.begin() as conn:
         conn.execute(text('CREATE EXTENSION IF NOT EXISTS vector'))
         conn.execute(text('CREATE TABLE IF NOT EXISTS schema_migrations (version INTEGER PRIMARY KEY, installed_at TIMESTAMPTZ DEFAULT now())'))
