@@ -99,16 +99,18 @@ def referenced_evidence(conversation_id, answer, current):
     return merged
 
 
-def history_question(source_run, conversation_id, action_id):
+def history_question(source_run, conversation_id, action_id, mode=None):
     """Resolve an allowlisted UI selection against the persisted source answer."""
     import re
     if not source_run or source_run.conversation_id != conversation_id:
         raise LookupError('Source answer not found in this conversation')
     try:
-        ui = (source_run.metrics or {})['a2ui']
+        ui = ((source_run.metrics or {}).get('agentic_ui_variants', {}).get(mode)
+              or (source_run.metrics or {})['a2ui'])
         if source_run.status != 'completed' or ui['status'] != 'completed':
             raise KeyError('incomplete')
-        action = ui['messages'][0]['createSurface']['dataModel']['actions'][action_id]
+        actions = ui['actions'] if ui.get('generation_mode') == 'open-ended' else ui['messages'][0]['createSurface']['dataModel']['actions']
+        action = actions[action_id]
         if action['name'] != 'show_order_history' or not re.fullmatch(r'[A-Za-z0-9_-]{1,100}', action['order_id']):
             raise KeyError('unknown action')
     except (KeyError, IndexError, TypeError):

@@ -280,12 +280,13 @@ For counts and aggregates, lead with the count and state the actual date range u
                 observation.update(output=final)
                 metrics['trace_id']=observation.trace_id
             if config.get('a2ui_enabled'):
-                from .a2ui_demo import compose, referenced_evidence
+                from .a2ui_demo import referenced_evidence
+                from .agentic_ui_demo import compose
                 try:
                     if server:
                         await ctx.refresh()
                     metrics['a2ui']=await compose(question,final,referenced_evidence(conversation_id,final,ctx.evidence),api,
-                        config.get('alias','support-model'),lf)
+                        config.get('alias','support-model'),lf,mode=config.get('agentic_ui_mode','declarative'))
                 except Exception:
                     logging.getLogger(__name__).warning('A2UI presentation failed; support answer retained')
                     metrics['a2ui']={'status':'unavailable','message':'The generated view is unavailable. The support answer is shown below.'}

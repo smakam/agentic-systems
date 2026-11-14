@@ -1,1 +1,32 @@
-{"name":"marketplace-lab","version":"0.1.0","private":true,"type":"module","scripts":{"dev":"vite --host 0.0.0.0","build":"vite build","preview":"vite preview --host 0.0.0.0"},"dependencies":{"@a2ui/react":"0.15.0","@a2ui/web_core":"0.15.0","react":"19.2.4","react-dom":"19.2.4","react-markdown":"10.1.0","remark-gfm":"4.0.1","zod":"3.25.76"},"devDependencies":{"vite":"7.3.8"},"overrides":{"dompurify":"3.4.17"}}
+{
+  "name": "marketplace-lab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "npm run build:mcp && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "build:mcp": "vite build --config vite.mcp.config.js",
+    "demo": "npm run build:mcp && vite --host 127.0.0.1 --port 5181"
+  },
+  "dependencies": {
+    "@a2ui/react": "0.15.0",
+    "@a2ui/web_core": "0.15.0",
+    "@modelcontextprotocol/ext-apps": "^1.1.2",
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "dompurify": "3.4.17",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-markdown": "10.1.0",
+    "remark-gfm": "4.0.1",
+    "vite-plugin-singlefile": "^2.3.2",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "vite": "7.3.8"
+  },
+  "overrides": {
+    "dompurify": "3.4.17"
+  }
+}
