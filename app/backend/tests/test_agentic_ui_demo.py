@@ -5,7 +5,7 @@ from unittest import TestCase
 from unittest.mock import AsyncMock
 
 from marketplace.a2ui_demo import available_data, history_question
-from marketplace.agentic_ui_demo import controlled_messages, compose, validate_html
+from marketplace.agentic_ui_demo import controlled_view, compose, validate_html
 
 SOURCE={'e1':{'status':'ok','rows':[{'order_id':'order-1','status':'dispatched'}]}}
 
@@ -17,22 +17,34 @@ def model_api(output):
 class AgenticUIContract(TestCase):
     def test_controlled_selection_cannot_invent_data_or_choose_non_event_timeline(self):
         data=available_data('Order dispatched.',SOURCE)
-        wire=controlled_messages('{"view":"summary","reference":"r0"}',data)
-        self.assertEqual(wire[0]['version'],'1.0')
-        self.assertEqual(wire[0]['createSurface']['dataModel'],data)
-        nodes=wire[0]['createSurface']['components']
-        self.assertEqual(next(n for n in nodes if n['id']=='selected')['record'],{'@path':'/records/r0'})
+        result=controlled_view('{"view":"summary","reference":"r0"}',data)
+        self.assertEqual(result['renderer'],'application-prebuilt')
+        self.assertEqual(result['selection'],{'view':'summary','reference':'r0'})
+        self.assertEqual(result['data'],data['records']['r0'])
+        self.assertEqual(result['actions'],data['actions'])
+        self.assertNotIn('messages',result)
         for selection in [{'view':'summary','reference':'r999'},{'view':'timeline','reference':'d0'},
                           {'view':'answer','reference':'r0'},{'view':'unknown','reference':None},
                           {'view':'summary','reference':'r0','layout':'custom'}]:
             with self.subTest(selection=selection),self.assertRaises(ValueError):
-                controlled_messages(json.dumps(selection),data)
+                controlled_view(json.dumps(selection),data)
+
+    def test_controlled_table_timeline_and_text_use_grounded_plain_data(self):
+        evidence={**SOURCE,'e2':{'status':'ok','rows':[{'order_id':'order-1','kind':'dispatched','occurred_at':'2026-10-01'}]}}
+        data=available_data('Order dispatched.',evidence)
+        for view,ref in [('table','d0'),('timeline','d1'),('answer',None)]:
+            result=controlled_view(json.dumps({'view':view,'reference':ref}),data)
+            self.assertEqual(result['data'],None if ref is None else data['datasets'][ref])
+            self.assertNotIn('messages',result)
+        self.assertEqual(controlled_view('{"view":"timeline","reference":"d1"}',data)['actions'],{})
 
     def test_three_modes_preserve_failure_fallback_and_usage(self):
         api=model_api('{"view":"summary","reference":"r0"}')
         result=asyncio.run(compose('Status?','Order dispatched.',SOURCE,api,'model',mode='controlled'))
         self.assertEqual(result['status'],'completed')
         self.assertEqual(result['input_tokens'],10)
+        self.assertNotIn('messages',result)
+        self.assertEqual(result['selection']['view'],'summary')
         self.assertEqual(api.chat.completions.create.await_count,1)
         failed=asyncio.run(compose('Status?','Answer',SOURCE,model_api('invalid'),'model',mode='controlled'))
         self.assertEqual(failed['status'],'unavailable')
@@ -47,6 +59,13 @@ class AgenticUIContract(TestCase):
         self.assertIn('order-1',history_question(run,'c1','a0','open-ended'))
         with self.assertRaises(LookupError):history_question(run,'other','a0','open-ended')
         with self.assertRaises(ValueError):history_question(run,'c1','a7','open-ended')
+
+    def test_controlled_history_uses_saved_actions_without_a2ui_messages(self):
+        ui={'status':'completed','generation_mode':'controlled',**controlled_view('{"view":"summary","reference":"r0"}',available_data('Answer',SOURCE))}
+        run=SimpleNamespace(status='completed',conversation_id='c1',metrics={'agentic_ui_variants':{'controlled':ui}})
+        self.assertIn('order-1',history_question(run,'c1','a0','controlled'))
+        with self.assertRaises(ValueError):history_question(run,'c1','a7','controlled')
+        with self.assertRaises(LookupError):history_question(run,'other','a0','controlled')
 
     def test_open_ended_output_is_bounded_and_complete(self):
         self.assertEqual(validate_html('```html\n<html>ok</html>\n```'),'<html>ok</html>')

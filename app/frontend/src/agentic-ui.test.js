@@ -1,6 +1,13 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {isolatedHtml,generatedCsp,modeDescriptions,embeddedStyles} from './agentic-ui.js';
+import {isolatedHtml,generatedCsp,modeDescriptions,embeddedStyles,controlledHistoryAction} from './agentic-ui.js';
+test('controlled history uses only plain application-owned actions',()=>{
+ const ui={renderer:'application-prebuilt',selection:{view:'table',reference:'d0'},actions:{a0:{name:'show_order_history',order_id:'order-1'}}};
+ assert.deepEqual(controlledHistoryAction(ui,'a0'),{actionId:'a0',orderId:'order-1',question:'Show the recorded event history for order order-1.'});
+ assert.equal(controlledHistoryAction(ui,'a7'),null);
+ assert.equal(controlledHistoryAction({...ui,renderer:'other'},'a0'),null);
+ assert.equal(controlledHistoryAction({...ui,actions:{a0:{name:'refund',order_id:'order-1'}}},'a0'),null);
+});
 test('embedded stylesheet removes complete font imports containing semicolons',()=>{
  const rules=':root{font-family:Arial,sans-serif}.a2ui-record{padding:12px}';
  for(const resource of ['url("https://fonts.example/css?family=Sans:wght@400;500;700")','"https://fonts.example/css?family=Sans:wght@400;500;700"',"url('https://fonts.example/css?family=Sans:wght@400;500;700')"]){

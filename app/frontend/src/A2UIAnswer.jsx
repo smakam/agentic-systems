@@ -55,17 +55,17 @@ export default function A2UIAnswer({ui,onAction,disabled,evidence,onEvidence,chi
  if(!ui)return children;
  return <>
   <section className="a2ui-answer" aria-label="Agent-composed answer" aria-busy={busyAction?true:undefined} inert={disabled||Boolean(busyAction)||undefined}>
-   <p className="eyebrow">{ui.generation_mode==='controlled'?'MODEL-SELECTED PREBUILT VIEW':'AGENT-COMPOSED VIEW'}</p>
+   <p className="eyebrow">AGENT-COMPOSED VIEW</p>
    {ui.status==='completed'?<DisplayBoundary><Surface messages={ui.messages} onAction={activate} evidence={evidence} onEvidence={onEvidence} busyAction={busyAction}/></DisplayBoundary>:<p role="status">{ui.message||'The generated view is unavailable. Use the text answer below.'}</p>}
   </section>
   {busyAction&&<p className="a2ui-action-progress" role="status"><span className="a2ui-action-spinner" aria-hidden="true"/>Loading order history and preparing the timeline…</p>}
   <details open={ui.status!=='completed'}><summary>Text answer and sources</summary>{children}</details>
   <details className="a2ui-inspector"><summary>Inspect UI composition</summary>
-   <p>{ui.generation_mode==='controlled'?'Available prebuilt views':'Available component inventory'}: {ui.components?.join(', ')}. Order history navigation only. {ui.generation_mode==='controlled'?'The model selected a fixed view; the application supplies its arrangement.':'Layout uses a separate model call after the support investigation.'}</p>
+   <p>Available component inventory: {ui.components?.join(', ')}. Order history navigation only. Layout uses a separate model call after the support investigation.</p>
    {ui.requests&&<p>UI composition: {ui.requests} call · {ui.input_tokens} input tokens · {ui.output_tokens} output tokens · {ui.elapsed_seconds}s. These are separate from the support totals below.</p>}
    {ui.trace_id&&<p>Presentation trace: <code>{ui.trace_id}</code>. Find this trace in Langfuse; it is separate from the business investigation.</p>}
    <details><summary>Presentation instructions</summary><pre>{ui.instructions}</pre></details>
-   <details><summary>{ui.generation_mode==='controlled'?'Model view selection':'Model layout output'}</summary><pre>{ui.model_output}</pre></details>
+   <details><summary>Model layout output</summary><pre>{ui.model_output}</pre></details>
    <details><summary>A2UI messages received by the renderer</summary><pre>{JSON.stringify(ui.messages,null,2)}</pre></details>
   </details>
  </>;

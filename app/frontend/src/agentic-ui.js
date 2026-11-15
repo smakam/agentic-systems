@@ -22,6 +22,11 @@ export function generatedHistoryAction(ui,event,frameWindow){
  if(!/^a[0-7]$/.test(id)||action?.name!=='show_order_history'||!/^[-A-Za-z0-9_]{1,100}$/.test(action.order_id))return null;
  return {actionId:id,orderId:action.order_id,question:`Show the recorded event history for order ${action.order_id}.`};
 }
+export function controlledHistoryAction(ui,id){
+ const action=ui.actions?.[id];
+ if(ui.renderer!=='application-prebuilt'||!/^a[0-7]$/.test(id)||action?.name!=='show_order_history'||!/^[-A-Za-z0-9_]{1,100}$/.test(action.order_id))return null;
+ return {actionId:id,orderId:action.order_id,question:`Show the recorded event history for order ${action.order_id}.`};
+}
 export const modeDescriptions={
  controlled:'The model selects one prebuilt view and its data. The application fixes the arrangement.',
  declarative:'The model composes registered components and data references. The client draws the widgets.',

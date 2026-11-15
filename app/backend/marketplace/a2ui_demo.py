@@ -109,7 +109,9 @@ def history_question(source_run, conversation_id, action_id, mode=None):
               or (source_run.metrics or {})['a2ui'])
         if source_run.status != 'completed' or ui['status'] != 'completed':
             raise KeyError('incomplete')
-        actions = ui['actions'] if ui.get('generation_mode') == 'open-ended' else ui['messages'][0]['createSurface']['dataModel']['actions']
+        # Direct controlled/open-ended views carry application-owned actions.
+        # Retain the legacy path for saved presentations made before migration.
+        actions = ui['actions'] if 'actions' in ui else ui['messages'][0]['createSurface']['dataModel']['actions']
         action = actions[action_id]
         if action['name'] != 'show_order_history' or not re.fullmatch(r'[A-Za-z0-9_-]{1,100}', action['order_id']):
             raise KeyError('unknown action')

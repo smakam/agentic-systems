@@ -33,3 +33,13 @@ Validated on 14 November 2026, on the isolated `codex/marketplace-agentic-ui` br
 - The inherited A2UI/Zod dependency chain retains an upstream audit finding. Payload limits/validation remain; no audit-clean claim is made.
 - Existing Test/production previews were not replaced. The review has its own database container and loopback ports.
 - No main merge, production deployment, AG-UI runtime integration, or publication was performed.
+
+## Direct Controlled Renderer Follow-up — 15 November 2026
+
+- Controlled responses now contain a validated `selection`, selected `data`, and application-owned `actions`; they contain no A2UI messages. `ControlledAnswer` renders prebuilt React views without the A2UI processor. Declarative mode retains A2UI.
+- Saved legacy controlled presentations offer regeneration rather than silently using the A2UI renderer. Switching modes retains a regenerated presentation.
+- Backend: 375 passed, 10 optional skipped, 30 subtests passed on the disposable regression database. Frontend/MCP: 65 passed. Both frontend and MCP resource builds passed.
+- Installed only on the normal Test UI (port 5179); Test state preserved during installation and regular preview containers unchanged.
+- Live Test request selected a table and data reference with no `messages` field. Browser displayed the prebuilt table, plain-data inspector, and no A2UI message inspector. Its history button returned a new controlled timeline without an alert.
+- Declarative mode still renders its RecordTable through A2UI in the browser, with its A2UI message inspector and no alert.
+- The code change is on `codex/controlled-ui-direct-rendering`; not yet merged into main.

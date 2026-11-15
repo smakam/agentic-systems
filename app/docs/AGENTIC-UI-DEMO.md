@@ -42,7 +42,7 @@ The MCP middleware is local-only and uses the existing authenticated session and
 
 | Claim | Evidence |
 | --- | --- |
-| Controlled selects rather than composes | Model view-selection JSON; `controlled_messages` in `marketplace/agentic_ui_demo.py` constructs the fixed tree |
+| Controlled selects rather than composes | Model view-selection JSON; `controlled_view` in `marketplace/agentic_ui_demo.py` resolves its data; `ControlledAnswer` renders a prebuilt React view directly, without A2UI messages |
 | Declarative composes components | Model layout output, catalog/signatures in instructions, resulting A2UI payload, client registry in `A2UIMarketplace.jsx` |
 | Open-ended produces code | Generated HTML/CSS output, sanitized frame document, sandbox without same-origin permission, nonce-only script policy, source-bound approved history messages |
 | The support facts are held constant | Same source run/evidence handles shown in Inspect delivery and rendering; comparison endpoint does not rerun business tools |
