@@ -300,6 +300,7 @@ class Question(BaseModel):
     marker_mode:str="off"
     loop_mode:Literal['normal','tool_error','turn_limit']='normal'
     cache_enabled:bool=False
+    agentic_ui_mode:Literal['off','controlled','declarative','open-ended']='off'
     a2ui_enabled:bool=False
     a2ui_action:A2UIReadAction|None=None
     routing_policy:str='off'
@@ -407,12 +408,13 @@ async def run_support_question(cid,body,user,db,*,transport='standard'):
     if transport=='a2a':
         from .hosting_client import enabled as a2a_remote_hosting
         if runtime!='sdk' or a2a_remote_hosting(): raise HTTPException(400,'A2A support requires the local SDK runtime')
+    if body.agentic_ui_mode!='off': body.a2ui_enabled=True
     if body.a2ui_action:
         if not body.a2ui_enabled:
             raise HTTPException(400,'Enable A2UI to use this history button')
         from .a2ui_demo import history_question
         try:
-            body.question=history_question(db.get(Run,body.a2ui_action.run_id),cid,body.a2ui_action.action_id)
+            body.question=history_question(db.get(Run,body.a2ui_action.run_id),cid,body.a2ui_action.action_id,body.agentic_ui_mode)
         except LookupError as exc:
             raise HTTPException(404,str(exc)) from None
         except ValueError as exc:
@@ -563,7 +565,7 @@ async def run_support_question(cid,body,user,db,*,transport='standard'):
             key_context = for_key(os.environ['EVAL_GATEWAY_KEY']) if (route_config or design_config) else for_role(user.role)
             if mode=='a2a_delivery':
                 lab_config={**(lab_config or {}),'delivery_enabled':True}
-            if body.a2ui_enabled: lab_config={**(lab_config or {}),'a2ui_enabled':True}
+            if body.a2ui_enabled: lab_config={**(lab_config or {}),'a2ui_enabled':True,'agentic_ui_mode':body.agentic_ui_mode if body.agentic_ui_mode!='off' else 'declarative'}
             with key_context, capture_calls():
                 return await answer(cid,body.question,evaluation_config=lab_config,memory_provider=body.memory_provider,memory_enabled=body.memory_enabled,memory_write=body.memory_write,guardrail=body.guardrail,source_authority=body.source_authority,marker_mode=body.marker_mode,suppress_catalog=body.suppress_catalog,suppress_documents=body.suppress_documents)
         finally:
@@ -836,3 +838,7 @@ async def reset_workspace_options(user=Depends(identity)):
         return {'reset':True,'message':'Settings reset. Start a new conversation for a clean comparison.'}
     except HTTPException:raise
     except Exception:raise HTTPException(503,'Defaults could not be fully restored. Retry reset; the current conversation is preserved.')
+
+# Presentation-only comparisons keep the original investigation and evidence.
+from .agentic_ui_demo import create_router as agentic_ui_router
+app.include_router(agentic_ui_router(identity, db_session, owned))
