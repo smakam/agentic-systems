@@ -1,6 +1,13 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {isolatedHtml,generatedCsp,modeDescriptions} from './agentic-ui.js';
+import {isolatedHtml,generatedCsp,modeDescriptions,embeddedStyles} from './agentic-ui.js';
+test('embedded stylesheet removes complete font imports containing semicolons',()=>{
+ const rules=':root{font-family:Arial,sans-serif}.a2ui-record{padding:12px}';
+ for(const resource of ['url("https://fonts.example/css?family=Sans:wght@400;500;700")','"https://fonts.example/css?family=Sans:wght@400;500;700"',"url('https://fonts.example/css?family=Sans:wght@400;500;700')"]){
+  assert.equal(embeddedStyles(`@import ${resource};${rules}`),rules);
+ }
+ assert.equal(embeddedStyles(rules),rules);
+});
 test('generated document applies a no-script/no-network policy before model markup',()=>{
  const html=isolatedHtml('<html><script>fetch("https://invalid.example")</script></html>');
  assert.ok(html.indexOf('Content-Security-Policy')<html.indexOf('<html>'));

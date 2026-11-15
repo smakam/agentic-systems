@@ -1,6 +1,10 @@
 // Generated code gets no same-origin capability, credentials or network access.
 export const mcpCsp="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; font-src 'none'; connect-src 'none'; form-action 'none'; base-uri 'none'; frame-src 'none'; object-src 'none'";
 export const generatedCsp=mcpCsp.replace("script-src 'unsafe-inline'", "script-src 'none'");
+// Font URLs contain semicolons; consume the complete URL before ending the import.
+export function embeddedStyles(css){
+ return css.replace(/@import\s*(?:url\([^)]*\)|"[^"]*"|'[^']*')[^;]*;/gi,'');
+}
 export function isolatedHtml(html,{nonce,actionIds=[],targetOrigin}={}){
  if(typeof html!=='string'||html.length>100000)throw new Error('Invalid generated document');
  let policy=generatedCsp,bridge='';

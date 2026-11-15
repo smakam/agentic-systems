@@ -2,8 +2,9 @@ import React,{useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {App} from '@modelcontextprotocol/ext-apps';
 import A2UIAnswer from './A2UIAnswer.jsx';
+import {embeddedStyles} from './agentic-ui.js';
 import styles from './style.css?inline';
-const sheet=document.createElement('style');sheet.textContent=styles.replace(/@import[^;]+;/g,'');document.head.appendChild(sheet);
+const sheet=document.createElement('style');sheet.textContent=embeddedStyles(styles);document.head.appendChild(sheet);
 
 const app=new App({name:'Marketplace A2UI view',version:'1.0.0'});
 let receive=()=>{};
