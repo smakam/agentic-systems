@@ -1,17 +1,27 @@
-import React,{useState} from 'react';
+import React,{useState,useEffect,useMemo,useRef} from 'react';
 import A2UIAnswer from './A2UIAnswer.jsx';
-import {isolatedHtml,modeDescriptions} from './agentic-ui.js';
+import {isolatedHtml,generatedHistoryAction,modeDescriptions} from './agentic-ui.js';
 import DOMPurify from 'dompurify';
 import MCPAppHost from './MCPAppHost.jsx';
 
 function GeneratedView({ui,onAction,disabled}){
- const [busy,setBusy]=useState(false);
- const markup=DOMPurify.sanitize(ui.html,{WHOLE_DOCUMENT:true,ADD_TAGS:['style'],FORBID_TAGS:['a','form','input','button','meta','link','base','iframe','object','embed','script','svg','math']});
- async function history(id,action){
-  if(busy||disabled)return;setBusy(true);
-  try{await onAction?.({actionId:id,orderId:action.order_id,question:`Show the recorded event history for order ${action.order_id}.`})}finally{setBusy(false)}
- }
- return <><iframe className="agentic-generated-frame" title="Model-generated order interface" sandbox="" referrerPolicy="no-referrer" srcDoc={isolatedHtml(markup)}/>{Object.entries(ui.actions||{}).map(([id,action])=><button key={id} disabled={disabled||busy} onClick={()=>history(id,action)}>{busy?'Loading recorded history…':action.label}</button>)}<small>History navigation is supplied by the application, outside the generated document.</small></>;
+ const [busy,setBusy]=useState(false),frame=useRef(null),sending=useRef(false),callback=useRef(onAction);callback.current=onAction;
+ const documentHtml=useMemo(()=>{
+  const markup=DOMPurify.sanitize(ui.html,{WHOLE_DOCUMENT:true,ADD_TAGS:['style'],ALLOW_DATA_ATTR:false,ADD_ATTR:['data-history-action'],FORBID_ATTR:['nonce','formaction','form','autofocus'],FORBID_TAGS:['a','form','input','meta','link','base','iframe','object','embed','script','svg','math']});
+  const bytes=crypto.getRandomValues(new Uint8Array(16)),nonce=Array.from(bytes,x=>x.toString(16).padStart(2,'0')).join('');
+  return isolatedHtml(markup,{nonce,actionIds:Object.keys(ui.actions||{}),targetOrigin:window.location.origin});
+ },[ui]);
+ useEffect(()=>{
+  async function receive(event){
+   const action=generatedHistoryAction(ui,event,frame.current?.contentWindow);
+   if(!action||disabled||sending.current)return;
+   sending.current=true;setBusy(true);
+   try{await callback.current?.(action);}finally{sending.current=false;setBusy(false)}
+  }
+  window.addEventListener('message',receive);return()=>window.removeEventListener('message',receive);
+ },[ui,disabled]);
+ useEffect(()=>{frame.current?.contentWindow?.postMessage({type:'marketplace-ui-status',disabled:Boolean(disabled||busy)},'*')},[disabled,busy]);
+ return <><iframe ref={frame} className="agentic-generated-frame" title="Model-generated order interface" sandbox="allow-scripts" referrerPolicy="no-referrer" srcDoc={documentHtml} inert={disabled||busy||undefined} onLoad={()=>frame.current?.contentWindow?.postMessage({type:'marketplace-ui-status',disabled:Boolean(disabled||busy)},'*')}/>{busy&&<p role="status">Loading recorded history…</p>}<small>The model generates the button; the application handles its approved history action.</small></>;
 }
 
 export default function AgenticUIAnswer({run,api,ui:initial,onAction,disabled,children,...rest}){
@@ -29,7 +39,7 @@ export default function AgenticUIAnswer({run,api,ui:initial,onAction,disabled,ch
  return <section className="agentic-comparison" aria-label="Agentic UI comparison">
   <div className="agentic-mode-tabs" role="group" aria-label="Compare generation patterns">{Object.keys(modeDescriptions).map(m=><button key={m} aria-pressed={mode===m} disabled={pending||disabled} onClick={()=>compare(m)}>{m==='open-ended'?'Open-ended':m[0].toUpperCase()+m.slice(1)}</button>)}</div>
   <p>{modeDescriptions[mode]}</p><div className="agentic-decision"><strong>Model output: </strong>{mode==='controlled'?<code>{ui.model_output}</code>:mode==='declarative'?<span>{ui.messages?.[0]?.createSurface?.components?.map(c=>c.component).join(' → ')||'No composition available'}</span>:<span>{ui.html?.length||0} characters of HTML/CSS; no registered marketplace widgets</span>}</div><small>Same completed investigation and source evidence. Switching patterns adds only a presentation call.</small>
-  {ui.status!=='completed'&&<button disabled={pending||disabled} onClick={()=>compare(mode,true)}>Retry presentation</button>}
+  {(ui.status!=='completed'||mode==='open-ended')&&<button disabled={pending||disabled} onClick={()=>compare(mode,true)}>{ui.status==='completed'?'Regenerate view':'Retry presentation'}</button>}
   {pending&&<p role="status">Generating the alternative presentation…</p>}{error&&<p role="alert">{error}</p>}
   <div className="agentic-display-tabs" role="group" aria-label="Display destination"><strong>Display:</strong><button aria-pressed={!embedded} disabled={pending||disabled} onClick={()=>setEmbedded(false)}>Direct in marketplace</button><button aria-pressed={embedded} disabled={pending||disabled||mode!=='declarative'||ui.status!=='completed'} onClick={()=>setEmbedded(true)}>MCP Apps</button>{mode!=='declarative'&&<small>This demo embeds the declarative A2UI view. Select Declarative to use MCP Apps.</small>}</div>
   {!embedded&&<details className="agentic-render-inspector"><summary>Inspect delivery and rendering</summary><p>Custom HTTP API → {mode==='open-ended'?'sanitized HTML/CSS → script-disabled iframe':'A2UI message processor → registered React widgets in this page'}. History actions use the owned conversation's support API.</p><pre>{JSON.stringify({generationMode:mode,sourceInvestigation:run.id,evidenceHandles:Object.keys(run.evidence||{}),rendering:mode==='open-ended'?'generated-markup sandbox':'client widget registry',modelOutputKind:mode==='controlled'?'prebuilt view selection':mode==='declarative'?'component composition':'HTML/CSS'},null,2)}</pre></details>}

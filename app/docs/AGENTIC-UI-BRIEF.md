@@ -35,7 +35,7 @@ Explain the design choices behind an agent's visual response using one marketpla
 - Test-only controls: controlled, declarative, open-ended. Keep plain text/source evidence available.
 - Controlled: model chooses from a bounded set of prebuilt views and supplied record/dataset references.
 - Declarative: reuse existing A2UI catalog, SDK validation, and client widgets.
-- Open-ended: model produces static HTML/CSS from the same evidence; sanitize it and run in a script-disabled, network-disabled iframe. History controls remain outside the generated document.
+- Open-ended: model produces static HTML/CSS from the same evidence; sanitize it and render in an isolated iframe. The model generates history buttons; a nonce-authorized application script connects them to the existing history action. Model scripts and network calls remain blocked.
 - MCP Apps: additional declarative embedding path with real tools/list, resources/read, tools/call, initialization, input/result delivery, and history interaction. A local teaching host is not proof of compatibility with ChatGPT or Claude.
 - AG-UI: diagram and explanation only; no new runtime integration.
 - No business database reset, main merge, production restart, or publication is part of this request.

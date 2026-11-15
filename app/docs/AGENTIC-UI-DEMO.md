@@ -32,7 +32,7 @@ The MCP middleware is local-only and uses the existing authenticated session and
 3. Open Text answer and sources. Establish the facts before comparing the UI.
 4. Select **Controlled** on that result. Inspect Model view selection. A checked result was `{"view":"table","reference":"d0"}`. The application builds the fixed arrangement. The same A2UI widget renderer is reused as an implementation detail; the model did not generate the component tree.
 5. Select **Declarative**. Inspect Presentation instructions, Model layout output, and A2UI messages received by the renderer. Follow the dataset reference into the supplied data. A checked status output used Text, RecordTable, a button label/Button, and Column. Model choices can vary.
-6. Select **Open-ended**. Inspect generated UI code. This demo supports static HTML/CSS only: markup is sanitized, no scripts or links survive, iframe sandbox has no allowances, and CSP blocks network access. History controls outside the document belong to the application. Compare displayed facts with the same source evidence.
+6. Select **Open-ended**. Inspect generated UI code. This demo supports static HTML/CSS only: markup is sanitized and CSP blocks model scripts and network access. The model generates a history button using a supplied action identifier. Only a nonce-authorized application script handles its click, forwarding an allowlisted action to the parent. The parent verifies the frame source and action before using the existing owned/CSRF-protected backend request. Compare displayed facts with the same source evidence.
 7. Select **Declarative → Display: MCP Apps**. Inspect Delivery and interaction events plus Inspect MCP protocol evidence. The tool declares a `ui://` resource; the host reads HTML containing the renderer/widgets. Initialization and tool input/result delivery use the official MCP Apps bridge.
 8. Open browser DevTools → Network, filter `mcp-ui`, and inspect JSON-RPC `initialize`, `tools/list`, `resources/read`, and `tools/call`. The optional GET event stream is unsupported by this stateless demo and returns 405; POST tool/resource calls are the relevant path.
 9. Click Show order history inside the iframe. Observe iframe → host → MCP tool → result → iframe. Checked output: EventTimeline plus RecordTable for returns/refunds/payouts. The tool calls the existing support API internally; MCP is the host/provider boundary.
@@ -44,7 +44,7 @@ The MCP middleware is local-only and uses the existing authenticated session and
 | --- | --- |
 | Controlled selects rather than composes | Model view-selection JSON; `controlled_messages` in `marketplace/agentic_ui_demo.py` constructs the fixed tree |
 | Declarative composes components | Model layout output, catalog/signatures in instructions, resulting A2UI payload, client registry in `A2UIMarketplace.jsx` |
-| Open-ended produces code | Generated HTML/CSS output, sanitized frame document, empty iframe sandbox attribute, CSP before model markup |
+| Open-ended produces code | Generated HTML/CSS output, sanitized frame document, sandbox without same-origin permission, nonce-only script policy, source-bound approved history messages |
 | The support facts are held constant | Same source run/evidence handles shown in Inspect delivery and rendering; comparison endpoint does not rerun business tools |
 | MCP Apps is a protocol integration | Tool metadata, resource receipt, AppBridge/App implementation, Network JSON-RPC and actual frame tool round trip |
 | The presentation model was called | Inspector trace identifier; Langfuse `Agentic UI presentation comparison` root and mode-specific generation child |
@@ -63,6 +63,6 @@ The original support investigation retains its normal trace. Alternative present
 
 - MCP Apps is implemented only for the declarative example in the local teaching host. No ChatGPT/Claude installation or compatibility certification is claimed.
 - The MCP provider lives in the local dev host process; it is a real SDK-backed server, not a full assistant/model router. The generation comparison reuses already-completed investigations.
-- Open-ended here means model-generated HTML/CSS, not arbitrary JavaScript. Extending it requires an explicit execution and permission design.
+- Open-ended here means model-generated HTML/CSS and button markup. Only the application-authored history bridge executes; arbitrary model-generated JavaScript remains disabled.
 - All experiments retain the existing Test-only A2UI gate. No AG-UI implementation, main merge, production deployment, or publication is included.
 - The existing A2UI/Zod dependency chain retains an upstream audit finding. Model payloads are bounded and validated before rendering; this branch does not claim the dependency issue is fixed. Do not use a forced dependency downgrade as a substitute for a compatible upstream patch.
