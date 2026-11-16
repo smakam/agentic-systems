@@ -34,7 +34,13 @@ The MCP authentication additions are part of `main`; a separate feature-branch c
 
 This branch adds browser-to-support A2A access and a separate simulated delivery agent. Choose Standard API, A2A Support, or A2A Support + Delivery in Support workspace; inspect the actual Agent Card, task results and read-only evidence. Sellers can enroll shipments at dispatch, change a simulated delivery scenario, and manually simulate delivery through the delivery service. Existing unlinked shipments retain their local behavior.
 
-See the [setup and walkthrough](app/docs/A2A-MARKETPLACE.md) and [executed validation](app/docs/A2A-VALIDATION.md). These additions are on the review branch and have not been merged into `main` or deployed to the existing workspaces.
+See the [setup and walkthrough](app/docs/A2A-MARKETPLACE.md) and [executed validation](app/docs/A2A-VALIDATION.md). These additions are included in `main`; their optional services still require the setup in that guide. A code merge does not deploy or restart an existing workspace.
+
+### Optional Agentic UI comparison lab
+
+Compare three presentation patterns for the same completed support investigation: the model selects a prebuilt view, composes registered A2UI components, or generates sanitized HTML/CSS. The controlled view renders directly in React; declarative mode uses A2UI and can also be embedded through the local MCP Apps teaching host. AG-UI is discussed in the course but has no runtime implementation here.
+
+The code is included in `main`. Start with the [isolated setup and demo guide](app/docs/AGENTIC-UI-DEMO.md) and [validation record](app/docs/AGENTIC-UI-VALIDATION.md). This optional lab needs an existing Test workspace, Docker, Node/npm and model access; it is not enabled in the baseline production workspace.
 
 The marketplace simulates buyers, sellers, orders, shipments, payments, returns and seller payouts. Its support agent investigates questions such as:
 

@@ -43,3 +43,13 @@ Validated on 14 November 2026, on the isolated `codex/marketplace-agentic-ui` br
 - Live Test request selected a table and data reference with no `messages` field. Browser displayed the prebuilt table, plain-data inspector, and no A2UI message inspector. Its history button returned a new controlled timeline without an alert.
 - Declarative mode still renders its RecordTable through A2UI in the browser, with its A2UI message inspector and no alert.
 - The code change is on `codex/controlled-ui-direct-rendering`; not yet merged into main.
+
+
+## Main Integration Validation — 16 November 2026
+
+- The original Agentic UI comparison branch was already merged into `main`. The direct controlled-renderer follow-up was integrated on top of that main revision in a clean, isolated checkout.
+- Backend regressions: **375 passed, 10 optional skipped, 30 subtests passed**, using `python3 app/scripts/test-a2ui-preview.py` against its dedicated disposable database. Existing Test and production databases were not reset.
+- Frontend and MCP protocol tests: **65 passed**, using `node --test src/*.test.js mcp-app-server.test.mjs`.
+- Both the frontend production build and self-contained MCP UI resource build passed with `npm run build`. The existing large-bundle warning remains.
+- `git diff --check` passed. The demo guide now describes controlled mode's direct React renderer, and the top-level README links to the optional Agentic UI lab.
+- These checks establish regression/build coverage, not a new live-model benchmark, third-party assistant compatibility test, or deployment. The previously recorded A2UI/Zod dependency finding is not claimed fixed.

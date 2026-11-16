@@ -1,6 +1,6 @@
 # Agentic UI Marketplace Demo
 
-Review branch: `codex/marketplace-agentic-ui`. AG-UI is explained only; there is no AG-UI runtime integration.
+The Agentic UI comparison and direct controlled renderer are included in `main`. AG-UI is explained only; there is no AG-UI runtime integration.
 
 ## Start The Isolated Review
 
@@ -30,7 +30,7 @@ The MCP middleware is local-only and uses the existing authenticated session and
 1. Sign in as operator or support. Open Support workspace and enable **Visual answers** under Agentic UI. Use standard API/SDK mode with other experiments and memory off.
 2. Start a new investigation: `What is the current status of order order-1? Include items and delivery status.` The initial presentation is declarative.
 3. Open Text answer and sources. Establish the facts before comparing the UI.
-4. Select **Controlled** on that result. Inspect Model view selection. A checked result was `{"view":"table","reference":"d0"}`. The application builds the fixed arrangement. The same A2UI widget renderer is reused as an implementation detail; the model did not generate the component tree.
+4. Select **Controlled** on that result. Inspect Model view selection. A checked result was `{"view":"table","reference":"d0"}`. The application renders the fixed arrangement directly through `ControlledAnswer`, using the selected data. No A2UI messages or model-generated component tree are used in controlled mode.
 5. Select **Declarative**. Inspect Presentation instructions, Model layout output, and A2UI messages received by the renderer. Follow the dataset reference into the supplied data. A checked status output used Text, RecordTable, a button label/Button, and Column. Model choices can vary.
 6. Select **Open-ended**. Inspect generated UI code. This demo supports static HTML/CSS only: markup is sanitized and CSP blocks model scripts and network access. The model generates a history button using a supplied action identifier. Only a nonce-authorized application script handles its click, forwarding an allowlisted action to the parent. The parent verifies the frame source and action before using the existing owned/CSRF-protected backend request. Compare displayed facts with the same source evidence.
 7. Select **Declarative → Display: MCP Apps**. Inspect Delivery and interaction events plus Inspect MCP protocol evidence. The tool declares a `ui://` resource; the host reads HTML containing the renderer/widgets. Initialization and tool input/result delivery use the official MCP Apps bridge.
@@ -64,5 +64,5 @@ The original support investigation retains its normal trace. Alternative present
 - MCP Apps is implemented only for the declarative example in the local teaching host. No ChatGPT/Claude installation or compatibility certification is claimed.
 - The MCP provider lives in the local dev host process; it is a real SDK-backed server, not a full assistant/model router. The generation comparison reuses already-completed investigations.
 - Open-ended here means model-generated HTML/CSS and button markup. Only the application-authored history bridge executes; arbitrary model-generated JavaScript remains disabled.
-- All experiments retain the existing Test-only A2UI gate. No AG-UI implementation, main merge, production deployment, or publication is included.
+- All experiments retain the existing Test-only A2UI gate. No AG-UI implementation, production deployment, or publication is included.
 - The existing A2UI/Zod dependency chain retains an upstream audit finding. Model payloads are bounded and validated before rendering; this branch does not claim the dependency issue is fixed. Do not use a forced dependency downgrade as a substitute for a compatible upstream patch.
