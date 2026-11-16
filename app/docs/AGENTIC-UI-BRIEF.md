@@ -1,5 +1,7 @@
 # Agentic UI: Choosing How Agents Present And Interact
 
+> Historical design record. Branch names, scope exclusions and validation counts below describe that stage of development. The current code is integrated in `main`; use [Agentic UI setup and demo](AGENTIC-UI-DEMO.md), [A2A setup](A2A-MARKETPLACE.md) and [MCP authentication](MCP-AUTHENTICATION.md) for current learner instructions.
+
 Status: full article review draft and isolated implementation are prepared. See AGENTIC-UI-DEMO.md and AGENTIC-UI-VALIDATION.md. Speaker notes follow article review.
 
 ## Objective

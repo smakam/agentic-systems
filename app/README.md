@@ -10,6 +10,9 @@ Choose a scenario in the [exercise index](../course/exercises/README.md), record
 
 ## Capability guides
 
+- [MCP authentication: shared, delegated and service access](docs/MCP-AUTHENTICATION.md)
+- [Agentic UI: setup, comparison and MCP Apps demo](docs/AGENTIC-UI-DEMO.md)
+
 - [A2A support and simulated delivery](docs/A2A-MARKETPLACE.md) and [validation results](docs/A2A-VALIDATION.md)
 - [Prompt and catalog](docs/PROMPT-AND-CATALOG.md) and [retrieval/policy evidence](docs/RAG-POLICY-DEMO.md)
 - [Guardrails and security](docs/GUARDRAILS-MANUAL.md), [security boundaries](docs/SECURITY-BOUNDARY-DEMO.md), and [OWASP mapping](docs/OWASP-SECURITY-MAP.md)

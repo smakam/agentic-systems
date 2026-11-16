@@ -4,13 +4,17 @@ The Agentic UI comparison and direct controlled renderer are included in `main`.
 
 ## Start The Isolated Review
 
-Prerequisites: existing local marketplace Test containers, Docker, Node/npm, and the Test gateway's valid model credentials. No provider credentials are stored in this branch.
+Prerequisites: complete [Local Setup](../LOCAL-SETUP.md) first and confirm the existing Test workspace is healthy. This guide uses the default `marketplace-lab` Compose project and its `marketplace-lab-test-backend-1` and `marketplace-lab-postgres-1` containers. Install Node 22/npm on the host for the teaching host; unlike baseline Docker startup, this path runs Vite on the host. Keep ports 58010 and 5181 free and use the Test gateway's valid model credentials. No provider credentials are stored in the repository.
 
-From the repository root:
+From the repository root, build the image that the helper expects, then start the review backend:
 
 ```sh
+docker build -t marketplace-a2ui-common-backend:local app/backend
 python3 app/scripts/start-agentic-ui-review.py
+curl --fail http://127.0.0.1:58010/api/health
 ```
+
+The helper does not build this image itself. Rebuild it after dependency changes. It bind-mounts the current checkout's marketplace code, and copies the existing Test configuration and read-only mounts. If your baseline uses another Compose project/container naming scheme, adapt the helper deliberately; it is not an auto-discovery tool for arbitrary installations.
 
 The script creates a separate PostgreSQL container from a snapshot of Test on its first run. It restores the reader's read-only role settings and starts only `marketplace-agentic-ui-backend` on loopback port 58010. Subsequent runs retain that copied database and restart only this review backend. The ordinary Test/production databases and containers are not reset or restarted. Mounts for existing configuration and course data remain read-only. Do not use this script as a production deployment procedure.
 
@@ -24,6 +28,91 @@ MARKETPLACE_API_PROXY=http://127.0.0.1:58010 npm run demo
 Open `http://127.0.0.1:5181`. `npm run demo` builds the self-contained MCP UI resource and starts the Vite teaching host/MCP endpoint. `npm run preview` is not an MCP host. Use a separate browser profile or a different loopback hostname if you need to keep another local marketplace session signed in; cookies are not scoped by port.
 
 The MCP middleware is local-only and uses the existing authenticated session and CSRF token. It exposes only the two read-only presentation tools, not arbitrary marketplace commands. A valid owned source investigation is required.
+
+## Run Regressions Without Resetting The Interactive Test Workspace
+
+The regression runner is separate from the review backend. It expects a dedicated container named `marketplace-a2a-test-db` on Docker's default `bridge` network. It must never use `marketplace-lab-postgres-1`, `market_test` in that shared container, or `marketplace-agentic-ui-db`.
+
+From the repository root, check whether the dedicated container already exists:
+
+```sh
+docker ps -a --filter name=marketplace-a2a-test-db --format 'table {{.Names}}\t{{.Status}}'
+```
+
+If it exists, start it with `docker start marketplace-a2a-test-db` if needed. Do not reinitialize it while a regression run is active. For a **first run only**, create the dedicated database with the same pinned pgvector image used by the baseline:
+
+```sh
+docker run -d --name marketplace-a2a-test-db --network bridge \
+  -e POSTGRES_PASSWORD=regression-local-only \
+  --mount "type=bind,source=$PWD/app/infra/init.sql,target=/docker-entrypoint-initdb.d/10-marketplace.sql,readonly" \
+  pgvector/pgvector@sha256:cf134a767f474095eeba57e0117be8e568e011a63f33fbf252f14c9b760f8e6f
+```
+
+This database has no published host port. The public local-demo passwords in `init.sql` are for this disposable lab, not production credentials. Wait until readiness succeeds **and** the `market` role exists (initialization may still be running after the server first accepts connections):
+
+```sh
+docker exec marketplace-a2a-test-db pg_isready -U postgres
+docker exec marketplace-a2a-test-db psql -U postgres -Atc "SELECT rolname FROM pg_roles WHERE rolname='market'"
+```
+
+Only after those checks succeed, create the regression database and enable pgvector:
+
+```sh
+docker exec marketplace-a2a-test-db createdb -U postgres -O market market_test
+docker exec marketplace-a2a-test-db psql -U postgres -d market_test -v ON_ERROR_STOP=1 -c 'CREATE EXTENSION IF NOT EXISTS vector'
+```
+
+Initialize the new regression database's marketplace schema, seed and auxiliary tables before the first suite run. This command shares only the dedicated database container's network namespace; it does not connect to the normal Test database or call a model provider:
+
+```sh
+docker run --rm -i --network container:marketplace-a2a-test-db \
+  -e DATABASE_URL=postgresql+psycopg://market:market-local@127.0.0.1:5432/market_test \
+  -e READ_DATABASE_URL=postgresql://agent_reader:reader-local@127.0.0.1:5432/market_test \
+  -e DATA_DIR=/data \
+  --mount "type=bind,source=$PWD/app/backend/marketplace,target=/app/marketplace,readonly" \
+  --mount "type=bind,source=$PWD/app/data,target=/data,readonly" \
+  marketplace-a2ui-common-backend:local python - <<'INIT'
+from marketplace.db import init_schema, Session
+from marketplace.seed import seed
+from marketplace.rag_policy_demo import initialize as initialize_rag_demo
+from marketplace.embedding_cache import initialize as initialize_embedding_cache
+init_schema()
+with Session.begin() as db:
+    seed(db)
+initialize_rag_demo()
+initialize_embedding_cache()
+INIT
+python3 app/scripts/test-a2ui-preview.py
+```
+
+The `createdb` command is first-run-only. Later runs reuse this dedicated database; the tests may replace its fixtures. The runner checks the container name, network and default-bridge address before using it. If Docker uses a different bridge subnet, stop and adapt that guard to your dedicated test environment; do not redirect it to the interactive database just to pass the check.
+
+Frontend checks run from `app/frontend` after `npm ci`:
+
+```sh
+node --test src/*.test.js mcp-app-server.test.mjs
+npm run build
+```
+
+These regressions use synthetic data and test doubles for model calls. They do not establish live model quality or third-party assistant compatibility. Historical counts are in [Validation](AGENTIC-UI-VALIDATION.md); report the results of your own run.
+
+On 16 November 2026, the documented first-run database creation and explicit initialization were exercised in a new disposable container using the existing local backend image and current mounted source. The complete backend suite passed: 375 tests and 30 subtests, with 10 optional skips. The temporary validation database was removed afterward; normal Test and main databases were not reset. This does not claim a fresh image/package download or a new live-model/OAuth verification.
+
+## Stop And Resume
+
+Stop the host `npm run demo` process with Ctrl-C. Stop only these dedicated containers when they are idle:
+
+```sh
+docker stop marketplace-agentic-ui-backend marketplace-agentic-ui-db
+# Only if you created/used the separate regression container:
+docker stop marketplace-a2a-test-db
+```
+
+To resume, start `marketplace-agentic-ui-db`, then rerun the review helper and the host frontend command above. Start the regression container separately if needed. Keep the normal Test baseline running while creating/restarting the review backend. Stopping these containers retains their data; no reset or volume-deletion command is needed. The first review database is a snapshot, so later changes in normal Test do not automatically appear there.
+
+## Local And Cloud Scope
+
+This is a local/Test teaching path on code included in `main`. It does not install MCP Apps in ChatGPT/Claude, configure cloud networking, deploy the review backend, or implement AG-UI. The baseline cloud setup does not automatically enable these experiments. See [MCP authentication](MCP-AUTHENTICATION.md) for the separate identity/payout lab and [A2A](A2A-MARKETPLACE.md) for agent communication.
 
 ## Demonstration Sequence
 
@@ -65,4 +154,4 @@ The original support investigation retains its normal trace. Alternative present
 - The MCP provider lives in the local dev host process; it is a real SDK-backed server, not a full assistant/model router. The generation comparison reuses already-completed investigations.
 - Open-ended here means model-generated HTML/CSS and button markup. Only the application-authored history bridge executes; arbitrary model-generated JavaScript remains disabled.
 - All experiments retain the existing Test-only A2UI gate. No AG-UI implementation, production deployment, or publication is included.
-- The existing A2UI/Zod dependency chain retains an upstream audit finding. Model payloads are bounded and validated before rendering; this branch does not claim the dependency issue is fixed. Do not use a forced dependency downgrade as a substitute for a compatible upstream patch.
+- The existing A2UI/Zod dependency chain retains an upstream audit finding. Model payloads are bounded and validated before rendering; this guide does not claim the dependency issue is fixed. Do not use a forced dependency downgrade as a substitute for a compatible upstream patch.

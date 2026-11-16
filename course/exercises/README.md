@@ -10,6 +10,7 @@ Solutions use **solutions/answers.md** consistently. Instructor guides are for d
 | Model and gateway | [Exercise](model-and-gateway/exercise.md) · [Answers](model-and-gateway/solutions/answers.md) |
 | Prompt and context | [Exercise](prompt-and-context/exercise.md) · [Answers](prompt-and-context/solutions/answers.md) |
 | Tools and mcp | [Exercise](tools-and-mcp/exercise.md) · [Answers](tools-and-mcp/solutions/answers.md) |
+| MCP authentication | [Ordered setup and verification](../../app/docs/MCP-AUTHENTICATION.md) · Shared support, buyer/seller OAuth and simulated service payouts |
 | Knowledge and retrieval | [Exercise](knowledge-and-retrieval/exercise.md) · [Answers](knowledge-and-retrieval/solutions/answers.md) |
 | Session state | [Exercise](session-state/exercise.md) · [Answers](session-state/solutions/answers.md) |
 | Agent loop | [Exercise](agent-loop/exercise.md) · [Answers](agent-loop/solutions/answers.md) |
@@ -19,6 +20,8 @@ Solutions use **solutions/answers.md** consistently. Instructor guides are for d
 | Model routing | [Exercise](model-routing/exercise.md) · [Answers](model-routing/solutions/answers.md) · [Instructor guide](model-routing/instructor-demo.md) |
 | Agent design patterns | [Exercise](agent-design-patterns/exercise.md) · [Answers](agent-design-patterns/solutions/answers.md) · [Instructor guide](agent-design-patterns/instructor-demo.md) |
 | Short and long term memory | [Exercise](short-and-long-term-memory/exercise.md) · [Answers](short-and-long-term-memory/solutions/answers.md) · [Instructor guide](short-and-long-term-memory/instructor-demo.md) · Test workspace: http://127.0.0.1:5179/ (`market_test`, Support, OpenAI Agents SDK) |
+| A2A | [Setup](../../app/docs/A2A-MARKETPLACE.md) · [Demonstration walkthrough](../../app/docs/A2A-DEMO-WALKTHROUGH.md) |
+| Agentic UI | [Setup and comparison walkthrough](../../app/docs/AGENTIC-UI-DEMO.md) · Local/Test and the local MCP Apps teaching host; AG-UI is explanation-only |
 | Google agent platform | [Setup](../setup/google-agent-platform/setup-guide.md) · [Instructor guide](google-agent-platform/instructor-demo.md) · [Exercise](google-agent-platform/exercise.md) · [Answers](google-agent-platform/solutions/answers.md) · Google Playground: Support Agent Basics; optional full-cloud integration |
 | Lyzr Agent Platform | [Setup](../setup/lyzr-agent-platform/setup-guide.md) · [Exercise](lyzr-agent-studio/exercise.md) · [Answers](lyzr-agent-studio/solutions/answers.md) · Native Playground; optional full-cloud integration |
 | Choosing an Agent Platform | [Exercise and worksheet](choosing-an-agent-platform/exercise.md) · [Separate reference answers](choosing-an-agent-platform/solutions/answers.md) · No new deployment required |

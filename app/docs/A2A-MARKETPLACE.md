@@ -1,6 +1,6 @@
 # A2A support and simulated delivery
 
-This optional lab adds two working A2A flows to the existing marketplace. It uses **a2a-sdk 1.3.0**, implementing **A2A protocol 1.0**. The SDK version and protocol version are different numbers. The implementation uses the installed SDK's JSON-RPC dispatcher, request handler, executor, task store and protobuf types, rather than the older `A2AStarletteApplication` examples.
+This local/Test capability adds two working A2A flows to the existing marketplace. It uses **a2a-sdk 1.3.0**, implementing **A2A protocol 1.0**. The SDK version and protocol version are different numbers. The implementation uses the installed SDK's JSON-RPC dispatcher, request handler, executor, task store and protobuf types, rather than the older `A2AStarletteApplication` examples.
 
 ## What runs
 
@@ -9,9 +9,9 @@ This optional lab adds two working A2A flows to the existing marketplace. It use
 
 No real carriers, payments or payouts are invoked. Shipping writes are deterministic backend operations, never support-agent tools.
 
-## Start the optional lab
+## Start the local/Test lab
 
-Use this branch and the existing [local setup](../LOCAL-SETUP.md). Add two different, independently generated random secrets to the private `app/.env`:
+Use the repository's `main` checkout and the existing [local setup](../LOCAL-SETUP.md). Add two different, independently generated random secrets to the private `app/.env`:
 
 ```dotenv
 DELIVERY_READ_TOKEN=<random read credential>
@@ -21,13 +21,13 @@ DELIVERY_MODEL_ALIAS=support-model-test
 
 Keep these values out of Git, screenshots and the browser. The delivery service rejects missing or equal credentials. The read credential can investigate; only the write credential can book, change a scenario or mark delivery. The support browser continues using its existing marketplace session and CSRF token.
 
-From `app/`, start the branch in the existing Test workspace on `http://127.0.0.1:5179`:
+From `app/`, start the A2A services in the existing Test workspace on `http://127.0.0.1:5179`:
 
 ```sh
 docker compose -f compose.yaml -f compose.memory.yaml -f compose.a2a-test.yaml up -d --build memory-backend memory-frontend delivery
 ```
 
-This is a local branch setup command, not an instruction to deploy or merge it. This command targets the Test services; do not rebuild the production backend/frontend for this experiment. Preserve any existing identity or cloud-runtime overlays required by your installation. The optional delivery service has no published host port and is reachable from the marketplace backend on the Compose network. Its SQLite records live in the separate `delivery-state` volume. The marketplace schema adds separate association and A2A metadata tables; existing shipment columns and old orders do not need a blanket migration.
+The code is already in `main`; this is a local/Test service setup command, not a cloud deployment. This command targets the Test services; do not rebuild the production backend/frontend for this experiment. Preserve any existing identity or cloud-runtime overlays required by your installation. The optional delivery service has no published host port and is reachable from the marketplace backend on the Compose network. Its SQLite records live in the separate `delivery-state` volume. The marketplace schema adds separate association and A2A metadata tables; existing shipment columns and old orders do not need a blanket migration.
 
 For host development, run Python from `app/backend` so the existing MCP subprocesses can import `marketplace`. Set `DATABASE_URL`, `READ_DATABASE_URL`, `DATA_DIR`, existing gateway credentials, `DELIVERY_A2A_URL` and the two delivery credentials. The Vite proxy target can be set with `MARKETPLACE_API_PROXY`. Do not point automated reset tests at an interactive database.
 

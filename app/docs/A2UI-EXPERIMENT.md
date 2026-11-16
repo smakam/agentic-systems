@@ -1,5 +1,7 @@
 # A2UI marketplace experiment
 
+> Historical design record. Branch names, scope exclusions and validation counts below describe that stage of development. The current code is integrated in `main`; use [Agentic UI setup and demo](AGENTIC-UI-DEMO.md), [A2A setup](A2A-MARKETPLACE.md) and [MCP authentication](MCP-AUTHENTICATION.md) for current learner instructions.
+
 Status: implemented and locally verified, 12 November 2026. The common Test preview is running on port 5179. See the Test incident below for the separate data-recovery limitation.
 
 ## Purpose

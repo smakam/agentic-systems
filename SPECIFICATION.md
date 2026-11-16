@@ -12,6 +12,14 @@ The application uses synthetic marketplace data to make agent behavior inspectab
 - Optional memory, routing, guardrails and orchestration labs change specific behavior. They do not convert remembered facts or model claims into trusted identity or current business evidence.
 - Langfuse provides tracing and evaluation telemetry when configured. Local experiment outputs retain their own source, fixture and grading provenance.
 
+## New capability boundaries
+
+- [MCP authentication](app/docs/MCP-AUTHENTICATION.md): shared-key support access, delegated buyer/seller order access, and service-authenticated simulated Test payouts. Identity providers issue credentials; backend ownership, scope and business rules decide permitted actions. Marketplace web sign-in is a separate integration.
+- [A2A](app/docs/A2A-MARKETPLACE.md): protocol adapters expose the support agent and a separately managed simulated delivery agent. The existing marketplace session/CSRF rules and conversation ownership remain in force; a common interface does not remove the access boundary.
+- [Agentic UI](app/docs/AGENTIC-UI-DEMO.md): a presentation stage reuses a completed investigation for controlled, declarative or generated views. MCP Apps supplies the local host/provider boundary for the declarative example. Requesting history starts new backend work; changing only presentation does not rerun the business investigation. AG-UI is explained, not integrated.
+
+These capabilities are in `main`, but enabling local/Test services is separate from deployment. The baseline cloud path does not automatically configure the identity lab, isolated UI teaching host or delivery experiment. Follow each guide's workspace and configuration requirements.
+
 ## Learning paths and contracts
 
 [Local Setup](app/LOCAL-SETUP.md) is the primary lab path; [Cloud Setup](app/CLOUD-SETUP.md) describes the optional deployment. [Runtime selection](app/RUNTIME-SELECTOR.md) explains the boundary between application hosting and agent execution. [User journeys](app/USER-JOURNEYS.md) describe business behavior.
