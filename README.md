@@ -12,35 +12,9 @@ You can use this repository independently of the **Inside AI Agent Systems: From
 
 Understand, build and evaluate AI agents through hands-on experiments, explore key production considerations, and choose an agentic platform that fits your needs. **[View the course and free preview lessons](https://www.udemy.com/course/inside-ai-agent-systems-from-components-to-platforms/?referralCode=47C95A5262ECC0C54C36).**
 
-## Application and experiment status
-
-Use [`main`](https://github.com/smakam/agentic-systems/tree/main) for the course application and setup guides. It includes the shared-key support MCP endpoint, buyer/seller OAuth access, optional Keycloak web sign-in alongside username/password login, and service-authenticated simulated payouts.
-
-The [Responsible AI pilot evidence branch](https://github.com/smakam/agentic-systems/tree/codex/responsible-ai-pilot-evidence) remains a separate evidence/documentation experiment covering direct model checks, AgentDojo, and the marketplace assistant. It is not a complete AI governance platform.
-
-### MCP authentication and automatic payouts
-
-The support endpoint retains its shared-key integration. The order endpoint applies the signed-in buyer's or seller's permissions in the backend. The payout endpoint accepts a separately registered service identity and applies the same payout rules across all sellers.
-
-**Automatic payouts are disabled by default and available only in the simulated Test workspace.** An operator can enable them in Admin after delivery and the required hold. The backend rechecks eligibility, amount and run limits, and duplicate-payment protection. The worker does not use a real payment provider.
-
-Keycloak, the public HTTPS route, and the service worker are optional local components; normal startup does not provision or enable them. The provisioning entry points are [`app/user-mcp/setup.py`](app/user-mcp/setup.py), [`configure_ui_login.py`](app/user-mcp/configure_ui_login.py), and [`configure_payout.py`](app/user-mcp/configure_payout.py). Generated identity links, client secrets, tunnel settings, and worker credentials stay in ignored private files.
-
-The MCP authentication additions are part of `main`; a separate feature-branch checkout is no longer required. Record the commit and workspace used when reporting results.
-
 ## What you can do
 
-### Optional A2A support and delivery lab
-
-This branch adds browser-to-support A2A access and a separate simulated delivery agent. Choose Standard API, A2A Support, or A2A Support + Delivery in Support workspace; inspect the actual Agent Card, task results and read-only evidence. Sellers can enroll shipments at dispatch, change a simulated delivery scenario, and manually simulate delivery through the delivery service. Existing unlinked shipments retain their local behavior.
-
-See the [setup and walkthrough](app/docs/A2A-MARKETPLACE.md) and [executed validation](app/docs/A2A-VALIDATION.md). These additions are included in `main`; their optional services still require the setup in that guide. A code merge does not deploy or restart an existing workspace.
-
-### Optional Agentic UI comparison lab
-
-Compare three presentation patterns for the same completed support investigation: the model selects a prebuilt view, composes registered A2UI components, or generates sanitized HTML/CSS. The controlled view renders directly in React; declarative mode uses A2UI and can also be embedded through the local MCP Apps teaching host. AG-UI is discussed in the course but has no runtime implementation here.
-
-The code is included in `main`. Start with the [isolated setup and demo guide](app/docs/AGENTIC-UI-DEMO.md) and [validation record](app/docs/AGENTIC-UI-VALIDATION.md). This optional lab needs an existing Test workspace, Docker, Node/npm and model access; it is not enabled in the baseline production workspace.
+Use [`main`](https://github.com/smakam/agentic-systems/tree/main) for the course application, all capabilities below and their setup guides. Record the commit and workspace used when reporting results. Optional services still need configuration; updating code does not deploy or restart an existing workspace.
 
 The marketplace simulates buyers, sellers, orders, shipments, payments, returns and seller payouts. Its support agent investigates questions such as:
 
@@ -60,10 +34,20 @@ Business actions are simulated. The support agent uses read-only business tools;
 | State and execution | Session history, agent iterations, tool recovery and stopping | [Session state](course/exercises/session-state/exercise.md) · [Agent loop](course/exercises/agent-loop/exercise.md) |
 | Observability and evaluation | Model/tool traces, token usage, answer quality, latency, cost and feedback | [Observability](course/exercises/observability/exercise.md) · [Evaluation](course/exercises/evaluation/exercise.md) |
 | Security | Guardrails, trusted identity, tool boundaries and optional screening services | [Guardrails and security](course/exercises/guardrails-security/exercise.md) |
+| MCP authentication | Shared-key support access, buyer/seller OAuth access with backend permission checks, and separate service identity for payouts. Optional Keycloak web sign-in coexists with username/password login. | [MCP setup](app/user-mcp/setup.py) · [Web sign-in setup](app/user-mcp/configure_ui_login.py) |
+| Automatic payouts | Service-authenticated simulated payouts, with backend eligibility, amount/run limits and duplicate-payment protection across sellers | [Payout setup](app/user-mcp/configure_payout.py) |
+| Agent-to-agent communication (A2A) | Compare Standard API, A2A Support and A2A Support + Delivery; inspect Agent Cards, task results and read-only evidence from support and simulated delivery agents | [Setup and walkthrough](app/docs/A2A-MARKETPLACE.md) · [Validation](app/docs/A2A-VALIDATION.md) |
+| Agentic UI | Compare model-selected prebuilt views, registered A2UI component compositions and sanitized HTML/CSS for the same completed investigation; embed declarative views through the local MCP Apps teaching host | [Setup and demo](app/docs/AGENTIC-UI-DEMO.md) · [Validation](app/docs/AGENTIC-UI-VALIDATION.md) |
 | Advanced behavior | Model routing, agent design patterns and memory across conversations | [Routing](course/exercises/model-routing/exercise.md) · [Patterns](course/exercises/agent-design-patterns/exercise.md) · [Memory](course/exercises/short-and-long-term-memory/exercise.md) |
 | Hosted platforms | Separate Google and Lyzr practice agents and optional marketplace integration | [Google setup](course/setup/google-agent-platform/setup-guide.md) · [Lyzr setup](course/setup/lyzr-agent-platform/setup-guide.md) |
 
-Some capabilities require the isolated test workspace, optional services or additional accounts. Each guide states its prerequisites; the baseline does not require every integration.
+Some capabilities require the isolated Test workspace, optional services or additional accounts. Each guide states its prerequisites; the baseline does not enable every integration.
+
+- **MCP identity and payouts:** Keycloak, the public HTTPS route and the payout worker need separate local provisioning. Generated identity links, client secrets, tunnel settings and worker credentials stay in ignored private files. Automatic payouts are disabled by default and available only in the simulated Test workspace. An operator can enable them in Admin after delivery and the required hold; the worker never uses a real payment provider.
+- **A2A delivery:** sellers can enroll shipments at dispatch, change a simulated delivery scenario and manually simulate delivery through the delivery service. Existing unlinked shipments retain their local behavior.
+- **Agentic UI:** the optional lab needs an existing Test workspace, Docker, Node/npm and model access. Controlled mode renders a prebuilt React view directly; declarative mode uses A2UI. AG-UI is explained only and has no runtime implementation here. The lab is not enabled in the baseline production workspace.
+
+The [Responsible AI pilot evidence branch](https://github.com/smakam/agentic-systems/tree/codex/responsible-ai-pilot-evidence) remains a separate evidence/documentation experiment covering direct model checks, AgentDojo and the marketplace assistant. It is not a complete AI governance platform.
 
 ## Choose a setup path
 
