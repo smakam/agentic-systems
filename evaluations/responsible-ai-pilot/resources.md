@@ -26,7 +26,7 @@ Companion catalog for **Evaluating Responsible AI**, in the Responsible AI and A
 
 | Setup | Saved evidence |
 | --- | --- |
-| Direct model calls | [Results and rubric decisions](https://github.com/smakam/agentic-systems/blob/2c224e9e1a15a64816b1cebc48ec28d34da44b1f/evaluations/responsible-ai-pilot/model-summary.md) |
+| Direct model calls | [Direct-model runner](https://github.com/smakam/agentic-systems/blob/2c224e9e1a15a64816b1cebc48ec28d34da44b1f/evaluations/responsible-ai-pilot/run_model_cases.py) and [results and rubric decisions](https://github.com/smakam/agentic-systems/blob/2c224e9e1a15a64816b1cebc48ec28d34da44b1f/evaluations/responsible-ai-pilot/model-summary.md) |
 | Fixed agent harness | [AgentDojo pilot results](https://github.com/smakam/agentic-systems/blob/2c224e9e1a15a64816b1cebc48ec28d34da44b1f/evaluations/responsible-ai-pilot/agentdojo-summary.md) |
 | Marketplace support agent | [Marketplace pilot results](https://github.com/smakam/agentic-systems/blob/2c224e9e1a15a64816b1cebc48ec28d34da44b1f/evaluations/responsible-ai-pilot/marketplace-summary.md) |
 
