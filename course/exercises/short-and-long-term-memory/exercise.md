@@ -12,14 +12,16 @@ Use **Refresh memory status** for the latest result and **Memory extraction trac
 
 ### Mem0 API-key setup (before the Mem0 cases)
 
-Internal memory needs no Mem0 account or key. To run the hosted Mem0 cases in your own installation:
+Internal memory needs no Mem0 account or key. For the hosted comparison, `MEM0_API_KEY` authenticates the app to Mem0. After the Mem0 free-plan introductory period, new memory saves also require a separate LLM provider key. The Mem0 organization owner adds that key under **Settings → BYOK**; model calls are billed to the provider account. Without that key, existing memories can still be searched within the free-plan limit, but new saves fail. See the [Mem0 free-plan FAQ](https://docs.mem0.ai/platform/pricing#free-plan).
+
+To run the hosted Mem0 cases in your own installation:
 
 1. Sign in to [Mem0 Platform and create a dashboard API key](https://docs.mem0.ai/platform/quickstart). Check your account quota and billing before running the lab.
 2. In the repository's `app` directory, open the existing private, gitignored `.env` file in your editor. Add `MEM0_API_KEY=your-own-key`, replacing the placeholder with your dashboard key. Keep the key out of chat, screenshots, frontend code and committed files.
 3. When no investigation is running, apply the configuration from `app` with `./scripts/start.sh`. No separate host Mem0 SDK installation is required; the backend calls the hosted service.
 4. Refresh the Test workspace, open Support with **OpenAI Agents SDK**, and confirm **Mem0** is available in the memory-provider selector. An available selector confirms configuration, not successful authentication or extraction; verify those during the Mem0 cases below.
 
-For a shared course workspace, the course operator configures the backend key. If Mem0 is unavailable, complete the Internal cases and record the setup limitation. Do not interpret a provider error as proof that no memory exists. See [local setup: Mem0 configuration](../../../app/LOCAL-SETUP.md#optional-mem0-setup) for the complete setup and verification sequence.
+For a shared course workspace, the operator configures the backend key and coordinates with the Mem0 organization owner if BYOK is required. If you cannot save new hosted memories, skip B2 and the Mem0 run of Part C. Complete A, B1, C with Internal, and D, and record the setup limitation. Do not interpret a provider error as proof that no memory exists. See [local setup: Mem0 configuration](../../../app/LOCAL-SETUP.md#optional-mem0-setup) for the complete setup and verification sequence.
 
 **Preference retrieval and precedence:** both provider paths instruct the agent to look for relevant saved preferences before answering a business question. The model controls whether and how it calls search, so inspect the actual trace rather than assuming a call. A retrieved relevant format preference takes precedence over the default answer layout; an explicit instruction in the current question takes precedence over the saved preference. Current business evidence still governs factual claims.
 
