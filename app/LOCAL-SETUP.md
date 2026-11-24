@@ -227,9 +227,11 @@ Never run a fixture reset, `scripts/test.sh`, or another runner against `market_
 
 ### Optional Mem0 setup
 
-Internal memory is included in the local setup and does not require a Mem0 account. To run the hosted Mem0 comparison, use your own [Mem0 Platform account and dashboard API key](https://docs.mem0.ai/platform/quickstart). Hosted availability, quota and charges depend on your account and current plan; check the dashboard before repeated extraction/search runs. Your model-provider API charges remain separate.
+Internal memory is included in the local setup and does not require a Mem0 account. To run the hosted Mem0 comparison, use your own [Mem0 Platform account and dashboard API key](https://docs.mem0.ai/platform/quickstart). Hosted availability and quotas depend on your plan; check the dashboard before repeated extraction or search runs.
 
-1. From the repository's `app` directory, open the existing **gitignored `.env` in your editor**. Add `MEM0_API_KEY=your-own-key` using your actual dashboard key, and save. Keep the file private (`chmod 600 .env`). Do not paste the key into chat, frontend code, terminal screenshots or committed files. You do not need to install a host Mem0 SDK or configure another LLM key for Mem0; this application calls its hosted APIs from the backend.
+`MEM0_API_KEY` authenticates the backend to Mem0. After the Mem0 free-plan introductory period, the Mem0 organization owner must add a separate LLM provider key under **Settings → BYOK** to keep saving new hosted memories. Configure that key in Mem0, not as `MEM0_API_KEY` in the app. The provider bills the model calls. Existing memories can still be searched within the free-plan limit without BYOK, but new saves fail. See the [Mem0 free-plan FAQ](https://docs.mem0.ai/platform/pricing#free-plan).
+
+1. From the repository's `app` directory, open the existing **gitignored `.env` in your editor**. Add `MEM0_API_KEY=your-own-key` using your actual dashboard key, and save. Keep the file private (`chmod 600 .env`). Do not paste the key into chat, frontend code, terminal screenshots or committed files. No host Mem0 SDK is required; the backend calls the hosted APIs.
 2. Apply the configuration when no investigation is running:
 
    ```bash
